@@ -2,12 +2,19 @@ from __future__ import annotations
 
 from paperagent.prompts.registry import all_prompts
 
+_EXPECTED_VERSIONS = {
+    "planning": "planning.v0.1.2",
+    "evidence_synthesis": "evidence_synthesis.v0.1.0",
+    "method_design": "method_design.v0.2.0",
+    "report": "report.v0.1.0",
+}
+
 
 def test_prompt_files__all_tasks__load_versioned_nonempty_content() -> None:
     prompts = {prompt.task: prompt for prompt in all_prompts()}
-    assert set(prompts) == {"planning", "evidence_synthesis", "method_design", "report"}
+    assert set(prompts) == set(_EXPECTED_VERSIONS)
     for task, prompt in prompts.items():
-        assert prompt.version.startswith(f"{task}.v0.1.")
+        assert prompt.version == _EXPECTED_VERSIONS[task]
         assert len(prompt.system) > 120
         assert "JSON" in prompt.system
         assert "hidden chain-of-thought" in prompt.system

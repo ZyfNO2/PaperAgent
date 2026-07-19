@@ -30,6 +30,7 @@ EXPECTED_BOUNDED_NODES = [
     "verify_evidence_node",
     "evidence_synthesis_node",
     "method_design_node",
+    "methodology_audit_node",
     "quality_gate_node",
     "report_node",
     "persist_node",

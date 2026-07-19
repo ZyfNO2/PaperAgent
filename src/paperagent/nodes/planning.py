@@ -4,6 +4,7 @@ from langchain_core.runnables import RunnableConfig
 
 from paperagent.errors import NodeError
 from paperagent.nodes._shared import call_structured
+from paperagent.runtime import get_option
 from paperagent.schemas import ResearchPlan
 from paperagent.state import PaperAgentState, StatePatch
 
@@ -42,7 +43,7 @@ async def planning_node(state: PaperAgentState, config: RunnableConfig) -> State
     return patch
 
 
-def planning_route(state: PaperAgentState) -> str:
+def planning_route(state: PaperAgentState, config: RunnableConfig) -> str:
     execution = state.get("execution")
     if execution is not None and execution.status == "failed":
         return "blocked"
@@ -54,5 +55,10 @@ def planning_route(state: PaperAgentState) -> str:
     # to "blocked" so the graph always reaches report_node -> persist_node
     # instead of silently stopping after planning.
     if plan.status not in ("ready", "need_human", "blocked"):
+        return "blocked"
+    if (
+        plan.status == "need_human"
+        and get_option(config, "human_review_policy", "interrupt") == "block"
+    ):
         return "blocked"
     return plan.status

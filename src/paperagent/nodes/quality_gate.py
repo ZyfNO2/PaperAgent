@@ -4,8 +4,16 @@ import re
 
 from langchain_core.runnables import RunnableConfig
 
+from paperagent.academic_methodology import (
+    METHOD_AUDIT_POLICY_VERSION,
+    METHOD_PLAN_CONTRACT_VERSION,
+    AuditVerdict,
+    MethodAuditReport,
+    audit_method_plan,
+    method_plan_fingerprint,
+)
 from paperagent.nodes._shared import execution_with
-from paperagent.runtime import get_services
+from paperagent.runtime import get_option, get_services
 from paperagent.schemas import EvidenceBundle, QualityDecision, RetrievalState
 from paperagent.state import PaperAgentState, StatePatch
 from paperagent.telemetry import make_event
@@ -17,7 +25,32 @@ def _has_threshold(text: str) -> bool:
     return bool(re.search(r"(?:\d+(?:\.\d+)?|>=|<=|>|<)", text))
 
 
-def evaluate_quality(state: PaperAgentState) -> QualityDecision:
+def _audit_reason_code(check_id: str) -> str:
+    normalized = re.sub(r"[^A-Z0-9]+", "_", check_id.upper()).strip("_")
+    return f"Q_METHOD_AUDIT_{normalized}"
+
+
+def _current_methodology_audit(state: PaperAgentState) -> MethodAuditReport | None:
+    method = state.get("method")
+    if method is None:
+        return None
+    methodology_audit = state.get("methodology_audit")
+    expected_fingerprint = method_plan_fingerprint(method.methodology_plan)
+    if (
+        methodology_audit is None
+        or methodology_audit.plan_fingerprint != expected_fingerprint
+        or methodology_audit.contract_version != METHOD_PLAN_CONTRACT_VERSION
+        or methodology_audit.policy_version != METHOD_AUDIT_POLICY_VERSION
+    ):
+        return audit_method_plan(method.methodology_plan)
+    return methodology_audit
+
+
+def evaluate_quality(
+    state: PaperAgentState,
+    *,
+    methodology_audit: MethodAuditReport | None = None,
+) -> QualityDecision:
     plan = state.get("plan")
     if plan is None:
         return QualityDecision(verdict="blocked", reason_codes=["Q_MISSING_PLAN"])
@@ -45,6 +78,9 @@ def evaluate_quality(state: PaperAgentState) -> QualityDecision:
     method = state.get("method")
     if synthesis is None or method is None:
         return QualityDecision(verdict="blocked", reason_codes=["Q_MISSING_ARTIFACT"])
+    methodology_audit = methodology_audit or _current_methodology_audit(state)
+    if methodology_audit is None:
+        return QualityDecision(verdict="blocked", reason_codes=["Q_MISSING_METHODOLOGY_AUDIT"])
     required_gap_ids = {gap.gap_id for gap in plan.evidence_gaps if gap.required}
     weak_gap_ids = sorted(
         assessment.gap_id
@@ -65,7 +101,10 @@ def evaluate_quality(state: PaperAgentState) -> QualityDecision:
             missing_gap_ids=weak_gap_ids,
         )
     accepted = set(evidence.accepted_ids)
-    invalid = (synthesis.referenced_evidence_ids() | set(method.evidence_ids)) - accepted
+    canonical_evidence_ids = {item.evidence_id for item in method.methodology_plan.evidence}
+    invalid = (
+        synthesis.referenced_evidence_ids() | set(method.evidence_ids) | canonical_evidence_ids
+    ) - accepted
     execution = state.get("execution")
     run = state.get("run")
     max_repairs = run.budgets.max_method_repairs if run is not None else 1
@@ -83,6 +122,31 @@ def evaluate_quality(state: PaperAgentState) -> QualityDecision:
             reason_codes=["Q_REPAIR_BUDGET_EXHAUSTED", "Q_UNKNOWN_EVIDENCE_ID"],
             invalid_evidence_ids=sorted(invalid),
         )
+
+    audit_failures = [
+        _audit_reason_code(check_id) for check_id in methodology_audit.trace.failed_check_ids
+    ]
+    if methodology_audit.verdict is AuditVerdict.NO_GO:
+        return QualityDecision(
+            verdict="blocked",
+            reason_codes=["Q_METHODOLOGY_NO_GO", *audit_failures],
+        )
+    if methodology_audit.verdict is AuditVerdict.REVISE:
+        if repair_count < max_repairs:
+            return QualityDecision(
+                verdict="repair_method",
+                reason_codes=["Q_METHODOLOGY_REVISE", *audit_failures],
+                repair_target="method",
+            )
+        return QualityDecision(
+            verdict="blocked",
+            reason_codes=[
+                "Q_REPAIR_BUDGET_EXHAUSTED",
+                "Q_METHODOLOGY_REVISE",
+                *audit_failures,
+            ],
+        )
+
     method_missing: list[str] = []
     if not method.baseline.name.strip():
         method_missing.append("Q_MISSING_BASELINE")
@@ -118,10 +182,17 @@ def evaluate_quality(state: PaperAgentState) -> QualityDecision:
 
 async def quality_gate_node(state: PaperAgentState, config: RunnableConfig) -> StatePatch:
     services = get_services(config)
-    decision = evaluate_quality(state)
+    methodology_audit = _current_methodology_audit(state)
+    decision = evaluate_quality(state, methodology_audit=methodology_audit)
     increment = 1 if decision.verdict == "repair_method" else 0
     trace = [
-        make_event(services, state, node=NODE, event_type="node.started", status="started"),
+        make_event(
+            services,
+            state,
+            node=NODE,
+            event_type="node.started",
+            status="started",
+        ),
         make_event(
             services,
             state,
@@ -142,6 +213,7 @@ async def quality_gate_node(state: PaperAgentState, config: RunnableConfig) -> S
     ]
     return {
         "quality": decision,
+        "methodology_audit": methodology_audit,
         "execution": execution_with(
             state,
             node=NODE,
@@ -152,8 +224,13 @@ async def quality_gate_node(state: PaperAgentState, config: RunnableConfig) -> S
     }
 
 
-def quality_route(state: PaperAgentState) -> str:
+def quality_route(state: PaperAgentState, config: RunnableConfig) -> str:
     quality = state.get("quality")
     if quality is None:
         raise ValueError("quality decision is required")
+    if (
+        quality.verdict == "human_review"
+        and get_option(config, "human_review_policy", "interrupt") == "block"
+    ):
+        return "blocked"
     return quality.verdict

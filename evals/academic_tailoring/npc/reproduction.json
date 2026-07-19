@@ -1,0 +1,26 @@
+{
+  "baseline_paper_id": "SYN-A",
+  "implementation_ref": "fixture-commit-a1b2c3",
+  "version_or_commit": "fixture-commit-a1b2c3",
+  "environment": "Python 3.12, simulator 1.0, one 8 GB GPU",
+  "environment_fingerprint": "sha256:python312-simulator10-8gb",
+  "dataset": "synthetic-npc-shift-v1",
+  "split": "familiar training and validation, familiar plus shifted testing",
+  "dataset_fingerprint": "sha256:synthetic-npc-shift-v1-frozen-split",
+  "seed_policy": "seeds 1, 2, 3, 5, 8",
+  "reproduced": true,
+  "reproduced_metrics": {
+    "intent_violation_rate": 0.18,
+    "task_success_rate": 0.71,
+    "adjustment_minutes_per_scenario": 45.0,
+    "p95_decision_latency_ms": 6.2
+  },
+  "acceptance_tolerance": "two percentage points or five percent relative",
+  "compute_fit": true,
+  "baseline_parity_verified": true,
+  "notes": [
+    "all values are simulated evaluator fixtures",
+    "modules-disabled execution matches the frozen fixture baseline",
+    "no real experimental result is claimed"
+  ]
+}

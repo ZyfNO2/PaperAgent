@@ -1,0 +1,985 @@
+{
+  "budget": {
+    "max_calls": 8,
+    "max_cost_usd": 2.0,
+    "max_total_tokens": 60000,
+    "max_wall_seconds": 180
+  },
+  "budget_compliance": true,
+  "budget_violations": [],
+  "case_id": "holdout-v2-insufficient_evidence-010",
+  "case_index": 10,
+  "category": "insufficient_evidence",
+  "deterministic_checks": [
+    {
+      "check_id": "terminal_class",
+      "expected": "succeeded",
+      "kind": "terminal",
+      "target": "terminal"
+    },
+    {
+      "check_id": "budget_enforced",
+      "expected": "within_limits",
+      "kind": "budget",
+      "target": "calls_tokens_time_cost"
+    },
+    {
+      "check_id": "identifier_validation",
+      "expected": "resolves_and_metadata_matches",
+      "kind": "identifier",
+      "target": "all_citations"
+    },
+    {
+      "check_id": "research_decision",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "explicit_go_revise_no_go"
+    },
+    {
+      "check_id": "required_01",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "private_baseline_marked_unverified"
+    },
+    {
+      "check_id": "required_02",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "missing_reproducibility_artifacts"
+    },
+    {
+      "check_id": "required_03",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "public_surrogate_baseline_plan"
+    },
+    {
+      "check_id": "required_04",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "reported_94_7_not_treated_as_verified"
+    },
+    {
+      "check_id": "required_05",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "revise_or_no_go_decision"
+    },
+    {
+      "check_id": "forbidden_01",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "trust_unverifiable_internal_metric"
+    },
+    {
+      "check_id": "forbidden_02",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "comparison_without_protocol"
+    },
+    {
+      "check_id": "forbidden_03",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "invented_private_baseline_details"
+    },
+    {
+      "check_id": "forbidden_04",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "false_go"
+    }
+  ],
+  "error": null,
+  "excluded_checks": [],
+  "execution_identity": {
+    "base_url": "https://api.mistral.ai/v1",
+    "case_file_sha256": "c1a74b7781f07085e33d4fe87d9a712f256f071b1c9169a78166ff5ca2386591",
+    "clean_tree": false,
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "scripts/run_gate_l_v2.py",
+      "--manifest",
+      "evals/v0_6/holdout_manifest.v2.json",
+      "--output-dir",
+      "build/gate-l-v2-final",
+      "--price-table",
+      "config/price-table-mistral.json"
+    ],
+    "github_run_id": null,
+    "github_workflow": null,
+    "manifest_path": "evals/v0_6/holdout_manifest.v2.json",
+    "manifest_sha256": "116ee09a38d19df96e4d045c20472533c01557ffa378cd3dbe6d166057ecfc3f",
+    "model": "mistral-small-latest",
+    "planning_prompt_version": "planning.v0.1.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "price_table_path": "config/price-table-mistral.json",
+    "price_table_sha256": "6782214e0fa743048565b583b8742e502076a2db7f341392f87fcb7feb845c67",
+    "provider": "mistral",
+    "python_version": "3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]",
+    "repo_sha": "local",
+    "scientific_behavior_cutoff_sha": "d4fef014932d084a0addd4a588b3431d2c08628b"
+  },
+  "expected_terminal": "succeeded",
+  "output_digest": "1f060c5771929db7b537750664fe8ca5d46dc614d6dec966b17931856f675cdc",
+  "raw_terminal": "blocked",
+  "reference_evidence": [],
+  "review_output": {
+    "accepted_evidence": [
+      {
+        "content_hash": "sha256:d8ffdd3d8a29fc2188af72ef9aec4d0cb5ad0fbbb02819111407c5acfb40394d",
+        "evidence_id": "ev-paper-2c154385274091161938",
+        "locator": "doi:10.1088/1538-3873/ae7205",
+        "retrieved_at": "2026-07-18T18:16:50.530526Z",
+        "source_type": "paper",
+        "summary": "Photographic plate archives spanning more than a century of sky coverage constitute an irreplaceable temporal baseline for variable and transient phenomena. Digitization projects—including DASCH (Harvard), APPLAUSE (Germany), NAROO (France) and the Digitized First Byurakan Survey (DFBS)—have rendered more than 500,000 plates machine-readable, but extracting scientific knowledge from these heterogeneous, defect-laden datasets requires purpose-built machine learning (ML) pipelines that differ fundamentally from those developed for modern CCD surveys. Existing reviews treat either plate digitization or general ML in astronomy; none systematically addresses the specific challenges—nonlinear photometric response, artifact morphology, spectrum blending, label scarcity, and distributional mismatch—that arise when modern ML methods are applied to inhomogeneous archival plate data. This review provides: (i) a unified treatment of the calibration prerequisites (Hurter–Driffield linearisation, WCS quality, artifact masking) that must precede any ML application to plate data; (ii) an in-depth methodological analysis of CNN-based spectral classification applied to the DFBS—the most extensive existing ML result on digitized objective-prism plates—including a critical evaluation of accuracy, label bias, and evaluation protocol shortcomings; (iii) a structured comparison of ML performance on photometric and spectroscopic tasks for both modern CCD surveys and digitized plate archives; and (iv) concrete evaluation protocol recommendations (source-held-out splits, macro-averaged metrics, cross-observatory validation) and a benchmark wish-list to enable reproducible, comparable results. CNN classifiers achieve 80%–85% overall accuracy on DFBS spectra, compared to >99% on SDSS/LAMOST spectra at similar S/N—a gap attributable primarily to spectrum blending, label distributional mismatch, and the absence of standardised evaluation protocols. Transfer learning and self-supervised pretraining offer the most promising paths to closing this gap. With standardised calibration products, open benchmarks, and robust domain-adaptation pipelines, century-long plate archives can power discoveries of rare transients, illuminate long-term AGN and stellar variability, and serve as a testbed for domain adaptation across instruments and epochs.",
+        "supports_gap_ids": [
+          "G1"
+        ],
+        "title": "A Review of Machine Learning in Astronomical Plate Digitization and Survey Data",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:dde45ad24bc85aecf7851223c39c1b6c2c8a070ef0dfb1e0911c589c98fd611d",
+        "evidence_id": "ev-paper-3d6e9c4585f13da6f2f6",
+        "locator": "https://arxiv.org/abs/2606.07659",
+        "retrieved_at": "2026-07-18T18:16:50.530526Z",
+        "source_type": "paper",
+        "summary": "Automated surface defect detection is critical for ensuring rigorous quality control in high-speed manufacturing environments. While deep learning models offer remarkable accuracy, deploying them on resource-constrained edge hardware without introducing significant latency remains a persistent challenge. This paper presents Industrial-YOLO, an edge-optimized framework built upon a fine-tuned YOLOv8 architecture specifically engineered for real-time industrial defect detection. We conduct a systematic benchmark utilizing the NEU surface defect database for steel sheets and the MVTec AD dataset, supplemented with custom automotive manufacturing extensions representing real-world structural anomalies (scratches, pits, and inclusions). To bridge the gap between algorithmic complexity and edge hardware constraints, target-specific optimizations are introduced via TensorRT and OpenVINO acceleration engines. Experimental results demonstrate that Industrial-YOLO achieves a high-velocity inference speed exceeding 120 FPS on the NVIDIA Jetson Orin platform while maintaining an exceptional mean Average Precision (mAP) of 98.5%. The proposed framework showcases highly robust, zero-latency performance when deployed directly onto an active automotive assembly line, offering a scalable blueprint for next-generation automated optical inspection (AOI) systems.",
+        "supports_gap_ids": [
+          "G2",
+          "G3",
+          "G4"
+        ],
+        "title": "Real-Time Industrial Defect Detection on Edge Hardware Using Fine-Tuned YOLOv8: A Systematic Benchmark on the NEU Surface Defect Database and MVTec AD with Automotive & Battery Manufacturing Extensions",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:41948d542ef5e5d23a267b8f11475b16f4e033ce524269a6fa7d4e15b063f8a2",
+        "evidence_id": "ev-paper-34fc5976b8986e9cb791",
+        "locator": "https://arxiv.org/abs/2503.04997",
+        "retrieved_at": "2026-07-18T18:16:50.531527Z",
+        "source_type": "paper",
+        "summary": "Automatic visual inspection using machine learning plays a key role in achieving zero-defect policies in industry. Research on anomaly detection is constrained by the availability of datasets that capture complex defect appearances and imperfect imaging conditions, which are typical of production processes. Recent benchmarks indicate that most publicly available datasets are biased towards optimal imaging conditions, leading to an overestimation of their applicability in real-world industrial scenarios. To address this gap, we introduce the Industrial Screen Printing Anomaly Detection Dataset (ISP-AD). It presents challenging small and weakly contrasted surface defects embedded within structured patterns exhibiting high permitted design variability. To the best of our knowledge, it is the largest publicly available industrial dataset to date, including both synthetic and real defects collected directly from the factory floor. Beyond benchmarking recent unsupervised anomaly detection methods, experiments on a mixed supervised training strategy, incorporating both synthesized and real defects, were conducted. Experiments show that even a small amount of injected, weakly labeled real defects improves generalization. Furthermore, starting from training on purely synthetic defects, emerging real defective samples can be efficiently integrated into subsequent scalable training. Overall, our findings indicate that model-free synthetic defects can provide a cold-start baseline, whereas a small number of injected real defects refine the decision boundary for previously unseen defect characteristics. The presented unsupervised and supervised dataset splits are designed to emphasize research on unsupervised, self-supervised, and supervised approaches, enhancing their applicability to industrial settings.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "ISP-AD: A Large-Scale Real-World Dataset for Advancing Industrial Anomaly Detection with Synthetic and Real Defects",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:88c9842619eee8ca0df1863a5835cc3e0707e56ba74dff032817d1c01d0d05b2",
+        "evidence_id": "ev-paper-b0415fecd064086f422f",
+        "locator": "https://arxiv.org/abs/2406.07694",
+        "retrieved_at": "2026-07-18T18:16:50.531527Z",
+        "source_type": "paper",
+        "summary": "Recent advancements in quality control across various industries have increasingly utilized the integration of video cameras and image processing for effective defect detection. A critical barrier to progress is the scarcity of comprehensive datasets featuring annotated defects, which are essential for developing and refining automated defect detection models. This systematic review, spanning from 2015 to 2023, identifies 15 publicly available datasets and critically examines them to assess their effectiveness and applicability for benchmarking and model development. Our findings reveal a diverse landscape of datasets, such as NEU-CLS, NEU-DET, DAGM, KolektorSDD, PCB Defect Dataset, and the Hollow Cylindrical Defect Detection Dataset, each with unique strengths and limitations in terms of image quality, defect type representation, and real-world applicability. The goal of this systematic review is to consolidate these datasets in a single location, providing researchers who seek such publicly available resources with a comprehensive reference.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "A PRISMA Driven Systematic Review of Publicly Available Datasets for Benchmark and Model Developments for Industrial Defect Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:301425bcba9dc72eb0123a9ebf06a511b250af4ead28b0f0008300451acedf9e",
+        "evidence_id": "ev-paper-1cc8f4cfe33937241a04",
+        "locator": "https://arxiv.org/abs/2404.10760",
+        "retrieved_at": "2026-07-18T18:16:50.532526Z",
+        "source_type": "paper",
+        "summary": "Anomaly detection (AD) is often focused on detecting anomaly areas for industrial quality inspection and medical lesion examination. However, due to the specific scenario targets, the data scale for AD is relatively small, and evaluation metrics are still deficient compared to classic vision tasks, such as object detection and semantic segmentation. To fill these gaps, this work first constructs a large-scale and general-purpose COCO-AD dataset by extending COCO to the AD field. This enables fair evaluation and sustainable development for different methods on this challenging benchmark. Moreover, current metrics such as AU-ROC have nearly reached saturation on simple datasets, which prevents a comprehensive evaluation of different methods. Inspired by the metrics in the segmentation field, we further propose several more practical threshold-dependent AD-specific metrics, ie, m$F_1$$^{.2}_{.8}$, mAcc$^{.2}_{.8}$, mIoU$^{.2}_{.8}$, and mIoU-max. Motivated by GAN inversion's high-quality reconstruction capability, we propose a simple but more powerful InvAD framework to achieve high-quality feature reconstruction. Our method improves the effectiveness of reconstruction-based methods on popular MVTec AD, VisA, and our newly proposed COCO-AD datasets under a multi-class unsupervised setting, where only a single detection model is trained to detect anomalies from different classes. Extensive ablation experiments have demonstrated the effectiveness of each component of our InvAD. Full codes and models are available at https://github.com/zhangzjn/ader.",
+        "supports_gap_ids": [
+          "G2",
+          "G3"
+        ],
+        "title": "Learning Feature Inversion for Multi-class Anomaly Detection under General-purpose COCO-AD Benchmark",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:d861175c5e52741aa624a0b8dbab7a28e783f6f4e163f6c9ab40bf9e23ccaf94",
+        "evidence_id": "ev-paper-2e3d64428bf8314239f3",
+        "locator": "https://arxiv.org/abs/2503.21622",
+        "retrieved_at": "2026-07-18T18:16:50.532526Z",
+        "source_type": "paper",
+        "summary": "In recent years, performance on existing anomaly detection benchmarks like MVTec AD and VisA has started to saturate in terms of segmentation AU-PRO, with state-of-the-art models often competing in the range of less than one percentage point. This lack of discriminatory power prevents a meaningful comparison of models and thus hinders progress of the field, especially when considering the inherent stochastic nature of machine learning results. We present MVTec AD 2, a collection of eight anomaly detection scenarios with more than 8000 high-resolution images. It comprises challenging and highly relevant industrial inspection use cases that have not been considered in previous datasets, including transparent and overlapping objects, dark-field and back light illumination, objects with high variance in the normal data, and extremely small defects. We provide comprehensive evaluations of state-of-the-art methods and show that their performance remains below 60% average AU-PRO. Additionally, our dataset provides test scenarios with lighting condition changes to assess the robustness of methods under real-world distribution shifts. We host a publicly accessible evaluation server that holds the pixel-precise ground truth of the test set (https://benchmark.mvtec.com/). All image data is available at https://www.mvtec.com/company/research/datasets/mvtec-ad-2.",
+        "supports_gap_ids": [
+          "G2",
+          "G3"
+        ],
+        "title": "The MVTec AD 2 Dataset: Advanced Scenarios for Unsupervised Anomaly Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:20b66a65af777497ddacec8315a878b82d197cef9c344df5b228237d745a3500",
+        "evidence_id": "ev-paper-54ded7a688815df1de20",
+        "locator": "https://arxiv.org/abs/2504.05679",
+        "retrieved_at": "2026-07-18T18:16:50.534413Z",
+        "source_type": "paper",
+        "summary": "Small unmanned aerial vehicle (UAV)-based visual inspections are a more efficient alternative to manual methods for examining civil structural defects, offering safe access to hazardous areas and significant cost savings by reducing labor requirements. However, traditional frame-based cameras, widely used in UAV-based inspections, often struggle to capture defects under low or dynamic lighting conditions. In contrast, dynamic vision sensors (DVS), or event-based cameras, excel in such scenarios by minimizing motion blur, enhancing power efficiency, and maintaining high-quality imaging across diverse lighting conditions without saturation or information loss. Despite these advantages, existing research lacks studies exploring the feasibility of using DVS for detecting civil structural defects. Moreover, there is no dedicated event-based dataset tailored for this purpose. Addressing this gap, this study introduces the first event-based civil infrastructure defect detection dataset, capturing defective surfaces as a spatio-temporal event stream using DVS. In addition to event-based data, the dataset includes grayscale intensity image frames captured simultaneously using an active pixel sensor (APS). Both data types were collected using the DAVIS346 camera, which integrates DVS and APS sensors. The dataset focuses on two types of defects: cracks and spalling, and includes data from both field and laboratory environments. The field dataset comprises 318 recording sequences, documenting 458 distinct cracks and 121 distinct spalling instances. The laboratory dataset includes 362 recording sequences, covering 220 distinct cracks and 308 spalling instances. We evaluated the dataset using four real-time object detection models.The results demonstrate the applicability of DVS cameras for robust detection of civil infrastructure defects under challenging lighting conditions.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "Event-based Civil Infrastructure Visual Defect Detection: ev-CIVIL Dataset and Benchmark",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:f9a841bc6ab2991aac70289c180ca4203534fd58e2658d76230c8d0b67f33e92",
+        "evidence_id": "ev-paper-f6a1a59281bb1c81adee",
+        "locator": "https://arxiv.org/abs/2209.09207",
+        "retrieved_at": "2026-07-18T18:16:50.534916Z",
+        "source_type": "paper",
+        "summary": "Recent deep learning approaches in table detection achieved outstanding performance and proved to be effective in identifying document layouts. Currently, available table detection benchmarks have many limitations, including the lack of samples diversity, simple table structure, the lack of training cases, and samples quality. In this paper, we introduce a diverse large-scale dataset for table detection with more than seven thousand samples containing a wide variety of table structures collected from many diverse sources. In addition to that, we also present baseline results using a convolutional neural network-based method to detect table structure in documents. Experimental results show the superiority of applying convolutional deep learning methods over classical computer vision-based methods. The introduction of this diverse table detection dataset will enable the community to develop high throughput deep learning methods for understanding document layout and tabular data processing. Dataset is available at: 1. https://www.kaggle.com/datasets/mrinalim/stdw-dataset 2. https://huggingface.co/datasets/n3011/STDW",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "Table Detection in the Wild: A Novel Diverse Table Detection Dataset and Method",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:c4b6de227e2c7fb8e93b1678cb26fb169eb295a7376147b7eb7551a658f5a13c",
+        "evidence_id": "ev-paper-539792e3a66172660bf1",
+        "locator": "https://arxiv.org/abs/1906.11561",
+        "retrieved_at": "2026-07-18T18:16:50.534916Z",
+        "source_type": "paper",
+        "summary": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to make it very near to real applications. Local rotation, different zoom rates, unbalanced classes, variation of textures in size are some properties of the proposed dataset. In the result part, some descriptors are applied on this dataset to evaluate the proposed STI dataset in comparison with other state-of-the-art datasets.",
+        "supports_gap_ids": [
+          "G2",
+          "G4",
+          "G5"
+        ],
+        "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:0f6874fb4f967c8b4fcf5b96e8cffd138372ba43cb76257a0102cc86f01fa85e",
+        "evidence_id": "ev-paper-d60e9e4a76f712c2cd44",
+        "locator": "https://arxiv.org/abs/2405.19595",
+        "retrieved_at": "2026-07-18T18:16:50.534916Z",
+        "source_type": "paper",
+        "summary": "The RSNA Abdominal Traumatic Injury CT (RATIC) dataset is the largest publicly available collection of adult abdominal CT studies annotated for traumatic injuries. This dataset includes 4,274 studies from 23 institutions across 14 countries. The dataset is freely available for non-commercial use via Kaggle at https://www.kaggle.com/competitions/rsna-2023-abdominal-trauma-detection. Created for the RSNA 2023 Abdominal Trauma Detection competition, the dataset encourages the development of advanced machine learning models for detecting abdominal injuries on CT scans. The dataset encompasses detection and classification of traumatic injuries across multiple organs, including the liver, spleen, kidneys, bowel, and mesentery. Annotations were created by expert radiologists from the American Society of Emergency Radiology (ASER) and Society of Abdominal Radiology (SAR). The dataset is annotated at multiple levels, including the presence of injuries in three solid organs with injury grading, image-level annotations for active extravasations and bowel injury, and voxelwise segmentations of each of the potentially injured organs. With the release of this dataset, we hope to facilitate research and development in machine learning and abdominal trauma that can lead to improved patient care and outcomes.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "The RSNA Abdominal Traumatic Injury CT (RATIC) Dataset",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:0b4e25bc03562bcea082481d124f0141cb78aad0bd63db5f5600d5082fceb97d",
+        "evidence_id": "ev-paper-33e0a86b407d0b567db3",
+        "locator": "https://arxiv.org/abs/2311.03725",
+        "retrieved_at": "2026-07-18T18:16:50.535919Z",
+        "source_type": "paper",
+        "summary": "Utilizing Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and Generative Adversarial Networks (GANs), our system introduces an innovative approach to defect detection in manufacturing. This technology excels in precisely identifying faults by extracting intricate details from product photographs, utilizing RNNs to detect evolving errors and generating synthetic defect data to bolster the model's robustness and adaptability across various defect scenarios. The project leverages a deep learning framework to automate real-time flaw detection in the manufacturing process. It harnesses extensive datasets of annotated images to discern complex defect patterns. This integrated system seamlessly fits into production workflows, thereby boosting efficiency and elevating product quality. As a result, it reduces waste and operational costs, ultimately enhancing market competitiveness.",
+        "supports_gap_ids": [
+          "G2",
+          "G3",
+          "G4",
+          "G5"
+        ],
+        "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:8f49bc3039e9f4238878b25313a4296661f095ce5719604313e8ed8f03e3c963",
+        "evidence_id": "ev-paper-f295dade85d3aecee7cd",
+        "locator": "https://arxiv.org/abs/1808.10033",
+        "retrieved_at": "2026-07-18T18:16:50.535919Z",
+        "source_type": "paper",
+        "summary": "In recent years, defect prediction has received a great deal of attention in the empirical software engineering world. Predicting software defects before the maintenance phase is very important not only to decrease the maintenance costs but also increase the overall quality of a software product. There are different types of product, process, and developer based software metrics proposed so far to measure the defectiveness of a software system. This paper suggests to use a novel set of software metrics which are based on the similarities detected among the source code files in a software project. To find source code similarities among different files of a software system, plagiarism and clone detection techniques are used. Two simple similarity metrics are calculated for each file, considering its overall similarity to the defective and non defective files in the project. Using these similarity metrics, we predict whether a specific file is defective or not. Our experiments on 10 open source data sets show that depending on the amount of detected similarity, proposed metrics could achieve significantly better performance compared to the existing static code metrics in terms of the area under the curve (AUC).",
+        "supports_gap_ids": [
+          "G2",
+          "G4",
+          "G5"
+        ],
+        "title": "Use of Source Code Similarity Metrics in Software Defect Prediction",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:1fd1237f43bd668759a35be2860bd84188c561d720d32da7ebdcbf55b186fc4f",
+        "evidence_id": "ev-paper-c3a2d165d27e8c8b3e55",
+        "locator": "https://arxiv.org/abs/2106.16020",
+        "retrieved_at": "2026-07-18T18:16:50.535919Z",
+        "source_type": "paper",
+        "summary": "Anomaly detection is a widely explored domain in machine learning. Many models are proposed in the literature, and compared through different metrics measured on various datasets. The most popular metrics used to compare performances are F1-score, AUC and AVPR. In this paper, we show that F1-score and AVPR are highly sensitive to the contamination rate. One consequence is that it is possible to artificially increase their values by modifying the train-test split procedure. This leads to misleading comparisons between algorithms in the literature, especially when the evaluation protocol is not well detailed. Moreover, we show that the F1-score and the AVPR cannot be used to compare performances on different datasets as they do not reflect the intrinsic difficulty of modeling such data. Based on these observations, we claim that F1-score and AVPR should not be used as metrics for anomaly detection. We recommend a generic evaluation procedure for unsupervised anomaly detection, including the use of other metrics such as the AUC, which are more robust to arbitrary choices in the evaluation protocol.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "Anomaly Detection: How to Artificially Increase your F1-Score with a Biased Evaluation Protocol",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:8f6d5cc0d7ace880659c3c3f921032b40a143cb20a2fdfcdd11d6f3e6e3353e7",
+        "evidence_id": "ev-paper-a4ac650f101ecccc5af2",
+        "locator": "https://arxiv.org/abs/2511.11604",
+        "retrieved_at": "2026-07-18T18:16:50.536919Z",
+        "source_type": "paper",
+        "summary": "The convergence of the Internet of Things (IoT) and Industry 4.0 has significantly enhanced data-driven methodologies within the nuclear industry, notably enhancing safety and economic efficiency. This advancement challenges the precise prediction of future maintenance needs for assets, which is crucial for reducing downtime and operational costs. However, the effectiveness of data-driven methodologies in the nuclear sector requires extensive domain knowledge due to the complexity of the systems involved. Thus, this paper proposes a novel predictive maintenance methodology that combines data-driven techniques with domain knowledge from a nuclear equipment. The methodological originality of this paper is located on two levels: highlighting the limitations of purely data-driven approaches and demonstrating the importance of knowledge in enhancing the performance of the predictive models. The applicative novelty of this work lies in its use within a domain such as a nuclear industry, which is highly restricted and ultrasensitive due to security, economic and environmental concerns. A detailed real-world case study which compares the current state of equipment monitoring with two scenarios, demonstrate that the methodology significantly outperforms purely data-driven methods in failure prediction. While purely data-driven methods achieve only a modest performance with a prediction horizon limited to 3 h and a F1 score of 56.36%, the hybrid approach increases the prediction horizon to 24 h and achieves a higher F1 score of 93.12%.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "Enhancing failure prediction in nuclear industry: Hybridization of knowledge- and data-driven techniques",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:3ddea4a28fa19fa0261dd7db7e413e618403ef64fd6d0df24b3d053727a94e74",
+        "evidence_id": "ev-paper-4ef0d0f3b764248589f1",
+        "locator": "https://arxiv.org/abs/2302.13317",
+        "retrieved_at": "2026-07-18T18:16:50.537549Z",
+        "source_type": "paper",
+        "summary": "Quality assurance is crucial in the smart manufacturing industry as it identifies the presence of defects in finished products before they are shipped out. Modern machine learning techniques can be leveraged to provide rapid and accurate detection of these imperfections. We, therefore, propose a transfer learning approach, namely TransferD2, to correctly identify defects on a dataset of source objects and extend its application to new unseen target objects. We present a data enhancement technique to generate a large dataset from the small source dataset for building a classifier. We then integrate three different pre-trained models (Xception, ResNet101V2, and InceptionResNetV2) into the classifier network and compare their performance on source and target data. We use the classifier to detect the presence of imperfections on the unseen target data using pseudo-bounding boxes. Our results show that ResNet101V2 performs best on the source data with an accuracy of 95.72%. Xception performs best on the target data with an accuracy of 91.00% and also provides a more accurate prediction of the defects on the target images. Throughout the experiment, the results also indicate that the choice of a pre-trained model is not dependent on the depth of the network. Our proposed approach can be applied in defect detection applications where insufficient data is available for training a model and can be extended to identify imperfections in new unseen data.",
+        "supports_gap_ids": [
+          "G2",
+          "G3",
+          "G4",
+          "G5"
+        ],
+        "title": "TransferD2: Automated Defect Detection Approach in Smart Manufacturing using Transfer Learning Techniques",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ceb8ab2a1deb330a4428330a92f49c308470a4f75bb4bb8394d51638f7a98a26",
+        "evidence_id": "ev-paper-4fab443c65c129f525f2",
+        "locator": "https://arxiv.org/abs/2404.00797",
+        "retrieved_at": "2026-07-18T18:16:50.538058Z",
+        "source_type": "paper",
+        "summary": "Metarobotics aims to combine next generation wireless communication, multi-sense immersion, and collective intelligence to provide a pervasive, itinerant, and non-invasive access and interaction with distant robotized applications. Industry and society are expected to benefit from these functionalities. For instance, robot programmers will no longer travel worldwide to plan and test robot motions, even collaboratively. Instead, they will have a personalized access to robots and their environments from anywhere, thus spending more time with family and friends. Students enrolled in robotics courses will be taught under authentic industrial conditions in real-time. This paper describes objectives of Metarobotics in society, industry, and in-between. It identifies and surveys technologies likely to enable their completion and provides an architecture to put forward the interplay of key components of Metarobotics. Potentials for self-determination, self-efficacy, and work-life-flexibility in robotics-related applications in Society 5.0, Industry 4.0, and Industry 5.0 are outlined.",
+        "supports_gap_ids": [
+          "G2",
+          "G4",
+          "G5"
+        ],
+        "title": "Metarobotics for Industry and Society: Vision, Technologies, and Opportunities",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:d93a3563837277432848fa50c0fad1b99fd2019008f3298fc7d5daefffadd600",
+        "evidence_id": "ev-paper-5e328c880b58a7b34b44",
+        "locator": "https://arxiv.org/abs/1710.09627",
+        "retrieved_at": "2026-07-18T18:16:50.538058Z",
+        "source_type": "paper",
+        "summary": "The Advent of the Internet-of-Things (IoT) paradigm has brought opportunities to solve many real-world problems. Energy management, for example, has attracted huge interest from academia, industries, governments and regulatory bodies. It involves collecting energy usage data, analyzing it, and optimizing the energy consumption by applying control strategies. However, in industrial environments, performing such optimization is not trivial. The changes in business rules, process control, and customer requirements make it much more challenging. In this paper, a Semantic Rules Engine (SRE) for industrial gateways is presented that allows implementing dynamic and flexible rule-based control strategies. It is simple, expressive, and allows managing rules on-the-fly without causing any service interruption. Additionally, it can handle semantic queries and provide results by inferring additional knowledge from previously defined concepts in ontologies. SRE has been validated and tested on different hardware platforms and in commercial products. Performance evaluations are also presented to validate its conformance to the customer requirements.",
+        "supports_gap_ids": [
+          "G2",
+          "G3",
+          "G4",
+          "G5"
+        ],
+        "title": "SRE: Semantic Rules Engine For the Industrial Internet-Of-Things Gateways",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:9438c377ef4359cbe03f8390eabbfa5eab569872ac2f87a3e6e74063adc7f437",
+        "evidence_id": "ev-paper-277f494e60d967b02f4c",
+        "locator": "https://arxiv.org/abs/2111.11714",
+        "retrieved_at": "2026-07-18T18:16:50.539061Z",
+        "source_type": "paper",
+        "summary": "Given the tremendous success of the Internet of Things in interconnecting consumer devices, we observe a natural trend to likewise interconnect devices in industrial settings, referred to as Industrial Internet of Things or Industry 4.0. While this coupling of industrial components provides many benefits, it also introduces serious security challenges. Although sharing many similarities with the consumer Internet of Things, securing the Industrial Internet of Things introduces its own challenges but also opportunities, mainly resulting from a longer lifetime of components and a larger scale of networks. In this paper, we identify the unique security goals and challenges of the Industrial Internet of Things, which, unlike consumer deployments, mainly follow from safety and productivity requirements. To address these security goals and challenges, we provide a comprehensive survey of research efforts to secure the Industrial Internet of Things, discuss their applicability, and analyze their security benefits.",
+        "supports_gap_ids": [
+          "G2",
+          "G3",
+          "G4",
+          "G5"
+        ],
+        "title": "Challenges and Opportunities in Securing the Industrial Internet of Things",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:987b1b4e0c1112853b3867cbbc9adb392906a8d3baed2ffe90f9a6dcfd431adf",
+        "evidence_id": "ev-paper-a8a15c2c6ce68e8287d7",
+        "locator": "https://arxiv.org/abs/cond-mat/0309395",
+        "retrieved_at": "2026-07-18T18:16:50.539061Z",
+        "source_type": "paper",
+        "summary": "This paper has been withdrawn",
+        "supports_gap_ids": [
+          "G2",
+          "G4"
+        ],
+        "title": "This paper has been withdrawn",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:25706f820ae001904581ba0f283b15ced5385323e7bcdf1cb540525472af4fb6",
+        "evidence_id": "ev-paper-519958743fa906813f70",
+        "locator": "https://arxiv.org/abs/1303.0042",
+        "retrieved_at": "2026-07-18T18:16:50.539061Z",
+        "source_type": "paper",
+        "summary": "During the past twelve years, NASA's Fermi Gamma-ray Space Telescope has supported a wide range of Education and Public Outreach (E/PO) activities, targeting K-14 students and the general public. The purpose of the Fermi E/PO program is to increase student and public understanding of the science of the high-energy Universe, through inspiring, engaging and educational activities linked to the mission's science objectives. The E/PO program has additional more general goals, including increasing the diversity of students in the Science, Technology, Engineering and Mathematics (STEM) pipeline, and increasing public awareness and understanding of Fermi science and technology. Fermi's multi-faceted E/PO program includes elements in each major outcome category: Higher Education; Elementary and Secondary Education; Informal Education and Public Outreach.",
+        "supports_gap_ids": [
+          "G2",
+          "G3",
+          "G4"
+        ],
+        "title": "Twelve Years of Education and Public Outreach with the Fermi Gamma-ray Space Telescope",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:2ce22f0c40e317192ebc8aea7dc9ba2277c46b29e3e8556c6026744ece566621",
+        "evidence_id": "ev-paper-e372fe536eab4115957a",
+        "locator": "https://arxiv.org/abs/2607.12245",
+        "retrieved_at": "2026-07-18T18:16:50.539061Z",
+        "source_type": "paper",
+        "summary": "Few-shot industrial defect detection remains difficult for standard supervised detectors, which achieve poor performance on boundary-dominated industrial defects. This paper proposes rough path signature-guided geometry augmentation (RPS-GA), a geometry-aware approach in which Canny edge contours are treated as ordered planar paths whose truncated second-order signature responses, especially the antisymmetric Lévy-area term, are aggregated into a spatial map that highlights boundary-related structure through two fusion operators, SIG-AUG and SGAA. The approach is evaluated on NEU-DET and PCB-Defect under a few-shot protocol with 5, 10, 20, or 50 labeled images per class, using an unmodified YOLOv8n detector throughout. Compared with the baseline, RPS-GA delivers large gains when supervision is limited, although the margin shrinks as more labels become available. On NEU-DET, SIG-AUG raises 10-shot mAP@0.5 from 0.341 to 0.583, whereas on PCB-Defect, SGAA improves 10-shot mAP@0.5 from 0.086 to 0.299 and yields usable detection at 5-shot where the baseline fails entirely. These trends are confirmed by multi-seed evaluation across independent random partitions. Overall, the results indicate that second-order path-signature geometry offers a practical way to strengthen few-shot industrial defect detection without meta-learning or detector redesign.",
+        "supports_gap_ids": [
+          "G3"
+        ],
+        "title": "Rough Path Signature-Guided Geometry Augmentation for Few-Shot Industrial Surface Defect Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:bf1d3889d6fc347546e7ac910e60314adab2563127825efeef544b2d8d574bc0",
+        "evidence_id": "ev-paper-7d70bfd25c73b7fcbec5",
+        "locator": "https://arxiv.org/abs/2412.03969",
+        "retrieved_at": "2026-07-18T18:16:50.540061Z",
+        "source_type": "paper",
+        "summary": "In the manufacturing industry, defect detection is an essential but challenging task aiming to detect defects generated in the process of production. Though traditional YOLO models presents a good performance in defect detection, they still have limitations in capturing high-order feature interrelationships, which hurdles defect detection in the complex scenarios and across the scales. To this end, we introduce hypergraph computation into YOLO framework, dubbed HyperDefect-YOLO (HD-YOLO), to improve representative ability and semantic exploitation. HD-YOLO consists of Defect Aware Module (DAM) and Mixed Graph Network (MGNet) in the backbone, which specialize for perception and extraction of defect features. To effectively aggregate multi-scale features, we propose HyperGraph Aggregation Network (HGANet) which combines hypergraph and attention mechanism to aggregate multi-scale features. Cross-Scale Fusion (CSF) is proposed to adaptively fuse and handle features instead of simple concatenation and convolution. Finally, we propose Semantic Aware Module (SAM) in the neck to enhance semantic exploitation for accurately localizing defects with different sizes in the disturbed background. HD-YOLO undergoes rigorous evaluation on public HRIPCB and NEU-DET datasets with significant improvements compared to state-of-the-art methods. We also evaluate HD-YOLO on self-built MINILED dataset collected in real industrial scenarios to demonstrate the effectiveness of the proposed method. The source codes are at https://github.com/Jay-zzcoder/HD-YOLO.",
+        "supports_gap_ids": [
+          "G3"
+        ],
+        "title": "HyperDefect-YOLO: Enhance YOLO with HyperGraph Computation for Industrial Defect Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:93ae34851f59abbc423eee65c2e8fb8d42107daadeb19e0204f56997eede41c1",
+        "evidence_id": "ev-paper-b6be2edd35628ed9737b",
+        "locator": "https://arxiv.org/abs/2308.14122",
+        "retrieved_at": "2026-07-18T18:17:22.612299Z",
+        "source_type": "paper",
+        "summary": "The pursuit of scientific knowledge strongly depends on the ability to reproduce and validate research results. It is a well-known fact that the scientific community faces challenges related to transparency, reliability, and the reproducibility of empirical published results. Consequently, the design and preparation of reproducible artifacts has a fundamental role in the development of science. Reproducible artifacts comprise comprehensive documentation, data, and code that enable replication and validation of research findings by others. In this work, we discuss a methodology to construct reproducible artifacts based on Docker. Our presentation centers around the preparation of an artifact to be submitted to scientific venues that encourage or require this process. This report's primary audience are scientists working with empirical computer science; however, we believe that the presented methodology can be extended to other technology-oriented empirical disciplines.",
+        "supports_gap_ids": [
+          "G5"
+        ],
+        "title": "Preparing Reproducible Scientific Artifacts using Docker",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:983771a3f34e68d49206fc0666e4ad5609be2fa30a65afbe19d3e6a8bac75822",
+        "evidence_id": "ev-paper-8e20a178fe688fec75b5",
+        "locator": "https://arxiv.org/abs/2304.13085",
+        "retrieved_at": "2026-07-18T18:17:22.612299Z",
+        "source_type": "paper",
+        "summary": "Advancements in AI-synthesized human voices have created a growing threat of impersonation and disinformation, making it crucial to develop methods to detect synthetic human voices. This study proposes a new approach to identifying synthetic human voices by detecting artifacts of vocoders in audio signals. Most DeepFake audio synthesis models use a neural vocoder, a neural network that generates waveforms from temporal-frequency representations like mel-spectrograms. By identifying neural vocoder processing in audio, we can determine if a sample is synthesized. To detect synthetic human voices, we introduce a multi-task learning framework for a binary-class RawNet2 model that shares the feature extractor with a vocoder identification module. By treating vocoder identification as a pretext task, we constrain the feature extractor to focus on vocoder artifacts and provide discriminative features for the final binary classifier. Our experiments show that the improved RawNet2 model based on vocoder identification achieves high classification performance on the binary task overall.",
+        "supports_gap_ids": [
+          "G5"
+        ],
+        "title": "AI-Synthesized Voice Detection Using Neural Vocoder Artifacts",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:d3e89f217e81cd95a2cae12cc477818f0ed254673ad0e6ec6a82f1255296fade",
+        "evidence_id": "ev-paper-7bcecac1eb26ba2512b7",
+        "locator": "https://arxiv.org/abs/1409.2575",
+        "retrieved_at": "2026-07-18T18:17:22.614808Z",
+        "source_type": "paper",
+        "summary": "We discuss when and why custom multi-factor risk models are warranted and give source code for computing some risk factors. Pension/mutual funds do not require customization but standardization. However, using standardized risk models in quant trading with much shorter holding horizons is suboptimal: 1) longer horizon risk factors (value, growth, etc.) increase noise trades and trading costs; 2) arbitrary risk factors can neutralize alpha; 3) \"standardized\" industries are artificial and insufficiently granular; 4) normalization of style risk factors is lost for the trading universe; 5) diversifying risk models lowers P&L correlations, reduces turnover and market impact, and increases capacity. We discuss various aspects of custom risk model building.",
+        "supports_gap_ids": [
+          "G5"
+        ],
+        "title": "Custom v. Standardized Risk Models",
+        "verification_status": "accepted"
+      }
+    ],
+    "method": {
+      "ablations": [
+        {
+          "change": "Remove all data augmentation steps (e.g., Mosaic, MixUp, random affine transformations) from the DataLoader-MVTecAD2 module.",
+          "expected_observation": "A significant drop in mAP (< 85%) due to reduced generalization, as augmentation is critical for handling variability in MVTec AD 2 (VF6).",
+          "name": "Ablation: Data Augmentation Pipeline"
+        },
+        {
+          "change": "Replace the YOLOv8 backbone with a ResNet-50 backbone in the Industrial-YOLO-Trainer module.",
+          "expected_observation": "A reduction in mAP (< 88%) compared to the baseline, as YOLOv8 is optimized for real-time industrial defect detection (VF4).",
+          "name": "Ablation: Model Backbone"
+        },
+        {
+          "change": "Modify the evaluation protocol to include contamination rates of 10% in the test set, as described in VF8.",
+          "expected_observation": "A reduction in F1-score and AU-PRO metrics due to increased false positives, demonstrating the sensitivity of metrics to evaluation protocols.",
+          "name": "Ablation: Evaluation Protocol Sensitivity"
+        }
+      ],
+      "baseline": {
+        "description": "A reproducible baseline using the public Industrial-YOLO framework (YOLOv8-based) trained on the MVTec AD 2 dataset for industrial defect detection. This baseline is selected because it provides a verifiable, open-source implementation and a challenging public dataset with standardized evaluation protocols. The baseline will be trained and evaluated under the same conditions as reported in the original Industrial-YOLO paper to establish a verifiable starting point.",
+        "name": "Public Surrogate Baseline: Industrial-YOLO on MVTec AD 2"
+      },
+      "evidence_ids": [
+        "ev-paper-3d6e9c4585f13da6f2f6",
+        "ev-paper-2e3d64428bf8314239f3",
+        "ev-paper-c3a2d165d27e8c8b3e55"
+      ],
+      "falsifiable_hypothesis": "The Industrial-YOLO baseline trained on MVTec AD 2 will achieve a mAP of at least 90% on the test set, as measured by the DefectEvaluator module. This threshold is chosen based on the reported performance of Industrial-YOLO (mAP 98.5%) and the challenging nature of MVTec AD 2, where state-of-the-art methods remain below 60% average AU-PRO (VF6). Failure to meet this threshold would indicate issues with implementation, dataset alignment, or evaluation protocols.",
+      "integration_contracts": [
+        {
+          "from_module": "M001",
+          "input": "Preprocessed MVTec AD 2 training and validation images with ground truth annotations in YOLO format.",
+          "output": "Batched training data ready for model ingestion.",
+          "to_module": "M002"
+        },
+        {
+          "from_module": "M002",
+          "input": "Trained Industrial-YOLO model weights and corresponding test dataset.",
+          "output": "Predicted defect bounding boxes and anomaly scores for evaluation.",
+          "to_module": "M003"
+        },
+        {
+          "from_module": "M003",
+          "input": "Evaluation metrics (mAP, F1-score, AU-PRO) and qualitative results (e.g., confusion matrices, ROC curves).",
+          "output": "Standardized defect detection performance report for the baseline.",
+          "to_module": "user"
+        }
+      ],
+      "minimum_key_experiment": {
+        "baseline": "Public Surrogate Baseline: Industrial-YOLO on MVTec AD 2",
+        "conditions": [
+          "Industrial-YOLO framework (YOLOv8-based) trained on MVTec AD 2 dataset.",
+          "Training and evaluation conducted on identical hardware and software environments.",
+          "Evaluation metrics computed using the DefectEvaluator module with standardized protocols."
+        ],
+        "metrics": [
+          "Mean Average Precision (mAP) at IoU=0.5",
+          "F1-score at IoU=0.5",
+          "Average Precision (AP) per defect class",
+          "AU-PRO for anomaly detection scenarios"
+        ],
+        "name": "Baseline Reproduction and Validation on MVTec AD 2",
+        "success_threshold": "mAP >= 90% on the MVTec AD 2 test set."
+      },
+      "modules": [
+        {
+          "module_id": "M001",
+          "name": "DataLoader-MVTecAD2",
+          "purpose": "Standardized data loading and preprocessing for MVTec AD 2 dataset, including image resizing, normalization, and augmentation pipelines consistent with Industrial-YOLO training protocols."
+        },
+        {
+          "module_id": "M002",
+          "name": "Industrial-YOLO-Trainer",
+          "purpose": "Training pipeline for the Industrial-YOLO model (YOLOv8-based) using the MVTec AD 2 dataset, with hyperparameters and augmentation strategies as specified in the original paper."
+        },
+        {
+          "module_id": "M003",
+          "name": "DefectEvaluator",
+          "purpose": "Evaluation module to compute mAP, F1-score, and AU-PRO metrics on the MVTec AD 2 test set, adhering to the evaluation protocols described in the Industrial-YOLO paper and MVTec AD 2 documentation."
+        }
+      ],
+      "problem_method_insight": "The user-provided baseline (DefectNet-v4) lacks verifiable artifacts, making it impossible to reproduce or validate its reported mAP=94.7. To address this, we propose a public surrogate baseline using Industrial-YOLO on MVTec AD 2, which provides a reproducible, open-source framework and a challenging public dataset with standardized evaluation protocols. This approach enables direct comparison with published results and isolates the impact of adding user-provided modules.",
+      "risks": [
+        "The MVTec AD 2 dataset may not fully represent the user's private industrial defect detection scenario, leading to domain shift issues.",
+        "Industrial-YOLO's reported mAP (98.5%) may not translate to MVTec AD 2 due to differences in dataset characteristics and evaluation protocols.",
+        "Hardware or software environment differences may introduce variability in results, complicating direct comparisons.",
+        "The user-provided modules may not integrate cleanly with the public baseline, requiring additional engineering effort.",
+        "Negative or null results in ablations may not provide actionable insights without further investigation."
+      ],
+      "schema_version": "0.1",
+      "status": "proposed",
+      "stop_conditions": [
+        "The baseline fails to achieve mAP >= 90% after three independent training runs, indicating a fundamental issue with implementation or dataset alignment.",
+        "The user-provided modules introduce irreconcilable conflicts with the public baseline, making integration infeasible.",
+        "Evidence gaps (e.g., missing dataset documentation, unclear evaluation protocols) cannot be resolved with available public sources.",
+        "The falsifiable hypothesis is falsified, and no further ablations or experiments are deemed productive."
+      ]
+    },
+    "quality": {
+      "human_question": null,
+      "invalid_evidence_ids": [],
+      "missing_gap_ids": [
+        "G3"
+      ],
+      "reason_codes": [
+        "Q_SYNTHESIS_GAP_WEAK"
+      ],
+      "repair_target": "retrieval",
+      "verdict": "repair_retrieval"
+    },
+    "report": {
+      "evidence_ids": [
+        "ev-paper-1cc8f4cfe33937241a04",
+        "ev-paper-277f494e60d967b02f4c",
+        "ev-paper-2c154385274091161938",
+        "ev-paper-2e3d64428bf8314239f3",
+        "ev-paper-33e0a86b407d0b567db3",
+        "ev-paper-34fc5976b8986e9cb791",
+        "ev-paper-3d6e9c4585f13da6f2f6",
+        "ev-paper-4ef0d0f3b764248589f1",
+        "ev-paper-4fab443c65c129f525f2",
+        "ev-paper-519958743fa906813f70",
+        "ev-paper-539792e3a66172660bf1",
+        "ev-paper-54ded7a688815df1de20",
+        "ev-paper-5e328c880b58a7b34b44",
+        "ev-paper-7bcecac1eb26ba2512b7",
+        "ev-paper-7d70bfd25c73b7fcbec5",
+        "ev-paper-8e20a178fe688fec75b5",
+        "ev-paper-a4ac650f101ecccc5af2",
+        "ev-paper-a8a15c2c6ce68e8287d7",
+        "ev-paper-b0415fecd064086f422f",
+        "ev-paper-b6be2edd35628ed9737b",
+        "ev-paper-c3a2d165d27e8c8b3e55",
+        "ev-paper-d60e9e4a76f712c2cd44",
+        "ev-paper-e372fe536eab4115957a",
+        "ev-paper-f295dade85d3aecee7cd",
+        "ev-paper-f6a1a59281bb1c81adee"
+      ],
+      "executive_summary": "The report generation is blocked due to a critical gap in accepted evidence (G3) and a synthesis weakness identified in the quality assessment. The proposed method remains unexecuted, and no verified or inferred findings can be reported without addressing the missing evidence and methodological repair.",
+      "experiment_plan": null,
+      "inferred_findings": [],
+      "limitations": [
+        "No verified or inferred findings can be reported due to the absence of evidence for gap G3.",
+        "The proposed method is unexecuted and cannot be validated without addressing the synthesis weakness.",
+        "The report is blocked until the missing evidence (G3) is retrieved and the methodological repair is completed."
+      ],
+      "next_actions": [
+        "Retrieve evidence for gap G3 using the repair target 'retrieval'.",
+        "Address the synthesis weakness (Q_SYNTHESIS_GAP_WEAK) by refining the synthesis approach.",
+        "Re-evaluate the proposed method after evidence retrieval and methodological repair.",
+        "Re-run the report generation process once the above actions are completed."
+      ],
+      "proposed_method": "The proposed method involves synthesizing findings from the provided evidence set to generate a structured report. However, this method cannot proceed due to the identified gap (G3) and quality issue (Q_SYNTHESIS_GAP_WEAK).",
+      "schema_version": "0.1",
+      "status": "blocked",
+      "verified_findings": []
+    },
+    "synthesis": {
+      "conflicts": [],
+      "feasibility": "partially_feasible",
+      "gap_assessments": [
+        {
+          "evidence_ids": [
+            "ev-paper-2c154385274091161938"
+          ],
+          "gap_id": "G1",
+          "limitations": [
+            "The review does not provide a directly reproducible pipeline or benchmark; it focuses on methodological guidance and recommendations rather than executable artifacts.",
+            "The accuracy gap between CNN classifiers on DFBS spectra (80%–85%) and modern CCD surveys (>99%) highlights the need for further methodological advances, particularly in domain adaptation and standardized evaluation protocols."
+          ],
+          "status": "supported",
+          "summary": "A comprehensive review explicitly identifies the unique challenges of applying modern ML to heterogeneous, defect-laden astronomical plate archives, including nonlinear photometric response, artifact morphology, spectrum blending, label scarcity, and distributional mismatch. It provides calibration prerequisites, methodological analysis, and evaluation protocol recommendations, directly addressing the gap in domain-specific ML pipelines for century-long plate archives."
+        },
+        {
+          "evidence_ids": [
+            "ev-paper-3d6e9c4585f13da6f2f6",
+            "ev-paper-34fc5976b8986e9cb791",
+            "ev-paper-b0415fecd064086f422f",
+            "ev-paper-1cc8f4cfe33937241a04",
+            "ev-paper-2e3d64428bf8314239f3",
+            "ev-paper-54ded7a688815df1de20",
+            "ev-paper-f6a1a59281bb1c81adee",
+            "ev-paper-539792e3a66172660bf1",
+            "ev-paper-d60e9e4a76f712c2cd44",
+            "ev-paper-33e0a86b407d0b567db3",
+            "ev-paper-f295dade85d3aecee7cd",
+            "ev-paper-c3a2d165d27e8c8b3e55",
+            "ev-paper-a4ac650f101ecccc5af2",
+            "ev-paper-4ef0d0f3b764248589f1",
+            "ev-paper-4fab443c65c129f525f2",
+            "ev-paper-5e328c880b58a7b34b44",
+            "ev-paper-277f494e60d967b02f4c",
+            "ev-paper-a8a15c2c6ce68e8287d7",
+            "ev-paper-519958743fa906813f70"
+          ],
+          "gap_id": "G2",
+          "limitations": [
+            "Many datasets are biased toward optimal imaging conditions, leading to overestimation of model performance in real-world scenarios.",
+            "Evaluation metrics such as F1-score and AVPR are sensitive to contamination rates and evaluation protocols, which can mislead comparisons between methods.",
+            "Some datasets lack diversity in defect types or imaging conditions, limiting generalizability.",
+            "The evidence does not provide a unified benchmark or standardized evaluation protocol across all domains."
+          ],
+          "status": "supported",
+          "summary": "Multiple accepted evidence items collectively address the gap in public datasets and benchmarks for industrial defect detection, spanning diverse domains (e.g., steel, automotive, screen printing, medical CT, table detection, texture analysis, and civil infrastructure). These include large-scale datasets (e.g., ISP-AD, MVTec AD 2, RATIC), systematic reviews of publicly available datasets, and evaluations of real-time and edge-optimized models. The evidence demonstrates the availability of diverse, machine-readable resources and highlights limitations such as dataset bias, lack of standardized evaluation protocols, and challenges in real-world applicability."
+        },
+        {
+          "evidence_ids": [
+            "ev-paper-3d6e9c4585f13da6f2f6",
+            "ev-paper-1cc8f4cfe33937241a04",
+            "ev-paper-2e3d64428bf8314239f3",
+            "ev-paper-33e0a86b407d0b567db3",
+            "ev-paper-4ef0d0f3b764248589f1",
+            "ev-paper-e372fe536eab4115957a",
+            "ev-paper-7d70bfd25c73b7fcbec5"
+          ],
+          "gap_id": "G3",
+          "limitations": [
+            "Real-time performance claims are hardware-specific (e.g., NVIDIA Jetson Orin) and may not generalize to other edge devices.",
+            "Few-shot methods show significant gains but still underperform compared to fully supervised baselines, particularly in boundary-dominated defects.",
+            "Limited evidence on cross-hardware validation or latency benchmarks beyond specific platforms."
+          ],
+          "status": "partial",
+          "summary": "Evidence supports the feasibility of real-time and edge-optimized defect detection models (e.g., Industrial-YOLO achieving >120 FPS on NVIDIA Jetson Orin with mAP 98.5%), as well as methodological advances for few-shot and multi-class anomaly detection (e.g., RPS-GA and HD-YOLO). However, gaps remain in standardized evaluation protocols for real-time performance, robustness under distribution shifts, and reproducibility of results across diverse hardware platforms."
+        },
+        {
+          "evidence_ids": [
+            "ev-paper-3d6e9c4585f13da6f2f6",
+            "ev-paper-539792e3a66172660bf1",
+            "ev-paper-f295dade85d3aecee7cd",
+            "ev-paper-4fab443c65c129f525f2",
+            "ev-paper-277f494e60d967b02f4c"
+          ],
+          "gap_id": "G4",
+          "limitations": [
+            "The user's private baseline is not reproducible or verifiable using the provided evidence.",
+            "No public dataset or benchmark includes DefectNet-v4 or a directly comparable surrogate model.",
+            "The evidence does not support claims about the performance or integration of DefectNet-v4 with public modules."
+          ],
+          "status": "unsupported",
+          "summary": "No accepted evidence directly addresses the feasibility of integrating the user's private baseline (DefectNet-v4) with public modules or provides a reproducible surrogate baseline for comparison. The available evidence focuses on public datasets, models, and benchmarks but does not validate or replicate the user's private claims (e.g., mAP=94.7)."
+        }
+      ],
+      "limitations": [
+        "The user's private baseline (DefectNet-v4) cannot be validated or replicated using the provided evidence, creating a critical gap in reproducibility and trustworthiness.",
+        "Standardized evaluation protocols for real-time and edge-optimized defect detection are lacking, complicating fair comparisons across methods and hardware platforms.",
+        "Many public datasets are biased toward optimal imaging conditions, limiting their applicability to real-world industrial scenarios.",
+        "Evaluation metrics such as F1-score and AVPR are sensitive to contamination rates and evaluation protocols, which can mislead performance comparisons.",
+        "The evidence does not address the integration of private baselines with public modules or provide a reproducible surrogate baseline for comparison.",
+        "Few-shot and boundary-dominated defect detection methods show promise but still underperform compared to fully supervised baselines, indicating room for improvement in generalization and robustness."
+      ],
+      "schema_version": "0.1",
+      "verified_findings": [
+        {
+          "claim_id": "VF1",
+          "evidence_ids": [
+            "ev-paper-2c154385274091161938"
+          ],
+          "text": "Photographic plate archives spanning more than a century constitute an irreplaceable temporal baseline for variable and transient phenomena, but extracting scientific knowledge from heterogeneous, defect-laden datasets requires purpose-built machine learning pipelines."
+        },
+        {
+          "claim_id": "VF2",
+          "evidence_ids": [
+            "ev-paper-2c154385274091161938"
+          ],
+          "text": "Digitization projects (e.g., DASCH, APPLAUSE, NAROO, DFBS) have rendered more than 500,000 plates machine-readable, enabling modern ML applications to legacy data."
+        },
+        {
+          "claim_id": "VF3",
+          "evidence_ids": [
+            "ev-paper-2c154385274091161938"
+          ],
+          "text": "CNN classifiers achieve 80%–85% overall accuracy on DFBS spectra, compared to >99% on SDSS/LAMOST spectra at similar S/N, due to spectrum blending, label distributional mismatch, and lack of standardized evaluation protocols."
+        },
+        {
+          "claim_id": "VF4",
+          "evidence_ids": [
+            "ev-paper-3d6e9c4585f13da6f2f6"
+          ],
+          "text": "Industrial-YOLO, an edge-optimized YOLOv8-based framework, achieves >120 FPS inference speed on NVIDIA Jetson Orin with mAP 98.5% for real-time industrial defect detection."
+        },
+        {
+          "claim_id": "VF5",
+          "evidence_ids": [
+            "ev-paper-34fc5976b8986e9cb791"
+          ],
+          "text": "The ISP-AD dataset introduces challenging small and weakly contrasted surface defects in structured patterns, with evidence that injecting a small amount of weakly labeled real defects improves generalization in anomaly detection models."
+        },
+        {
+          "claim_id": "VF6",
+          "evidence_ids": [
+            "ev-paper-2e3d64428bf8314239f3"
+          ],
+          "text": "MVTec AD 2 provides eight challenging anomaly detection scenarios with >8000 high-resolution images, including transparent objects, overlapping objects, and extreme lighting conditions, where state-of-the-art methods remain below 60% average AU-PRO."
+        },
+        {
+          "claim_id": "VF7",
+          "evidence_ids": [
+            "ev-paper-54ded7a688815df1de20"
+          ],
+          "text": "The ev-CIVIL dataset is the first event-based civil infrastructure defect detection dataset, capturing cracks and spalling using DVS cameras, and demonstrates robust detection under challenging lighting conditions."
+        },
+        {
+          "claim_id": "VF8",
+          "evidence_ids": [
+            "ev-paper-c3a2d165d27e8c8b3e55"
+          ],
+          "text": "Evaluation metrics such as F1-score and AVPR are highly sensitive to contamination rates and evaluation protocols, leading to misleading comparisons in anomaly detection literature."
+        },
+        {
+          "claim_id": "VF9",
+          "evidence_ids": [
+            "ev-paper-e372fe536eab4115957a"
+          ],
+          "text": "RPS-GA, a geometry-augmentation method using rough path signatures, significantly improves few-shot industrial defect detection (e.g., 10-shot mAP@0.5 from 0.341 to 0.583 on NEU-DET)."
+        },
+        {
+          "claim_id": "VF10",
+          "evidence_ids": [
+            "ev-paper-7d70bfd25c73b7fcbec5"
+          ],
+          "text": "HD-YOLO, which integrates hypergraph computation into YOLO, achieves significant improvements over state-of-the-art methods on public datasets (e.g., HRIPCB, NEU-DET) and a self-built MINILED dataset."
+        }
+      ]
+    }
+  },
+  "scientific_trace": {
+    "accepted_evidence_count": 25,
+    "completed_query_ids": [
+      "Q1",
+      "Q2a",
+      "Q2b",
+      "Q3",
+      "Q4",
+      "Q5"
+    ],
+    "coverage_by_gap": {
+      "G1": 1,
+      "G2": 19,
+      "G3": 10,
+      "G4": 10,
+      "G5": 10
+    },
+    "plan_status": "ready",
+    "quality_missing_gap_ids": [
+      "G3"
+    ],
+    "quality_reason_codes": [
+      "Q_SYNTHESIS_GAP_WEAK"
+    ],
+    "quality_verdict": "repair_retrieval",
+    "retrieval_budget_exhausted": false,
+    "retrieval_max_rounds": 2,
+    "retrieval_round": 2,
+    "tool_errors": [
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q1",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q2a",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q2a",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q2a",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q2b",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q2b",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q2b",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q3",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q3",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q3",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q4",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q4",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q4",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q5",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q5",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q5",
+        "retryable": true
+      }
+    ],
+    "verification_counts": {
+      "accepted": 25
+    }
+  },
+  "skipped_checks": [],
+  "started_utc": "2026-07-18T18:16:25.630795+00:00",
+  "telemetry": {
+    "accounting_complete": true,
+    "accounting_errors": [],
+    "calls": 5,
+    "estimated_cost_usd": 0.0098946,
+    "input_tokens": 24726,
+    "output_tokens": 8249,
+    "provider_errors": 0,
+    "repairs": 0,
+    "retries": 0,
+    "total_tokens": 32975
+  },
+  "terminal": "blocked",
+  "trace_digest": "6a78bca2a9baf85938308f01be6f66a8121850e8086b5e6debf183a18e3c3aec",
+  "version": "v2",
+  "wall_seconds": 78.218
+}

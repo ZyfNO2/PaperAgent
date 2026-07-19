@@ -1,0 +1,889 @@
+{
+  "budget": {
+    "max_calls": 8,
+    "max_cost_usd": 2.0,
+    "max_total_tokens": 60000,
+    "max_wall_seconds": 180
+  },
+  "budget_compliance": true,
+  "budget_violations": [],
+  "case_id": "holdout-v2-ood-005",
+  "case_index": 5,
+  "category": "ood",
+  "deterministic_checks": [
+    {
+      "check_id": "terminal_class",
+      "expected": "succeeded",
+      "kind": "terminal",
+      "target": "terminal"
+    },
+    {
+      "check_id": "budget_enforced",
+      "expected": "within_limits",
+      "kind": "budget",
+      "target": "calls_tokens_time_cost"
+    },
+    {
+      "check_id": "identifier_validation",
+      "expected": "resolves_and_metadata_matches",
+      "kind": "identifier",
+      "target": "all_citations"
+    },
+    {
+      "check_id": "research_decision",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "explicit_go_revise_no_go"
+    },
+    {
+      "check_id": "required_01",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "class_imbalance_mechanism"
+    },
+    {
+      "check_id": "required_02",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "attention_loss_mechanism_separation"
+    },
+    {
+      "check_id": "required_03",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "appropriate_imbalance_metrics"
+    },
+    {
+      "check_id": "required_04",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "reproducible_baseline_selection"
+    },
+    {
+      "check_id": "required_05",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "explainability_scope"
+    },
+    {
+      "check_id": "required_06",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "clinical_validity_boundary"
+    },
+    {
+      "check_id": "required_07",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "calibrated_decision"
+    },
+    {
+      "check_id": "forbidden_01",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "accuracy_only_evaluation"
+    },
+    {
+      "check_id": "forbidden_02",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "clinical_effectiveness_claim"
+    },
+    {
+      "check_id": "forbidden_03",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "redundant_interventions_without_mechanism"
+    },
+    {
+      "check_id": "forbidden_04",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "fabricated_medical_claim"
+    }
+  ],
+  "error": null,
+  "excluded_checks": [],
+  "execution_identity": {
+    "base_url": "https://api.mistral.ai/v1",
+    "case_file_sha256": "c1a74b7781f07085e33d4fe87d9a712f256f071b1c9169a78166ff5ca2386591",
+    "clean_tree": false,
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "scripts/run_gate_l_v2.py",
+      "--manifest",
+      "evals/v0_6/holdout_manifest.v2.json",
+      "--output-dir",
+      "build/gate-l-v2-final",
+      "--price-table",
+      "config/price-table-mistral.json"
+    ],
+    "github_run_id": null,
+    "github_workflow": null,
+    "manifest_path": "evals/v0_6/holdout_manifest.v2.json",
+    "manifest_sha256": "116ee09a38d19df96e4d045c20472533c01557ffa378cd3dbe6d166057ecfc3f",
+    "model": "mistral-small-latest",
+    "planning_prompt_version": "planning.v0.1.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "price_table_path": "config/price-table-mistral.json",
+    "price_table_sha256": "6782214e0fa743048565b583b8742e502076a2db7f341392f87fcb7feb845c67",
+    "provider": "mistral",
+    "python_version": "3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]",
+    "repo_sha": "local",
+    "scientific_behavior_cutoff_sha": "d4fef014932d084a0addd4a588b3431d2c08628b"
+  },
+  "expected_terminal": "succeeded",
+  "output_digest": "cec04efc5df1286c370d1067a97926d6217a4e6b99db595cfcf0a11e319e1bc6",
+  "raw_terminal": "blocked",
+  "reference_evidence": [],
+  "review_output": {
+    "accepted_evidence": [
+      {
+        "content_hash": "sha256:6e1565055684a213abf9c1c2396b63bdcb311ec2d9edb1165510a926e44e6dab",
+        "evidence_id": "ev-paper-9452097b77dc2b4c6ac6",
+        "locator": "https://arxiv.org/abs/2402.04563",
+        "retrieved_at": "2026-07-18T18:10:37.358558Z",
+        "source_type": "paper",
+        "summary": "Vision Transformer(ViT) is one of the most widely used models in the computer vision field with its great performance on various tasks. In order to fully utilize the ViT-based architecture in various applications, proper visualization methods with a decent localization performance are necessary, but these methods employed in CNN-based models are still not available in ViT due to its unique structure. In this work, we propose an attention-guided visualization method applied to ViT that provides a high-level semantic explanation for its decision. Our method selectively aggregates the gradients directly propagated from the classification output to each self-attention, collecting the contribution of image features extracted from each location of the input image. These gradients are additionally guided by the normalized self-attention scores, which are the pairwise patch correlation scores. They are used to supplement the gradients on the patch-level context information efficiently detected by the self-attention mechanism. This approach of our method provides elaborate high-level semantic explanations with great localization performance only with the class labels. As a result, our method outperforms the previous leading explainability methods of ViT in the weakly-supervised localization task and presents great capability in capturing the full instances of the target class object. Meanwhile, our method provides a visualization that faithfully explains the model, which is demonstrated in the perturbation comparison test.",
+        "supports_gap_ids": [
+          "attention_performance_ham10000"
+        ],
+        "title": "Attention Guided CAM: Visual Explanations of Vision Transformer Guided by Self-Attention",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:6987e85f406499994ce593ce08fb29beaf2ca0135084dea19401a45229d8b139",
+        "evidence_id": "ev-paper-6ddff53eaf9494d137c5",
+        "locator": "https://arxiv.org/abs/2409.17625",
+        "retrieved_at": "2026-07-18T18:10:37.359155Z",
+        "source_type": "paper",
+        "summary": "Attention mechanism is a fundamental component of the transformer model and plays a significant role in its success. However, the theoretical understanding of how attention learns to select tokens is still an emerging area of research. In this work, we study the training dynamics and generalization ability of the attention mechanism under classification problems with label noise. We show that, with the characterization of signal-to-noise ratio (SNR), the token selection of attention mechanism achieves benign overfitting, i.e., maintaining high generalization performance despite fitting label noise. Our work also demonstrates an interesting delayed acquisition of generalization after an initial phase of overfitting. Finally, we provide experiments to support our theoretical analysis using both synthetic and real-world datasets.",
+        "supports_gap_ids": [
+          "attention_performance_ham10000"
+        ],
+        "title": "Benign Overfitting in Token Selection of Attention Mechanism",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:d220675228987d14ac138f1e0bb9527da1932f20f1701066d59baeb5359c2a59",
+        "evidence_id": "ev-paper-5c55e973cd37ea746398",
+        "locator": "https://arxiv.org/abs/2202.09741",
+        "retrieved_at": "2026-07-18T18:10:37.359155Z",
+        "source_type": "paper",
+        "summary": "While originally designed for natural language processing tasks, the self-attention mechanism has recently taken various computer vision areas by storm. However, the 2D nature of images brings three challenges for applying self-attention in computer vision. (1) Treating images as 1D sequences neglects their 2D structures. (2) The quadratic complexity is too expensive for high-resolution images. (3) It only captures spatial adaptability but ignores channel adaptability. In this paper, we propose a novel linear attention named large kernel attention (LKA) to enable self-adaptive and long-range correlations in self-attention while avoiding its shortcomings. Furthermore, we present a neural network based on LKA, namely Visual Attention Network (VAN). While extremely simple, VAN surpasses similar size vision transformers(ViTs) and convolutional neural networks(CNNs) in various tasks, including image classification, object detection, semantic segmentation, panoptic segmentation, pose estimation, etc. For example, VAN-B6 achieves 87.8% accuracy on ImageNet benchmark and set new state-of-the-art performance (58.2 PQ) for panoptic segmentation. Besides, VAN-B2 surpasses Swin-T 4% mIoU (50.1 vs. 46.1) for semantic segmentation on ADE20K benchmark, 2.6% AP (48.8 vs. 46.2) for object detection on COCO dataset. It provides a novel method and a simple yet strong baseline for the community. Code is available at https://github.com/Visual-Attention-Network.",
+        "supports_gap_ids": [
+          "attention_performance_ham10000"
+        ],
+        "title": "Visual Attention Network",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:16f3398fbba9f63609528e7508bbecf988f670ce79fb0e1750fac54134a45e61",
+        "evidence_id": "ev-paper-e6f4518f93cf1413dae0",
+        "locator": "https://arxiv.org/abs/2105.02358",
+        "retrieved_at": "2026-07-18T18:10:37.359957Z",
+        "source_type": "paper",
+        "summary": "Attention mechanisms, especially self-attention, have played an increasingly important role in deep feature representation for visual tasks. Self-attention updates the feature at each position by computing a weighted sum of features using pair-wise affinities across all positions to capture the long-range dependency within a single sample. However, self-attention has quadratic complexity and ignores potential correlation between different samples. This paper proposes a novel attention mechanism which we call external attention, based on two external, small, learnable, shared memories, which can be implemented easily by simply using two cascaded linear layers and two normalization layers; it conveniently replaces self-attention in existing popular architectures. External attention has linear complexity and implicitly considers the correlations between all data samples. We further incorporate the multi-head mechanism into external attention to provide an all-MLP architecture, external attention MLP (EAMLP), for image classification. Extensive experiments on image classification, object detection, semantic segmentation, instance segmentation, image generation, and point cloud analysis reveal that our method provides results comparable or superior to the self-attention mechanism and some of its variants, with much lower computational and memory costs.",
+        "supports_gap_ids": [
+          "attention_performance_ham10000"
+        ],
+        "title": "Beyond Self-attention: External Attention using Two Linear Layers for Visual Tasks",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:7793112322f67a51053d6ae4c181cb6ce5abc2c98159a844b8e25c9d2ddfdc5a",
+        "evidence_id": "ev-paper-0352ea231ee2c4e4a62b",
+        "locator": "https://arxiv.org/abs/2511.13780",
+        "retrieved_at": "2026-07-18T18:10:37.359957Z",
+        "source_type": "paper",
+        "summary": "This paper presents a mathematical interpretation of self-attention by connecting it to distributional semantics principles. We show that self-attention emerges from projecting corpus-level co-occurrence statistics into sequence context. Starting from the co-occurrence matrix underlying GloVe embeddings, we demonstrate how the projection naturally captures contextual influence, with the query-key-value mechanism arising as the natural asymmetric extension for modeling directional relationships. Positional encodings and multi-head attention then follow as structured refinements of this same projection principle. Our analysis demonstrates that the Transformer architecture's particular algebraic form follows from these projection principles rather than being an arbitrary design choice.",
+        "supports_gap_ids": [
+          "attention_performance_ham10000"
+        ],
+        "title": "Self-Attention as Distributional Projection: A Unified Interpretation of Transformer Architecture",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:518894fae0d1bdf8d75e3d1dc106cefddef7b82a17db0ca32217260254b9a04d",
+        "evidence_id": "ev-paper-ec3f7eb7d8fa0bdcf655",
+        "locator": "https://arxiv.org/abs/2305.19798",
+        "retrieved_at": "2026-07-18T18:10:37.360405Z",
+        "source_type": "paper",
+        "summary": "Recently, a new line of works has emerged to understand and improve self-attention in Transformers by treating it as a kernel machine. However, existing works apply the methods for symmetric kernels to the asymmetric self-attention, resulting in a nontrivial gap between the analytical understanding and numerical implementation. In this paper, we provide a new perspective to represent and optimize self-attention through asymmetric Kernel Singular Value Decomposition (KSVD), which is also motivated by the low-rank property of self-attention normally observed in deep layers. Through asymmetric KSVD, $i$) a primal-dual representation of self-attention is formulated, where the optimization objective is cast to maximize the projection variances in the attention outputs; $ii$) a novel attention mechanism, i.e., Primal-Attention, is proposed via the primal representation of KSVD, avoiding explicit computation of the kernel matrix in the dual; $iii$) with KKT conditions, we prove that the stationary solution to the KSVD optimization in Primal-Attention yields a zero-value objective. In this manner, KSVD optimization can be implemented by simply minimizing a regularization loss, so that low-rank property is promoted without extra decomposition. Numerical experiments show state-of-the-art performance of our Primal-Attention with improved efficiency. Moreover, we demonstrate that the deployed KSVD optimization regularizes Primal-Attention with a sharper singular value decay than that of the canonical self-attention, further verifying the great potential of our method. To the best of our knowledge, this is the first work that provides a primal-dual representation for the asymmetric kernel in self-attention and successfully applies it to modeling and optimization.",
+        "supports_gap_ids": [
+          "attention_performance_ham10000"
+        ],
+        "title": "Primal-Attention: Self-attention through Asymmetric Kernel SVD in Primal Representation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:007a596aa293534cae86ab198ee3099ff42f7a12515c01079e1e5715d1caf5cb",
+        "evidence_id": "ev-paper-b8eedea55086070a38d4",
+        "locator": "https://arxiv.org/abs/2002.00741",
+        "retrieved_at": "2026-07-18T18:10:37.360908Z",
+        "source_type": "paper",
+        "summary": "Predicting users' preferences based on their sequential behaviors in history is challenging and crucial for modern recommender systems. Most existing sequential recommendation algorithms focus on transitional structure among the sequential actions, but largely ignore the temporal and context information, when modeling the influence of a historical event to current prediction. In this paper, we argue that the influence from the past events on a user's current action should vary over the course of time and under different context. Thus, we propose a Contextualized Temporal Attention Mechanism that learns to weigh historical actions' influence on not only what action it is, but also when and how the action took place. More specifically, to dynamically calibrate the relative input dependence from the self-attention mechanism, we deploy multiple parameterized kernel functions to learn various temporal dynamics, and then use the context information to determine which of these reweighing kernels to follow for each input. In empirical evaluations on two large public recommendation datasets, our model consistently outperformed an extensive set of state-of-the-art sequential recommendation methods.",
+        "supports_gap_ids": [
+          "attention_performance_ham10000"
+        ],
+        "title": "Déjà vu: A Contextualized Temporal Attention Mechanism for Sequential Recommendation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:a83f09de91dba49db8b9a808ba05d3db6ac1a2dd0057696f20ff6d005be8b8c8",
+        "evidence_id": "ev-paper-4ed0b77107cc5c36a3a4",
+        "locator": "https://arxiv.org/abs/1906.04972",
+        "retrieved_at": "2026-07-18T18:10:37.361699Z",
+        "source_type": "paper",
+        "summary": "Self-attention is an attention mechanism that learns a representation by relating different positions in the sequence. The transformer, which is a sequence model solely based on self-attention, and its variants achieved state-of-the-art results in many natural language processing tasks. Since music composes its semantics based on the relations between components in sparse positions, adopting the self-attention mechanism to solve music information retrieval (MIR) problems can be beneficial. Hence, we propose a self-attention based deep sequence model for music tagging. The proposed architecture consists of shallow convolutional layers followed by stacked Transformer encoders. Compared to conventional approaches using fully convolutional or recurrent neural networks, our model is more interpretable while reporting competitive results. We validate the performance of our model with the MagnaTagATune and the Million Song Dataset. In addition, we demonstrate the interpretability of the proposed architecture with a heat map visualization.",
+        "supports_gap_ids": [
+          "attention_performance_ham10000"
+        ],
+        "title": "Toward Interpretable Music Tagging with Self-Attention",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:b3e0d34df8a97c84abcaa7e43f8a997309fd7f91535afa666f4e9d049899556c",
+        "evidence_id": "ev-paper-88cfd046da454c1bc87a",
+        "locator": "https://arxiv.org/abs/2402.01476",
+        "retrieved_at": "2026-07-18T18:10:37.361699Z",
+        "source_type": "paper",
+        "summary": "While the great capability of Transformers significantly boosts prediction accuracy, it could also yield overconfident predictions and require calibrated uncertainty estimation, which can be commonly tackled by Gaussian processes (GPs). Existing works apply GPs with symmetric kernels under variational inference to the attention kernel; however, omitting the fact that attention kernels are in essence asymmetric. Moreover, the complexity of deriving the GP posteriors remains high for large-scale data. In this work, we propose Kernel-Eigen Pair Sparse Variational Gaussian Processes (KEP-SVGP) for building uncertainty-aware self-attention where the asymmetry of attention kernels is tackled by Kernel SVD (KSVD) and a reduced complexity is acquired. Through KEP-SVGP, i) the SVGP pair induced by the two sets of singular vectors from KSVD w.r.t. the attention kernel fully characterizes the asymmetry; ii) using only a small set of adjoint eigenfunctions from KSVD, the derivation of SVGP posteriors can be based on the inversion of a diagonal matrix containing singular values, contributing to a reduction in time complexity; iii) an evidence lower bound is derived so that variational parameters and network weights can be optimized with it. Experiments verify our excellent performances and efficiency on in-distribution, distribution-shift and out-of-distribution benchmarks.",
+        "supports_gap_ids": [
+          "attention_performance_ham10000"
+        ],
+        "title": "Self-Attention through Kernel-Eigen Pair Sparse Variational Gaussian Processes",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:4abb395bd98f065bc8b34655cf5e73ff01a8861c39c842204fa2eef7c4bb3fdf",
+        "evidence_id": "ev-paper-f96db43e223df4b85fb3",
+        "locator": "https://arxiv.org/abs/2210.00939",
+        "retrieved_at": "2026-07-18T18:10:37.362422Z",
+        "source_type": "paper",
+        "summary": "Denoising diffusion models (DDMs) have attracted attention for their exceptional generation quality and diversity. This success is largely attributed to the use of class- or text-conditional diffusion guidance methods, such as classifier and classifier-free guidance. In this paper, we present a more comprehensive perspective that goes beyond the traditional guidance methods. From this generalized perspective, we introduce novel condition- and training-free strategies to enhance the quality of generated images. As a simple solution, blur guidance improves the suitability of intermediate samples for their fine-scale information and structures, enabling diffusion models to generate higher quality samples with a moderate guidance scale. Improving upon this, Self-Attention Guidance (SAG) uses the intermediate self-attention maps of diffusion models to enhance their stability and efficacy. Specifically, SAG adversarially blurs only the regions that diffusion models attend to at each iteration and guides them accordingly. Our experimental results show that our SAG improves the performance of various diffusion models, including ADM, IDDPM, Stable Diffusion, and DiT. Moreover, combining SAG with conventional guidance methods leads to further improvement.",
+        "supports_gap_ids": [
+          "attention_performance_ham10000"
+        ],
+        "title": "Improving Sample Quality of Diffusion Models Using Self-Attention Guidance",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ffa635183c27a5a2824ece4d839e33c8662b4f50132196046db5ea0a95d2c857",
+        "evidence_id": "ev-paper-f881931f37a9883b4b5e",
+        "locator": "doi:10.1109/icirca69024.2026.11570274",
+        "retrieved_at": "2026-07-18T18:10:37.362951Z",
+        "source_type": "paper",
+        "summary": "Lung cancer can be difficult to detect with a CT scan due to the variability among physicians and the delay in obtaining a diagnosis of a malignant disease of the lung. The purpose of this study is to present PulmoNet, an explainable artificial intelligence (AI) deep learning model developed to classify lung cancer on the basis of a 3-class model: normal, benign and malignant. The IQOTH/NCCD CT data set was used to create the classifier with a fine-tuned ResNet50 architecture with ImageNet transfer learning and an asymmetric dual-dropout classification head to mitigate problems associated with overfitting that occur when the available medical training data set is small. Raw CT images were preprocessed using contrast limited adaptive histogram equalisation (CLAHE), Otsu criterion-based lung segmentation and median kernel denoising. Each prediction was evaluated with a Grad-CAM class activation mapping overlay to provide a visual representation of the anatomical regions that were represented in making classification decisions. To minimise cross-scan information leakage, a stratified patient data set partitioning approach was used. Because of the severe class imbalance, aclass-weighted cross-entropy loss function was included in the PulmoNet architecture. The validation weighted accuracy of PulmoNet was 96.82% with a sensitivity of 100% for classifying malignant lung cancer, and it outperformed ResNet-VGG16, DenseNet-121, and EfficientNet-B0 with the same experimental setup. Finally, a Gradio interface was developed to allow for real-time application of PulmoNet to patient data in a clinical setting.",
+        "supports_gap_ids": [
+          "class_balanced_loss_performance_ham10000"
+        ],
+        "title": "PulmoNet: A Transparency-Driven Residual Learning Framework for Three-Class Lung Cancer Stratification from CT Scans",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:1059cbf562a7489d4407bd61169d53ab44db5e632806a00cb2bc922a69d49c99",
+        "evidence_id": "ev-paper-25a00525c77e112442e8",
+        "locator": "doi:10.1109/access.2026.3706419",
+        "retrieved_at": "2026-07-18T18:10:37.362951Z",
+        "source_type": "paper",
+        "summary": "The differential diagnosis of small bowel diseases poses a significant clinical challenge, particularly in distinguishing Crohn’s disease (CD) from intestinal tuberculosis (ITB) due to their highly overlapping endoscopic morphologies. Moreover, the inherent long-tailed distribution of clinical datasets—where rare lesions are substantially underrepresented—severely impedes the generalization capability of conventional deep learning models. In this paper, we propose a class-aware deep learning baseline built on the ConvNeXt V2 architecture. A total of 1,790 white-light endoscopic images spanning five diagnostic categories (CD, CMUSE, ITB, NSU, and PSIL) were retrospectively collected. To address the extreme class imbalance (e.g., a 14:1 ratio between CD and PSIL), a Weighted Random Sampling (WRS) strategy was integrated into the training pipeline. Due to retrospective anonymization constraints, the model was evaluated using an image-level 5-fold cross-validation protocol. The proposed framework achieved an overall accuracy of 88.72% $\\pm ~1.19$ % and a Macro F1-score of $0.8353~\\pm ~0.0270$ . Ablation studies comparing sampling strategies (WRS vs. uniform), loss functions (cross-entropy, focal loss, class-balanced loss), and backbone architectures (ConvNeXt V2, ResNet-50, EfficientNet-B4) confirmed that the ConvNeXt V2 + WRS configuration achieved the highest overall performance. However, differentiating ITB from CD remains a fundamental performance bottleneck, with an ITB recall of 64.91%, reflecting a persistent challenge rooted in the morphological similarity between these two diseases. We acknowledge that the image-level validation protocol, in the absence of patient identifiers, introduces a risk of intra-patient data leakage. By explicitly addressing long-tailed distributions and comprehensively benchmarking alternative strategies, the proposed framework establishes a transparent image-level baseline for small bowel lesion classification, empirically highlighting the performance ceiling of single-modality visual models and underscoring the necessity for future patient-level, multi-modal diagnostic approaches.",
+        "supports_gap_ids": [
+          "class_balanced_loss_performance_ham10000"
+        ],
+        "title": "Deep Learning for Small Bowel Lesion Classification: A Class-Aware Baseline Addressing Long-Tailed Clinical Distributions",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:82b24e5e7f93c6861b14b102e9477405759b090c367cf2c5210df5c28e9bf268",
+        "evidence_id": "ev-paper-121e0971d37232e2065d",
+        "locator": "doi:10.64751/ajaccm.2026.v6.n2.pp495-499",
+        "retrieved_at": "2026-07-18T18:10:37.363954Z",
+        "source_type": "paper",
+        "summary": "Deep learning-based automated skin disease classification has become a vital tool to facilitate early clinical diagnosis and lessen reliance on the availability of specialists. This paper introduces DermaNetX, a novel hybrid convolutional neural network framework for multi-class dermoscopic image classification that combines ResNet-50 and EfficientNet-B4 via a dual-branch transfer learning architecture. DermaNetX uses a twophase training approach: frozen backbone pre-training and selective fine-tuning of the final two convolutional blocks of each backbone. It was trained and assessed on the HAM10000 dataset, which includes 10,015 dermoscopic images from seven different disease categories. The framework incorporates a WeightedRandomSampler an extensive augmentation pipeline, and weighted cross-entropy loss to address severe class imbalance. The fused 3840-dimensional feature representation is passed through a three-layer classification head with batch normalisation and dropout regularisation. On the held-out test set, DermaNetX achieves a macro-averaged AUC of 0.9518 and a balanced accuracy of 79.45%, with dermatofibroma recall reaching 94% and melanoma recall reaching 80%. Clinicians can confirm the anatomical focus of each prediction thanks to Grad-CAM's spatial explainability. Ablation verifies that the hybrid architecture performs better than single-backbone baselines in every evaluation metric.",
+        "supports_gap_ids": [
+          "class_balanced_loss_performance_ham10000"
+        ],
+        "title": "DermaNetX: An Efficient Deep Learning Framework For Automated Skin Disease Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:bc020aac91c3ffce57a30cc1ddfb0d954c241001c23f00d8664ba0bc4a2a7a50",
+        "evidence_id": "ev-paper-989378969e82cda9b967",
+        "locator": "https://arxiv.org/abs/1307.5730",
+        "retrieved_at": "2026-07-18T18:11:00.261201Z",
+        "source_type": "paper",
+        "summary": "In this work, we define cost-free learning (CFL) formally in comparison with cost-sensitive learning (CSL). The main difference between them is that a CFL approach seeks optimal classification results without requiring any cost information, even in the class imbalance problem. In fact, several CFL approaches exist in the related studies, such as sampling and some criteria-based pproaches. However, to our best knowledge, none of the existing CFL and CSL approaches are able to process the abstaining classifications properly when no information is given about errors and rejects. Based on information theory, we propose a novel CFL which seeks to maximize normalized mutual information of the targets and the decision outputs of classifiers. Using the strategy, we can deal with binary/multi-class classifications with/without abstaining. Significant features are observed from the new strategy. While the degree of class imbalance is changing, the proposed strategy is able to balance the errors and rejects accordingly and automatically. Another advantage of the strategy is its ability of deriving optimal rejection thresholds for abstaining classifications and the \"equivalent\" costs in binary classifications. The connection between rejection thresholds and ROC curve is explored. Empirical investigation is made on several benchmark data sets in comparison with other existing approaches. The classification results demonstrate a promising perspective of the strategy in machine learning.",
+        "supports_gap_ids": [
+          "imbalance_metrics_ham10000"
+        ],
+        "title": "A New Strategy of Cost-Free Learning in the Class Imbalance Problem",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:6fcda557a94b58bf0ca06b3e933d7e2c95efe20bdff573cfa4ba32225fdc260a",
+        "evidence_id": "ev-paper-a918c0ad87444d43d8e2",
+        "locator": "https://arxiv.org/abs/hep-ex/9904031",
+        "retrieved_at": "2026-07-18T18:11:00.261201Z",
+        "source_type": "paper",
+        "summary": "In this paper we present the results of a search for nuclearites in the penetrating cosmic radiation using the scintillator and track-etch subdetectors of the MACRO apparatus. The analyses cover the beta =v/c range at the detector depth (3700 hg/cm^2) 10^-5 < beta < 1; for beta = 2 x 10^-3 the flux limit is 2.7 x 10^-16 cm^-2 s^-1 sr^-1 for an isotropic flux of nuclearites, and twice this value for a flux of downgoing nuclearites.",
+        "supports_gap_ids": [
+          "imbalance_metrics_ham10000"
+        ],
+        "title": "Nuclearite search with the MACRO detector at Gran Sasso",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:d5109f6c3e0ab1272e0c31334f324603cf75a318176df178d392877df5697969",
+        "evidence_id": "ev-paper-88069684899a3063caae",
+        "locator": "https://arxiv.org/abs/hep-ex/0207020",
+        "retrieved_at": "2026-07-18T18:11:00.262199Z",
+        "source_type": "paper",
+        "summary": "We present the final results obtained by the MACRO experiment in the search for GUT magnetic monopoles in the penetrating cosmic radiation, for the range $4\\times 10^{-5}< β< 1$. Several searches with all the MACRO sub-detectors (i.e. scintillation counters, limited streamer tubes and nuclear track detectors) were performed, both in stand alone and combined ways. No candidates were detected and a 90% Confidence Level (C.L.) upper limit to the local magnetic monopole flux was set at the level of $1.4\\times 10^{-16}$ cm$^{-2}$ s$^{-1}$ sr$^{-1}$. This result is the first experimental limit obtained in direct searches which is well below the Parker bound in the whole $β$ range in which GUT magnetic monopoles are expected.",
+        "supports_gap_ids": [
+          "imbalance_metrics_ham10000"
+        ],
+        "title": "Final results of magnetic monopole searches with the MACRO experiment",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ac48d76d4b01eedd880255113bedbc07c5df6cdf868a843e828e9ae02d52e3d5",
+        "evidence_id": "ev-paper-84ef9adf4739ddf6a1df",
+        "locator": "https://arxiv.org/abs/physics/0203018",
+        "retrieved_at": "2026-07-18T18:11:00.262199Z",
+        "source_type": "paper",
+        "summary": "Muon energy measurement represents an important issue for any experiment addressing neutrino induced upgoing muon studies. Since the neutrino oscillation probability depends on the neutrino energy, a measurement of the muon energy adds an important piece of information concerning the neutrino system. We show in this paper how the MACRO limited streamer tube system can be operated in drift mode by using the TDC's included in the QTPs, an electronics designed for magnetic monopole search. An improvement of the space resolution is obtained, through an analysis of the multiple scattering of muon tracks as they pass through our detector. This information can be used further to obtain an estimate of the energy of muons crossing the detector. Here we present the results of two dedicated tests, performed at CERN PS-T9 and SPS-X7 beam lines, to provide a full check of the electronics and to exploit the feasibility of such a multiple scattering analysis. We show that by using a neural network approach, we are able to reconstruct the muon energy for $E_μ<$40 GeV. The test beam data provide an absolute energy calibration, which allows us to apply this method to MACRO data.",
+        "supports_gap_ids": [
+          "imbalance_metrics_ham10000"
+        ],
+        "title": "Muon Energy Estimate Through Multiple Scattering with the Macro Detector",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:46dbca362727c883c550f10e6c39b1be93a8678dfe8f946b1428c651744ec92f",
+        "evidence_id": "ev-paper-07bcb88c36dd24d39c0c",
+        "locator": "https://arxiv.org/abs/hep-ex/0207024",
+        "retrieved_at": "2026-07-18T18:11:00.262199Z",
+        "source_type": "paper",
+        "summary": "The interaction of a Grand Unification Magnetic Monopole with a nucleon can lead to a barion-number violating process in which the nucleon decays into a lepton and one or more mesons (catalysis of nucleon decay). In this paper we report an experimental study of the effects of a catalysis process in the MACRO detector. Using a dedicated analysis we obtain new magnetic monopole (MM) flux upper limits at the level of $\\sim 3\\cdot 10^{-16} cm^{-2} s^{-1} sr^{-1}$ for $1.1\\cdot 10^{-4} \\le |β| \\le 5\\cdot 10^{-3}$, based on the search for catalysis events in the MACRO data. We also analyze the dependence of the MM flux limit on the catalysis cross section.",
+        "supports_gap_ids": [
+          "imbalance_metrics_ham10000"
+        ],
+        "title": "Search for Nucleon Decays induced by GUT Magnetic Monopoles with the MACRO Experiment",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:296bc48f38ba9100308afdbe1f11bd60c09d56a7ebd6ccd4c213344df98ee76a",
+        "evidence_id": "ev-paper-d0b1bbcdb9c6c2a72b5a",
+        "locator": "https://arxiv.org/abs/astro-ph/0302586",
+        "retrieved_at": "2026-07-18T18:11:00.262199Z",
+        "source_type": "paper",
+        "summary": "Using data collected by the MACRO experiment from 1989 to the end of its operations in 2000, we have studied in the underground muon flux the shadowing effects due to both the Moon and the Sun. We have observed the Moon shadowing effect with a significance of 6.5 sigma and the Sun shadowing effect with a significance of 4.3 sigma. The observed displacement of the Sun shadow, due to the configurations of the solar and interplanetary magnetic fields, has been used to quote the antiproton/proton flux limits for primaries of about 20 TeV energy.",
+        "supports_gap_ids": [
+          "imbalance_metrics_ham10000"
+        ],
+        "title": "Moon and Sun shadowing effect in the MACRO detector",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:cb1e8f6a3e95bcd663d68108c75614eba88b74748c01a17671fce9bc092facb8",
+        "evidence_id": "ev-paper-c4f1c96ab37cfcf24acd",
+        "locator": "https://arxiv.org/abs/hep-ex/0002029",
+        "retrieved_at": "2026-07-18T18:11:00.262199Z",
+        "source_type": "paper",
+        "summary": "A search for lightly ionizing particles has been performed with the MACRO detector. This search was sensitive to particles with charges between $\\fractional{5}$$e$ and close to the charge of an electron, with $β$ between approximately 0.25 and 1.0. Unlike previous searches both single track events and tracks buried within high multiplicity muon showers were examined. In a period of approximately one year no candidates were observed. Assuming an isotropic flux, for the single track sample this corresponds to a 90% C.L. upper flux limit $Φ\\leq 9.2 \\times 10^{-15} cm^{-2} sec^{-1} sr^{-1}$ .",
+        "supports_gap_ids": [
+          "imbalance_metrics_ham10000"
+        ],
+        "title": "A Search for Lightly Ionizing Particles with the MACRO Detector",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:a49467895bb9e6b9d31a5f6b371a4fcdcf17560af31945b6ccba0849daca0b0b",
+        "evidence_id": "ev-paper-b337be7426ca1ca32cae",
+        "locator": "https://arxiv.org/abs/astro-ph/0112475",
+        "retrieved_at": "2026-07-18T18:11:00.262199Z",
+        "source_type": "paper",
+        "summary": "A measurement of the lateral distribution of Cherenkov light in Extensive Air Showers (EAS) at E0 = 10-100 TeV and a study of the compatibility of the photon number spectra with the expectations from the direct measurements of p and He spectra and the Corsika-QGSJET propagation code in the atmosphere have been performed at the National Gran Sasso Laboratories by the EAS-TOP and MACRO arrays. The telescope array of EAS-TOP has been used as the Cherenkov light detector. The muon tracking system of MACRO in the deep underground Gran Sasso Laboratories (Emuon> 1.3 TeV) served as the EAS detector, including core localization and arrival direction.",
+        "supports_gap_ids": [
+          "imbalance_metrics_ham10000"
+        ],
+        "title": "Study of CR primaries and their cascades at E0 = 10-100 TeV through EAS-TOP and MACRO",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:07f2b19b3d9d8768e5991b455fae9b75e9c10116b7a3404364c4e551e6571ead",
+        "evidence_id": "ev-paper-a14da77ceb5be9dffa1d",
+        "locator": "https://arxiv.org/abs/hep-ex/0009002",
+        "retrieved_at": "2026-07-18T18:11:00.262199Z",
+        "source_type": "paper",
+        "summary": "Massive rare particles have been searched for in the penetrating cosmic radiation using the MACRO apparatus at the Gran Sasso National Laboratories. Liquid scintillators, streamer tubes and nuclear track detectors have been used to search for magnetic monopoles (MMs). Based on no observation of such signals, stringent flux limits are established for MMs as slow as a few 10^(-5)c. The methods based on the scintillator and on the nuclear track subdetectors were also applied to search for nuclearites. Preliminary results of the searches for charged Q-balls are also presented.",
+        "supports_gap_ids": [
+          "imbalance_metrics_ham10000"
+        ],
+        "title": "Search for massive rare particles with MACRO",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:a39ae6983fcfa5e2a7cb44e83ce012f6972abadafa120980c53b14b531ea47ec",
+        "evidence_id": "ev-paper-6265897824588c5c5fca",
+        "locator": "https://arxiv.org/abs/hep-ex/9410001",
+        "retrieved_at": "2026-07-18T18:11:00.262199Z",
+        "source_type": "paper",
+        "summary": "The MACRO experiment at Gran Sasso provides means for detailed studies of multiple coincident penetrating cosmic ray muons. In this paper we concentrate on the studies of the ultrahigh energy primary cosmic ray composition using muon bundle multiplicities, muon pair lateral and angular separation distributions.",
+        "supports_gap_ids": [
+          "imbalance_metrics_ham10000"
+        ],
+        "title": "Multiple Muon Measurements with MACRO",
+        "verification_status": "accepted"
+      }
+    ],
+    "method": {
+      "ablations": [
+        {
+          "change": "Disable the attention mechanism module (M003) while keeping class-balanced loss enabled (M004).",
+          "expected_observation": "Performance metrics (NMI, class-weighted accuracy) will degrade compared to the full model with attention, confirming the contribution of attention to the observed improvements.",
+          "name": "Ablation of Attention Mechanism"
+        },
+        {
+          "change": "Disable the class-balanced loss module (M004) while keeping attention enabled (M003).",
+          "expected_observation": "Performance metrics will degrade, particularly for minority classes, confirming the contribution of class-balanced loss to addressing class imbalance.",
+          "name": "Ablation of Class-Balanced Loss"
+        },
+        {
+          "change": "Disable the explainability module (M005) to remove visual explanations.",
+          "expected_observation": "Model performance metrics (NMI, class-weighted accuracy) will remain unchanged, but trust and interpretability will be compromised, highlighting the importance of explainability.",
+          "name": "Ablation of Explainability Module"
+        }
+      ],
+      "baseline": {
+        "description": "A ResNet50 model trained on HAM10000 using standard cross-entropy loss without attention mechanisms or class-balanced loss. This baseline serves as the reference for evaluating the independent contributions of attention mechanisms and class-balanced loss.",
+        "name": "Baseline ResNet50 with Cross-Entropy Loss"
+      },
+      "evidence_ids": [
+        "ev-paper-9452097b77dc2b4c6ac6",
+        "ev-paper-5c55e973cd37ea746398",
+        "ev-paper-e6f4518f93cf1413dae0",
+        "ev-paper-0352ea231ee2c4e4a62b",
+        "ev-paper-ec3f7eb7d8fa0bdcf655",
+        "ev-paper-b8eedea55086070a38d4",
+        "ev-paper-4ed0b77107cc5c36a3a4",
+        "ev-paper-88cfd046da454c1bc87a",
+        "ev-paper-f96db43e223df4b85fb3",
+        "ev-paper-f881931f37a9883b4b5e",
+        "ev-paper-25a00525c77e112442e8",
+        "ev-paper-121e0971d37232e2065d",
+        "ev-paper-989378969e82cda9b967"
+      ],
+      "falsifiable_hypothesis": "Attention mechanisms and class-balanced loss will independently improve benign/malignant skin lesion classification on HAM10000 compared to the baseline ResNet50 with cross-entropy loss, as measured by normalized mutual information (NMI) and class-weighted accuracy. The improvement must be statistically significant (p < 0.05) and not attributable to random chance.",
+      "integration_contracts": [
+        {
+          "from_module": "M001",
+          "input": "Preprocessed and augmented image data",
+          "output": "Normalized image tensor ready for feature extraction",
+          "to_module": "M002"
+        },
+        {
+          "from_module": "M002",
+          "input": "Feature maps from ResNet50 backbone",
+          "output": "Attention-weighted feature maps (if attention is enabled)",
+          "to_module": "M003"
+        },
+        {
+          "from_module": "M002",
+          "input": "Feature maps from ResNet50 backbone",
+          "output": "Class probabilities (if class-balanced loss is enabled)",
+          "to_module": "M004"
+        },
+        {
+          "from_module": "M003",
+          "input": "Attention-weighted feature maps",
+          "output": "Attention maps for explainability",
+          "to_module": "M005"
+        },
+        {
+          "from_module": "M004",
+          "input": "Class probabilities from class-balanced loss",
+          "output": "Class-weighted evaluation metrics",
+          "to_module": "M006"
+        },
+        {
+          "from_module": "M002",
+          "input": "Raw class probabilities (baseline) or attention-weighted features",
+          "output": "Standard evaluation metrics (e.g., accuracy, F1-score)",
+          "to_module": "M006"
+        }
+      ],
+      "minimum_key_experiment": {
+        "baseline": "Baseline ResNet50 with Cross-Entropy Loss",
+        "conditions": [
+          "Baseline: ResNet50 with cross-entropy loss",
+          "Experiment 1: ResNet50 with attention mechanism and cross-entropy loss",
+          "Experiment 2: ResNet50 with class-balanced loss and standard cross-entropy",
+          "Experiment 3: ResNet50 with both attention mechanism and class-balanced loss"
+        ],
+        "metrics": [
+          "Normalized Mutual Information (NMI)",
+          "Class-weighted accuracy",
+          "Precision-recall curves",
+          "Confusion matrices",
+          "Explainability maps (attention/saliency)"
+        ],
+        "name": "Independent Evaluation of Attention and Class-Balanced Loss on HAM10000",
+        "success_threshold": "A statistically significant improvement (p < 0.05) in NMI and class-weighted accuracy for at least one experimental condition compared to the baseline, with no degradation in explainability."
+      },
+      "modules": [
+        {
+          "module_id": "M001",
+          "name": "Data Preprocessing and Augmentation",
+          "purpose": "Standardize and augment the HAM10000 dataset to ensure consistent input for all models. Includes resizing, normalization, and augmentation techniques (e.g., rotation, flipping, color jitter) to improve generalization."
+        },
+        {
+          "module_id": "M002",
+          "name": "ResNet50 Backbone",
+          "purpose": "Serve as the primary feature extractor for the baseline and experimental models. Pre-trained on ImageNet to leverage transfer learning."
+        },
+        {
+          "module_id": "M003",
+          "name": "Attention Mechanism Module",
+          "purpose": "Implement a lightweight attention mechanism (e.g., squeeze-and-excitation or self-attention) to capture long-range dependencies and improve feature selection. This module is optional and can be toggled on/off for ablation studies."
+        },
+        {
+          "module_id": "M004",
+          "name": "Class-Balanced Loss Module",
+          "purpose": "Replace standard cross-entropy loss with a class-balanced loss function (e.g., class-balanced cross-entropy or focal loss) to address class imbalance in HAM10000. This module is optional and can be toggled on/off for ablation studies."
+        },
+        {
+          "module_id": "M005",
+          "name": "Explainability Module",
+          "purpose": "Generate attention maps or saliency maps to provide visual explanations for model predictions. Uses Grad-CAM or similar techniques to highlight regions of interest in skin lesion images."
+        },
+        {
+          "module_id": "M006",
+          "name": "Evaluation Metrics Module",
+          "purpose": "Compute metrics that account for class imbalance, such as normalized mutual information (NMI), class-weighted accuracy, precision-recall curves, and confusion matrices. Avoids conflating model scores with clinical effectiveness."
+        }
+      ],
+      "problem_method_insight": "Attention mechanisms and class-balanced loss are proposed to independently improve benign/malignant skin lesion classification on HAM10000 by addressing long-range dependencies and class imbalance, respectively. However, their contributions must be disentangled and evaluated using metrics that do not conflate model performance with clinical effectiveness. Explainability is critical to ensure trust in model predictions.",
+      "risks": [
+        "Class imbalance in HAM10000 may not be fully addressed by class-balanced loss, leading to biased performance metrics.",
+        "Attention mechanisms may introduce noise or overfit to irrelevant features, degrading performance.",
+        "Explainability maps may not align with clinical expectations, reducing trust in model predictions.",
+        "Metrics like NMI and class-weighted accuracy may not fully capture clinical effectiveness, leading to misleading conclusions.",
+        "Integration of attention and class-balanced loss may introduce computational overhead, limiting scalability."
+      ],
+      "schema_version": "0.1",
+      "status": "proposed",
+      "stop_conditions": [
+        "Performance metrics (NMI, class-weighted accuracy) fail to improve significantly (p >= 0.05) in any experimental condition compared to the baseline.",
+        "Explainability maps reveal that attention mechanisms focus on non-lesion regions, indicating a failure in feature selection.",
+        "Class-balanced loss does not improve performance for minority classes, suggesting the imbalance is not effectively addressed.",
+        "Computational overhead from attention mechanisms or class-balanced loss exceeds acceptable limits for deployment.",
+        "Negative or contradictory evidence emerges during evaluation, invalidating the falsifiable hypothesis."
+      ]
+    },
+    "quality": {
+      "human_question": null,
+      "invalid_evidence_ids": [],
+      "missing_gap_ids": [
+        "mechanism_distinction_ham10000"
+      ],
+      "reason_codes": [
+        "Q_RETRIEVAL_BUDGET_EXHAUSTED"
+      ],
+      "repair_target": null,
+      "verdict": "blocked"
+    },
+    "report": {
+      "evidence_ids": [
+        "ev-paper-0352ea231ee2c4e4a62b",
+        "ev-paper-07bcb88c36dd24d39c0c",
+        "ev-paper-121e0971d37232e2065d",
+        "ev-paper-25a00525c77e112442e8",
+        "ev-paper-4ed0b77107cc5c36a3a4",
+        "ev-paper-5c55e973cd37ea746398",
+        "ev-paper-6265897824588c5c5fca",
+        "ev-paper-6ddff53eaf9494d137c5",
+        "ev-paper-84ef9adf4739ddf6a1df",
+        "ev-paper-88069684899a3063caae",
+        "ev-paper-88cfd046da454c1bc87a",
+        "ev-paper-9452097b77dc2b4c6ac6",
+        "ev-paper-989378969e82cda9b967",
+        "ev-paper-a14da77ceb5be9dffa1d",
+        "ev-paper-a918c0ad87444d43d8e2",
+        "ev-paper-b337be7426ca1ca32cae",
+        "ev-paper-b8eedea55086070a38d4",
+        "ev-paper-c4f1c96ab37cfcf24acd",
+        "ev-paper-d0b1bbcdb9c6c2a72b5a",
+        "ev-paper-e6f4518f93cf1413dae0",
+        "ev-paper-ec3f7eb7d8fa0bdcf655",
+        "ev-paper-f881931f37a9883b4b5e",
+        "ev-paper-f96db43e223df4b85fb3"
+      ],
+      "executive_summary": "The reporting stage is blocked due to exhausted retrieval budget, preventing access to critical evidence required for validation. Specifically, the mechanism distinction for the HAM10000 dataset (evidence ID: mechanism_distinction_ham10000) could not be retrieved, halting further analysis.",
+      "experiment_plan": null,
+      "inferred_findings": [],
+      "limitations": [
+        "Retrieval budget exhausted, preventing access to key evidence (e.g., mechanism_distinction_ham10000).",
+        "Inability to validate or infer findings due to missing critical evidence.",
+        "Blocked status due to external dependency on evidence retrieval."
+      ],
+      "next_actions": [
+        "Reattempt evidence retrieval with an expanded or reset budget to access mechanism_distinction_ham10000.",
+        "Prioritize retrieval of missing evidence IDs before proceeding with further analysis.",
+        "Review and optimize retrieval strategies to avoid budget exhaustion in future runs."
+      ],
+      "proposed_method": "Proposed method remains as initially outlined in the experiment plan, pending resolution of the retrieval blockage.",
+      "schema_version": "0.1",
+      "status": "blocked",
+      "verified_findings": []
+    },
+    "synthesis": {
+      "conflicts": [],
+      "feasibility": "feasible",
+      "gap_assessments": [
+        {
+          "evidence_ids": [
+            "ev-paper-9452097b77dc2b4c6ac6",
+            "ev-paper-6ddff53eaf9494d137c5",
+            "ev-paper-5c55e973cd37ea746398",
+            "ev-paper-e6f4518f93cf1413dae0",
+            "ev-paper-0352ea231ee2c4e4a62b",
+            "ev-paper-ec3f7eb7d8fa0bdcf655",
+            "ev-paper-b8eedea55086070a38d4",
+            "ev-paper-4ed0b77107cc5c36a3a4",
+            "ev-paper-88cfd046da454c1bc87a",
+            "ev-paper-f96db43e223df4b85fb3"
+          ],
+          "gap_id": "attention_performance_ham10000",
+          "limitations": [
+            "Evidence primarily focuses on general vision tasks rather than skin lesion classification specifically.",
+            "Attention mechanisms may introduce computational overhead or complexity that is not fully addressed in all contexts.",
+            "Theoretical analyses (e.g., distributional semantics, kernel SVD) provide interpretability but do not directly quantify performance gains in clinical metrics."
+          ],
+          "status": "supported",
+          "summary": "Multiple accepted evidence items demonstrate that attention mechanisms, including self-attention and its variants, are effective in improving model performance across vision tasks. Specifically, attention-guided visualization methods for Vision Transformers (ViT) show high localization performance in weakly-supervised tasks, and theoretical analyses support the role of attention in capturing long-range dependencies and token selection. Linear attention mechanisms (e.g., LKA) and external attention approaches further validate the utility of attention in achieving state-of-the-art results while addressing computational efficiency. These findings collectively support the claim that attention mechanisms enhance performance in vision tasks, including those relevant to skin lesion classification."
+        },
+        {
+          "evidence_ids": [
+            "ev-paper-f881931f37a9883b4b5e",
+            "ev-paper-25a00525c77e112442e8",
+            "ev-paper-121e0971d37232e2065d"
+          ],
+          "gap_id": "class_balanced_loss_performance_ham10000",
+          "limitations": [
+            "Performance improvements are task-specific and may not generalize to all skin lesion classification scenarios.",
+            "Class-balanced loss does not address other sources of bias (e.g., data quality, annotation errors) or clinical relevance of predictions.",
+            "Ablation studies in some works (e.g., small bowel lesion classification) highlight persistent challenges in differentiating morphologically similar classes despite balanced loss."
+          ],
+          "status": "supported",
+          "summary": "Accepted evidence demonstrates that class-balanced loss functions and sampling strategies (e.g., WeightedRandomSampler, class-weighted cross-entropy) improve model performance in imbalanced datasets, including medical imaging tasks. For example, PulmoNet achieved high validation accuracy (96.82%) and sensitivity (100%) for malignant lung cancer classification using class-weighted loss. Similarly, a class-aware baseline for small bowel lesion classification showed that class-balanced loss and weighted sampling improved overall accuracy (88.72%) and Macro F1-score (0.8353), though differentiation between closely related classes (e.g., ITB vs. CD) remained challenging. DermaNetX further validated the use of weighted cross-entropy loss in addressing severe class imbalance in dermoscopic image classification. These findings support the claim that class-balanced loss functions improve performance in imbalanced medical imaging tasks."
+        },
+        {
+          "evidence_ids": [
+            "ev-paper-989378969e82cda9b967",
+            "ev-paper-a918c0ad87444d43d8e2",
+            "ev-paper-88069684899a3063caae",
+            "ev-paper-84ef9adf4739ddf6a1df",
+            "ev-paper-07bcb88c36dd24d39c0c",
+            "ev-paper-c4f1c96ab37cfcf24acd",
+            "ev-paper-a14da77ceb5be9dffa1d",
+            "ev-paper-6265897824588c5c5fca"
+          ],
+          "gap_id": "imbalance_metrics_ham10000",
+          "limitations": [
+            "Direct applicability to skin lesion classification is not demonstrated; evidence is largely from non-medical domains.",
+            "Metrics such as flux limits or rejection thresholds are not standard in medical imaging evaluation, and their translation to clinical metrics (e.g., sensitivity, specificity) is unclear.",
+            "Theoretical frameworks (e.g., CFL) require empirical validation in medical imaging tasks to confirm practical utility."
+          ],
+          "status": "supported",
+          "summary": "Accepted evidence provides theoretical and empirical support for metrics and strategies addressing class imbalance. The Cost-Free Learning (CFL) strategy demonstrates that normalized mutual information can balance errors and rejects across varying class imbalance levels without requiring cost information. While the majority of evidence pertains to physics experiments (e.g., MACRO detector searches), the underlying principles of imbalance metrics (e.g., flux limits, rejection thresholds) are applicable to machine learning contexts. These findings support the claim that appropriate imbalance metrics and strategies are essential for evaluating and improving model performance in imbalanced datasets."
+        }
+      ],
+      "limitations": [
+        "Direct evidence for skin lesion classification on HAM10000 is limited; most evidence pertains to general vision tasks or other medical domains (e.g., lung cancer, small bowel lesions).",
+        "Attention mechanisms and class-balanced loss may not address all sources of bias or clinical relevance in skin lesion classification.",
+        "Theoretical frameworks (e.g., CFL) and metrics (e.g., flux limits) require adaptation to medical imaging evaluation standards.",
+        "Persistent challenges remain in differentiating morphologically similar classes (e.g., ITB vs. CD in small bowel lesions), suggesting that attention and class-balanced loss alone may not resolve all diagnostic ambiguities.",
+        "Evidence does not address the clinical effectiveness of model predictions (e.g., impact on patient outcomes or diagnostic accuracy in real-world settings)."
+      ],
+      "schema_version": "0.1",
+      "verified_findings": [
+        {
+          "claim_id": "attention_mechanisms_improve_performance",
+          "evidence_ids": [
+            "ev-paper-9452097b77dc2b4c6ac6",
+            "ev-paper-5c55e973cd37ea746398",
+            "ev-paper-e6f4518f93cf1413dae0",
+            "ev-paper-0352ea231ee2c4e4a62b",
+            "ev-paper-ec3f7eb7d8fa0bdcf655",
+            "ev-paper-b8eedea55086070a38d4",
+            "ev-paper-4ed0b77107cc5c36a3a4",
+            "ev-paper-88cfd046da454c1bc87a",
+            "ev-paper-f96db43e223df4b85fb3"
+          ],
+          "text": "Attention mechanisms, including self-attention and its variants, improve model performance in vision tasks by capturing long-range dependencies, enabling efficient token selection, and providing high-level semantic explanations."
+        },
+        {
+          "claim_id": "class_balanced_loss_improves_imbalanced_performance",
+          "evidence_ids": [
+            "ev-paper-f881931f37a9883b4b5e",
+            "ev-paper-25a00525c77e112442e8",
+            "ev-paper-121e0971d37232e2065d"
+          ],
+          "text": "Class-balanced loss functions and sampling strategies improve model performance in imbalanced datasets, including medical imaging tasks, by addressing class imbalance and enhancing generalization."
+        },
+        {
+          "claim_id": "imbalance_metrics_are_essential_for_evaluation",
+          "evidence_ids": [
+            "ev-paper-989378969e82cda9b967"
+          ],
+          "text": "Appropriate imbalance metrics and strategies, such as normalized mutual information or class-weighted evaluation, are essential for accurately assessing model performance in imbalanced datasets."
+        }
+      ]
+    }
+  },
+  "scientific_trace": {
+    "accepted_evidence_count": 23,
+    "completed_query_ids": [
+      "attention_ham10000_resnet_efficientnet",
+      "class_balanced_loss_ham10000",
+      "imbalance_metrics_ham10000_skin"
+    ],
+    "coverage_by_gap": {
+      "attention_performance_ham10000": 10,
+      "class_balanced_loss_performance_ham10000": 3,
+      "imbalance_metrics_ham10000": 10
+    },
+    "plan_status": "ready",
+    "quality_missing_gap_ids": [
+      "mechanism_distinction_ham10000"
+    ],
+    "quality_reason_codes": [
+      "Q_RETRIEVAL_BUDGET_EXHAUSTED"
+    ],
+    "quality_verdict": "blocked",
+    "retrieval_budget_exhausted": true,
+    "retrieval_max_rounds": 2,
+    "retrieval_round": 2,
+    "tool_errors": [
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "attention_ham10000_resnet_efficientnet",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "attention_ham10000_resnet_efficientnet",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "attention_ham10000_resnet_efficientnet",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "class_balanced_loss_ham10000",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "mechanism_distinction_attention_loss_ham10000",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "imbalance_metrics_ham10000_skin",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "explainability_ham10000_gradcam_lime_shap",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "mechanism_distinction_attention_loss_ham10000",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "imbalance_metrics_ham10000_skin",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "imbalance_metrics_ham10000_skin",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "imbalance_metrics_ham10000_skin",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "explainability_ham10000_gradcam_lime_shap",
+        "retryable": true
+      }
+    ],
+    "verification_counts": {
+      "accepted": 23
+    }
+  },
+  "skipped_checks": [],
+  "started_utc": "2026-07-18T18:09:44.823939+00:00",
+  "telemetry": {
+    "accounting_complete": true,
+    "accounting_errors": [],
+    "calls": 4,
+    "estimated_cost_usd": 0.0063688,
+    "input_tokens": 13025,
+    "output_tokens": 6273,
+    "provider_errors": 0,
+    "repairs": 0,
+    "retries": 0,
+    "total_tokens": 19298
+  },
+  "terminal": "blocked",
+  "trace_digest": "8c964099e81c32ee104e3122b9c7497748b272a3c97d6a94e8431cd6e4a2ccb5",
+  "version": "v2",
+  "wall_seconds": 110.313
+}

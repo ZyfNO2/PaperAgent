@@ -56,6 +56,21 @@ class EvidenceItem(FrozenModel):
     supports_gap_ids: list[str]
     summary: str
     content_hash: str
+    provider: str | None = None
+    metadata: dict[str, str] = Field(default_factory=dict)
+
+    @property
+    def stable_identifier(self) -> str:
+        for key, prefix in (
+            ("doi", "doi:"),
+            ("arxiv_id", "arxiv:"),
+            ("openalex_id", "openalex:"),
+            ("semantic_scholar_id", "s2:"),
+        ):
+            value = self.metadata.get(key)
+            if value:
+                return f"{prefix}{value}"
+        return self.locator
 
 
 class EvidenceBundle(FrozenModel):

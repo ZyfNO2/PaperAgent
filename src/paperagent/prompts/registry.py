@@ -16,9 +16,9 @@ class PromptSpec:
 
 
 _PROMPT_VERSIONS = {
-    "planning": "planning.v0.1.0",
+    "planning": "planning.v0.1.2",
     "evidence_synthesis": "evidence_synthesis.v0.1.0",
-    "method_design": "method_design.v0.1.0",
+    "method_design": "method_design.v0.2.0",
     "report": "report.v0.1.0",
 }
 

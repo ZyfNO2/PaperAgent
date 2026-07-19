@@ -1,0 +1,798 @@
+{
+  "budget": {
+    "max_calls": 8,
+    "max_cost_usd": 2.0,
+    "max_total_tokens": 60000,
+    "max_wall_seconds": 180
+  },
+  "budget_compliance": true,
+  "budget_violations": [],
+  "case_id": "holdout-v2-in_domain-004",
+  "case_index": 4,
+  "category": "in_domain",
+  "deterministic_checks": [
+    {
+      "check_id": "terminal_class",
+      "expected": "succeeded",
+      "kind": "terminal",
+      "target": "terminal"
+    },
+    {
+      "check_id": "budget_enforced",
+      "expected": "within_limits",
+      "kind": "budget",
+      "target": "calls_tokens_time_cost"
+    },
+    {
+      "check_id": "identifier_validation",
+      "expected": "resolves_and_metadata_matches",
+      "kind": "identifier",
+      "target": "all_citations"
+    },
+    {
+      "check_id": "research_decision",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "explicit_go_revise_no_go"
+    },
+    {
+      "check_id": "required_01",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "compute_hotspot_analysis"
+    },
+    {
+      "check_id": "required_02",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "optimization_scope_choice"
+    },
+    {
+      "check_id": "required_03",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "nonredundant_module_selection"
+    },
+    {
+      "check_id": "required_04",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "accuracy_guardrail"
+    },
+    {
+      "check_id": "required_05",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "fps_or_latency_measurement"
+    },
+    {
+      "check_id": "required_06",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "params_flops_memory_reporting"
+    },
+    {
+      "check_id": "required_07",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "minimal_method_design"
+    },
+    {
+      "check_id": "forbidden_01",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "stack_all_lightweight_modules"
+    },
+    {
+      "check_id": "forbidden_02",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "flops_as_latency_proxy"
+    },
+    {
+      "check_id": "forbidden_03",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "duplicate_mechanism_modules"
+    },
+    {
+      "check_id": "forbidden_04",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "guaranteed_superiority_claim"
+    }
+  ],
+  "error": null,
+  "excluded_checks": [],
+  "execution_identity": {
+    "base_url": "https://api.mistral.ai/v1",
+    "case_file_sha256": "c1a74b7781f07085e33d4fe87d9a712f256f071b1c9169a78166ff5ca2386591",
+    "clean_tree": false,
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "scripts/run_gate_l_v2.py",
+      "--manifest",
+      "evals/v0_6/holdout_manifest.v2.json",
+      "--output-dir",
+      "build/gate-l-v2-final",
+      "--price-table",
+      "config/price-table-mistral.json"
+    ],
+    "github_run_id": null,
+    "github_workflow": null,
+    "manifest_path": "evals/v0_6/holdout_manifest.v2.json",
+    "manifest_sha256": "116ee09a38d19df96e4d045c20472533c01557ffa378cd3dbe6d166057ecfc3f",
+    "model": "mistral-small-latest",
+    "planning_prompt_version": "planning.v0.1.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "price_table_path": "config/price-table-mistral.json",
+    "price_table_sha256": "6782214e0fa743048565b583b8742e502076a2db7f341392f87fcb7feb845c67",
+    "provider": "mistral",
+    "python_version": "3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]",
+    "repo_sha": "local",
+    "scientific_behavior_cutoff_sha": "d4fef014932d084a0addd4a588b3431d2c08628b"
+  },
+  "expected_terminal": "succeeded",
+  "output_digest": "56e632f75284309794f666a4c01d97b9ca01eb94fe912e54514ce8de0bf00e72",
+  "raw_terminal": "blocked",
+  "reference_evidence": [],
+  "review_output": {
+    "accepted_evidence": [
+      {
+        "content_hash": "sha256:7b61899ee5e0a82e14142ee2cbe66de7be34d162fc4607b587eb1a24ceb7a39b",
+        "evidence_id": "ev-paper-1aeefa98073cb8b1ca43",
+        "locator": "https://arxiv.org/abs/2604.17040",
+        "retrieved_at": "2026-07-18T18:09:23.538915Z",
+        "source_type": "paper",
+        "summary": "Spiking neural operators are appealing for neuromorphic edge computing because event-driven substrates can, in principle, translate sparse activity into lower latency and energy. Whether that advantage survives deployment on commodity edge-GPU software stacks, however, remains unclear. We study this question on a Jetson Orin Nano 8 GB using five pretrained variable-spiking wavelet neural operator (VS-WNO) checkpoints and five matched dense wavelet neural operator (WNO) checkpoints on the Darcy rectangular benchmark. On a reference-aligned path, VS-WNO exhibits substantial algorithmic sparsity, with mean spike rates decreasing from 54.26% at the first spiking layer to 18.15% at the fourth. On a deployment-style request path, however, this sparsity does not reduce deployed cost: VS-WNO reaches 59.6 ms latency and 228.0 mJ dynamic energy per inference, whereas dense WNO reaches 53.2 ms and 180.7 mJ, while also achieving slightly lower reference-path error (1.77% versus 1.81%). Nsight Systems indicates that the request path remains launch-dominated and dense rather than sparsity-aware: for VS-WNO, cudaLaunchKernel accounts for 81.6% of CUDA API time within the latency window, and dense convolution kernels account for 53.8% of GPU kernel time; dense WNO shows the same pattern. On this Jetson-class GPU stack, spike sparsity is measurable but does not reduce deployed cost because the runtime does not suppress dense work as spike activity decreases.",
+        "supports_gap_ids": [
+          "G001",
+          "G002"
+        ],
+        "title": "When Spike Sparsity Does Not Translate to Deployed Cost: VS-WNO on Jetson Orin Nano",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:e4fecc7703ee58deb358cbbd0743b89a1cc9546c99b6e31304a06abd19f5ecba",
+        "evidence_id": "ev-paper-1552b49cf3c8d5ba68ad",
+        "locator": "https://arxiv.org/abs/2606.00524",
+        "retrieved_at": "2026-07-18T18:09:23.538915Z",
+        "source_type": "paper",
+        "summary": "The Machine Learning Core (MLC) embedded in the STMicroelectronics LSM6DSOX IMU is widely cited as a low-latency alternative to host-side inference, yet wire-level decision-delivery latency is rarely measured. Using a Saleae Logic Pro 8 logic analyzer on an NVIDIA Jetson Orin Nano, we measured interrupt-to-decision latency (sensor INT1 edge to host decision GPIO) for three pipelines (a host-side decision-tree classifier, the standard MLC bank-switch read protocol, and an MLC binary-fast variant) under idle, I2C bus contention, and CPU stress. The protocol was pre-registered with 12 externally-timestamped Zenodo amendments before confirmatory data collection (4,770 of 4,860 trials included, 98.15%, across nine cells). The host pipeline exhibits lower median latency than the MLC pipeline under all conditions: 321.7 vs 681.5 us at idle (2.1x faster) and 574.5 vs 1,325.4 us under I2C contention (2.3x faster). The three-transaction I2C read protocol, not the silicon's classification, is the dominant latency contributor. We additionally characterize a reproducible 706.5 ms MLC decision cadence that bounds full stimulus-to-decision latency. Code, data, and pre-registration: github.com/akulswami/sensor-mlc-latency.",
+        "supports_gap_ids": [
+          "G001",
+          "G002"
+        ],
+        "title": "Wire-Level Interrupt-to-Decision Latency of On-Sensor MLC versus Host Inference on the NVIDIA Jetson Orin Nano: A Pre-Registered Measurement Study",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:fa27725df2d7a02a5b5be061e6dd3c7d6597a0582a91a5357f7293de98bb37ac",
+        "evidence_id": "ev-paper-db780e11b16d0d880212",
+        "locator": "https://arxiv.org/abs/2211.15444",
+        "retrieved_at": "2026-07-18T18:09:23.538915Z",
+        "source_type": "paper",
+        "summary": "In this report, we present a fast and accurate object detection method dubbed DAMO-YOLO, which achieves higher performance than the state-of-the-art YOLO series. DAMO-YOLO is extended from YOLO with some new technologies, including Neural Architecture Search (NAS), efficient Reparameterized Generalized-FPN (RepGFPN), a lightweight head with AlignedOTA label assignment, and distillation enhancement. In particular, we use MAE-NAS, a method guided by the principle of maximum entropy, to search our detection backbone under the constraints of low latency and high performance, producing ResNet/CSP-like structures with spatial pyramid pooling and focus modules. In the design of necks and heads, we follow the rule of ``large neck, small head''.We import Generalized-FPN with accelerated queen-fusion to build the detector neck and upgrade its CSPNet with efficient layer aggregation networks (ELAN) and reparameterization. Then we investigate how detector head size affects detection performance and find that a heavy neck with only one task projection layer would yield better results.In addition, AlignedOTA is proposed to solve the misalignment problem in label assignment. And a distillation schema is introduced to improve performance to a higher level. Based on these new techs, we build a suite of models at various scales to meet the needs of different scenarios. For general industry requirements, we propose DAMO-YOLO-T/S/M/L. They can achieve 43.6/47.7/50.2/51.9 mAPs on COCO with the latency of 2.78/3.83/5.62/7.95 ms on T4 GPUs respectively. Additionally, for edge devices with limited computing power, we have also proposed DAMO-YOLO-Ns/Nm/Nl lightweight models. They can achieve 32.3/38.2/40.5 mAPs on COCO with the latency of 4.08/5.05/6.69 ms on X86-CPU. Our proposed general and lightweight models have outperformed other YOLO series models in their respective application scenarios.",
+        "supports_gap_ids": [
+          "G001",
+          "G002"
+        ],
+        "title": "DAMO-YOLO : A Report on Real-Time Object Detection Design",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:f10ed011c8abbccfed4eff37e55891acef526ba253af851c8ba86dfbef6433d2",
+        "evidence_id": "ev-paper-8cef1e6d7e772d321606",
+        "locator": "https://arxiv.org/abs/1910.01271",
+        "retrieved_at": "2026-07-18T18:09:23.539915Z",
+        "source_type": "paper",
+        "summary": "Object detection remains an active area of research in the field of computer vision, and considerable advances and successes has been achieved in this area through the design of deep convolutional neural networks for tackling object detection. Despite these successes, one of the biggest challenges to widespread deployment of such object detection networks on edge and mobile scenarios is the high computational and memory requirements. As such, there has been growing research interest in the design of efficient deep neural network architectures catered for edge and mobile usage. In this study, we introduce YOLO Nano, a highly compact deep convolutional neural network for the task of object detection. A human-machine collaborative design strategy is leveraged to create YOLO Nano, where principled network design prototyping, based on design principles from the YOLO family of single-shot object detection network architectures, is coupled with machine-driven design exploration to create a compact network with highly customized module-level macroarchitecture and microarchitecture designs tailored for the task of embedded object detection. The proposed YOLO Nano possesses a model size of ~4.0MB (>15.1x and >8.3x smaller than Tiny YOLOv2 and Tiny YOLOv3, respectively) and requires 4.57B operations for inference (>34% and ~17% lower than Tiny YOLOv2 and Tiny YOLOv3, respectively) while still achieving an mAP of ~69.1% on the VOC 2007 dataset (~12% and ~10.7% higher than Tiny YOLOv2 and Tiny YOLOv3, respectively). Experiments on inference speed and power efficiency on a Jetson AGX Xavier embedded module at different power budgets further demonstrate the efficacy of YOLO Nano for embedded scenarios.",
+        "supports_gap_ids": [
+          "G001"
+        ],
+        "title": "YOLO Nano: a Highly Compact You Only Look Once Convolutional Neural Network for Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:eba0be55ca4efa3666f2f85ccbdef16487caafc7c5c367478f699a63f535828c",
+        "evidence_id": "ev-paper-2be6a844ef8b874c06c4",
+        "locator": "https://arxiv.org/abs/2412.05192",
+        "retrieved_at": "2026-07-18T18:09:23.539915Z",
+        "source_type": "paper",
+        "summary": "Traumatic brain injuries (TBI) are considered a silent epidemic. It affects many people, from automobiles to sports to service members. In this study, we employed a musculoskeletal head-neck model to understand the effect of impact locations, characteristics, and neck strength on head and neck injury severity. Three types of impact forces were studied: low-velocity impact (LVI), intermediate-velocity impact (IVI), and high-velocity impact (HVI). We investigated six parameters: linear and rotational accelerations, the Generalized Acceleration Model For Brain Injury Threshold (GAMBIT), neck force, neck moment, and Neck Injury Criteria (NIC). We consider seven impact locations, three neck strengths, and three impact characteristics. We studied a total of 63 cases. It was found that the linear accelerations do not change much with different neck strengths and impact locations. The impact locations have a significant effect on head and neck injury parameters, and anterolateral impact is the most risky impact location for both head and neck. The maximum average rotational acceleration is for anterolateral eccentric impact which is 4.75 times more than the average anterior central impact. The lateral impacts generate about 10% more linear accelerations than anterior and posterior impacts. Neck forces do not vary more than 20% with impact locations and neck strength. The average head and neck injury parameters do not vary more than 10% based on neck strength. Impact characteristics have a significant role in GAMBIT and NIC. The average GAMBIT for IVI and HVI were 1.44 and 1.54 times higher than LVI. In summary, the anterolateral eccentric impact has a higher probability of head and neck injury than the other six impact locations. These findings provide objective evidence that can inform injury prevention strategies as well as aid tissue and cellular level studies.",
+        "supports_gap_ids": [
+          "G001"
+        ],
+        "title": "A biomechanical study of neck strength and impact dynamics on head and neck injury parameters",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:d4f86e092f1c2e7799e3665b644d5f39a27701a5722c8c411f8a81ede5801ed9",
+        "evidence_id": "ev-paper-111b584a0a7b5fd9291b",
+        "locator": "https://arxiv.org/abs/2211.05409",
+        "retrieved_at": "2026-07-18T18:09:23.540418Z",
+        "source_type": "paper",
+        "summary": "Outcome prediction is crucial for head and neck cancer patients as it can provide prognostic information for early treatment planning. Radiomics methods have been widely used for outcome prediction from medical images. However, these methods are limited by their reliance on intractable manual segmentation of tumor regions. Recently, deep learning methods have been proposed to perform end-to-end outcome prediction so as to remove the reliance on manual segmentation. Unfortunately, without segmentation masks, these methods will take the whole image as input, such that makes them difficult to focus on tumor regions and potentially unable to fully leverage the prognostic information within the tumor regions. In this study, we propose a radiomics-enhanced deep multi-task framework for outcome prediction from PET/CT images, in the context of HEad and neCK TumOR segmentation and outcome prediction challenge (HECKTOR 2022). In our framework, our novelty is to incorporate radiomics as an enhancement to our recently proposed Deep Multi-task Survival model (DeepMTS). The DeepMTS jointly learns to predict the survival risk scores of patients and the segmentation masks of tumor regions. Radiomics features are extracted from the predicted tumor regions and combined with the predicted survival risk scores for final outcome prediction, through which the prognostic information in tumor regions can be further leveraged. Our method achieved a C-index of 0.681 on the testing set, placing the 2nd on the leaderboard with only 0.00068 lower in C-index than the 1st place.",
+        "supports_gap_ids": [
+          "G001"
+        ],
+        "title": "Radiomics-enhanced Deep Multi-task Learning for Outcome Prediction in Head and Neck Cancer",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:8abda689072c041ee4f8fae33555b41feb14f6081422d9cf6012acfe0ab086b5",
+        "evidence_id": "ev-paper-c7c8cccf3663ff62b87a",
+        "locator": "https://arxiv.org/abs/2102.10446",
+        "retrieved_at": "2026-07-18T18:09:23.540418Z",
+        "source_type": "paper",
+        "summary": "Development of robust and accurate fully automated methods for medical image segmentation is crucial in clinical practice and radiomics studies. In this work, we contributed an automated approach for Head and Neck (H&N) primary tumor segmentation in combined positron emission tomography / computed tomography (PET/CT) images in the context of the MICCAI 2020 Head and Neck Tumor segmentation challenge (HECKTOR). Our model was designed on the U-Net architecture with residual layers and supplemented with Squeeze-and-Excitation Normalization. The described method achieved competitive results in cross-validation (DSC 0.745, precision 0.760, recall 0.789) performed on different centers, as well as on the test set (DSC 0.759, precision 0.833, recall 0.740) that allowed us to win first prize in the HECKTOR challenge among 21 participating teams. The full implementation based on PyTorch and the trained models are available at https://github.com/iantsen/hecktor",
+        "supports_gap_ids": [
+          "G001"
+        ],
+        "title": "Squeeze-and-Excitation Normalization for Automated Delineation of Head and Neck Primary Tumors in Combined PET and CT Images",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:db8fdfb50db70e5dd09bf17687ab1bcb3c3d0cdd50d9a0d0b7ce9bdd67b5a10e",
+        "evidence_id": "ev-paper-0df04b93240f7520af57",
+        "locator": "https://arxiv.org/abs/2603.13531",
+        "retrieved_at": "2026-07-18T18:09:23.540418Z",
+        "source_type": "paper",
+        "summary": "Wearable exosuits assist human movement in tasks ranging from rehabilitation to daily activities; specifically, head-neck support is necessary for patients with certain neurological disorders. Rigid-link exoskeletons have shown to enable head-neck mobility compared to static braces, but their bulkiness and restrictive structure inspire designs using \"soft\" actuation methods. In this paper, we propose a fabric pneumatic artificial muscle-based exosuit design for head-neck support. We describe the design of our prototype and physics-based model, enabling us to derive actuator pressures required to compensate for gravitational load. Our modeled range of motion and workspace analysis indicate that the limited actuator lengths impose slight limitations (83% workspace coverage), and gravity compensation imposes a more significant limitation (43% workspace coverage). We introduce compression force along the neck as a novel, potentially comfort-related metric. We further apply our model to compare the torque output of various actuator placement configurations, allowing us to select a design with stability in lateral deviation and high axial rotation torques. The model correctly predicts trends in measured data where wrapping the actuators around the neck is not a significant factor. Our test dummy and human user demonstration confirm that the exosuit can provide functional head support and trajectory tracking, underscoring the potential of artificial muscle-based soft actuation for head-neck mobility assistance.",
+        "supports_gap_ids": [
+          "G001"
+        ],
+        "title": "Fabric Pneumatic Artificial Muscle-Based Head-Neck Exosuit: Design, Modeling, and Evaluation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:acbe267320e645f8a02591e67f73f623dc1ddc14a25d894e2e8eedf8b74ec521",
+        "evidence_id": "ev-paper-8c6aa960c51634e603f9",
+        "locator": "https://arxiv.org/abs/2101.11935",
+        "retrieved_at": "2026-07-18T18:09:23.541105Z",
+        "source_type": "paper",
+        "summary": "Accurate prognosis for an individual patient is a key component of precision oncology. Recent advances in machine learning have enabled the development of models using a wider range of data, including imaging. Radiomics aims to extract quantitative predictive and prognostic biomarkers from routine medical imaging, but evidence for computed tomography radiomics for prognosis remains inconclusive. We have conducted an institutional machine learning challenge to develop an accurate model for overall survival prediction in head and neck cancer using clinical data etxracted from electronic medical records and pre-treatment radiological images, as well as to evaluate the true added benefit of radiomics for head and neck cancer prognosis. Using a large, retrospective dataset of 2,552 patients and a rigorous evaluation framework, we compared 12 different submissions using imaging and clinical data, separately or in combination. The winning approach used non-linear, multitask learning on clinical data and tumour volume, achieving high prognostic accuracy for 2-year and lifetime survival prediction and outperforming models relying on clinical data only, engineered radiomics and deep learning. Combining all submissions in an ensemble model resulted in improved accuracy, with the highest gain from a image-based deep learning model. Our results show the potential of machine learning and simple, informative prognostic factors in combination with large datasets as a tool to guide personalized cancer care.",
+        "supports_gap_ids": [
+          "G001"
+        ],
+        "title": "A Machine Learning Challenge for Prognostic Modelling in Head and Neck Cancer Using Multi-modal Data",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:de48c56ced9a7356bbc48246df004a62de08a7e2fb494b78a9c737b69ac2410a",
+        "evidence_id": "ev-paper-0f687e97f9010920c686",
+        "locator": "https://arxiv.org/abs/2206.07608",
+        "retrieved_at": "2026-07-18T18:09:23.541105Z",
+        "source_type": "paper",
+        "summary": "The physics of dynamic friction on water molecule contaminated surfaces is still poorly understood. In line with the growing interest in hydrophobic contact for industrial applications, this paper focuses on friction mechanisms in such interfaces. As a commonly used material, contact with graphite is considered in a twin-fold approach based on experimental investigations using the circular mode atomic force microscopy technique combined with molecular dynamic simulations. We demonstrate that an intuitive paradigm, which asserts that water molecules are squeezed out of a hydrophobic contact, should be refined. As a consequence, we introduce a mechanism considering a droplet produced within the sliding nano-contact by the accumulation of water adsorbed on the substrate. Then we show that a full slip regime of the droplet sliding on the hydrophobic substrate explains the experimental tribological behavior.",
+        "supports_gap_ids": [
+          "G001"
+        ],
+        "title": "Nature of dynamic friction in a humid hydrophobic nano-contact",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:a0356a519c24bda4bfab06c68418f04440da8fd3eca222a5a03cbc7e670dff36",
+        "evidence_id": "ev-paper-f9db2a743317604e3be7",
+        "locator": "https://arxiv.org/abs/2601.03290",
+        "retrieved_at": "2026-07-18T18:09:23.541609Z",
+        "source_type": "paper",
+        "summary": "The deployment of transformer-based models on resource-constrained edge devices represents a critical challenge in enabling real-time artificial intelligence applications. This comprehensive survey examines lightweight transformer architectures specifically designed for edge deployment, analyzing recent advances in model compression, quantization, pruning, and knowledge distillation techniques. We systematically review prominent lightweight variants including MobileBERT, TinyBERT, DistilBERT, EfficientFormer, EdgeFormer, and MobileViT, providing detailed performance benchmarks on standard datasets such as GLUE, SQuAD, ImageNet-1K, and COCO. Our analysis encompasses current industry adoption patterns across major hardware platforms (NVIDIA Jetson, Qualcomm Snapdragon, Apple Neural Engine, ARM architectures), deployment frameworks (TensorFlow Lite, ONNX Runtime, PyTorch Mobile, CoreML), and optimization strategies. Experimental results demonstrate that modern lightweight transformers can achieve 75-96% of full-model accuracy while reducing model size by 4-10x and inference latency by 3-9x, enabling deployment on devices with as little as 2-5W power consumption. We identify sparse attention mechanisms, mixed-precision quantization (INT8/FP16), and hardware-aware neural architecture search as the most effective optimization strategies. Novel findings include memory-bandwidth bottleneck analysis revealing 15-40M parameter models achieve optimal hardware utilization (60-75% efficiency), quantization sweet spots for different model types, and comprehensive energy efficiency profiling across edge platforms. We establish real-time performance boundaries and provide a practical 6-step deployment pipeline achieving 8-12x size reduction with less than 2% accuracy degradation.",
+        "supports_gap_ids": [
+          "G001",
+          "G002"
+        ],
+        "title": "Lightweight Transformer Architectures for Edge Devices in Real-Time Applications",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:3e599e0e4e0c0e0e0c0d6d20aa34b5f20b208e6ed54ec39cf86996ed09447a59",
+        "evidence_id": "ev-paper-cfaa60f5723befc6630b",
+        "locator": "https://arxiv.org/abs/2509.21696",
+        "retrieved_at": "2026-07-18T18:09:23.541609Z",
+        "source_type": "paper",
+        "summary": "Infrared imaging has emerged as a robust solution for urban object detection under low-light and adverse weather conditions, offering significant advantages over traditional visible-light cameras. However, challenges such as class imbalance, thermal noise, and computational constraints can significantly hinder model performance in practical settings. To address these issues, we evaluate multiple YOLO variants on the FLIR ADAS V2 dataset, ultimately selecting YOLOv8 as our baseline due to its balanced accuracy and efficiency. Building on this foundation, we present \\texttt{MS-YOLO} (\\textbf{M}obileNetv4 and \\textbf{S}lideLoss based on YOLO), which replaces YOLOv8's CSPDarknet backbone with the more efficient MobileNetV4, reducing computational overhead by \\textbf{1.5%} while sustaining high accuracy. In addition, we introduce \\emph{SlideLoss}, a novel loss function that dynamically emphasizes under-represented and occluded samples, boosting precision without sacrificing recall. Experiments on the FLIR ADAS V2 benchmark show that \\texttt{MS-YOLO} attains competitive mAP and superior precision while operating at only \\textbf{6.7 GFLOPs}. These results demonstrate that \\texttt{MS-YOLO} effectively addresses the dual challenge of maintaining high detection quality while minimizing computational costs, making it well-suited for real-time edge deployment in urban environments.",
+        "supports_gap_ids": [
+          "G001",
+          "G002"
+        ],
+        "title": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:1e4d97323926d8c304012fb3a570c496e7345f794cad493b416c0048e9138c5b",
+        "evidence_id": "ev-paper-0bd6af25b01a32341514",
+        "locator": "https://arxiv.org/abs/1905.01787",
+        "retrieved_at": "2026-07-18T18:09:23.541609Z",
+        "source_type": "paper",
+        "summary": "To achieve lightweight object detectors for deployment on the edge devices, an effective model compression pipeline is proposed in this paper. The compression pipeline consists of automatic channel pruning for the backbone, fixed channel deletion for the branch layers and knowledge distillation for the guidance learning. As results, the Resnet50-v1d is auto-pruned and fine-tuned on ImageNet to attain a compact base model as the backbone of object detector. Then, lightweight object detectors are implemented with proposed compression pipeline. For instance, the SSD-300 with model size=16.3MB, FLOPS=2.31G, and mAP=71.2 is created, revealing a better result than SSD-300-MobileNet.",
+        "supports_gap_ids": [
+          "G001"
+        ],
+        "title": "Creating Lightweight Object Detectors with Model Compression for Deployment on Edge Devices",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:a3442ecf699dfbcd4c47cf3d4c497f3e23d0a0d326563cf20cbf23175f44cac6",
+        "evidence_id": "ev-paper-649b774ce4ecead412d5",
+        "locator": "https://arxiv.org/abs/2312.11716",
+        "retrieved_at": "2026-07-18T18:09:23.542614Z",
+        "source_type": "paper",
+        "summary": "Demand for efficient onboard object detection is increasing due to its key role in autonomous navigation. However, deploying object detection models such as YOLO on resource constrained edge devices is challenging due to the high computational requirements of such models. In this paper, an compressed object detection model named Squeezed Edge YOLO is examined. This model is compressed and optimized to kilobytes of parameters in order to fit onboard such edge devices. To evaluate Squeezed Edge YOLO, two use cases - human and shape detection - are used to show the model accuracy and performance. Moreover, the model is deployed onboard a GAP8 processor with 8 RISC-V cores and an NVIDIA Jetson Nano with 4GB of memory. Experimental results show Squeezed Edge YOLO model size is optimized by a factor of 8x which leads to 76% improvements in energy efficiency and 3.3x faster throughout.",
+        "supports_gap_ids": [
+          "G001",
+          "G002"
+        ],
+        "title": "Squeezed Edge YOLO: Onboard Object Detection on Edge Devices",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:f6eff55d973c2740c620fb17245e870832ee2a867dfa09be504e14874fd543fd",
+        "evidence_id": "ev-paper-95ae193f4f55d9dbfff4",
+        "locator": "https://arxiv.org/abs/1411.3958",
+        "retrieved_at": "2026-07-18T18:09:23.543383Z",
+        "source_type": "paper",
+        "summary": "Quantum walks on translation invariant regular graphs spread quadratically faster than their classical counterparts. The same coherence that gives them this quantum speedup inhibits, or even stops their spread in the presence of disorder. We ask how to create an efficient transport channel from a fixed source site (A) to fixed target site (B) in a disordered 2-dimensional discrete-time quantum walk by cutting some of the links. We show that the somewhat counterintuitive strategy of cutting links along a single line connecting A to B creates such a channel. The efficient transport along the cut is due to topologically protected chiral edge states, which exist even though the bulk Chern number in this system vanishes. We give a realization of the walk as a periodically driven lattice Hamiltonian, and identify the bulk topological invariant responsible for the edge states as the quasienergy winding of this Hamiltonian.",
+        "supports_gap_ids": [
+          "G001",
+          "G002"
+        ],
+        "title": "Edge-state enhanced transport in a 2-dimensional quantum walk",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:2d4986be0c352c1c0b64286e55084cbdf934e46cd1c2363a67457071ec44ebfd",
+        "evidence_id": "ev-paper-bc685cd46ad13fecf1c8",
+        "locator": "https://arxiv.org/abs/2601.15914",
+        "retrieved_at": "2026-07-18T18:09:23.543887Z",
+        "source_type": "paper",
+        "summary": "In the realm of Virtual Reality (VR) and Human-Computer Interaction (HCI), real-time emotion recognition shows promise for supporting individuals with Autism Spectrum Disorder (ASD) in improving social skills. This task requires a strict latency-accuracy trade-off, with motion-to-photon (MTP) latency kept below 140 ms to maintain contingency. However, most off-the-shelf Deep Learning models prioritize accuracy over the strict timing constraints of commodity hardware. As a first step toward accessible VR therapy, we benchmark State-of-the-Art (SOTA) models for Zero-Shot Facial Expression Recognition (FER) on virtual characters using the UIBVFED dataset. We evaluate Medium and Nano variants of YOLO (v8, v11, and v12) for face detection, alongside general-purpose Vision Transformers including CLIP, SigLIP, and ViT-FER.Our results on CPU-only inference demonstrate that while face detection on stylized avatars is robust (100% accuracy), a \"Latency Wall\" exists in the classification stage. The YOLOv11n architecture offers the optimal balance for detection (~54 ms). However, general-purpose Transformers like CLIP and SigLIP fail to achieve viable accuracy (<23%) or speed (>150 ms) for real-time loops. This study highlights the necessity for lightweight, domain-specific architectures to enable accessible, real-time AI in therapeutic settings.",
+        "supports_gap_ids": [
+          "G002"
+        ],
+        "title": "The Latency Wall: Benchmarking Off-the-Shelf Emotion Recognition for Real-Time Virtual Avatars",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:19e5e013a86b4fe436618dfdc95d679493e7ee01e24b98fe157eda12f689f883",
+        "evidence_id": "ev-paper-0d9f1d622ade8d9ef54c",
+        "locator": "https://arxiv.org/abs/2506.03654",
+        "retrieved_at": "2026-07-18T18:09:23.543887Z",
+        "source_type": "paper",
+        "summary": "Real-time object detection is a fundamental but challenging task in computer vision, particularly when computational resources are limited. Although YOLO-series models have set strong benchmarks by balancing speed and accuracy, the increasing need for richer global context modeling has led to the use of Transformer-based architectures. Nevertheless, Transformers have high computational complexity because of their self-attention mechanism, which limits their practicality for real-time and edge deployments. To overcome these challenges, recent developments in linear state space models, such as Mamba, provide a promising alternative by enabling efficient sequence modeling with linear complexity. Building on this insight, we propose MambaNeXt-YOLO, a novel object detection framework that balances accuracy and efficiency through three key contributions: (1) MambaNeXt Block: a hybrid design that integrates CNNs with Mamba to effectively capture both local features and long-range dependencies; (2) Multi-branch Asymmetric Fusion Pyramid Network (MAFPN): an enhanced feature pyramid architecture that improves multi-scale object detection across various object sizes; and (3) Edge-focused Efficiency: our method achieved 66.6% mAP at 31.9 FPS on the PASCAL VOC dataset without any pre-training and supports deployment on edge devices such as the NVIDIA Jetson Xavier NX and Orin NX.",
+        "supports_gap_ids": [
+          "G002"
+        ],
+        "title": "MambaNeXt-YOLO: A Hybrid State Space Model for Real-time Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:0752de6d5f6e4f58d9fd1971a3de9beeb194970f84ded9aaf472f49a7b31fcb1",
+        "evidence_id": "ev-paper-61a2070d371ac3b34f8a",
+        "locator": "https://arxiv.org/abs/2405.09575",
+        "retrieved_at": "2026-07-18T18:09:23.543887Z",
+        "source_type": "paper",
+        "summary": "The article presents an accessible route into the field of neuroscience through the JNEEG device. This device allows converting the Jetson Nano board into a brain-computer interface, making it easy to measure EEG, EMG, and ECG signals with 8 channels. With Jetson Nano is possible use deep learning for real-time signal processing and feature extraction from EEG in real-time without any data transmission. Over the past decade, the proliferation of artificial intelligence has significantly impacted various industries, including neurobiology. The integration of machine learning techniques has opened avenues for practical applications of EEG signals across technology sectors. This surge in interest has led to the widespread popularity of low-cost brain-computer interface devices capable of recording EEG signals using non-invasive electrodes. JNEEG device demonstrates satisfactory noise levels and accuracy for use in applied tasks with machine learning.",
+        "supports_gap_ids": [
+          "G002"
+        ],
+        "title": "JNEEG shield for Jetson Nano for real-time EEG signal processing with deep learning",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:5937777424dc6b07f517b68ddfb857a6787751ba228332b934d1df823424c93c",
+        "evidence_id": "ev-paper-1c4d152a9c073bdbbe38",
+        "locator": "https://arxiv.org/abs/2512.22973",
+        "retrieved_at": "2026-07-18T18:09:23.544892Z",
+        "source_type": "paper",
+        "summary": "Current methods for incremental object detection (IOD) primarily rely on Faster R-CNN or DETR series detectors; however, these approaches do not accommodate the real-time YOLO detection frameworks. In this paper, we first identify three primary types of knowledge conflicts that contribute to catastrophic forgetting in YOLO-based incremental detectors: foreground-background confusion, parameter interference, and misaligned knowledge distillation. Subsequently, we introduce YOLO-IOD, a real-time Incremental Object Detection (IOD) framework that is constructed upon the pretrained YOLO-World model, facilitating incremental learning via a stage-wise parameter-efficient fine-tuning process. Specifically, YOLO-IOD encompasses three principal components: 1) Conflict-Aware Pseudo-Label Refinement (CPR), which mitigates the foreground-background confusion by leveraging the confidence levels of pseudo labels and identifying potential objects relevant to future tasks. 2) Importancebased Kernel Selection (IKS), which identifies and updates the pivotal convolution kernels pertinent to the current task during the current learning stage. 3) Cross-Stage Asymmetric Knowledge Distillation (CAKD), which addresses the misaligned knowledge distillation conflict by transmitting the features of the student target detector through the detection heads of both the previous and current teacher detectors, thereby facilitating asymmetric distillation between existing and newly introduced categories. We further introduce LoCo COCO, a more realistic benchmark that eliminates data leakage across stages. Experiments on both conventional and LoCo COCO benchmarks show that YOLO-IOD achieves superior performance with minimal forgetting.",
+        "supports_gap_ids": [
+          "G002"
+        ],
+        "title": "YOLO-IOD: Towards Real Time Incremental Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ce13b731c27b1850b499208fb462b77a43d874706ff0dcd36ea0e8efd42c8372",
+        "evidence_id": "ev-paper-1c293b5b245ec3e9c644",
+        "locator": "https://arxiv.org/abs/2512.14002",
+        "retrieved_at": "2026-07-18T18:09:23.544892Z",
+        "source_type": "paper",
+        "summary": "Vehicular Edge Computing (VEC) has emerged as a promising paradigm for enhancing the computational efficiency and service quality in intelligent transportation systems by enabling vehicles to wirelessly offload computation-intensive tasks to nearby Roadside Units. However, efficient task offloading and resource allocation for time-critical applications in VEC remain challenging due to constrained network bandwidth and computational resources, stringent task deadlines, and rapidly changing network conditions. To address these challenges, we formulate a Deadline-Constrained Task Offloading and Resource Allocation Problem (DOAP), denoted as $\\mathbf{P}$, in VEC with both bandwidth and computational resource constraints, aiming to maximize the total vehicle utility. To solve $\\mathbf{P}$, we propose $\\mathtt{SARound}$, an approximation algorithm based on Linear Program rounding and local-ratio techniques, that improves the best-known approximation ratio for DOAP from $\\frac{1}{6}$ to $\\frac{1}{4}$. Additionally, we design an online service subscription and offloading control framework to address the challenges of short task deadlines and rapidly changing wireless network conditions. To validate our approach, we develop a comprehensive VEC simulator, VecSim, using the open-source simulation libraries OMNeT++ and Simu5G. VecSim integrates our designed framework to manage the full life-cycle of real-time vehicular tasks. Experimental results, based on profiled object detection applications and real-world taxi trace data, show that $\\mathtt{SARound}$ consistently outperforms state-of-the-art baselines under varying network conditions while maintaining runtime efficiency.",
+        "supports_gap_ids": [
+          "G002"
+        ],
+        "title": "Real-Time Service Subscription and Adaptive Offloading Control in Vehicular Edge Computing",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:5078d0a1372eb9ea52e58487bac1a9c694b44094a047184392dbf2447c8a1d79",
+        "evidence_id": "ev-paper-af3742d83c76b9bb300b",
+        "locator": "https://arxiv.org/abs/1806.09998",
+        "retrieved_at": "2026-07-18T18:09:23.544892Z",
+        "source_type": "paper",
+        "summary": "Motor is the most widely used production equipment in industrial field. In order to realize the real-time state monitoring and multi-fault pre-diagnosis of three-phase motor, this paper presents a design of three-phase motor state monitoring and fault diagnosis system based on LabVIEW. The multi-dimensional vibration acceleration, rotational speed, temperature, current and voltage signals of the motor are collected with NI cDAQ acquisition equipment in real time and high speed. At the same time, the model of motor health state and fault state is established. The order analysis algorithm is used to analyze the data at an advanced level, and the diagnosis and classification of different fault types are realized. The system is equipped with multi-channel acquisition, display, analysis and storage. Combined with the current cloud transmission technology, we will back up the data to the cloud to be used by other terminals.",
+        "supports_gap_ids": [
+          "G002"
+        ],
+        "title": "Real time state monitoring and fault diagnosis system for motor based on LabVIEW",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:7ece17b4eb5369318ff4d3c0c7aa2017a3b21620ad6289ab3db1a2c6c38b7bc6",
+        "evidence_id": "ev-paper-6c0d9db56f7bcf42db25",
+        "locator": "https://arxiv.org/abs/1802.00625",
+        "retrieved_at": "2026-07-18T18:09:23.544892Z",
+        "source_type": "paper",
+        "summary": "This paper proposes a system for the ingestion and analysis of real-time sensor and actor data of bulk materials handling plants and machinery. It references issues that concern mining sensor data in cyber physical systems (CPS). The advance of cyber physical systems has created a significant change in the architecture of sensor and actor data. It affects the complexity of the observed systems in general, the number of signals being processed, the spatial distribution of the signal sources on a machine or plant and the global availability of the data. There are different definitions for what constitutes cyber physical systems: the most succinct and pertinent to the work shown in this paper is the definition given by the IEEE: A CPS is a system with a coupling of the cyber aspects of computing and communications with the physical aspects of dynamics and engineering that must abide by the laws of physics. This includes sensor networks, real-time and hybrid systems. Results computed from sensor and actor data must obey the equations used for modelling the physics of the observed system - this fundamentally poses an inverse problem. Such problems are not covered sufficiently by literature addressing mining of sensor data. Even available standard books on mining sensor data do not discuss the special nature of sensor data. Typically, present approaches of mining data rely on correlation as being a sole, reliable measure for significance. It is not taken into account that the inverse solutions to the model-describing equations are required to establish a semantic link between a sensor observation and its precedent cause. Without this link - without causality - there can be no physics based knowledge discovery.",
+        "supports_gap_ids": [
+          "G002"
+        ],
+        "title": "Real-Time-Data Analytics in Raw Materials Handling",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:dcf25f540c281719a0411836f97d378f57dc118ec573155d14c0fa66661fbf6f",
+        "evidence_id": "ev-paper-5e4f810e216bda3030de",
+        "locator": "https://arxiv.org/abs/2509.20160",
+        "retrieved_at": "2026-07-18T18:09:23.545891Z",
+        "source_type": "paper",
+        "summary": "Deep Neural Networks (DNNs) have had a significant impact on domains like autonomous vehicles and smart cities through low-latency inferencing on edge computing devices close to the data source. However, DNN training on the edge is poorly explored. Techniques like federated learning and the growing capacity of GPU-accelerated edge devices like NVIDIA Jetson motivate the need for a holistic characterization of DNN training on the edge. Training DNNs is resource-intensive and can stress an edge's GPU, CPU, memory and storage capacities. Edge devices also have different resources compared to workstations and servers, such as slower shared memory and diverse storage media. Here, we perform a principled study of DNN training on individual devices of three contemporary Jetson device types: AGX Xavier, Xavier NX and Nano for three diverse DNN model--dataset combinations. We vary device and training parameters such as I/O pipelining and parallelism, storage media, mini-batch sizes and power modes, and examine their effect on CPU and GPU utilization, fetch stalls, training time, energy usage, and variability. Our analysis exposes several resource inter-dependencies and counter-intuitive insights, while also helping quantify known wisdom. Our rigorous study can help tune the training performance on the edge, trade-off time and energy usage on constrained devices, and even select an ideal edge hardware for a DNN workload, and, in future, extend to federated learning too. As an illustration, we use these results to build a simple model to predict the training time and energy per epoch for any given DNN across different power modes, with minimal additional profiling.",
+        "supports_gap_ids": [
+          "G002"
+        ],
+        "title": "Characterizing the Performance of Accelerated Jetson Edge Devices for Training Deep Learning Models",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:61be2e078cb64517d7e3d29b20b0a7de45cb6aed8fde70f19b62b18e235d948e",
+        "evidence_id": "ev-paper-fa594cb1bd38e9a89b69",
+        "locator": "https://arxiv.org/abs/2307.16834",
+        "retrieved_at": "2026-07-18T18:09:23.545891Z",
+        "source_type": "paper",
+        "summary": "Innovative enhancement in embedded system platforms, specifically hardware accelerations, significantly influence the application of deep learning in real-world scenarios. These innovations translate human labor efforts into automated intelligent systems employed in various areas such as autonomous driving, robotics, Internet-of-Things (IoT), and numerous other impactful applications. NVIDIA's Jetson platform is one of the pioneers in offering optimal performance regarding energy efficiency and throughput in the execution of deep learning algorithms. Previously, most benchmarking analysis was based on 2D images with a single deep learning model for each comparison result. In this paper, we implement an end-to-end video-based crime-scene anomaly detection system inputting from surveillance videos and the system is deployed and completely operates on multiple Jetson edge devices (Nano, AGX Xavier, Orin Nano). The comparison analysis includes the integration of Torch-TensorRT as a software developer kit from NVIDIA for the model performance optimisation. The system is built based on the PySlowfast open-source project from Facebook as the coding template. The end-to-end system process comprises the videos from camera, data preprocessing pipeline, feature extractor and the anomaly detection. We provide the experience of an AI-based system deployment on various Jetson Edge devices with Docker technology. Regarding anomaly detectors, a weakly supervised video-based deep learning model called Robust Temporal Feature Magnitude Learning (RTFM) is applied in the system. The approach system reaches 47.56 frames per second (FPS) inference speed on a Jetson edge device with only 3.11 GB RAM usage total. We also discover the promising Jetson device that the AI system achieves 15% better performance than the previous version of Jetson devices while consuming 50% less energy power.",
+        "supports_gap_ids": [
+          "G002"
+        ],
+        "title": "Benchmarking Jetson Edge Devices with an End-to-end Video-based Anomaly Detection System",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:f93662efcade48df74d4771e71b9a318a0c9228a845f7c23da60f1f958a7fe6b",
+        "evidence_id": "ev-paper-b6a33bdbce5c254337df",
+        "locator": "https://arxiv.org/abs/2409.11700",
+        "retrieved_at": "2026-07-18T18:09:23.546891Z",
+        "source_type": "paper",
+        "summary": "Sound event localization and detection (SELD) is critical for various real-world applications, including smart monitoring and Internet of Things (IoT) systems. Although deep neural networks (DNNs) represent the state-of-the-art approach for SELD, their significant computational complexity and model sizes present challenges for deployment on resource-constrained edge devices, especially under real-time conditions. Despite the growing need for real-time SELD, research in this area remains limited. In this paper, we investigate the unique challenges of deploying SELD systems for real-world, real-time applications by performing extensive experiments on a commercially available Raspberry Pi 3 edge device. Our findings reveal two critical, often overlooked considerations: the high computational cost of feature extraction and the performance degradation associated with low-latency, real-time inference. This paper provides valuable insights and considerations for future work toward developing more efficient and robust real-time SELD systems",
+        "supports_gap_ids": [
+          "G002"
+        ],
+        "title": "Real-Time Sound Event Localization and Detection: Deployment Challenges on Edge Devices",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:e1315f695d488ed6d7b4243279209f7ebe9995524b746d85f229b75d79d6c1bc",
+        "evidence_id": "ev-paper-0ea7f0d3d2e51502de8b",
+        "locator": "https://arxiv.org/abs/2306.13107",
+        "retrieved_at": "2026-07-18T18:09:23.546891Z",
+        "source_type": "paper",
+        "summary": "Power efficiency is a crucial consideration for embedded systems design, particularly in the field of edge computing and IoT devices. This study aims to calibrate the power measurements obtained from the built-in sensors of NVIDIA Jetson devices, facilitating the collection of reliable and precise power consumption data in real-time. To achieve this goal, accurate power readings are obtained using external hardware, and a regression model is proposed to map the sensor measurements to the true power values. Our results provide insights into the accuracy and reliability of the built-in power sensors for various Jetson edge boards and highlight the importance of calibrating their internal power readings. In detail, internal sensors underestimate the actual power by up to 50% in most cases, but this calibration reduces the error to within 3%. By making the internal sensor data usable for precise online assessment of power and energy figures, the regression models presented in this paper have practical applications, for both practitioners and researchers, in accurately designing energy-efficient and autonomous edge services.",
+        "supports_gap_ids": [
+          "G002"
+        ],
+        "title": "Accurate Calibration of Power Measurements from Internal Power Sensors on NVIDIA Jetson Devices",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:79d68203e4eb8d3eab3bbebf1aba2d3576a7d0d8094ac39c9964a6f443f00b2d",
+        "evidence_id": "ev-paper-4bac61ba4cb138119f75",
+        "locator": "https://arxiv.org/abs/2404.19480",
+        "retrieved_at": "2026-07-18T18:09:23.546891Z",
+        "source_type": "paper",
+        "summary": "Internet of Everything (IoE) is a newly emerging trend, especially in homes. Marketing forces toward smart homes are also accelerating the spread of IoE devices in households. An obvious risk of the rapid adoption of these smart devices is that many lack controls for protecting the privacy and security of end users from attacks designed to disrupt lives and incur financial losses. Today the smart home is a system for managing the basic life support processes of both small systems, e.g., commercial, office premises, apartments, cottages, and largely automated complexes, e.g., commercial and industrial complexes. One of the critical tasks to be solved by the concept of a modern smart home is the problem of preventing the usage of IoE resources. Recently, there has been a rapid increase in attacks on consumer IoE devices. Memory corruption vulnerabilities constitute a significant class of vulnerabilities in software security through which attackers can gain control of an entire system. Numerous memory corruption vulnerabilities have been found in IoE firmware already deployed in the consumer market. This paper aims to analyze and explain the resource usage attack and create a low-cost simulation environment to aid in the dynamic analysis of the attack. Further, we perform controlled resource usage attacks while measuring resource consumption on resource-constrained victims' IoE devices, such as CPU and memory utilization. We also build a lightweight algorithm to detect memory usage attacks in the IoE environment. The result shows high efficiency in detecting and mitigating memory usage attacks by detecting when the intruder starts and stops the attack.",
+        "supports_gap_ids": [
+          "G002"
+        ],
+        "title": "Mitigating and Analysis of Memory Usage Attack in IoE System",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:8e577da4b50a6033cb5f70b44d69344022cba0d28d339f749351ac3347b29243",
+        "evidence_id": "ev-paper-4f434e90a0202a2816a4",
+        "locator": "doi:10.3390/computers15010069",
+        "retrieved_at": "2026-07-18T18:09:23.547892Z",
+        "source_type": "paper",
+        "summary": "Real-time visual inference on resource-constrained hardware remains a core challenge for edge computing and embedded artificial intelligence systems. Recent deep learning architectures, particularly Vision Transformers (ViTs) and Detection Transformers (DETRs), achieve high detection accuracy but impose substantial computational and memory demands that limit their deployment on low-power edge platforms such as NVIDIA Jetson and Raspberry Pi devices. This paper presents a systematic review of model compression and optimization strategies—specifically quantization, pruning, and knowledge distillation—applied to lightweight object detection architectures for edge deployment. Following PRISMA (Preferred Reporting Items for Systematic Reviews and Meta-Analyses) guidelines, peer-reviewed studies were analyzed from Scopus, IEEE Xplore, and ScienceDirect to examine the evolution of efficient detectors from convolutional neural networks to transformer-based models. The synthesis highlights a growing focus on real-time transformer variants, including Real-Time DETR (RT-DETR) and low-bit quantized approaches such as Q-DETR, alongside optimized YOLO-based architectures. While quantization enables substantial theoretical acceleration (e.g., up to 16× operation reduction), aggressive low-bit precision introduces accuracy degradation, particularly in transformer attention mechanisms, highlighting a critical efficiency-accuracy tradeoff. The review further shows that Quantization-Aware Training (QAT) consistently outperforms Post-Training Quantization (PTQ) in preserving performance under low-precision constraints. Finally, this review identifies critical open research challenges, emphasizing the efficiency–accuracy tradeoff and the high computational demands imposed by Transformer architectures. Future directions are proposed, including hardware-aware optimization, robustness to imbalanced datasets, and multimodal sensing integration, to ensure reliable real-time inference in practical agricultural edge computing environments.",
+        "supports_gap_ids": [
+          "G003"
+        ],
+        "title": "Systematic Review of Quantization-Optimized Lightweight Transformer Architectures for Real-Time Fruit Ripeness Detection on Edge Devices",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:324929bfa70cf179125a49fd1575f93b5f4b0e81ce5c394273b868560b159a18",
+        "evidence_id": "ev-paper-7bc89ddc5aa2a38e8448",
+        "locator": "doi:10.70382/tijsrat.v11i9.084",
+        "retrieved_at": "2026-07-18T18:09:23.548396Z",
+        "source_type": "paper",
+        "summary": "Industrial cleaning robots operating in dynamic and cluttered environments require robust, accurate, and low-latency object detection systems to ensure safe navigation, efficient task execution, and collision avoidance. Traditional vision-based detection methods often fail to meet real-time performance constraints when deployed on embedded robotic platforms with limited computational resources. This research presents the development of an optimized YOLO-based real-time vision system for object detection in industrial cleaning robots. The proposed system leverages advanced variants of the YOLO (You Only Look Once) deep learning architecture, selected for its single-stage detection capability and high inference speed. Model optimization techniques including network pruning, quantization, input resolution tuning, anchor box recalibration, and hardware-aware training were implemented to balance detection accuracy and computational efficiency. Transfer learning was employed using pre-trained weights, followed by fine-tuning on a domain-specific dataset consisting of industrial floor environments with obstacles such as debris, cables, tools, liquid spills, and human presence. To ensure real-time deployment, the system was integrated with embedded GPU hardware and optimized using parallel processing and model acceleration frameworks. Performance evaluation was conducted using standard metrics including mean Average Precision (mAP), precision-recall curves, F1-score, and inference latency (frames per second). Experimental results demonstrate that the optimized YOLO model achieves high detection accuracy while maintaining real-time performance under industrial lighting variations, occlusions, and dynamic object movement. The developed vision system significantly enhances robotic perception capabilities, enabling improved obstacle avoidance, adaptive cleaning path planning, and operational safety. The study contributes a scalable and deployable framework for integrating lightweight deep learning-based object detection into autonomous industrial service robots. Future work may explore multimodal sensor fusion, edge-AI deployment optimization, and continual learning for long-term industrial adaptability.",
+        "supports_gap_ids": [
+          "G003"
+        ],
+        "title": "DEVELOPMENT OF AN OPTIMIZED YOLO-BASED REAL-TIME VISION SYSTEM FOR OBJECT DETECTION IN INDUSTRIAL CLEANING ROBOTS",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:57d0b07cc44e05d87e7ce9e352a606ed5b18565724d39e9be526a8f19527ef34",
+        "evidence_id": "ev-paper-9bd53e3ba394373a28ee",
+        "locator": "doi:10.48550/arxiv.2509.25164",
+        "retrieved_at": "2026-07-18T18:09:23.548396Z",
+        "source_type": "paper",
+        "summary": "This study presents a comprehensive analysis of Ultralytics YOLO26(also called as YOLOv26), highlighting its key architectural enhancements and performance benchmarking for real-time object detection. YOLO26, released in September 2025, stands as the newest and most advanced member of the YOLO family, purpose-built to deliver efficiency, accuracy, and deployment readiness on edge and low-power devices. The paper sequentially details architectural innovations of YOLO26, including the removal of Distribution Focal Loss (DFL), adoption of end-to-end NMS-free inference, integration of ProgLoss and Small-Target-Aware Label Assignment (STAL), and the introduction of the MuSGD optimizer for stable convergence. Beyond architecture, the study positions YOLO26 as a multi-task framework, supporting object detection, instance segmentation, pose/keypoints estimation, oriented detection, and classification. We present performance benchmarks of YOLO26 on edge devices such as NVIDIA Jetson Nano and Orin, comparing its results with YOLOv8, YOLOv11, YOLOv12, YOLOv13, and transformer-based detectors(RF-DETR and RT-DETR). This paper further explores real-time deployment pathways, flexible export options (ONNX, TensorRT, CoreML, TFLite), and quantization for INT8/FP16. Practical use cases of YOLO26 across robotics, manufacturing, and IoT are highlighted to demonstrate cross-industry adaptability. Finally, insights on deployment efficiency and broader implications are discussed, with future directions for YOLO26 and the YOLO lineage outlined.",
+        "supports_gap_ids": [
+          "G003"
+        ],
+        "title": "YOLO26: Key Architectural Enhancements and Performance Benchmarking for Real-Time Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ad2937803fa2586e12f24f26f149a03fbdb697f7d70726eee311fde81b039572",
+        "evidence_id": "ev-paper-b8da63c717416b54a4e7",
+        "locator": "doi:10.7717/peerj-cs.3357",
+        "retrieved_at": "2026-07-18T18:09:23.548396Z",
+        "source_type": "paper",
+        "summary": "Object detection is a core task in computer vision, and the You Only Look Once (YOLO) family remains a preferred choice for real-time applications. With increasing demand to deploy detectors on resource-constrained devices, many researchers have proposed lightweight YOLO variants. This systematic literature review synthesizes peer-reviewed studies on lightweight YOLO models published from 2016 to 2025. We performed reproducible searches in Scopus and Web of Science, screened records using Preferred Reporting Items for Systematic reviews and Meta-Analyses (PRISMA), and applied a 12-item quality assessment to select 103 peer-reviewed journal and conference articles for detailed analysis. We classify primary lightweighting strategies—pruning, quantization, knowledge distillation, and lightweight network architectures—and evaluate their trade-offs in accuracy, latency, model size, and energy use. We also examine application domains, dataset effects, common evaluation metrics, and deployment platforms (\n e.g\n ., Jetson, Raspberry Pi, microcontrollers, Field-Programmable Gate Arrays (FPGAs)), and highlight practical hardware–software considerations. Emerging directions such as hybrid convolutional neural network (CNN)-Transformer modules and hardware-aware Neural Architecture Search are discussed, and key open challenges are identified, including cross-scene generalization, robustness to dynamic environmental interference, and the need for standardized evaluation protocols and hardware-aware co-design. This review consolidates current knowledge and offers practical guidance for researchers and practitioners developing or deploying lightweight YOLO models on constrained hardware.",
+        "supports_gap_ids": [
+          "G003"
+        ],
+        "title": "A systematic literature review of lightweight YOLO models for object detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:17b9107af91894fadcb6133a6896541eca9c52d9f8cebe728bcc9f435a5441ec",
+        "evidence_id": "ev-paper-e187e822b136b3cc8282",
+        "locator": "doi:10.18535/ijecs.v14i06.5171",
+        "retrieved_at": "2026-07-18T18:09:23.549400Z",
+        "source_type": "paper",
+        "summary": "Real-time object detection has seen tremendous advances in recent years, driven largely by the power of convolutional neural networks (CNNs) and transformer-based models. However, existing approaches still struggle to maintain detection accuracy under adverse weather conditions such as fog, rain, and nighttime low-light scenarios. These environments are critical for applications such as autonomous driving, aerial surveillance, and smart city infrastructure. This paper presents a robust transformer-based object detection framework designed to operate efficiently in challenging weather conditions without sacrificing real-time performance. The proposed system builds upon Vision Transformers (ViTs) and hybrid CNN-ViT architectures to capture both local texture and global context features. A novel weather-adaptive attention mechanism is introduced, enabling the model to dynamically reweight features based on visual degradation cues caused by environmental interference. We train and evaluate our framework using three leading weather-specific benchmark datasets: DAWN, Foggy Cityscapes, and NightOwls. These datasets encompass diverse visibility conditions, object categories, and urban scene complexities.\nTo ensure deployment feasibility in real-world systems, we incorporate lightweight architectural modifications, including quantization-aware training, positional encoding reduction, and pruning strategies. These optimizations significantly reduce model size and computational demand without compromising accuracy. Empirical results show that our model achieves real-time inference speeds of 25 to 30 FPS on edge-level NVIDIA Jetson devices, while improving mean Average Precision (mAP) by 10 to 14 percent under extreme weather conditions when compared to traditional CNN-based detectors such as YOLOv5 and Faster R-CNN. Additionally, ablation studies confirm the efficacy of hybrid backbones and weather-attentive feature fusion in handling occlusions, motion blur, and varying light intensities. This research offers a practical and scalable solution to a critical gap in robust computer vision, enabling safer and more reliable deployment in autonomous navigation and intelligent traffic systems that operate in non-ideal conditions.",
+        "supports_gap_ids": [
+          "G003"
+        ],
+        "title": "Real-Time Object Detection in Adverse Weather Conditions Using Transformer-Based Architectures",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:da952f08917178c41c95cc4ea2d60d0205ed952e8bf85ab8302d88537059b657",
+        "evidence_id": "ev-paper-0bed945136e6d76da6d1",
+        "locator": "doi:10.1109/decon67170.2025.11448065",
+        "retrieved_at": "2026-07-18T18:09:23.549400Z",
+        "source_type": "paper",
+        "summary": "The detection of defects in fabric is a critical process for maintaining quality standards and reducing economic losses in the textile industry. Traditional inspection methods, which rely on human operators, are often slow, inconsistent, and susceptible to error. This research introduces an innovative solution that harnesses Edge AI and deep learning to facilitate real-time, on-site defect detection. We developed a highly efficient and lightweight model based on the YOLOv8 architecture, specifically tailored for deployment on resource-constrained edge devices like NVIDIA Jetson Nano or Raspberry Pi. Through a process of comprehensive literature analysis and domain expertise, a compact, high-precision model was trained on diverse fabric defect datasets. To ensure optimal performance on edge hardware, we employed advanced optimization techniques like quantization and pruning. The primary offering of the work are threefold: the making of a streamlined YOLOv8-based model for fabric defect detection, a comparative analysis of various edge inference strategies, and a proposed system architecture for real-time embedded deployment. This study effectively demonstrates the practical application of advanced AI to solve longstanding challenges in textile quality control. Future efforts will be directed towards extensive real-world operational testing and exploring localized Model Training with Federated Learning enhancement.",
+        "supports_gap_ids": [
+          "G003"
+        ],
+        "title": "Real-Time Fabric Defect Detection Using a Lightweight YOLOv8 Model on Edge Devices",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:05c643e8fca3b79c12e302b1e514cf83e499c580d3fc62d917704fb08bf5f8c5",
+        "evidence_id": "ev-paper-03ea7ce500cf70b757ec",
+        "locator": "doi:10.51583/ijltemas.2025.1411000065",
+        "retrieved_at": "2026-07-18T18:09:23.549400Z",
+        "source_type": "paper",
+        "summary": "The growing need for rapid situational awareness in outdoor environments has highlighted the demand for lightweight, real-time hazard-detection systems deployable on unmanned aerial vehicles (UAVs). This study presents EdgeAI-Drone, a novel MobileNetV3-SSD–based framework optimized for real-time detection of abandoned weapons in natural terrains. A fully custom dataset of 2,350 images was developed using Philippine outdoor environments, capturing various weapon replicas under diverse lighting, terrain, and occlusion conditions. Images were manually annotated in Pascal VOC format and augmented with geometric and photometric transformations to enhance robustness. The proposed model was trained using transfer learning and optimized through structured pruning and INT8 quantization, enabling deployment on resource-constrained edge devices such as the NVIDIA Jetson Nano and Coral Edge TPU. Experimental results demonstrate that EdgeAI-Drone achieved high detection accuracy, with a Precision of 0.91, Recall of 0.94, F1-score of 0.92, mAP@0.5 of 0.87, and mAP@0.5:0.95 of 0.71. Real-time inference speeds were recorded at 22–24 FPS on the Jetson Nano and 55–60 FPS on the Coral Edge TPU. The system remained operationally robust across UAV flight altitudes of 5 m, 10 m, and 15 m, with graceful performance degradation at higher altitudes. Qualitative results further confirmed the model’s ability to identify partially occluded weapon replicas in cluttered outdoor settings. The findings indicate that integrating lightweight CNN architectures with edge-optimized deployment pipelines can enable practical, reliable UAV-based hazard detection systems. EdgeAI-Drone demonstrates strong potential for supporting search-and-rescue missions, post-conflict site assessments, border monitoring, and disaster response operations. Future work includes expanding to multi-class hazard detection, incorporating thermal/infrared sensing, and integrating autonomous UAV navigation for fully automated field hazard assessment.",
+        "supports_gap_ids": [
+          "G003"
+        ],
+        "title": "Edge AI Drone: Lightweight MobileNetV3-SSD for Real-Time Detection of Abandoned Weapons in Outdoor Terrains",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:38007fbd0d225ed57d6eea6a929e4181c40ce9208d4d8437029bc7098e06653a",
+        "evidence_id": "ev-paper-cd18cf574ec03e8e6c0a",
+        "locator": "doi:10.14569/ijacsa.2026.0170176",
+        "retrieved_at": "2026-07-18T18:09:23.550403Z",
+        "source_type": "paper",
+        "summary": "Real-time recognition of loose fresh produce is a key requirement for intelligent retail weighing systems, enabling automated replacement of or assistance to manual PLU-based item selection. However, the deployment performance of recent YOLO architectures on embedded edge platforms such as the NVIDIA Jetson Xavier NX remains insufficiently studied in practical retail scenarios. This study aims to benchmark recent YOLO architectures for real-time fresh produce recognition on embedded edge devices. This work presents an Edge–AI retail weighing system that recognizes Malaysian fresh produce using YOLOv9, YOLOv10, and YOLOv11 models on the Jetson Xavier NX. A domain-specific dataset of 8 450 images across 26 classes was created by merging ImageNet and Roboflow sources and applying quality filtering and unified preprocessing. Each model was fine-tuned and optimized with TensorRT at FP16 and INT8 precision. Transfer learning improved accuracy across all models; YOLOv11-Large achieved the highest mAP@0.5 of ≈ 0.897 but at a reduced frame rate, while the mid-sized YOLOv10-M delivered an mAP@0.5 of ≈ 0.890 with near-real-time performance inference. Inference analysis shows that pre-and post-processing add only a few milliseconds per frame yet become proportionally significant as inference speeds increase; YOLOv11’s Non-Maximum Suppression (NMS) head introduces notable latency relative to YOLOv10’s NMS-free design. Quantized YOLOv10-M and YOLOv10-N sustain ≈ 14–19 FPS , offering the best balance between accuracy and speed. Qualitative tests on market footage confirm robust detection, indicating that these optimized models enable accurate, low-latency produce identification for intelligent retail weighing.",
+        "supports_gap_ids": [
+          "G003"
+        ],
+        "title": "Edge Artificial Intelligence for Real-Time Fresh Produce Identification in Retail Weighing Systems",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:2c26c67bc003c58d533517317ba590e9175f6acf0eed2a1da8dee92f099a1409",
+        "evidence_id": "ev-paper-85366879ce664a6dc4b1",
+        "locator": "doi:10.59573/emsj.9(5).2025.11",
+        "retrieved_at": "2026-07-18T18:09:23.550403Z",
+        "source_type": "paper",
+        "summary": "The proliferation of mobile devices as primary platforms for content creation and communication has created an urgent need for sophisticated AI capabilities that can operate within the constraints of resource-limited hardware while preserving user privacy. This article presents a comprehensive analysis of state-of-the-art model compression techniques that enable the deployment of complex neural networks directly on mobile devices, eliminating the traditional reliance on cloud-based processing. It systematically evaluates quantization, pruning, knowledge distillation, and neural architecture search methods, demonstrating how these techniques can be combined to achieve dramatic model size reductions while maintaining near-original accuracy levels. The article introduces a novel hybrid compression pipeline that addresses the fundamental challenges of memory bandwidth limitations, thermal constraints, and battery life considerations inherent in mobile platforms. Through detailed case studies of production applications and real-time video processing systems, it validates the practical efficacy of these compression strategies in serving hundreds of millions of users. The article establishes that on-device AI processing not only resolves critical privacy concerns and regulatory compliance requirements but also delivers superior user experiences through reduced latency, improved reliability, and elimination of connectivity dependencies. The findings indicate that privacy-first edge computing architectures represent a paradigm shift in AI deployment, offering transformative benefits for both users and developers while opening new research avenues in neuromorphic computing, federated learning optimization, and multimodal compression techniques.",
+        "supports_gap_ids": [
+          "G003"
+        ],
+        "title": "Edge AI Revolution: Compressed Neural Networks Enabling Real-Time Mobile Processing",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:3a6ef03fd329413da2b0cfaa57ff40f0d555530ac3da364024f58f448e9e1068",
+        "evidence_id": "ev-paper-00dc3763c594581cff7b",
+        "locator": "doi:10.1109/ciacon65473.2025.11189632",
+        "retrieved_at": "2026-07-18T18:09:23.550403Z",
+        "source_type": "paper",
+        "summary": "Traditional face recognition systems struggle to balance accuracy, privacy, and computational efficiency in IoT environments. This work addresses these challenges by proposing a novel framework integrating hybrid CNN-Transformer models and federated edge learning. The architecture synergizes convolutional layers for localized feature extraction and transformer blocks for global facial context modeling, achieving state-of-the-art accuracy with minimal parameters. Privacy is preserved through federated learning, where models are trained decentralizedly across IoT nodes without raw data transmission. Further, dynamic network pruning, quantization-aware training, and hardware-aligned kernel optimizations ensure real-time inference on edge devices like Raspberry Pi 4 and NVIDIA Jetson Nano. Rigorous evaluation on the LFW, CASIA-WebFace, and custom IoT-Face-MINI dataset demonstrates 98.2% accuracy (mean of 5-fold cross-validation), surpassing lightweight CNNs (MobileFaceNet: 97.8%) and cloud-based ResNet-50 (98.0%) while reducing latency by 62% and energy use by 35%. Ablation studies confirm the hybrid model’s superiority in handling occlusion and illumination variations. Statistical analysis (p < 0.01) validates significance against benchmarks. The system’s reproducibility is ensured via open-sourced code, Dockerized training pipelines, and detailed hyperparameter documentation.By unifying accuracy, efficiency, and ethical design, this framework empowers applications like secure smart homes and patient monitoring. The work critically addresses trade-offs between biometric precision and edge deployment constraints, setting a precedent for trustworthy IoT-AI systems.",
+        "supports_gap_ids": [
+          "G003"
+        ],
+        "title": "Federated Edge Learning with Hybrid CNN-Transformers for Secure, High-Accuracy Face Recognition in Resource-Constrained IoT Systems",
+        "verification_status": "accepted"
+      }
+    ],
+    "report": {
+      "evidence_ids": [],
+      "executive_summary": "PaperAgent v0.1 execution was blocked due to an invalid or missing method_status input, preventing the generation of a valid report. No verified or inferred findings could be produced under these conditions.",
+      "experiment_plan": null,
+      "inferred_findings": [],
+      "limitations": [
+        "Invalid or missing method_status input prevented report generation.",
+        "No evidence processing or analysis could be performed due to the blockage."
+      ],
+      "next_actions": [
+        "Provide a valid method_status input to unblock the report generation process.",
+        "Ensure all required inputs (e.g., method_status) are correctly specified before reattempting execution."
+      ],
+      "proposed_method": null,
+      "schema_version": "0.1",
+      "status": "blocked",
+      "verified_findings": []
+    }
+  },
+  "scientific_trace": {
+    "accepted_evidence_count": 37,
+    "completed_query_ids": [
+      "Q001",
+      "Q002",
+      "Q003",
+      "Q004",
+      "Q005"
+    ],
+    "coverage_by_gap": {
+      "G001": 15,
+      "G002": 19,
+      "G003": 10
+    },
+    "plan_status": "ready",
+    "quality_missing_gap_ids": [],
+    "quality_reason_codes": [],
+    "quality_verdict": null,
+    "retrieval_budget_exhausted": false,
+    "retrieval_max_rounds": 2,
+    "retrieval_round": 1,
+    "tool_errors": [
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q001",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q001",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q001",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q002",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q002",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q002",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q003",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q003",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q003",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q004",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q004",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q004",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q005",
+        "retryable": true
+      }
+    ],
+    "verification_counts": {
+      "accepted": 37
+    }
+  },
+  "skipped_checks": [],
+  "started_utc": "2026-07-18T18:08:55.531371+00:00",
+  "telemetry": {
+    "accounting_complete": true,
+    "accounting_errors": [],
+    "calls": 3,
+    "estimated_cost_usd": 0.0070518,
+    "input_tokens": 21291,
+    "output_tokens": 4656,
+    "provider_errors": 0,
+    "repairs": 0,
+    "retries": 0,
+    "total_tokens": 25947
+  },
+  "terminal": "blocked",
+  "trace_digest": "b3652bdc133cccd73959134604985eb8fa1c7aa8f2dceb91684bf21fc4a0877d",
+  "version": "v2",
+  "wall_seconds": 49.297
+}

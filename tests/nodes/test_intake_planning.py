@@ -66,7 +66,7 @@ async def test_planning_node__happy_fixture__returns_plan_and_usage_trace(fixed_
     assert patch["plan"].status == "ready"
     assert patch["execution"].llm_call_count == 1
     assert any(event.event_type == "llm.responded" for event in patch["trace"])
-    assert any(event.prompt_version == "planning.v0.1.0" for event in patch["trace"])
+    assert any(event.prompt_version == "planning.v0.1.2" for event in patch["trace"])
 
 
 @pytest.mark.asyncio
@@ -115,4 +115,21 @@ def test_planning_route__status__maps_to_expected_edge() -> None:
             kwargs["research_questions"] = ["q"]
             kwargs["evidence_gaps"] = [{"gap_id": "g", "description": "d"}]
             kwargs["search_queries"] = [{"query_id": "q", "gap_id": "g", "query": "search"}]
-        assert planning_route({"plan": ResearchPlan(**kwargs)}) == status
+        assert planning_route({"plan": ResearchPlan(**kwargs)}, {}) == status
+
+
+def test_planning_route__headless_policy_blocks_human_interrupt() -> None:
+    from paperagent.nodes.planning import planning_route
+    from paperagent.schemas import ResearchPlan
+
+    plan = ResearchPlan(
+        status="need_human",
+        problem_statement="p",
+        scope="s",
+        clarification_question="Which corpus should be used?",
+    )
+
+    assert (
+        planning_route({"plan": plan}, {"configurable": {"human_review_policy": "block"}})
+        == "blocked"
+    )
