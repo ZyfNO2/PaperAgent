@@ -106,7 +106,11 @@ class LiteratureRetrievalService:
         all_results = list(first_results)
         rounds = 1
         rewrite_calls = 0
-        if coverage.retry_recommendation == "focused_retry" and self._rewriter is not None:
+        if (
+            plan.max_rounds > 1
+            and coverage.retry_recommendation == "focused_retry"
+            and self._rewriter is not None
+        ):
             retry_lanes = await self._rewriter.rewrite(plan, coverage)
             rewrite_calls = 1
             if retry_lanes:
