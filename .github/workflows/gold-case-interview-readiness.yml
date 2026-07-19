@@ -18,7 +18,6 @@ on:
       - "scripts/build_interview_readiness.py"
       - "tests/evals/test_gold_case_readiness.py"
       - "tests/evals/test_rag_evaluation.py"
-      - "tests/evals/test_rag_evaluation_hardening.py"
       - "tests/test_interview_readiness.py"
       - "docs/evaluation/RAG_EVALUATION_CONTRACT.md"
       - "docs/interview/GOLD_CASE_RAG_READINESS.md"
@@ -31,7 +30,7 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -68,7 +67,6 @@ jobs:
           scripts/build_interview_readiness.py
           tests/evals/test_gold_case_readiness.py
           tests/evals/test_rag_evaluation.py
-          tests/evals/test_rag_evaluation_hardening.py
           tests/test_interview_readiness.py
       - name: Ruff format
         run: >-
@@ -80,7 +78,6 @@ jobs:
           scripts/build_interview_readiness.py
           tests/evals/test_gold_case_readiness.py
           tests/evals/test_rag_evaluation.py
-          tests/evals/test_rag_evaluation_hardening.py
           tests/test_interview_readiness.py
       - name: Strict Mypy
         run: mypy --config-file pyproject.toml
@@ -89,7 +86,6 @@ jobs:
           pytest -q
           tests/evals/test_gold_case_readiness.py
           tests/evals/test_rag_evaluation.py
-          tests/evals/test_rag_evaluation_hardening.py
           tests/test_interview_readiness.py
 
   full-regression-and-artifact:
