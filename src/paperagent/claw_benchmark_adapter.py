@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Literal
 
 from pydantic import Field
 
@@ -55,12 +54,10 @@ def _fact_partitions(state: PaperAgentState) -> FactPartitions:
     contract = state.get("research_contract")
     outcome = state.get("final_outcome")
 
-    verified = _dedupe(
-        item.text for item in synthesis.verified_findings
-    ) if synthesis is not None else ()
-    inferred = _dedupe(
-        item.text for item in report.inferred_findings
-    ) if report is not None else ()
+    verified = (
+        _dedupe(item.text for item in synthesis.verified_findings) if synthesis is not None else ()
+    )
+    inferred = _dedupe(item.text for item in report.inferred_findings) if report is not None else ()
     proposed = _dedupe(
         (
             method.problem_method_insight if method is not None else None,
@@ -121,7 +118,9 @@ def _gap_roles(state: PaperAgentState) -> dict[str, EvidenceRole]:
     return roles
 
 
-def _retrieval_roles(state: PaperAgentState, gap_roles: dict[str, EvidenceRole]) -> tuple[EvidenceRole, ...]:
+def _retrieval_roles(
+    state: PaperAgentState, gap_roles: dict[str, EvidenceRole]
+) -> tuple[EvidenceRole, ...]:
     roles: list[EvidenceRole] = [role for role in gap_roles.values() if role != "other"]
     method = state.get("method")
     plan = state.get("plan")
@@ -171,9 +170,7 @@ def _evidence_reviews(
     if bundle is None:
         return ()
     ledger = state.get("evidence_ledger")
-    relevance_by_id = {
-        item.evidence_id: item for item in state.get("relevance_assessments", [])
-    }
+    relevance_by_id = {item.evidence_id: item for item in state.get("relevance_assessments", [])}
     ledger_by_id = {item.evidence_id: item for item in ledger.entries} if ledger else {}
     method_roles = _method_evidence_roles(state)
     full_text_ids = set(context.full_text_evidence_ids)
@@ -376,9 +373,7 @@ def normalize_paperagent_state(
     experiments = _experiments(state)
     decision, evaluated, evaluation_errors = _decision(state)
 
-    clarification_questions = _dedupe(
-        (plan.clarification_question if plan is not None else None,)
-    )
+    clarification_questions = _dedupe((plan.clarification_question if plan is not None else None,))
     next_actions = _dedupe(
         (
             *(outcome.recommended_next_actions if outcome is not None else []),
@@ -390,16 +385,14 @@ def normalize_paperagent_state(
     pilot_recommended = (
         context.pilot_recommended
         if context.pilot_recommended is not None
-        else decision == "REVISE"
-        and any("pilot" in item.casefold() for item in next_actions)
+        else decision == "REVISE" and any("pilot" in item.casefold() for item in next_actions)
     )
-    strong_comparison_derived = any(
-        item.arm_type == "strong_comparison" for item in experiments
-    )
+    strong_comparison_derived = any(item.arm_type == "strong_comparison" for item in experiments)
+    synthesis = state.get("synthesis")
     negative_results_derived = bool(
         (report is not None and report.limitations)
         or (audit is not None and audit.risks)
-        or (state.get("synthesis") is not None and state["synthesis"].conflicts)
+        or (synthesis is not None and synthesis.conflicts)
     )
     trace_audit = state.get("trace_audit")
     trace_audit_passed = trace_audit.passed if trace_audit is not None else evaluated
