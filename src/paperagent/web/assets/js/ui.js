@@ -236,6 +236,7 @@ PA.store = (() => {
       lang: "zh",
       motion: true,
       demo: true,
+      intro: true,
       pageSize: 10,
     },
     currentProject: "crack-3d",

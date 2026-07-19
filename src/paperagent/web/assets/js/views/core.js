@@ -401,6 +401,9 @@
               h("div", { class: "setting-name", text: "每页数量" }),
               h("div", { class: "setting-desc", text: "文献、证据等列表的默认分页大小。" })),
             pageSizeSel),
+          toggle("intro", "启动引导", "每次会话开始时显示开启动画与项目选择界面。", (on) => {
+            if (on) sessionStorage.removeItem("paperagent.intro.shown");
+          }),
           toggle("demo", "Demo 模式", "显示 DEMO 标识与演示数据提示横幅。")));
 
       const dangerZone = h("section", { class: "panel" },

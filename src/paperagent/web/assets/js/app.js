@@ -165,5 +165,18 @@
     window.addEventListener("hashchange", navigate);
     if (!location.hash) location.hash = "#/overview";
     navigate();
+
+    /* 启动流程：Splash → Gate（每会话一次，可在设置中关闭） */
+    PA.onProjectChanged = () => {
+      renderProjectSwitcher();
+      renderNav();
+      setActiveNav(currentRoute().id);
+      navigate();
+    };
+    const INTRO_FLAG = "paperagent.intro.shown";
+    if (PA.store.settings().intro && !sessionStorage.getItem(INTRO_FLAG)) {
+      sessionStorage.setItem(INTRO_FLAG, "1");
+      PA.intro.start(() => PA.onProjectChanged());
+    }
   });
 })();
