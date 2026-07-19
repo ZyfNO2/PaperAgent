@@ -58,6 +58,9 @@ async def test_graph__planning_interrupt__resumes_without_repeating_intake(fixed
                         "baseline_parity_verified": "true",
                         "dataset_fingerprint": "sha256:fixture-dataset",
                         "environment_fingerprint": "sha256:fixture-environment",
+                        "relevance_scope": "direct",
+                        "supporting_spans": "Synthetic support fixture.",
+                        "fixture_gap_support_ids": "gap-support",
                     },
                 )
             ],
@@ -70,7 +73,12 @@ async def test_graph__planning_interrupt__resumes_without_repeating_intake(fixed
                     title="Synthetic ablation note",
                     locator="fixture://ablation",
                     snippet="ablation",
-                    metadata={"license": "MIT"},
+                    metadata={
+                        "license": "MIT",
+                        "relevance_scope": "direct",
+                        "supporting_spans": "Synthetic ablation fixture.",
+                        "fixture_gap_support_ids": "gap-ablation",
+                    },
                 )
             ],
         }
@@ -96,7 +104,9 @@ async def test_graph__planning_interrupt__resumes_without_repeating_intake(fixed
             "search_scenario": "happy_path",
         }
     }
-    paused = await graph.ainvoke({"request": ResearchRequest(question="Study this method")}, config)
+    paused = await graph.ainvoke(
+        {"request": ResearchRequest(question="Study this method")}, config
+    )
     assert paused["__interrupt__"]
     resumed = await graph.ainvoke(Command(resume="Evaluate citation evidence"), config)
     assert resumed["execution"].status == "completed"
