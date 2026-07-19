@@ -44,6 +44,46 @@ def test_npc_gold_case_digest_is_deterministic() -> None:
     assert first.model_dump() == second.model_dump()
 
 
+def test_gold_case_report_rejects_unsupported_contract_version() -> None:
+    payload = run_gold_case(REPOSITORY_ROOT).model_dump(mode="json")
+    payload["contract_version"] = "paperagent.gold-case.v1"
+
+    with pytest.raises(ValidationError, match="unsupported Gold Case contract version"):
+        GoldCaseReport.model_validate(payload)
+
+
+def test_gold_case_report_rejects_unexpected_case_id() -> None:
+    payload = run_gold_case(REPOSITORY_ROOT).model_dump(mode="json")
+    payload["case_id"] = "other-case"
+
+    with pytest.raises(ValidationError, match="unexpected Gold Case identifier"):
+        GoldCaseReport.model_validate(payload)
+
+
+def test_gold_case_report_requires_declared_limitations() -> None:
+    payload = run_gold_case(REPOSITORY_ROOT).model_dump(mode="json")
+    payload["limitations"] = []
+
+    with pytest.raises(ValidationError, match="limitations must be non-empty"):
+        GoldCaseReport.model_validate(payload)
+
+
+def test_gold_case_report_rejects_derived_check_drift() -> None:
+    payload = run_gold_case(REPOSITORY_ROOT).model_dump(mode="json")
+    payload["acceptance_checks"]["expected_go_decision"] = False
+
+    with pytest.raises(ValidationError, match="acceptance checks diverge"):
+        GoldCaseReport.model_validate(payload)
+
+
+def test_gold_case_report_rejects_status_drift() -> None:
+    payload = run_gold_case(REPOSITORY_ROOT).model_dump(mode="json")
+    payload["status"] = "failed"
+
+    with pytest.raises(ValidationError, match="status diverges"):
+        GoldCaseReport.model_validate(payload)
+
+
 def test_gold_case_report_rejects_tampered_payload() -> None:
     payload = run_gold_case(REPOSITORY_ROOT).model_dump(mode="json")
     payload["limitations"][0] = "tampered limitation"
