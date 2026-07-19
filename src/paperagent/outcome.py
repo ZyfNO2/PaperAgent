@@ -12,8 +12,7 @@ def _next_actions(state: PaperAgentState, reason_codes: list[str]) -> list[str]:
     if quality is not None:
         if quality.missing_gap_ids:
             actions.append(
-                "Retrieve and validate evidence for gaps: "
-                + ", ".join(quality.missing_gap_ids)
+                "Retrieve and validate evidence for gaps: " + ", ".join(quality.missing_gap_ids)
             )
         if quality.invalid_evidence_ids:
             actions.append(
@@ -25,9 +24,7 @@ def _next_actions(state: PaperAgentState, reason_codes: list[str]) -> list[str]:
     if any("RETRIEVAL" in code or "GAP" in code for code in reason_codes):
         actions.append("Run a focused retrieval round with stricter relevance and gap binding.")
     if "Q_HUMAN_DECISION_REQUIRED" in reason_codes:
-        actions.append(
-            "Resolve the recorded human-review question before scientific acceptance."
-        )
+        actions.append("Resolve the recorded human-review question before scientific acceptance.")
     if not actions:
         actions.append("Resolve the blocking contract evidence and rerun the workflow.")
     return actions
@@ -55,9 +52,7 @@ def _outcome(
             "report_status": report_status,
             "reason_codes": reason_codes,
             "blocker_code": blocker_code,
-            "missing_gap_ids": (
-                list(quality.missing_gap_ids) if quality is not None else []
-            ),
+            "missing_gap_ids": (list(quality.missing_gap_ids) if quality is not None else []),
             "invalid_evidence_ids": (
                 list(quality.invalid_evidence_ids) if quality is not None else []
             ),
@@ -65,9 +60,7 @@ def _outcome(
                 audit.plan_fingerprint if audit is not None else None
             ),
             "evidence_ledger_fingerprint": (
-                hash_payload(ledger.model_dump(mode="json"))
-                if ledger is not None
-                else None
+                hash_payload(ledger.model_dump(mode="json")) if ledger is not None else None
             ),
             "recommended_next_actions": recommended_next_actions,
         }
@@ -82,9 +75,7 @@ def derive_final_outcome(state: PaperAgentState) -> FinalOutcome:
     reason_codes = list(quality.reason_codes) if quality is not None else []
     if execution is not None and execution.status == "failed":
         error_code = (
-            execution.last_error.code
-            if execution.last_error is not None
-            else "EXECUTION_FAILED"
+            execution.last_error.code if execution.last_error is not None else "EXECUTION_FAILED"
         )
         return _outcome(
             state,
@@ -129,9 +120,7 @@ def derive_final_outcome(state: PaperAgentState) -> FinalOutcome:
     return _outcome(
         state,
         execution_status=(
-            "blocked"
-            if quality is not None and quality.verdict == "human_review"
-            else "succeeded"
+            "blocked" if quality is not None and quality.verdict == "human_review" else "succeeded"
         ),
         scientific_verdict="REVISE",
         report_status="completed",
