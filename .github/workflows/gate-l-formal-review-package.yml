@@ -1,0 +1,216 @@
+name: Gate L Build Blinded Review Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Full frozen 40-character source SHA
+        required: true
+        type: string
+      freeze_run_id:
+        description: Gate L Formal Freeze workflow run ID
+        required: true
+        type: string
+      freeze_artifact_name:
+        description: Exact freeze artifact name
+        required: true
+        type: string
+      execution_run_id:
+        description: Gate L Formal Execute workflow run ID
+        required: true
+        type: string
+      execution_artifact_name:
+        description: Exact execution artifact name
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  package:
+    name: Build separated reviewer and custodian artifacts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      FREEZE_RUN_ID: ${{ inputs.freeze_run_id }}
+      EXECUTION_RUN_ID: ${{ inputs.execution_run_id }}
+      FREEZE_DIR: build/gate-l-v3-formal-freeze-input
+      EXECUTION_DIR: build/gate-l-v3-formal-execution-input
+      REVIEWER_DIR: build/gate-l-v3-reviewer-package
+      CUSTODIAN_DIR: build/gate-l-v3-review-custodian
+
+    steps:
+      - name: Validate package request
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$FREEZE_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$EXECUTION_RUN_ID" =~ ^[0-9]+$ ]]
+
+      - name: Check out exact frozen source SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 1
+
+      - name: Verify checked-out identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install project
+        run: python -m pip install -e '.[dev]'
+
+      - name: Download formal freeze artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.freeze_artifact_name }}
+          path: ${{ env.FREEZE_DIR }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.freeze_run_id }}
+
+      - name: Download formal execution artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.execution_artifact_name }}
+          path: ${{ env.EXECUTION_DIR }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.execution_run_id }}
+
+      - name: Verify upstream artifact chain and eligibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$CUSTODIAN_DIR"
+          python scripts/gate_l_artifact_chain.py verify-freeze \
+            --bundle-dir "$FREEZE_DIR" \
+            --source-sha "$SOURCE_SHA" \
+            --run-id "$FREEZE_RUN_ID" \
+            --output "$CUSTODIAN_DIR/verified-freeze.json"
+          python scripts/gate_l_artifact_chain.py verify-execution \
+            --bundle-dir "$EXECUTION_DIR" \
+            --manifest "$FREEZE_DIR/manifest.json" \
+            --source-sha "$SOURCE_SHA" \
+            --output "$CUSTODIAN_DIR/verified-execution.json"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          value = json.loads(
+              (Path(os.environ["CUSTODIAN_DIR"]) / "verified-execution.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+          if value.get("formal_execution_eligible") is not True:
+              raise SystemExit("formal review package requires execution-eligible evidence")
+          PY
+
+      - name: Build blinded reviewer package
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$REVIEWER_DIR" "$CUSTODIAN_DIR"
+          python scripts/gate_l_acceptance_v3.py blind \
+            --manifest "$FREEZE_DIR/manifest.json" \
+            --evidence-dir "$EXECUTION_DIR/per-case" \
+            --output "$REVIEWER_DIR/review-package.json"
+          mv "$REVIEWER_DIR/review-package.mapping.json" \
+            "$CUSTODIAN_DIR/review-package.mapping.json"
+          python scripts/gate_l_review_package_guard.py \
+            --manifest "$FREEZE_DIR/manifest.json" \
+            --package "$REVIEWER_DIR/review-package.json" \
+            --mapping "$CUSTODIAN_DIR/review-package.mapping.json" \
+            --output "$CUSTODIAN_DIR/verified-review-package.json"
+          test ! -e "$REVIEWER_DIR/review-package.mapping.json"
+
+      - name: Add review instructions and checksum inventories
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$REVIEWER_DIR/README.txt" <<'EOF'
+          This artifact is the blinded Gate L reviewer package.
+          Review independently. Do not request or infer hidden case IDs, expected labels,
+          provider/model identity, the other reviewer's scores, or the custodian mapping.
+          Return one JSON review matching evals/v0_6/gate_l_v3_review.template.json.
+          EOF
+          python - <<'PY'
+          import json
+          import os
+          from datetime import UTC, datetime
+          from pathlib import Path
+
+          output = Path(os.environ["CUSTODIAN_DIR"])
+          record = {
+              "gate": "L",
+              "record_type": "blinded_review_package",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "freeze_run_id": os.environ["FREEZE_RUN_ID"],
+              "execution_run_id": os.environ["EXECUTION_RUN_ID"],
+              "created_at_utc": datetime.now(tz=UTC).isoformat(),
+              "github_repository": os.environ["GITHUB_REPOSITORY"],
+              "github_run_id": os.environ["GITHUB_RUN_ID"],
+              "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "github_workflow": os.environ["GITHUB_WORKFLOW"],
+          }
+          (output / "review-package-workflow-record.json").write_text(
+              json.dumps(record, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          (
+            cd "$REVIEWER_DIR"
+            find . -type f ! -name SHA256SUMS -printf '%P\0' \
+              | sort -z \
+              | xargs -0 -r sha256sum > SHA256SUMS
+          )
+          (
+            cd "$CUSTODIAN_DIR"
+            find . -type f ! -name SHA256SUMS -printf '%P\0' \
+              | sort -z \
+              | xargs -0 -r sha256sum > SHA256SUMS
+          )
+
+      - name: Upload blinded reviewer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-l-blinded-reviewer-${{ inputs.source_sha }}-${{ github.run_id }}
+          path: ${{ env.REVIEWER_DIR }}/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Upload private custodian mapping artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-l-review-custodian-${{ inputs.source_sha }}-${{ github.run_id }}
+          path: ${{ env.CUSTODIAN_DIR }}/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Publish review-package summary
+        shell: bash
+        run: |
+          {
+            echo '## Gate L blinded review package'
+            echo
+            echo "- Source SHA: \`$SOURCE_SHA\`"
+            echo "- Freeze run: \`$FREEZE_RUN_ID\`"
+            echo "- Execution run: \`$EXECUTION_RUN_ID\`"
+            echo "- Package run: \`$GITHUB_RUN_ID\`"
+            echo '- Reviewer and custodian artifacts were uploaded separately.'
+            echo '- Gate L decision: `INCOMPLETE` until two independent human reviews and adjudication finish.'
+          } >> "$GITHUB_STEP_SUMMARY"
