@@ -4,19 +4,19 @@
 
 ```text
 Repository:        ZyfNO2/PaperAgent
-Pull request:       #22
-Head SHA:           2f459a35fd4e9762817f15b387769e5458a1cad6
-Base branch:        fix/academic-tailoring-contract-convergence
-Base SHA:           ba1f04bb10e576a1d815312cb76e49a42ab8ce99
-Branch:             fix/academic-tailoring-review-hardening
+Integration branch: integration/paperagent-v0.9-clean
+Source branch:      fix/academic-tailoring-contract-convergence
+Source SHA:         257d1850faae4a6f5e6a15eaa77d27d1d5d6a96d
+Target:             master
+Head SHA:           d5154055
 Package version:    0.5.1
-CI runs:            29689274176 / 29689274159
+PR #22 audit hardening: included
 Merge performed:    no
 Release performed:  no
-Status:             engineering review passed, Draft, not merged
+Status:             engineering review passed, clean integration pending
 ```
 
-PR #22 is stacked on Draft PR #21 (`fix/academic-tailoring-contract-convergence`). It should remain Draft until the parent branch is reviewed and merged. Do not merge directly into `master`.
+This branch is based on current `master` and contains the final state of PR #17–#22. It excludes build artifacts, databases, and design files.
 
 ## Interview evidence already delivered
 
