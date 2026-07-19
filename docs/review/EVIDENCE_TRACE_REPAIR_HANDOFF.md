@@ -2,9 +2,9 @@
 
 ## Status
 
-**PARTIAL COMPLETE — cloud deterministic C0–C2 complete; local/real-provider L1+ pending.**
+**PARTIAL COMPLETE — cloud deterministic C0–C2 and live literature-provider smoke complete; real-LLM and scientific L2+ verification pending.**
 
-This handoff records engineering verification only. It does not claim real-provider retrieval quality, real-LLM semantic accuracy, full-text verification quality, baseline reproduction, empirical research gains, or independent scientific acceptance.
+This handoff records engineering verification and a bounded live literature-provider smoke. It does not claim real-LLM semantic accuracy, full-text review quality, real-corpus retrieval Precision/Recall, baseline reproduction, empirical research gains, or independent scientific acceptance.
 
 ## Repository and branch
 
@@ -13,7 +13,8 @@ This handoff records engineering verification only. It does not claim real-provi
 - Base SHA: `4599053b6efda464aee1fe242db801427384a6c2`
 - Development branch: `fix/evidence-ledger-final-outcome-trace-exact`
 - Draft PR: `#30`
-- Implementation SHA before this handoff: `152e5f398a38b169d9d1d4c9253fb89aa959703e`
+- Final implementation SHA before handoff-only commits: `152e5f398a38b169d9d1d4c9253fb89aa959703e`
+- Handoff verification parent SHA: `3506b9516f3e109763df0e2559050204b4e45730`
 - Merge status: not merged; PR remains Draft
 
 PR #30 supersedes PR #29 only for exact-head CI evidence. PR #29 was not deleted or merged.
@@ -43,7 +44,7 @@ PR #30 supersedes PR #29 only for exact-head CI evidence. PR #29 was not deleted
   - if required gaps remain missing and retrieval budget is exhausted;
   - skip Synthesis and Method Design;
   - produce `REVISE` with a completed repair report.
-- Kept existing LangGraph architecture and existing LLM-call contract rather than adding unnecessary LLM nodes.
+- Kept the existing LangGraph architecture and LLM-call contract rather than adding unnecessary LLM nodes.
 
 ### Final state and report consistency
 
@@ -55,7 +56,7 @@ PR #30 supersedes PR #29 only for exact-head CI evidence. PR #29 was not deleted
 - Scientific `NO_GO` is represented as a successful workflow conclusion, not a provider/program failure.
 - Provider/program failure produces `failed / NOT_EVALUATED` in `FinalOutcome`.
 - Existing `ExecutionMeta` retains its legacy `blocked` terminal for failed workflows so current task/API consumers remain compatible.
-- Report generation now renders from `FinalOutcome` and cannot independently redefine terminal state.
+- Report generation renders from `FinalOutcome` and cannot independently redefine terminal state.
 - Report validation rejects unknown or non-accepted evidence IDs.
 - `REVISE` reports require concrete next actions.
 
@@ -129,11 +130,13 @@ PR #30 supersedes PR #29 only for exact-head CI evidence. PR #29 was not deleted
 
 ## Verified CI and tests
 
-All results below are bound to implementation SHA:
+### Implementation SHA verification
+
+Results bound to:
 
 `152e5f398a38b169d9d1d4c9253fb89aa959703e`
 
-### Evidence Contract Cloud
+#### Evidence Contract Cloud
 
 - Workflow run: `29699837626`
 - Conclusion: success
@@ -145,22 +148,39 @@ All results below are bound to implementation SHA:
 - Focused deterministic/C2 tests: 15 passed
 - Full offline regression: 371 passed, 11 skipped, 0 failed
 
-The 11 skipped tests are intentional environment-gated tests:
+The 11 default-run skips were intentional environment/dependency gates:
 
-- Playwright browser smoke: dependency unavailable in this job;
-- real OpenAI-compatible LLM smoke: API key and opt-in flag absent;
-- real Mistral smoke: API key/model and opt-in flag absent;
-- real literature provider smoke: network opt-in flag absent.
+- Playwright browser smoke was not installed in the default offline job;
+- real OpenAI-compatible LLM smoke lacked API key and opt-in flag;
+- real Mistral smoke lacked API key/model and opt-in flag;
+- real literature-provider smoke was not enabled in the default offline job.
 
-### Repository workflows
+#### Repository workflows
 
 - PaperAgent CI run `29699837616`: success
-  - Python 3.11 offline verification: success
-  - Python 3.12 offline verification: success
-  - Ruff, format, Mypy, offline tests and coverage: success
 - PaperAgent v0.5.1 Release Hardening run `29699837636`: success
 - Academic Tailoring Agent Evaluation run `29699837638`: success
 - PaperAgent Interview Evidence run `29699837628`: success
+
+### Handoff parent SHA verification
+
+Results bound to:
+
+`3506b9516f3e109763df0e2559050204b4e45730`
+
+- Evidence Contract Cloud run `29699943400`: success
+- PaperAgent CI run `29699943388`: success
+  - Python 3.11 offline verification: success
+  - Python 3.12 offline verification: success
+- Academic Tailoring Agent Evaluation run `29699943396`: success
+- PaperAgent Interview Evidence run `29699943381`: success
+- PaperAgent v0.5.1 Release Hardening run `29699943386`: success
+  - Docker readiness smoke: success
+  - installed wheel / CLI / plugin / web smoke: success
+  - Chromium vertical smoke: success
+  - live OpenAlex / arXiv / Crossref / DataCite smoke: success
+
+The live provider smoke proves bounded API availability and expected provider contract behavior for its fixed smoke cases. It does not establish real-corpus relevance quality or scientific claim support accuracy.
 
 ## Architecture decisions
 
@@ -177,14 +197,25 @@ The 11 skipped tests are intentional environment-gated tests:
 6. **Fail closed at persistence.**
    The independent audit does not trust a top-level Trace or Report conclusion merely because it matches itself.
 
+## Executed live verification
+
+The Release Hardening workflow executed and passed its fixed live provider smoke for:
+
+- OpenAlex;
+- arXiv;
+- Crossref;
+- DataCite.
+
+This live smoke is limited to provider connectivity, parsing and fixed contract cases. It is not a live end-to-end PaperAgent research-quality evaluation.
+
 ## Not executed / not verified
 
 The following remain pending and must not be represented as completed:
 
-- real OpenAlex/arXiv/Crossref provider smoke after this change;
 - real OpenAI-compatible structured-output smoke;
 - real Mistral structured-output smoke;
-- real full-text retrieval and review;
+- live end-to-end graph execution using a real LLM plus live retrieval;
+- real full-text retrieval and semantic review;
 - real corpus Precision@5 / Recall@10 measurement;
 - human relevance and Claim–Evidence adjudication;
 - real baseline reproduction;
@@ -200,11 +231,13 @@ The following remain pending and must not be represented as completed:
 - Property-based testing, large mutation generation, long fuzzing, concurrency stress, and crash-recovery campaigns remain outside this implementation slice.
 - PR #30 is intentionally Draft and unmerged.
 
-## Local/real L1 verification instructions
+## Remaining L1 verification instructions
 
 Use the exact branch/commit from this handoff. Never place API keys in the repository or logs.
 
-### 1. Real literature provider smoke
+### 1. Optional literature-provider rerun
+
+A live provider smoke already passed in Release Hardening. Re-run only when diagnosing provider drift or local network behavior:
 
 ```bash
 export PAPERAGENT_RUN_REAL_PROVIDER=1
@@ -218,13 +251,6 @@ Expected pass conditions:
 - OpenAlex search status is `success`;
 - arXiv search status is `success`;
 - Crossref verifies DOI `10.1038/nature14539` using `crossref_doi_exact`.
-
-Return on failure:
-
-- complete pytest traceback;
-- provider HTTP status/error type;
-- sanitized environment/config values;
-- no API keys or Authorization headers.
 
 ### 2. OpenAI-compatible structured-output smoke
 
@@ -268,19 +294,24 @@ Return:
 - token/cost/latency output when available;
 - generated Trace/FinalOutcome/Report artifacts for any full-graph case.
 
+Do not return API keys, Authorization headers, or raw secret-bearing environment dumps.
+
 ## Next developer steps
 
-1. Run the real L1 provider and LLM smoke tests above against the exact handoff commit.
-2. Fix provider-specific schema/retry issues without weakening deterministic validators.
-3. Re-run all C0–C2 CI after every prompt/provider change.
-4. Add structured real semantic relevance and Top-K full-text review behind versioned contracts.
-5. Expand Trace v0.2 sequence/hash/replay and automated mutation coverage.
-6. Build a real development corpus, freeze thresholds, then create a new unseen holdout.
-7. Keep PR #30 Draft until real-test evidence and review boundaries are accepted.
+1. Run the real OpenAI-compatible and/or Mistral LLM smoke tests against the exact handoff commit.
+2. Add one live full-graph canary combining a real LLM with live retrieval while preserving a strict budget.
+3. Fix provider/model-specific schema issues without weakening deterministic validators.
+4. Re-run all C0–C2 and Release Hardening CI after every prompt/provider change.
+5. Add structured real semantic relevance and Top-K full-text review behind versioned contracts.
+6. Expand Trace v0.2 sequence/hash/replay and automated mutation coverage.
+7. Build a real development corpus, freeze thresholds, then create a new unseen holdout.
+8. Keep PR #30 Draft until real-LLM evidence and review boundaries are accepted.
 
 ## Final classification
 
 - Cloud deterministic C0–C2: **complete and CI-verified**
-- Real provider / real LLM L1: **pending**
+- Live literature-provider smoke: **complete for fixed smoke cases**
+- Real OpenAI-compatible / Mistral LLM L1: **pending**
+- Live full-chain research canary: **pending**
 - Real scientific L2+ and frozen holdout: **not verified**
-- Overall: **PARTIAL COMPLETE / WAITING FOR REAL TESTS**
+- Overall: **PARTIAL COMPLETE / WAITING FOR REAL-LLM AND SCIENTIFIC TESTS**
