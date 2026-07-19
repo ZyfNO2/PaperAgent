@@ -1,0 +1,118 @@
+[
+  {
+    "schema_version": "0.1",
+    "event_id": "event-0001",
+    "run_id": "run-steel-001",
+    "span_id": "span-0001",
+    "event_type": "node.started",
+    "node": "planning_node",
+    "timestamp": "2026-07-20T00:00:01Z",
+    "status": "started",
+    "input_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  {
+    "schema_version": "0.1",
+    "event_id": "event-0002",
+    "run_id": "run-steel-001",
+    "span_id": "span-0002",
+    "event_type": "node.completed",
+    "node": "planning_node",
+    "timestamp": "2026-07-20T00:00:02Z",
+    "status": "completed",
+    "output_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+  },
+  {
+    "schema_version": "0.1",
+    "event_id": "event-0003",
+    "run_id": "run-steel-001",
+    "span_id": "span-0003",
+    "event_type": "route.decided",
+    "node": "evidence_quality_gate_node",
+    "timestamp": "2026-07-20T00:00:03Z",
+    "status": "decided",
+    "route": "repair_retrieval"
+  },
+  {
+    "schema_version": "0.1",
+    "event_id": "event-0004",
+    "run_id": "run-steel-001",
+    "span_id": "span-0004",
+    "event_type": "node.started",
+    "node": "retrieval_node",
+    "timestamp": "2026-07-20T00:00:04Z",
+    "status": "started"
+  },
+  {
+    "schema_version": "0.1",
+    "event_id": "event-0005",
+    "run_id": "run-steel-001",
+    "span_id": "span-0005",
+    "event_type": "node.completed",
+    "node": "retrieval_node",
+    "timestamp": "2026-07-20T00:00:05Z",
+    "status": "completed"
+  },
+  {
+    "schema_version": "0.1",
+    "event_id": "event-0006",
+    "run_id": "run-steel-001",
+    "span_id": "span-0006",
+    "event_type": "route.decided",
+    "node": "evidence_quality_gate_node",
+    "timestamp": "2026-07-20T00:00:06Z",
+    "status": "decided",
+    "route": "pass"
+  },
+  {
+    "schema_version": "0.1",
+    "event_id": "event-0007",
+    "run_id": "run-steel-001",
+    "span_id": "span-0007",
+    "event_type": "node.started",
+    "node": "report_node",
+    "timestamp": "2026-07-20T00:00:07Z",
+    "status": "started"
+  },
+  {
+    "schema_version": "0.1",
+    "event_id": "event-0008",
+    "run_id": "run-steel-001",
+    "span_id": "span-0008",
+    "event_type": "node.completed",
+    "node": "report_node",
+    "timestamp": "2026-07-20T00:00:08Z",
+    "status": "completed"
+  },
+  {
+    "schema_version": "0.1",
+    "event_id": "event-0009",
+    "run_id": "run-steel-001",
+    "span_id": "span-0009",
+    "event_type": "node.started",
+    "node": "persist_node",
+    "timestamp": "2026-07-20T00:00:09Z",
+    "status": "started"
+  },
+  {
+    "schema_version": "0.1",
+    "event_id": "event-0010",
+    "run_id": "run-steel-001",
+    "span_id": "span-0010",
+    "event_type": "trace.audited",
+    "node": "persist_node",
+    "timestamp": "2026-07-20T00:00:10Z",
+    "status": "completed",
+    "output_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  {
+    "schema_version": "0.1",
+    "event_id": "event-0011",
+    "run_id": "run-steel-001",
+    "span_id": "span-0011",
+    "event_type": "node.completed",
+    "node": "persist_node",
+    "timestamp": "2026-07-20T00:00:11Z",
+    "status": "completed",
+    "output_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  }
+]
