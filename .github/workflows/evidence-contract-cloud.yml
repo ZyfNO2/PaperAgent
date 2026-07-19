@@ -19,6 +19,7 @@ on:
       - "src/paperagent/state.py"
       - "tests/nodes/test_evidence_ledger_outcome_trace.py"
       - "tests/e2e/test_evidence_pollution_flow.py"
+      - "tests/e2e/test_evidence_quality_gate_flow.py"
       - ".github/workflows/evidence-contract-cloud.yml"
   workflow_dispatch:
 
@@ -63,6 +64,7 @@ jobs:
             src/paperagent/state.py
             tests/nodes/test_evidence_ledger_outcome_trace.py
             tests/e2e/test_evidence_pollution_flow.py
+            tests/e2e/test_evidence_quality_gate_flow.py
           )
           cp --parents "${files[@]}" build/evidence-contract-cloud/source/
           ruff check "${files[@]}" --output-format=concise \
@@ -78,6 +80,7 @@ jobs:
             tests/nodes/test_evidence_ledger_outcome_trace.py \
             tests/nodes/test_retrieval.py \
             tests/e2e/test_evidence_pollution_flow.py \
+            tests/e2e/test_evidence_quality_gate_flow.py \
             > build/evidence-contract-cloud/pytest.log 2>&1
           pytest_status=$?
           printf '{"ruff":%s,"format":%s,"mypy":%s,"pytest":%s}\n' \
