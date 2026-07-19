@@ -146,9 +146,7 @@ class LiteratureSearchAdapter:
             )
 
         filtered = [
-            paper
-            for paper in papers_by_id.values()
-            if self._passes_return_relevance(paper, policy)
+            paper for paper in papers_by_id.values() if self._passes_return_relevance(paper, policy)
         ]
         filtered.sort(
             key=lambda paper: (
@@ -251,9 +249,7 @@ class LiteratureSearchAdapter:
         )
 
     @staticmethod
-    def _merge_papers(
-        papers_by_id: dict[str, PaperRecord], incoming: list[PaperRecord]
-    ) -> None:
+    def _merge_papers(papers_by_id: dict[str, PaperRecord], incoming: list[PaperRecord]) -> None:
         for paper in incoming:
             previous = papers_by_id.get(paper.paper_id)
             if previous is None:
@@ -267,9 +263,8 @@ class LiteratureSearchAdapter:
             if verification_status != "verified" and paper.verification_status == "verified":
                 verification_status = "verified"
             rank_features = previous.rank_features
-            if (
-                paper.rank_features is not None
-                and (rank_features is None or paper.rank_features.score > rank_features.score)
+            if paper.rank_features is not None and (
+                rank_features is None or paper.rank_features.score > rank_features.score
             ):
                 rank_features = paper.rank_features
             papers_by_id[paper.paper_id] = previous.model_copy(
