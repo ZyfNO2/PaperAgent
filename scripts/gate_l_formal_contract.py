@@ -189,6 +189,7 @@ def freeze_contract(
     spec_path: Path,
     manifest_path: Path,
     *,
+    source_sha: str,
     repo_root: Path = Path("."),
     prompt_snapshot: Callable[
         [Path], tuple[dict[str, str], list[dict[str, str]]]
@@ -201,7 +202,7 @@ def freeze_contract(
     holdout_version = spec.get("holdout_version")
     if not isinstance(holdout_version, str) or not holdout_version.startswith("v3-"):
         raise ValueError("holdout_version must start with 'v3-'")
-    source_sha = _source_sha(spec.get("source_sha"))
+    frozen_source_sha = _source_sha(source_sha)
     cases_path = _safe_relative_path(spec.get("cases"), field="cases")
     attestation_path = _safe_relative_path(
         spec.get("attestation"), field="attestation"
@@ -276,7 +277,7 @@ def freeze_contract(
         "formal_contract_version": FORMAL_CONTRACT_VERSION,
         "status": "frozen_pending_execution",
         "frozen_at_utc": datetime.now(tz=UTC).isoformat(),
-        "scientific_behavior_cutoff_sha": source_sha,
+        "scientific_behavior_cutoff_sha": frozen_source_sha,
         "planning_prompt_version": prompt_versions["planning"],
         "prompt_versions": prompt_versions,
         "policy_versions": policy_snapshot(),
@@ -434,6 +435,7 @@ def _parser() -> argparse.ArgumentParser:
     freeze = commands.add_parser("freeze")
     freeze.add_argument("--spec", type=Path, required=True)
     freeze.add_argument("--manifest-out", type=Path, required=True)
+    freeze.add_argument("--source-sha", required=True)
     verify = commands.add_parser("verify")
     verify.add_argument("--manifest", type=Path, required=True)
     verify.add_argument("--runtime-sha")
@@ -446,7 +448,11 @@ def main() -> int:
     args = _parser().parse_args()
     try:
         if args.command == "freeze":
-            manifest = freeze_contract(args.spec, args.manifest_out)
+            manifest = freeze_contract(
+                args.spec,
+                args.manifest_out,
+                source_sha=args.source_sha,
+            )
             print(
                 "Formal Gate L manifest frozen: "
                 f"version={manifest['version']} "
