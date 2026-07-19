@@ -4,7 +4,6 @@ from pathlib import Path
 
 from paperagent.gold_case import run_gold_case
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 
 
