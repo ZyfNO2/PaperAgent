@@ -119,6 +119,11 @@ def test_succeeded_input_requires_evidence_and_claims() -> None:
         RAGEvaluationInput.model_validate(payload)
 
 
+def test_succeeded_input_rejects_block_reason() -> None:
+    with pytest.raises(ValidationError, match="cannot carry a block reason"):
+        _input(block_reason="stale blocker")
+
+
 def test_blocked_input_requires_reason() -> None:
     with pytest.raises(ValidationError, match="block reason"):
         _input(terminal="blocked")
@@ -128,6 +133,13 @@ def test_report_rejects_out_of_range_metric_values() -> None:
     payload = evaluate_rag_case(_input(), cutoffs=(1, 2)).model_dump(mode="json")
     payload["recall_at_k"]["1"] = 1.5
     with pytest.raises(ValidationError, match="finite rates between 0 and 1"):
+        RAGEvaluationReport.model_validate(payload)
+
+
+def test_report_rejects_inconsistent_support_rates() -> None:
+    payload = evaluate_rag_case(_input(), cutoffs=(1, 2)).model_dump(mode="json")
+    payload["citation_support_rate"] = 0.75
+    with pytest.raises(ValidationError, match="support rates must sum to 1"):
         RAGEvaluationReport.model_validate(payload)
 
 
