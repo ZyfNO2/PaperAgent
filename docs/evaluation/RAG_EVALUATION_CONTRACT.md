@@ -18,8 +18,23 @@ Each evaluation case records:
 - LLM call, token, and estimated-cost telemetry;
 - terminal state and an explicit blocker reason when blocked.
 
-Unknown evidence references, duplicate evidence IDs, non-contiguous ranks, and impossible token
-accounting are rejected before scoring.
+Unknown evidence references, duplicate evidence IDs, non-contiguous ranks, blank identifiers,
+impossible token accounting, vacuous successful cases, and out-of-range metric values are rejected
+before scoring.
+
+## Evidence-domain boundary
+
+Literature citation support and baseline reproduction evidence are different facts.
+
+- A paper citation may support a description of the published method.
+- It cannot prove that PaperAgent or the user reproduced that baseline.
+- Baseline reproduction must come from trusted server-owned execution metadata, including the
+  implementation/version, dataset and environment fingerprints, split, seed policy, metrics, and
+  parity result.
+- The Gold Case therefore excludes the `baseline-reproduction` fact from literature citation metrics.
+  That fact is evaluated by the canonical methodology audit and baseline-reproduction rubric instead.
+
+This prevents a Baseline paper from being counted as evidence that a local training run succeeded.
 
 ## Metrics
 
@@ -39,8 +54,11 @@ accounting are rejected before scoring.
 ## Aggregation
 
 Aggregates are arithmetic means for bounded rates and sums for calls, tokens, and cost. Reports must
-use the same K cutoffs before aggregation. Blocker reasons remain categorical counts and must not be
-collapsed into a generic `failed` bucket.
+use the same K cutoffs before aggregation, but JSON key order is not semantically significant. Case
+IDs must be unique so one execution cannot be counted twice. Terminal counts must sum to the number
+of cases, and blocker counts cannot exceed it.
+
+Blocker reasons remain categorical counts and must not be collapsed into a generic `failed` bucket.
 
 Recommended blocker taxonomy:
 
@@ -55,6 +73,15 @@ method_audit_rejected
 synthesis_budget_exhausted
 provider_failure
 ```
+
+## Gold Case report integrity
+
+The Gold Case report contains a SHA-256 digest over its canonical payload. Loading the report
+recomputes and verifies that digest, requires the complete acceptance-check set, and verifies that
+each check matches the corresponding report field. A modified report cannot be converted into an
+interview evidence document while retaining the old digest.
+
+The digest is an integrity binding, not a signature or third-party attestation.
 
 ## Gold Case boundary
 
