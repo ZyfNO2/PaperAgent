@@ -156,27 +156,18 @@ def normalize_completed_audit(
             for field in _COUNT_FIELDS
         }
         if counts["repair_successes"] > counts["repair_attempts"]:
-            raise ValueError(
-                f"{case_id}: repair_successes cannot exceed repair_attempts"
-            )
-        if (
-            counts["noncritical_unsupported_claims"]
-            > counts["noncritical_claims_reviewed"]
-        ):
+            raise ValueError(f"{case_id}: repair_successes cannot exceed repair_attempts")
+        if counts["noncritical_unsupported_claims"] > counts["noncritical_claims_reviewed"]:
             raise ValueError(
                 f"{case_id}: unsupported noncritical claims cannot exceed reviewed claims"
             )
         if counts["citation_mismatches"] > counts["citations_reviewed"]:
-            raise ValueError(
-                f"{case_id}: citation mismatches cannot exceed reviewed citations"
-            )
+            raise ValueError(f"{case_id}: citation mismatches cannot exceed reviewed citations")
         failures = item.get("zero_tolerance_failures")
         if not isinstance(failures, list) or any(
             not isinstance(value, str) or not value.strip() for value in failures
         ):
-            raise ValueError(
-                f"{case_id}: zero_tolerance_failures must be a string list"
-            )
+            raise ValueError(f"{case_id}: zero_tolerance_failures must be a string list")
         notes = item.get("notes")
         if not isinstance(notes, str):
             raise ValueError(f"{case_id}: notes must be a string")
@@ -196,9 +187,7 @@ def normalize_completed_audit(
     reviewed_claims = totals["noncritical_claims_reviewed"]
     reviewed_citations = totals["citations_reviewed"]
     if reviewed_claims == 0:
-        raise ValueError(
-            "formal content audit must review at least one noncritical claim"
-        )
+        raise ValueError("formal content audit must review at least one noncritical claim")
     if reviewed_citations == 0:
         raise ValueError("formal content audit must review at least one citation")
     return {
@@ -211,14 +200,10 @@ def normalize_completed_audit(
         "fabricated_identifiers": totals["fabricated_identifiers"],
         "critical_unsupported_claims": totals["critical_unsupported_claims"],
         "noncritical_unsupported_claim_rate": (
-            totals["noncritical_unsupported_claims"] / reviewed_claims
-            if reviewed_claims
-            else 0.0
+            totals["noncritical_unsupported_claims"] / reviewed_claims if reviewed_claims else 0.0
         ),
         "citation_mismatch_rate": (
-            totals["citation_mismatches"] / reviewed_citations
-            if reviewed_citations
-            else 0.0
+            totals["citation_mismatches"] / reviewed_citations if reviewed_citations else 0.0
         ),
         "repair_attempts": totals["repair_attempts"],
         "repair_successes": totals["repair_successes"],
@@ -228,9 +213,7 @@ def normalize_completed_audit(
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Prepare or finalize formal Gate L content audit"
-    )
+    parser = argparse.ArgumentParser(description="Prepare or finalize formal Gate L content audit")
     commands = parser.add_subparsers(dest="command", required=True)
     prepare = commands.add_parser("prepare")
     prepare.add_argument("--manifest", type=Path, required=True)
@@ -253,9 +236,7 @@ def main() -> int:
             _write(args.output, build_template(args.manifest, args.evidence_dir))
             print(f"Gate L audit template written: {args.output}")
             return 0
-        normalized = normalize_completed_audit(
-            args.manifest, args.evidence_dir, args.audit
-        )
+        normalized = normalize_completed_audit(args.manifest, args.evidence_dir, args.audit)
         _write(args.normalized_audit_out, normalized)
         summary = assemble(
             args.manifest,
