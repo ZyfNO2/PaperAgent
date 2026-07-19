@@ -83,6 +83,14 @@ jobs:
             tests/e2e/test_evidence_quality_gate_flow.py \
             > build/evidence-contract-cloud/pytest.log 2>&1
           pytest_status=$?
+          formatted_files=()
+          for file in "${files[@]}"; do
+            formatted_files+=("build/evidence-contract-cloud/source/$file")
+          done
+          ruff check --fix "${formatted_files[@]}" \
+            > build/evidence-contract-cloud/autofix.log 2>&1
+          ruff format "${formatted_files[@]}" \
+            >> build/evidence-contract-cloud/autofix.log 2>&1
           printf '{"ruff":%s,"format":%s,"mypy":%s,"pytest":%s}\n' \
             "$ruff_status" "$format_status" "$mypy_status" "$pytest_status" \
             > build/evidence-contract-cloud/status.json
