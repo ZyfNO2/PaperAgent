@@ -46,6 +46,11 @@ class MistralLLMProvider(LLMProvider):
         budget: TaskBudget | None = None,
         price_table: PriceTable | None = None,
     ) -> None:
+        if config.max_estimated_cost_usd is not None:
+            if price_table is None:
+                raise ValueError("a price table is required when a monetary budget is configured")
+            if config.model not in price_table.models:
+                raise ValueError("the configured model is missing from the selected price table")
         self._config = config
         self._client = client
         self._telemetry = telemetry or TelemetrySink()

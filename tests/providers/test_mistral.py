@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import json
+from decimal import Decimal
 
 import httpx
 import pytest
 from pydantic import BaseModel, ConfigDict, SecretStr
 
+from paperagent.pricing import ModelPrice, PriceTable
 from paperagent.providers.mistral import MistralLLMProvider
 from paperagent.providers.runtime import (
     ProviderError,
@@ -34,6 +36,30 @@ def make_provider(
     config = ProviderRuntimeConfig.model_validate(values)
     client = httpx.AsyncClient(transport=handler)
     return MistralLLMProvider(config, client=client), client
+
+
+def test_monetary_budget_requires_pricing_before_first_request() -> None:
+    config = ProviderRuntimeConfig(
+        model="test-model",
+        api_key=SecretStr("test-secret"),
+        max_estimated_cost_usd=0.1,
+    )
+
+    with pytest.raises(ValueError, match="price table"):
+        MistralLLMProvider(config)
+    with pytest.raises(ValueError, match="missing"):
+        MistralLLMProvider(
+            config,
+            price_table=PriceTable(
+                version="test",
+                models={
+                    "another-model": ModelPrice(
+                        input_usd_per_million_tokens=Decimal("1"),
+                        output_usd_per_million_tokens=Decimal("1"),
+                    )
+                },
+            ),
+        )
 
 
 @pytest.mark.asyncio

@@ -193,6 +193,91 @@ def test_real_state_normalization_is_gold_independent_and_conservative() -> None
     assert result.score < 100
 
 
+def test_revise_with_actionable_recovery_infers_pilot() -> None:
+    state = cast(
+        PaperAgentState,
+        {
+            "request": ResearchRequest(question="轻量化无人机小目标检测"),
+            "final_outcome": FinalOutcome(
+                execution_status="succeeded",
+                scientific_verdict="REVISE",
+                quality_route="blocked",
+                report_status="completed",
+                reason_codes=["Q_INSUFFICIENT_COVERAGE"],
+                recommended_next_actions=[
+                    "Run a focused retrieval round with stricter relevance.",
+                    "Freeze the baseline before method design.",
+                ],
+            ),
+            "report": FinalReport(
+                status="completed",
+                executive_summary="Evidence was insufficient.",
+                verified_findings=[],
+                inferred_findings=[],
+                limitations=["Baseline reproduction remains pending."],
+                next_actions=[
+                    "Run a focused retrieval round with stricter relevance.",
+                    "Freeze the baseline before method design.",
+                ],
+                evidence_ids=[],
+            ),
+        },
+    )
+    trace = normalize_paperagent_state(
+        state,
+        BenchmarkNormalizationContext(
+            case_id="at-001-uav-small-object-lightweight",
+            stronger_baselines_considered=True,
+            negative_results_visible=True,
+        ),
+    )
+    assert trace.decision == "REVISE"
+    assert trace.pilot_recommended
+    assert trace.trace_audit_passed is not False
+
+    dataset = load_gold_dataset(DATASET_ROOT)
+    case = next(item for item in dataset.cases if item.case_id == trace.case_id)
+    result = evaluate_case(case, trace)
+    assert result.decision_matches
+    assert result.observed_decision == "REVISE_TO_PILOT"
+
+
+def test_revise_with_only_placeholder_recovery_defers_pilot() -> None:
+    state = cast(
+        PaperAgentState,
+        {
+            "request": ResearchRequest(question="轻量化无人机小目标检测"),
+            "final_outcome": FinalOutcome(
+                execution_status="succeeded",
+                scientific_verdict="REVISE",
+                quality_route="blocked",
+                report_status="completed",
+                reason_codes=["Q_INSUFFICIENT_COVERAGE"],
+                recommended_next_actions=[],
+            ),
+            "report": FinalReport(
+                status="completed",
+                executive_summary="Evidence was insufficient.",
+                verified_findings=[],
+                inferred_findings=[],
+                limitations=[],
+                next_actions=[],
+                evidence_ids=[],
+            ),
+        },
+    )
+    trace = normalize_paperagent_state(
+        state,
+        BenchmarkNormalizationContext(
+            case_id="at-001-uav-small-object-lightweight",
+            stronger_baselines_considered=True,
+            negative_results_visible=True,
+        ),
+    )
+    assert trace.decision == "REVISE"
+    assert trace.pilot_recommended is False
+
+
 def test_not_evaluated_state_fails_closed_in_benchmark_trace() -> None:
     state = cast(
         PaperAgentState,

@@ -46,6 +46,32 @@ def _dedupe(values: Iterable[str | None]) -> tuple[str, ...]:
     return tuple(output)
 
 
+def _has_actionable_recovery_path(next_actions: tuple[str, ...]) -> bool:
+    """True when the recovery path is specific enough to act on.
+
+    A fallback placeholder like "capture missing evidence and rerun the bounded
+    workflow" does not count as actionable.  At least one action must mention a
+    concrete step such as a pilot, retrieval round, or method repair.
+    """
+    if not next_actions:
+        return False
+    _concrete_markers = (
+        "pilot",
+        "retrieval",
+        "method repair",
+        "repair_method",
+        "bounded",
+        "re-run",
+        "rerun",
+        "validate evidence",
+        "freeze baseline",
+    )
+    return any(
+        any(marker in item.casefold() for marker in _concrete_markers)
+        for item in next_actions
+    )
+
+
 def _fact_partitions(state: PaperAgentState) -> FactPartitions:
     synthesis = state.get("synthesis")
     report = state.get("report")
@@ -385,7 +411,7 @@ def normalize_paperagent_state(
     pilot_recommended = (
         context.pilot_recommended
         if context.pilot_recommended is not None
-        else decision == "REVISE" and any("pilot" in item.casefold() for item in next_actions)
+        else decision == "REVISE" and _has_actionable_recovery_path(next_actions)
     )
     strong_comparison_derived = any(item.arm_type == "strong_comparison" for item in experiments)
     synthesis = state.get("synthesis")
