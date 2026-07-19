@@ -156,7 +156,6 @@ def _fixture(
         json.dumps(
             {
                 "holdout_version": "v3-formal-test",
-                "source_sha": "a" * 40,
                 "cases": "cases.jsonl",
                 "attestation": "attestation.json",
                 "behavior_files": ["behavior.py"],
@@ -204,6 +203,7 @@ def test_freeze_and_verify_binds_full_artifact_bundle(
     manifest = FORMAL.freeze_contract(
         spec,
         manifest_path,
+        source_sha="a" * 40,
         repo_root=tmp_path,
         prompt_snapshot=FORMAL._runtime_prompt_snapshot,
         policy_snapshot=FORMAL._runtime_policy_snapshot,
@@ -233,6 +233,7 @@ def test_verify_rejects_changed_behavior_file(
     FORMAL.freeze_contract(
         spec,
         manifest_path,
+        source_sha="a" * 40,
         repo_root=tmp_path,
         prompt_snapshot=FORMAL._runtime_prompt_snapshot,
         policy_snapshot=FORMAL._runtime_policy_snapshot,
@@ -256,6 +257,7 @@ def test_verify_rejects_runtime_sha_mismatch(
     FORMAL.freeze_contract(
         spec,
         manifest_path,
+        source_sha="a" * 40,
         repo_root=tmp_path,
         prompt_snapshot=FORMAL._runtime_prompt_snapshot,
         policy_snapshot=FORMAL._runtime_policy_snapshot,
@@ -277,6 +279,7 @@ def test_verify_rejects_unfrozen_strategy(
     FORMAL.freeze_contract(
         spec,
         manifest_path,
+        source_sha="a" * 40,
         repo_root=tmp_path,
         prompt_snapshot=FORMAL._runtime_prompt_snapshot,
         policy_snapshot=FORMAL._runtime_policy_snapshot,
@@ -302,6 +305,7 @@ def test_freeze_rejects_path_traversal(
         FORMAL.freeze_contract(
             spec,
             manifest_path,
+            source_sha="a" * 40,
             repo_root=tmp_path,
             prompt_snapshot=FORMAL._runtime_prompt_snapshot,
             policy_snapshot=FORMAL._runtime_policy_snapshot,
