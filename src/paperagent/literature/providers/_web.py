@@ -19,14 +19,8 @@ def extract_identifiers(*values: str | None) -> tuple[str | None, str | None]:
     text = " ".join(value for value in values if value)
     doi_match = _DOI_RE.search(text)
     arxiv_match = _ARXIV_RE.search(text)
-    doi = (
-        canonical_doi(doi_match.group(0).rstrip(_TRAILING_PUNCTUATION))
-        if doi_match
-        else None
-    )
-    arxiv_id = (
-        canonical_arxiv_id(arxiv_match.group("id")) if arxiv_match else None
-    )
+    doi = canonical_doi(doi_match.group(0).rstrip(_TRAILING_PUNCTUATION)) if doi_match else None
+    arxiv_id = canonical_arxiv_id(arxiv_match.group("id")) if arxiv_match else None
     return doi, arxiv_id
 
 
