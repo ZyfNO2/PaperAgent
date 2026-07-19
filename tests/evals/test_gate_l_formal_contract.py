@@ -20,9 +20,7 @@ def _load_script(name: str, path: str) -> ModuleType:
     return module
 
 
-FORMAL = _load_script(
-    "gate_l_formal_contract", "scripts/gate_l_formal_contract.py"
-)
+FORMAL = _load_script("gate_l_formal_contract", "scripts/gate_l_formal_contract.py")
 CATEGORIES = ("in_domain", "ood", "insufficient_evidence", "adversarial")
 RUBRIC = [
     {
@@ -101,9 +99,7 @@ def _case(case_id: str, category: str) -> dict[str, Any]:
     }
 
 
-def _fixture(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> tuple[Path, Path]:
+def _fixture(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Path]:
     cases = tmp_path / "cases.jsonl"
     case_rows = [
         _case(f"formal-{category}-{index}", category)
@@ -111,8 +107,7 @@ def _fixture(
         for index in range(4)
     ]
     cases.write_text(
-        "".join(json.dumps(row) + "\n" for row in case_rows),
-        encoding="utf-8",
+        "".join(json.dumps(row) + "\n" for row in case_rows), encoding="utf-8"
     )
     digest = FORMAL._sha256(cases)
     attestation = tmp_path / "attestation.json"
@@ -161,29 +156,22 @@ def _fixture(
                 "behavior_files": ["behavior.py"],
                 "strategy_profiles": ["strategy.json"],
                 "price_tables": ["price.json"],
-                "required_provider_environment": [
-                    "PAPERAGENT_LLM_API_KEY"
-                ],
+                "required_provider_environment": ["PAPERAGENT_LLM_API_KEY"],
             }
         ),
         encoding="utf-8",
     )
 
-    def prompt_snapshot(
-        root: Path,
-    ) -> tuple[dict[str, str], list[dict[str, str]]]:
+    def prompt_snapshot(root: Path) -> tuple[dict[str, str], list[dict[str, str]]]:
         return (
             {"planning": "planning.test"},
             [
-                FORMAL._artifact_record(
-                    root, "planning.md", kind="prompt"
-                ),
-                FORMAL._artifact_record(
-                    root, "registry.py", kind="prompt_registry"
-                ),
+                FORMAL._artifact_record(root, "planning.md", kind="prompt"),
+                FORMAL._artifact_record(root, "registry.py", kind="prompt_registry"),
             ],
         )
 
+    monkeypatch.setattr(FORMAL, "REQUIRED_BEHAVIOR_FILES", ("behavior.py",))
     monkeypatch.setattr(FORMAL, "_runtime_prompt_snapshot", prompt_snapshot)
     monkeypatch.setattr(
         FORMAL,
@@ -238,9 +226,7 @@ def test_verify_rejects_changed_behavior_file(
         prompt_snapshot=FORMAL._runtime_prompt_snapshot,
         policy_snapshot=FORMAL._runtime_policy_snapshot,
     )
-    (tmp_path / "behavior.py").write_text(
-        "POLICY = 'changed'\n", encoding="utf-8"
-    )
+    (tmp_path / "behavior.py").write_text("POLICY = 'changed'\n", encoding="utf-8")
     with pytest.raises(ValueError, match="frozen artifact digest mismatch"):
         FORMAL.verify_contract(
             manifest_path,
@@ -306,6 +292,74 @@ def test_freeze_rejects_path_traversal(
             spec,
             manifest_path,
             source_sha="a" * 40,
+            repo_root=tmp_path,
+            prompt_snapshot=FORMAL._runtime_prompt_snapshot,
+            policy_snapshot=FORMAL._runtime_policy_snapshot,
+        )
+
+
+def test_freeze_requires_all_mandatory_behavior_files(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    spec, manifest_path = _fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(
+        FORMAL,
+        "REQUIRED_BEHAVIOR_FILES",
+        ("behavior.py", "required.py"),
+    )
+    with pytest.raises(ValueError, match="missing mandatory formal inputs"):
+        FORMAL.freeze_contract(
+            spec,
+            manifest_path,
+            source_sha="a" * 40,
+            repo_root=tmp_path,
+            prompt_snapshot=FORMAL._runtime_prompt_snapshot,
+            policy_snapshot=FORMAL._runtime_policy_snapshot,
+        )
+
+
+def test_verify_rejects_manifest_field_tampering(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    spec, manifest_path = _fixture(tmp_path, monkeypatch)
+    FORMAL.freeze_contract(
+        spec,
+        manifest_path,
+        source_sha="a" * 40,
+        repo_root=tmp_path,
+        prompt_snapshot=FORMAL._runtime_prompt_snapshot,
+        policy_snapshot=FORMAL._runtime_policy_snapshot,
+    )
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["strategy_profiles"] = ["other.json"]
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    with pytest.raises(ValueError, match="strategy_profiles do not match"):
+        FORMAL.verify_contract(
+            manifest_path,
+            repo_root=tmp_path,
+            prompt_snapshot=FORMAL._runtime_prompt_snapshot,
+            policy_snapshot=FORMAL._runtime_policy_snapshot,
+        )
+
+
+def test_verify_rejects_threshold_tampering(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    spec, manifest_path = _fixture(tmp_path, monkeypatch)
+    FORMAL.freeze_contract(
+        spec,
+        manifest_path,
+        source_sha="a" * 40,
+        repo_root=tmp_path,
+        prompt_snapshot=FORMAL._runtime_prompt_snapshot,
+        policy_snapshot=FORMAL._runtime_policy_snapshot,
+    )
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["acceptance_thresholds"]["maximum_false_go"] = 1
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    with pytest.raises(ValueError, match="acceptance thresholds"):
+        FORMAL.verify_contract(
+            manifest_path,
             repo_root=tmp_path,
             prompt_snapshot=FORMAL._runtime_prompt_snapshot,
             policy_snapshot=FORMAL._runtime_policy_snapshot,
