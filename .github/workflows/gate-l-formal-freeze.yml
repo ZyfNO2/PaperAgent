@@ -60,7 +60,12 @@ jobs:
           set -euo pipefail
           ruff check .
           ruff format --check .
-          python -m pytest tests/evals/test_gate_l_formal_contract.py
+          python -m pytest \
+            tests/evals/test_gate_l_formal_contract.py \
+            tests/evals/test_gate_l_artifact_chain.py \
+            tests/evals/test_gate_l_formal_audit.py \
+            tests/evals/test_gate_l_review_package_guard.py \
+            tests/evals/test_gate_l_formal_execution.py
 
       - name: Freeze manifest
         shell: bash
@@ -107,7 +112,19 @@ jobs:
           PY
           tar -czf "$OUTPUT_DIR/gate-l-formal-freeze.tgz" \
             -C "$OUTPUT_DIR" manifest.json freeze-record.json
-          sha256sum "$OUTPUT_DIR"/* > "$OUTPUT_DIR/SHA256SUMS"
+          (
+            cd "$OUTPUT_DIR"
+            sha256sum manifest.json freeze-record.json gate-l-formal-freeze.tgz > SHA256SUMS
+          )
+          python scripts/gate_l_artifact_chain.py verify-freeze \
+            --bundle-dir "$OUTPUT_DIR" \
+            --source-sha "$SOURCE_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --output "$OUTPUT_DIR/verified-freeze.json"
+          (
+            cd "$OUTPUT_DIR"
+            sha256sum verified-freeze.json >> SHA256SUMS
+          )
 
       - name: Publish freeze summary
         shell: bash
