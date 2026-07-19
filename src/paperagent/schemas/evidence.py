@@ -52,7 +52,12 @@ class EvidenceItem(FrozenModel):
     title: str
     locator: str
     retrieved_at: datetime
-    verification_status: Literal["accepted", "rejected", "pending", "failed_verification"]
+    verification_status: Literal[
+        "accepted",
+        "rejected",
+        "pending",
+        "failed_verification",
+    ]
     supports_gap_ids: list[str]
     summary: str
     content_hash: str
@@ -100,18 +105,24 @@ class EvidenceBundle(FrozenModel):
             "pending": set(self.pending_ids),
             "failed_verification": set(self.failed_verification_ids),
         }
-        all_identity_ids: list[str] = [item for values in identity_sets.values() for item in values]
+        all_identity_ids: list[str] = [
+            item for values in identity_sets.values() for item in values
+        ]
         if len(all_identity_ids) != len(set(all_identity_ids)):
             raise ValueError("each evidence ID must belong to exactly one identity status set")
         item_by_id = {item.evidence_id: item for item in self.items}
         for evidence_id, item in item_by_id.items():
             if evidence_id not in identity_sets[item.verification_status]:
                 raise ValueError(
-                    f"evidence {evidence_id} missing from {item.verification_status} identity set"
+                    f"evidence {evidence_id} missing from "
+                    f"{item.verification_status} identity set"
                 )
         unknown_ids = set(all_identity_ids) - set(item_by_id)
         if unknown_ids:
-            raise ValueError(f"identity status sets contain unknown evidence IDs: {sorted(unknown_ids)}")
+            raise ValueError(
+                "identity status sets contain unknown evidence IDs: "
+                f"{sorted(unknown_ids)}"
+            )
         final_accepted = set(self.accepted_ids)
         relevance_rejected = set(self.relevance_rejected_ids)
         if not final_accepted <= identity_verified:
@@ -120,7 +131,10 @@ class EvidenceBundle(FrozenModel):
             raise ValueError("relevance rejected evidence must be identity verified")
         if final_accepted & relevance_rejected:
             raise ValueError("evidence cannot be both accepted and relevance rejected")
-        if self.identity_verified_ids and final_accepted | relevance_rejected != identity_verified:
+        if (
+            self.identity_verified_ids
+            and final_accepted | relevance_rejected != identity_verified
+        ):
             raise ValueError(
                 "identity verified evidence must be either final accepted or relevance rejected"
             )
