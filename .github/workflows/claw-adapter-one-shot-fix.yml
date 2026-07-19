@@ -1,0 +1,65 @@
+name: PaperClaw Adapter One-shot Fix
+
+on:
+  pull_request:
+    branches:
+      - fix/evidence-ledger-final-outcome-trace-exact
+    paths:
+      - "src/paperagent/claw_benchmark_adapter.py"
+      - ".github/workflows/claw-adapter-one-shot-fix.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: >-
+      github.event.pull_request.head.ref == 'feat/claw-academic-tailoring-benchmark-v1' &&
+      github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/claw-academic-tailoring-benchmark-v1
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install formatter
+        run: python -m pip install -q 'ruff>=0.12,<0.13'
+      - name: Apply adapter typing fix
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/paperagent/claw_benchmark_adapter.py')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace('from typing import Literal\n', '')
+          old = '''    negative_results_derived = bool(
+              (report is not None and report.limitations)
+              or (audit is not None and audit.risks)
+              or (state.get("synthesis") is not None and state["synthesis"].conflicts)
+          )
+          '''
+          new = '''    synthesis = state.get("synthesis")
+          negative_results_derived = bool(
+              (report is not None and report.limitations)
+              or (audit is not None and audit.risks)
+              or (synthesis is not None and synthesis.conflicts)
+          )
+          '''
+          if old not in text:
+              raise SystemExit('expected negative-results block not found')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+          ruff format src/paperagent/claw_benchmark_adapter.py
+          ruff check src/paperagent/claw_benchmark_adapter.py
+      - name: Commit fixed adapter
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/paperagent/claw_benchmark_adapter.py
+          git diff --cached --quiet && exit 0
+          git commit -m "fix(eval): tighten benchmark state normalization typing"
+          git push origin HEAD:feat/claw-academic-tailoring-benchmark-v1
