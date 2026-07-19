@@ -6,7 +6,6 @@ from pydantic import Field, model_validator
 
 from paperagent.schemas.base import FrozenModel
 
-
 EvidenceScope = Literal["direct", "indirect", "background_only", "irrelevant"]
 GapSupportType = Literal[
     "direct_support",
@@ -68,9 +67,12 @@ class RelevanceAssessment(FrozenModel):
 
     @model_validator(mode="after")
     def validate_support(self) -> RelevanceAssessment:
-        if self.decision == "pass" and self.evidence_scope in {"direct", "indirect"}:
-            if not self.supporting_spans:
-                raise ValueError("accepted direct or indirect relevance requires a supporting span")
+        if (
+            self.decision == "pass"
+            and self.evidence_scope in {"direct", "indirect"}
+            and not self.supporting_spans
+        ):
+            raise ValueError("accepted direct or indirect relevance requires a supporting span")
         if self.decision == "reject" and self.evidence_scope not in {
             "background_only",
             "irrelevant",
