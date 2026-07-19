@@ -71,6 +71,24 @@ def _apply_environment(profile: dict[str, Any]) -> None:
         os.environ[key] = value
 
 
+def _case_failures(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    failures: list[dict[str, Any]] = []
+    for item in results:
+        violations = item.get("budget_violations")
+        if not isinstance(violations, list):
+            violations = ["invalid_budget_violations"]
+        if item.get("budget_compliance") is not True and not violations:
+            violations = ["budget_noncompliance_without_reason"]
+        if violations:
+            failures.append(
+                {
+                    "case_id": item["case_id"],
+                    "violations": sorted(str(value) for value in violations),
+                }
+            )
+    return failures
+
+
 async def run(args: argparse.Namespace) -> int:
     profile = _profile(args.strategy)
     _apply_environment(profile)
@@ -102,8 +120,12 @@ async def run(args: argparse.Namespace) -> int:
         literature_settings=LiteratureProviderSettings(
             contact_email=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
             semantic_scholar_api_key=os.getenv("SEMANTIC_SCHOLAR_API_KEY"),
-            provider_timeout_seconds=float(literature.get("provider_timeout_seconds", 10.0)),
-            round_deadline_seconds=float(literature.get("round_deadline_seconds", 25.0)),
+            provider_timeout_seconds=float(
+                literature.get("provider_timeout_seconds", 10.0)
+            ),
+            round_deadline_seconds=float(
+                literature.get("round_deadline_seconds", 25.0)
+            ),
             enable_arxiv_fallback=bool(literature.get("enable_arxiv_fallback", True)),
         ),
         price_table=price_table,
@@ -152,13 +174,15 @@ async def run(args: argparse.Namespace) -> int:
     global_failures: list[str] = []
     if formal_run and clean_tree is not True:
         global_failures.append("clean_tree_not_verified")
+    case_failures = _case_failures(results)
+    formal_eligible = formal_run and not global_failures and not case_failures
     run_record = {
         "gate": "L",
         "contract_version": manifest["contract_version"],
         "holdout_version": manifest["version"],
         "strategy_id": profile["strategy_id"],
         "formal_run": formal_run,
-        "formal_execution_eligible": formal_run and not global_failures,
+        "formal_execution_eligible": formal_eligible,
         "selected_case_ids": sorted(requested),
         "execution_identity": identity,
         "started_utc": min(
@@ -169,6 +193,7 @@ async def run(args: argparse.Namespace) -> int:
         "case_count": len(results),
         "terminal_summary": dict(Counter(item["terminal"] for item in results)),
         "global_failures": global_failures,
+        "case_failures": case_failures,
         "cases": [
             {
                 "case_id": item["case_id"],
@@ -176,6 +201,7 @@ async def run(args: argparse.Namespace) -> int:
                 "terminal": item["terminal"],
                 "expected_terminals": item["expected_terminals"],
                 "budget_compliance": item["budget_compliance"],
+                "budget_violations": item.get("budget_violations", []),
                 "output_digest": item["output_digest"],
                 "trace_digest": item["trace_digest"],
             }
@@ -189,8 +215,11 @@ async def run(args: argparse.Namespace) -> int:
     )
     if not formal_run:
         print("Targeted execution is diagnostic-only.")
-    if global_failures:
-        print(f"Formal execution integrity failure: {global_failures}")
+    failures = global_failures + [
+        f"{item['case_id']}:{','.join(item['violations'])}" for item in case_failures
+    ]
+    if failures:
+        print(f"Formal execution failed closed: {failures}")
         return 2
     return 0
 
