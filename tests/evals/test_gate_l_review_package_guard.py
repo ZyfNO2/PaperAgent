@@ -37,8 +37,7 @@ def test_guard_rejects_hidden_case_identity(tmp_path: Path) -> None:
         "holdout_version": "v3-test",
         "blinded": True,
         "cases": [
-            {"arm_id": f"arm-{index:03d}", "review_output": {"text": "ok"}}
-            for index in range(16)
+            {"arm_id": f"arm-{index:03d}", "review_output": {"text": "ok"}} for index in range(16)
         ],
     }
     _write(package, package_value)
