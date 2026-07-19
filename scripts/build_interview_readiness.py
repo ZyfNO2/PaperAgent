@@ -8,7 +8,9 @@ from paperagent.interview_readiness import render_interview_readiness
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Build interview evidence from a Gold Case report.")
+    parser = argparse.ArgumentParser(
+        description="Build interview evidence from a Gold Case report."
+    )
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     return parser.parse_args()
