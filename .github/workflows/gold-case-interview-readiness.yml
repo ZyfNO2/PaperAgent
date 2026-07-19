@@ -114,6 +114,7 @@ jobs:
       - name: Full repository regression
         shell: bash
         run: |
+          set +e
           set -o pipefail
           pytest \
             --cov=paperagent \
@@ -122,6 +123,13 @@ jobs:
             --junitxml=build/gold-case/pytest.xml \
             -q \
             2>&1 | tee build/gold-case/pytest-output.log
+          pytest_status=${PIPESTATUS[0]}
+          set -e
+          if grep -q "^FAIL Required test coverage" build/gold-case/pytest-output.log; then
+            echo "Coverage gate failed even if pytest returned zero."
+            exit 1
+          fi
+          exit "$pytest_status"
       - name: Build Gold Case report
         run: >-
           python scripts/run_gold_case_readiness.py
@@ -132,6 +140,7 @@ jobs:
           --input build/gold-case/report.json
           --output build/gold-case/interview-readiness.md
       - name: Upload evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: gold-case-interview-readiness-${{ github.run_id }}
