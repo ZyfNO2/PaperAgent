@@ -7,10 +7,10 @@ from pathlib import Path
 import pytest
 
 from paperagent.claw_academic_benchmark import (
+    SOURCE_COMMIT,
     AcademicTailoringRunTrace,
     AggregateEvaluation,
     EvidenceReview,
-    SOURCE_COMMIT,
     build_gold_self_check_trace,
     evaluate_case,
     evaluate_dataset,
@@ -26,7 +26,7 @@ def _trace_with(
     trace: AcademicTailoringRunTrace,
     **updates: object,
 ) -> AcademicTailoringRunTrace:
-    payload = trace.model_dump(mode="json")
+    payload = trace.model_dump(mode="json", by_alias=True)
     payload.update(updates)
     return AcademicTailoringRunTrace.model_validate(payload)
 
@@ -65,12 +65,12 @@ def test_gold_evaluator_self_check_passes_all_twenty_cases() -> None:
 
 def test_report_digest_and_derived_counts_are_fail_closed() -> None:
     report = run_gold_self_check(DATASET_ROOT)
-    payload = report.model_dump(mode="json")
+    payload = report.model_dump(mode="json", by_alias=True)
     payload["passed"] = 19
     with pytest.raises(ValueError, match="aggregate passed count"):
         AggregateEvaluation.model_validate(payload)
 
-    payload = report.model_dump(mode="json")
+    payload = report.model_dump(mode="json", by_alias=True)
     payload["report_digest"] = "0" * 64
     with pytest.raises(ValueError, match="report digest mismatch"):
         AggregateEvaluation.model_validate(payload)
@@ -102,7 +102,9 @@ def test_identity_verified_but_relevance_failed_cannot_be_accepted() -> None:
 
 def test_incompatible_supplied_paper_is_a_hard_failure() -> None:
     dataset = load_gold_dataset(DATASET_ROOT)
-    case = next(item for item in dataset.cases if item.case_id == "at-020-lightgcn-contrastive-supplied")
+    case = next(
+        item for item in dataset.cases if item.case_id == "at-020-lightgcn-contrastive-supplied"
+    )
     trace = build_gold_self_check_trace(case)
     reviews = list(trace.evidence_reviews)
     supplied = reviews[1]
@@ -118,9 +120,7 @@ def test_incompatible_supplied_paper_is_a_hard_failure() -> None:
     )
     result = evaluate_case(case, mutated)
     assert result.status == "failed"
-    assert "FORCED_INCOMPATIBLE_SUPPLIED_MATERIAL" in {
-        item.code for item in result.hard_failures
-    }
+    assert "FORCED_INCOMPATIBLE_SUPPLIED_MATERIAL" in {item.code for item in result.hard_failures}
 
 
 def test_revise_pilot_mapping_is_explicit_and_not_implicit() -> None:
@@ -166,12 +166,11 @@ def test_dataset_evaluation_requires_exact_case_identity() -> None:
 def test_jsonl_run_contract_round_trips() -> None:
     dataset = load_gold_dataset(DATASET_ROOT)
     traces = tuple(build_gold_self_check_trace(case) for case in dataset.cases)
-    serialized = "\n".join(item.model_dump_json() for item in traces)
+    serialized = "\n".join(item.model_dump_json(by_alias=True) for item in traces)
     restored = tuple(
-        AcademicTailoringRunTrace.model_validate_json(line)
-        for line in serialized.splitlines()
+        AcademicTailoringRunTrace.model_validate_json(line) for line in serialized.splitlines()
     )
     report = evaluate_dataset(dataset, restored)
-    decoded = json.loads(report.model_dump_json())
+    decoded = json.loads(report.model_dump_json(by_alias=True))
     assert decoded["source_commit"] == SOURCE_COMMIT
     assert decoded["passed"] == 20

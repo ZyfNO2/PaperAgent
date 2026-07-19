@@ -14,9 +14,7 @@ from paperagent.claw_academic_benchmark import (
 
 def _load_run_traces(path: Path) -> tuple[AcademicTailoringRunTrace, ...]:
     traces: list[AcademicTailoringRunTrace] = []
-    for line_number, line in enumerate(
-        path.read_text(encoding="utf-8").splitlines(), start=1
-    ):
+    for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         if not line.strip():
             continue
         try:
@@ -79,7 +77,7 @@ def main() -> int:
         mode = "candidate-run"
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
-        json.dumps(report.model_dump(mode="json"), ensure_ascii=False, indent=2),
+        json.dumps(report.model_dump(mode="json", by_alias=True), ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
     print(

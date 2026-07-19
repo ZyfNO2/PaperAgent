@@ -119,7 +119,7 @@ def _sha256(value: object) -> str:
 
 def _git_blob_sha(payload: bytes) -> str:
     header = f"blob {len(payload)}\0".encode()
-    return hashlib.sha1(header + payload).hexdigest()  # noqa: S324
+    return hashlib.sha1(header + payload).hexdigest()
 
 
 def _present(value: str | None) -> bool:
@@ -127,7 +127,9 @@ def _present(value: str | None) -> bool:
 
 
 class DatasetSource(FrozenModel):
-    schema: Literal["paperagent.external-dataset-source.v1"]
+    schema_name: Literal["paperagent.external-dataset-source.v1"] = Field(
+        default="paperagent.external-dataset-source.v1", alias="schema"
+    )
     dataset_id: Literal["claw-academic-tailoring-v1"]
     source_repository: Literal["ZyfNO2/PaperClaw"]
     source_branch: Literal["main"]
@@ -154,7 +156,9 @@ class TraceStage(FrozenModel):
 
 
 class TraceProfile(FrozenModel):
-    schema: Literal["paperclaw.academic-tailoring.trace-profile.v1"]
+    schema_name: Literal["paperclaw.academic-tailoring.trace-profile.v1"] = Field(
+        default="paperclaw.academic-tailoring.trace-profile.v1", alias="schema"
+    )
     profile_id: Literal["academic-tailoring-gold-trace-v1"]
     stages: tuple[TraceStage, ...]
     global_hard_failures: tuple[str, ...]
@@ -186,7 +190,9 @@ class SpecialAssertions(FrozenModel):
 
 
 class GoldCase(FrozenModel):
-    schema: Literal["paperclaw.academic-tailoring.case.v1"]
+    schema_name: Literal["paperclaw.academic-tailoring.case.v1"] = Field(
+        default="paperclaw.academic-tailoring.case.v1", alias="schema"
+    )
     case_id: str = Field(pattern=r"^at-[0-9]{3}-[a-z0-9-]+$")
     user_input: str = Field(min_length=1)
     supplied_materials: tuple[SuppliedMaterial, ...]
@@ -237,9 +243,9 @@ class GoldDataset(FrozenModel):
             raise ValueError("supplied-paper distribution must remain 15/3/2")
         expected_digest = _sha256(
             {
-                "source": self.source.model_dump(mode="json"),
-                "profile": self.profile.model_dump(mode="json"),
-                "cases": [item.model_dump(mode="json") for item in self.cases],
+                "source": self.source.model_dump(mode="json", by_alias=True),
+                "profile": self.profile.model_dump(mode="json", by_alias=True),
+                "cases": [item.model_dump(mode="json", by_alias=True) for item in self.cases],
             }
         )
         if not hmac.compare_digest(self.dataset_digest, expected_digest):
@@ -328,7 +334,9 @@ class ExperimentTrace(FrozenModel):
 
 
 class AcademicTailoringRunTrace(FrozenModel):
-    schema: Literal["paperagent.claw-academic-run.v1"] = RUN_TRACE_SCHEMA
+    schema_name: Literal["paperagent.claw-academic-run.v1"] = Field(
+        default="paperagent.claw-academic-run.v1", alias="schema"
+    )
     case_id: str = Field(min_length=1)
     fact_partitions: FactPartitions
     retrieval_roles: tuple[EvidenceRole, ...]
@@ -397,9 +405,7 @@ class CaseEvaluation(FrozenModel):
             raise ValueError("case score must be derived from stage scores")
         expected_status = (
             "passed"
-            if self.score >= self.minimum_score
-            and self.decision_matches
-            and not self.hard_failures
+            if self.score >= self.minimum_score and self.decision_matches and not self.hard_failures
             else "failed"
         )
         if self.status != expected_status:
@@ -408,11 +414,13 @@ class CaseEvaluation(FrozenModel):
 
 
 class AggregateEvaluation(FrozenModel):
-    schema: Literal["paperagent.claw-academic-report.v1"] = REPORT_SCHEMA
-    source_repository: Literal["ZyfNO2/PaperClaw"] = SOURCE_REPOSITORY
-    source_commit: Literal[
+    schema_name: Literal["paperagent.claw-academic-report.v1"] = Field(
+        default="paperagent.claw-academic-report.v1", alias="schema"
+    )
+    source_repository: Literal["ZyfNO2/PaperClaw"] = "ZyfNO2/PaperClaw"
+    source_commit: Literal["60a577a3d8d6701a8d212604572e846cc8a41e2f"] = (
         "60a577a3d8d6701a8d212604572e846cc8a41e2f"
-    ] = SOURCE_COMMIT
+    )
     dataset_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
     total: int = Field(ge=1)
     passed: int = Field(ge=0)
@@ -435,7 +443,7 @@ class AggregateEvaluation(FrozenModel):
         expected_hard_failures = sum(len(item.hard_failures) for item in self.cases)
         if self.hard_failure_count != expected_hard_failures:
             raise ValueError("aggregate hard failure count must be derived from case results")
-        payload = self.model_dump(mode="json", exclude={"report_digest"})
+        payload = self.model_dump(mode="json", by_alias=True, exclude={"report_digest"})
         expected_digest = _sha256(payload)
         if not hmac.compare_digest(self.report_digest, expected_digest):
             raise ValueError("aggregate report digest mismatch")
@@ -445,8 +453,8 @@ class AggregateEvaluation(FrozenModel):
 def load_gold_dataset(root: Path) -> GoldDataset:
     source = DatasetSource.model_validate_json((root / "source.json").read_text(encoding="utf-8"))
     for filename, expected_blob in source.files.items():
-        payload = (root / filename).read_bytes()
-        actual_blob = _git_blob_sha(payload)
+        file_payload = (root / filename).read_bytes()
+        actual_blob = _git_blob_sha(file_payload)
         if actual_blob != expected_blob:
             raise ValueError(
                 f"snapshot file {filename} diverges from PaperClaw blob {expected_blob}"
@@ -459,25 +467,23 @@ def load_gold_dataset(root: Path) -> GoldDataset:
         raise ValueError(f"expected four case shards, found {len(shards)}")
     cases: list[GoldCase] = []
     for shard in shards:
-        for line_number, line in enumerate(
-            shard.read_text(encoding="utf-8").splitlines(), start=1
-        ):
+        for line_number, line in enumerate(shard.read_text(encoding="utf-8").splitlines(), start=1):
             if not line.strip():
                 continue
             try:
                 cases.append(GoldCase.model_validate_json(line))
             except ValueError as exc:
                 raise ValueError(f"{shard.name}:{line_number}: {exc}") from exc
-    payload = {
-        "source": source.model_dump(mode="json"),
-        "profile": profile.model_dump(mode="json"),
-        "cases": [item.model_dump(mode="json") for item in cases],
+    dataset_payload = {
+        "source": source.model_dump(mode="json", by_alias=True),
+        "profile": profile.model_dump(mode="json", by_alias=True),
+        "cases": [item.model_dump(mode="json", by_alias=True) for item in cases],
     }
     return GoldDataset(
         source=source,
         profile=profile,
         cases=tuple(cases),
-        dataset_digest=_sha256(payload),
+        dataset_digest=_sha256(dataset_payload),
     )
 
 
@@ -492,7 +498,9 @@ def _partition_sets(partitions: FactPartitions) -> tuple[set[str], ...]:
 
 def _partitions_are_disjoint(partitions: FactPartitions) -> bool:
     values = _partition_sets(partitions)
-    return all(not left & right for index, left in enumerate(values) for right in values[index + 1 :])
+    return all(
+        not left & right for index, left in enumerate(values) for right in values[index + 1 :]
+    )
 
 
 def _hypothesis_complete(hypothesis: HypothesisTrace | None) -> bool:
@@ -512,22 +520,25 @@ def _hypothesis_complete(hypothesis: HypothesisTrace | None) -> bool:
 
 
 def _module_complete(module: ModuleTrace) -> bool:
-    return all(
-        _present(value)
-        for value in (
-            module.evidence_id,
-            module.original_role,
-            module.proposed_role,
-            module.input_semantics,
-            module.output_semantics,
-            module.input_shape,
-            module.output_shape,
-            module.optimization_interaction,
-            module.compute_cost,
-            module.failure_mode,
-            module.implementation_switch,
+    return (
+        all(
+            _present(value)
+            for value in (
+                module.evidence_id,
+                module.original_role,
+                module.proposed_role,
+                module.input_semantics,
+                module.output_semantics,
+                module.input_shape,
+                module.output_shape,
+                module.optimization_interaction,
+                module.compute_cost,
+                module.failure_mode,
+                module.implementation_switch,
+            )
         )
-    ) and module.role_compatible is True
+        and module.role_compatible is True
+    )
 
 
 def _experiment_complete(experiment: ExperimentTrace) -> bool:
@@ -599,9 +610,7 @@ def _hard_failures(trace: AcademicTailoringRunTrace) -> tuple[HardFailure, ...]:
     incompatible_supplied = [
         item.evidence_id
         for item in trace.evidence_reviews
-        if item.source_is_supplied_material
-        and item.accepted
-        and item.role_compatible is False
+        if item.source_is_supplied_material and item.accepted and item.role_compatible is False
     ]
     if incompatible_supplied:
         failures.append(
@@ -697,9 +706,7 @@ def evaluate_case(
         and trace.decision in {"REVISE", "NO_GO"}
         and _present(trace.module_defer_reason)
     )
-    modules_complete = bool(trace.modules) and all(
-        _module_complete(item) for item in trace.modules
-    )
+    modules_complete = bool(trace.modules) and all(_module_complete(item) for item in trace.modules)
     module_ids = tuple(item.module_id for item in trace.modules)
     experiments_complete = bool(trace.experiments) and all(
         _experiment_complete(item) for item in trace.experiments
@@ -848,8 +855,7 @@ def evaluate_case(
                     "strong-comparison experiment arm is missing",
                 ),
                 (
-                    module_defer_valid
-                    or bool({"single_module", "full"} & experiment_arms),
+                    module_defer_valid or bool({"single_module", "full"} & experiment_arms),
                     "method experiment arm is missing",
                 ),
                 (bool(trace.stop_conditions), "stop conditions are missing"),
@@ -870,9 +876,7 @@ def evaluate_case(
     score = sum(item.earned for item in stages)
     decision_matches = observed_decision == case.decision
     status: Literal["passed", "failed"] = (
-        "passed"
-        if score >= minimum_score and decision_matches and not hard_failures
-        else "failed"
+        "passed" if score >= minimum_score and decision_matches and not hard_failures else "failed"
     )
     return CaseEvaluation(
         case_id=case.case_id,
@@ -930,9 +934,7 @@ def evaluate_dataset(
         "by_tag": by_tag,
         "cases": [item.model_dump(mode="json") for item in results],
     }
-    return AggregateEvaluation.model_validate(
-        {**payload, "report_digest": _sha256(payload)}
-    )
+    return AggregateEvaluation.model_validate({**payload, "report_digest": _sha256(payload)})
 
 
 def _gold_review(
@@ -942,9 +944,7 @@ def _gold_review(
 ) -> EvidenceReview:
     return EvidenceReview(
         evidence_id=f"{case.case_id}-evidence-{index:02d}",
-        source_type=(
-            "user_material" if index <= len(case.supplied_materials) else "paper"
-        ),
+        source_type=("user_material" if index <= len(case.supplied_materials) else "paper"),
         identity_verified=True,
         relevance_reviewed=True,
         relevance_passed=True,
