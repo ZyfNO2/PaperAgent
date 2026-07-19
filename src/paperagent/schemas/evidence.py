@@ -75,7 +75,13 @@ class EvidenceItem(FrozenModel):
 
 class EvidenceBundle(FrozenModel):
     items: list[EvidenceItem] = Field(default_factory=list)
+    # Final evidence acceptance. Downstream synthesis, method design and report
+    # must use this set, not identity verification alone.
     accepted_ids: list[str] = Field(default_factory=list)
+    # Server-owned identity verification result. This preserves the distinction
+    # between "the paper exists" and "the paper supports this research task".
+    identity_verified_ids: list[str] = Field(default_factory=list)
+    relevance_rejected_ids: list[str] = Field(default_factory=list)
     rejected_ids: list[str] = Field(default_factory=list)
     pending_ids: list[str] = Field(default_factory=list)
     failed_verification_ids: list[str] = Field(default_factory=list)
@@ -87,31 +93,44 @@ class EvidenceBundle(FrozenModel):
         ids = [item.evidence_id for item in self.items]
         if len(ids) != len(set(ids)):
             raise ValueError("evidence IDs must be globally unique")
-        sets = {
-            "accepted": set(self.accepted_ids),
+        identity_verified = set(self.identity_verified_ids or self.accepted_ids)
+        identity_sets = {
+            "accepted": identity_verified,
             "rejected": set(self.rejected_ids),
             "pending": set(self.pending_ids),
             "failed_verification": set(self.failed_verification_ids),
         }
-        all_status_ids: list[str] = [item for values in sets.values() for item in values]
-        if len(all_status_ids) != len(set(all_status_ids)):
-            raise ValueError("each evidence ID must belong to exactly one status set")
+        all_identity_ids: list[str] = [item for values in identity_sets.values() for item in values]
+        if len(all_identity_ids) != len(set(all_identity_ids)):
+            raise ValueError("each evidence ID must belong to exactly one identity status set")
         item_by_id = {item.evidence_id: item for item in self.items}
         for evidence_id, item in item_by_id.items():
-            if evidence_id not in sets[item.verification_status]:
+            if evidence_id not in identity_sets[item.verification_status]:
                 raise ValueError(
-                    f"evidence {evidence_id} missing from {item.verification_status} set"
+                    f"evidence {evidence_id} missing from {item.verification_status} identity set"
                 )
-        unknown_ids = set(all_status_ids) - set(item_by_id)
+        unknown_ids = set(all_identity_ids) - set(item_by_id)
         if unknown_ids:
-            raise ValueError(f"status sets contain unknown evidence IDs: {sorted(unknown_ids)}")
+            raise ValueError(f"identity status sets contain unknown evidence IDs: {sorted(unknown_ids)}")
+        final_accepted = set(self.accepted_ids)
+        relevance_rejected = set(self.relevance_rejected_ids)
+        if not final_accepted <= identity_verified:
+            raise ValueError("final accepted evidence must be identity verified")
+        if not relevance_rejected <= identity_verified:
+            raise ValueError("relevance rejected evidence must be identity verified")
+        if final_accepted & relevance_rejected:
+            raise ValueError("evidence cannot be both accepted and relevance rejected")
+        if self.identity_verified_ids and final_accepted | relevance_rejected != identity_verified:
+            raise ValueError(
+                "identity verified evidence must be either final accepted or relevance rejected"
+            )
         expected_coverage: dict[str, int] = {}
         for item in self.items:
-            if item.verification_status == "accepted":
+            if item.evidence_id in final_accepted:
                 for gap_id in item.supports_gap_ids:
                     expected_coverage[gap_id] = expected_coverage.get(gap_id, 0) + 1
         if self.coverage_by_gap != expected_coverage:
-            raise ValueError("coverage_by_gap must count accepted evidence only")
+            raise ValueError("coverage_by_gap must count final accepted evidence only")
         return self
 
     def accepted_items(self) -> list[EvidenceItem]:
