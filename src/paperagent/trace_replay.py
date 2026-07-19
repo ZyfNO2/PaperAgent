@@ -66,13 +66,9 @@ class TraceReplayReport(FrozenModel):
 
     @model_validator(mode="after")
     def validate_report(self) -> TraceReplayReport:
-        derived_errors = [
-            item.invariant_id for item in self.invariant_results if not item.passed
-        ]
+        derived_errors = [item.invariant_id for item in self.invariant_results if not item.passed]
         if self.passed != (not derived_errors):
-            raise ValueError(
-                "replay passed flag must be derived from invariant results"
-            )
+            raise ValueError("replay passed flag must be derived from invariant results")
         if self.error_codes != derived_errors:
             raise ValueError("replay error_codes must match failed invariant order")
         return self
@@ -120,9 +116,7 @@ def audit_trace_events(
             )
         )
 
-    record(
-        "TRACE_NONEMPTY", bool(events), "a replay trace must contain at least one event"
-    )
+    record("TRACE_NONEMPTY", bool(events), "a replay trace must contain at least one event")
 
     run_ids = {event.run_id for event in events}
     record(
@@ -156,8 +150,7 @@ def audit_trace_events(
         {
             event.parent_span_id
             for event in events
-            if event.parent_span_id is not None
-            and event.parent_span_id not in span_id_set
+            if event.parent_span_id is not None and event.parent_span_id not in span_id_set
         }
     )
     record(
@@ -179,25 +172,18 @@ def audit_trace_events(
             status_errors.append(
                 f"event {index} type={event.event_type} uses status={event.status}"
             )
-        if (
-            event.event_type.endswith((".completed", ".responded"))
-            and event.status != "completed"
-        ):
+        if event.event_type.endswith((".completed", ".responded")) and event.status != "completed":
             status_errors.append(
                 f"event {index} type={event.event_type} uses status={event.status}"
             )
-        if (
-            event.event_type.endswith((".started", ".requested"))
-            and event.status != "started"
-        ):
+        if event.event_type.endswith((".started", ".requested")) and event.status != "started":
             status_errors.append(
                 f"event {index} type={event.event_type} uses status={event.status}"
             )
-        if event.event_type == "route.decided":
-            if event.status != "decided" or not event.route:
-                route_errors.append(
-                    f"event {index} route.decided requires status=decided and a non-empty route"
-                )
+        if event.event_type == "route.decided" and (event.status != "decided" or not event.route):
+            route_errors.append(
+                f"event {index} route.decided requires status=decided and a non-empty route"
+            )
 
         if event.event_type == "node.started":
             active_nodes[event.node] += 1
@@ -237,8 +223,7 @@ def audit_trace_events(
     terminal_indexes = [
         index
         for index, event in enumerate(events)
-        if event.node == "persist_node"
-        and event.event_type in {"node.completed", "node.failed"}
+        if event.node == "persist_node" and event.event_type in {"node.completed", "node.failed"}
     ]
     terminal_is_final = not terminal_indexes or (
         len(terminal_indexes) == 1 and terminal_indexes[0] == len(events) - 1
@@ -308,9 +293,7 @@ def build_trace_replay_report(
         fixture_version=fixture_version,
         source_commit=source_commit,
         trace_digest=trace_digest(events),
-        final_state_digest=hash_payload(final_state)
-        if final_state is not None
-        else None,
+        final_state_digest=hash_payload(final_state) if final_state is not None else None,
         report_digest=hash_payload(report) if report is not None else None,
         event_count=len(events),
         route_sequence=_route_sequence(events),
@@ -335,14 +318,12 @@ def apply_trace_mutation(
     if mutation == "duplicate_event":
         mutated.insert(1, mutated[0])
     elif mutation == "mixed_run_id":
-        mutated[1 if len(mutated) > 1 else 0] = mutated[
-            1 if len(mutated) > 1 else 0
-        ].model_copy(update={"run_id": "run-mutated"})
+        mutated[1 if len(mutated) > 1 else 0] = mutated[1 if len(mutated) > 1 else 0].model_copy(
+            update={"run_id": "run-mutated"}
+        )
     elif mutation == "missing_route":
         index = next(
-            index
-            for index, event in enumerate(mutated)
-            if event.event_type == "route.decided"
+            index for index, event in enumerate(mutated) if event.event_type == "route.decided"
         )
         mutated[index] = mutated[index].model_copy(update={"route": None})
     elif mutation == "failed_without_error_code":
@@ -358,13 +339,11 @@ def apply_trace_mutation(
             }
         )
     elif mutation == "completed_status_mismatch":
-        mutated[1 if len(mutated) > 1 else 0] = mutated[
-            1 if len(mutated) > 1 else 0
-        ].model_copy(update={"event_type": "node.completed", "status": "decided"})
-    elif mutation == "orphan_parent_span":
-        mutated[0] = mutated[0].model_copy(
-            update={"parent_span_id": "span-does-not-exist"}
+        mutated[1 if len(mutated) > 1 else 0] = mutated[1 if len(mutated) > 1 else 0].model_copy(
+            update={"event_type": "node.completed", "status": "decided"}
         )
+    elif mutation == "orphan_parent_span":
+        mutated[0] = mutated[0].model_copy(update={"parent_span_id": "span-does-not-exist"})
     elif mutation == "append_after_terminal":
         terminal = mutated[-1]
         mutated.append(
