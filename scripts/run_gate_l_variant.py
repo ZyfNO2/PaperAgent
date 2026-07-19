@@ -123,14 +123,10 @@ async def _execute_case_with_payload(
 
     wall_seconds = round(time.monotonic() - started, 3)
     raw_terminal = (
-        str(result.get("execution", {}).get("status", "failed"))
-        if result is not None
-        else "failed"
+        str(result.get("execution", {}).get("status", "failed")) if result is not None else "failed"
     )
     terminal_class = _normalized_terminal(raw_terminal)
-    llm_events = [
-        event for event in trace_records if event.get("event") == "llm.invocation"
-    ]
+    llm_events = [event for event in trace_records if event.get("event") == "llm.invocation"]
     calls = len(llm_events)
     input_tokens = 0
     output_tokens = 0
@@ -269,12 +265,8 @@ async def run(args: argparse.Namespace) -> int:
         literature_settings=LiteratureProviderSettings(
             contact_email=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
             semantic_scholar_api_key=os.getenv("SEMANTIC_SCHOLAR_API_KEY"),
-            provider_timeout_seconds=float(
-                literature.get("provider_timeout_seconds", 10.0)
-            ),
-            round_deadline_seconds=float(
-                literature.get("round_deadline_seconds", 25.0)
-            ),
+            provider_timeout_seconds=float(literature.get("provider_timeout_seconds", 10.0)),
+            round_deadline_seconds=float(literature.get("round_deadline_seconds", 25.0)),
             enable_arxiv_fallback=bool(literature.get("enable_arxiv_fallback", True)),
         ),
         price_table=price_table,
