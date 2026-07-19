@@ -13,7 +13,6 @@ from paperagent.claw_benchmark_adapter import (
 from paperagent.graph import build_graph
 from paperagent.literature.factory import (
     LiteratureProviderSettings,
-    LiteratureRuntime,
     build_literature_runtime,
 )
 from paperagent.persistence import InMemoryStateStore
@@ -27,7 +26,8 @@ SearchMode = Literal["fake", "literature"]
 
 
 class BenchmarkSearchRuntime(Protocol):
-    adapter: SearchProvider
+    @property
+    def adapter(self) -> SearchProvider: ...
 
     async def aclose(self) -> None: ...
 
@@ -57,10 +57,7 @@ def build_benchmark_search_runtime(
             raise ValueError("fake benchmark mode requires an explicit fixture search provider")
         return _InjectedSearchRuntime(adapter=fake_provider)
     if mode == "literature":
-        return cast(
-            LiteratureRuntime,
-            build_literature_runtime(settings or LiteratureProviderSettings()),
-        )
+        return build_literature_runtime(settings or LiteratureProviderSettings())
     raise ValueError(f"unsupported benchmark search mode: {mode}")
 
 
