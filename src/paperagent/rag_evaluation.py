@@ -198,8 +198,7 @@ def aggregate_rag_reports(
     return RAGEvaluationAggregate(
         case_count=count,
         mean_recall_at_k={
-            key: sum(report.recall_at_k[key] for report in reports) / count
-            for key in cutoff_keys
+            key: sum(report.recall_at_k[key] for report in reports) / count for key in cutoff_keys
         },
         mean_precision_at_k={
             key: sum(report.precision_at_k[key] for report in reports) / count
@@ -207,7 +206,8 @@ def aggregate_rag_reports(
         },
         mean_evidence_precision=sum(report.evidence_precision for report in reports) / count,
         mean_citation_support_rate=sum(report.citation_support_rate for report in reports) / count,
-        mean_unsupported_claim_rate=sum(report.unsupported_claim_rate for report in reports) / count,
+        mean_unsupported_claim_rate=sum(report.unsupported_claim_rate for report in reports)
+        / count,
         mean_duplicate_source_rate=sum(report.duplicate_source_rate for report in reports) / count,
         mean_context_utilization=sum(report.context_utilization for report in reports) / count,
         total_llm_calls=sum(report.llm_calls for report in reports),
