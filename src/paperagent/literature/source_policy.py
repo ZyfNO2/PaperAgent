@@ -115,7 +115,9 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
     terms = _english_terms(normalized)
     informative = _informative_terms(normalized)
     unique_informative = tuple(dict.fromkeys(informative))
-    discriminative = tuple(term for term in unique_informative if term not in _GENERIC_TERMS)
+    discriminative = tuple(
+        term for term in unique_informative if term not in _GENERIC_TERMS
+    )
     identifier_query = bool(_IDENTIFIER.search(normalized))
     cjk_count = len(_CJK.findall(normalized))
     generic_only = bool(unique_informative) and not discriminative
@@ -128,7 +130,9 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
     if not identifier_query and len(unique_informative) < 3 and cjk_count < 8:
         reasons.append("query is too broad for rate-limited scholarly search")
     if not identifier_query and len(discriminative) < 2 and cjk_count < 8:
-        reasons.append("query lacks at least two task-, domain-, dataset-, or mechanism-specific terms")
+        reasons.append(
+            "query lacks at least two task-, domain-, dataset-, or mechanism-specific terms"
+        )
     if generic_only:
         reasons.append("query contains only generic research vocabulary")
 
@@ -142,10 +146,7 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
         risk = "high"
 
     recent = bool(set(terms).intersection(_RECENT_HINTS) or _YEAR.search(normalized))
-    if identifier_query and "arxiv" in normalized.casefold():
-        primary = "arxiv"
-        escalation = ("openalex", "semantic_scholar")
-    elif recent:
+    if (identifier_query and "arxiv" in normalized.casefold()) or recent:
         primary = "arxiv"
         escalation = ("openalex", "semantic_scholar")
     else:
