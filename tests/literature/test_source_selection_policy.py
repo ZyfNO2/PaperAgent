@@ -43,7 +43,10 @@ def _paper(
         canonical_title="Lightweight UAV small object detection on VisDrone",
         authors=["Researcher"],
         year=2025,
-        abstract="Lightweight UAV detector for small objects on VisDrone with latency evaluation.",
+        abstract=(
+            "Lightweight UAV detector for small objects on VisDrone "
+            "with latency evaluation."
+        ),
         doi=f"10.1234/{paper_id}" if verified else None,
         urls=[f"https://example.org/{paper_id}"],
         source_records=[
@@ -130,10 +133,17 @@ async def test_generic_query_is_rejected_before_any_provider_call() -> None:
 
 @pytest.mark.asyncio
 async def test_specific_query_stops_after_one_successful_academic_source() -> None:
-    strong = _paper("openalex", paper_id="oa-1", relevance=0.8, score=0.84, verified=True)
+    strong = _paper(
+        "openalex",
+        paper_id="oa-1",
+        relevance=0.8,
+        score=0.84,
+        verified=True,
+    )
+    second = strong.model_copy(update={"paper_id": "oa-2"})
     service = RecordingService(
         {
-            "openalex": _bundle("openalex", [strong, strong.model_copy(update={"paper_id": "oa-2"})]),
+            "openalex": _bundle("openalex", [strong, second]),
             "semantic_scholar": _bundle("semantic_scholar", []),
             "arxiv": _bundle("arxiv", []),
             "tavily": _bundle("tavily", []),
@@ -142,7 +152,9 @@ async def test_specific_query_stops_after_one_successful_academic_source() -> No
     adapter = _adapter(service)
 
     results = await adapter.search(
-        query=_query("lightweight UAV small object detection VisDrone AP_small latency"),
+        query=_query(
+            "lightweight UAV small object detection VisDrone AP_small latency"
+        ),
         scenario="live",
         call_index=0,
         fixture_version="v0.1",
@@ -158,7 +170,13 @@ async def test_specific_query_stops_after_one_successful_academic_source() -> No
 
 @pytest.mark.asyncio
 async def test_low_quality_first_source_escalates_only_until_threshold_is_met() -> None:
-    weak = _paper("openalex", paper_id="oa-weak", relevance=0.1, score=0.4, verified=False)
+    weak = _paper(
+        "openalex",
+        paper_id="oa-weak",
+        relevance=0.1,
+        score=0.4,
+        verified=False,
+    )
     strong = _paper(
         "semantic_scholar",
         paper_id="s2-1",
@@ -166,13 +184,11 @@ async def test_low_quality_first_source_escalates_only_until_threshold_is_met() 
         score=0.84,
         verified=True,
     )
+    second = strong.model_copy(update={"paper_id": "s2-2"})
     service = RecordingService(
         {
             "openalex": _bundle("openalex", [weak]),
-            "semantic_scholar": _bundle(
-                "semantic_scholar",
-                [strong, strong.model_copy(update={"paper_id": "s2-2"})],
-            ),
+            "semantic_scholar": _bundle("semantic_scholar", [strong, second]),
             "arxiv": _bundle("arxiv", []),
             "tavily": _bundle("tavily", []),
         }
@@ -180,7 +196,9 @@ async def test_low_quality_first_source_escalates_only_until_threshold_is_met() 
     adapter = _adapter(service)
 
     results = await adapter.search(
-        query=_query("lightweight UAV small object detection VisDrone AP_small latency"),
+        query=_query(
+            "lightweight UAV small object detection VisDrone AP_small latency"
+        ),
         scenario="live",
         call_index=0,
         fixture_version="v0.1",
