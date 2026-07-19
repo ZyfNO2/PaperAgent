@@ -219,6 +219,7 @@ def test_input_contract_rejects_structural_inconsistency(
     elif mutation == "used_context_overflow":
         payload["used_context_tokens"] = 251
     elif mutation == "retrieved_context_overflow":
+        payload["used_context_tokens"] = 100
         payload["total_context_tokens"] = 150
     with pytest.raises(ValidationError, match=message):
         RAGEvaluationInput.model_validate(payload)
