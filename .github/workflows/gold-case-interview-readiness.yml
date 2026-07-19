@@ -119,13 +119,14 @@ jobs:
           pytest \
             --cov=paperagent \
             --cov-branch \
+            --cov-fail-under=90 \
             --cov-report=term-missing \
             --junitxml=build/gold-case/pytest.xml \
             -q \
             2>&1 | tee build/gold-case/pytest-output.log
           pytest_status=${PIPESTATUS[0]}
           set -e
-          if grep -q "^FAIL Required test coverage" build/gold-case/pytest-output.log; then
+          if grep -q "Required test coverage.*not reached" build/gold-case/pytest-output.log; then
             echo "Coverage gate failed even if pytest returned zero."
             exit 1
           fi
