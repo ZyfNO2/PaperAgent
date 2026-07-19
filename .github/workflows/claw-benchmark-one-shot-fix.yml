@@ -141,14 +141,14 @@ jobs:
           )
           test.write_text(text, encoding='utf-8')
           PY
-          ruff check --fix \
-            src/paperagent/claw_academic_benchmark.py \
-            scripts/run_claw_academic_benchmark.py \
+          files=(
+            src/paperagent/claw_academic_benchmark.py
+            scripts/run_claw_academic_benchmark.py
             tests/evals/test_claw_academic_benchmark.py
-          ruff format \
-            src/paperagent/claw_academic_benchmark.py \
-            scripts/run_claw_academic_benchmark.py \
-            tests/evals/test_claw_academic_benchmark.py
+          )
+          ruff check --fix "${files[@]}" || true
+          ruff format "${files[@]}"
+          ruff check "${files[@]}"
       - name: Commit fixed sources
         run: |
           git config user.name github-actions[bot]
