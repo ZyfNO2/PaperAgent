@@ -20,6 +20,7 @@ on:
       - "tests/nodes/test_evidence_ledger_outcome_trace.py"
       - "tests/e2e/test_evidence_pollution_flow.py"
       - "tests/e2e/test_evidence_quality_gate_flow.py"
+      - "docs/review/EVIDENCE_TRACE_REPAIR_HANDOFF.md"
       - ".github/workflows/evidence-contract-cloud.yml"
   workflow_dispatch:
 
@@ -33,7 +34,7 @@ concurrency:
 jobs:
   cloud-fast:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -83,6 +84,8 @@ jobs:
             tests/e2e/test_evidence_quality_gate_flow.py \
             > build/evidence-contract-cloud/pytest.log 2>&1
           pytest_status=$?
+          pytest -q > build/evidence-contract-cloud/full-pytest.log 2>&1
+          full_pytest_status=$?
           formatted_files=()
           for file in "${files[@]}"; do
             formatted_files+=("build/evidence-contract-cloud/source/$file")
@@ -91,11 +94,12 @@ jobs:
             > build/evidence-contract-cloud/autofix.log 2>&1
           ruff format "${formatted_files[@]}" \
             >> build/evidence-contract-cloud/autofix.log 2>&1
-          printf '{"ruff":%s,"format":%s,"mypy":%s,"pytest":%s}\n' \
+          printf '{"ruff":%s,"format":%s,"mypy":%s,"pytest":%s,"full_pytest":%s}\n' \
             "$ruff_status" "$format_status" "$mypy_status" "$pytest_status" \
+            "$full_pytest_status" \
             > build/evidence-contract-cloud/status.json
           cat build/evidence-contract-cloud/status.json
-          if (( ruff_status || format_status || mypy_status || pytest_status )); then
+          if (( ruff_status || format_status || mypy_status || pytest_status || full_pytest_status )); then
             exit 1
           fi
       - name: Upload evidence contract logs
