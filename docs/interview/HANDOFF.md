@@ -136,3 +136,4 @@ The handoff does not claim:
 - live Mistral scientific-quality evidence;
 - real-paper reproduction, external holdout, or blinded expert review;
 - production throughput, availability, or cost SLOs.
+- the system binds baseline reproduction facts to server-owned evidence metadata and does not execute training experiments independently.
