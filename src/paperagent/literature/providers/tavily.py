@@ -19,6 +19,22 @@ from paperagent.schemas.literature import (
     QueryLane,
 )
 
+_ACADEMIC_WEB_DOMAINS = [
+    "aclanthology.org",
+    "arxiv.org",
+    "dl.acm.org",
+    "doi.org",
+    "github.com",
+    "huggingface.co",
+    "ieeexplore.ieee.org",
+    "nature.com",
+    "openreview.net",
+    "paperswithcode.com",
+    "proceedings.mlr.press",
+    "sciencedirect.com",
+    "springer.com",
+]
+
 
 class TavilyProvider:
     provider_name = "tavily"
@@ -53,13 +69,13 @@ class TavilyProvider:
                 json_body={
                     "query": lane.query,
                     "search_depth": "basic",
-                    "max_results": min(limit, 10),
+                    "max_results": min(limit, 5),
                     "topic": "general",
                     "include_answer": False,
                     "include_raw_content": False,
                     "include_images": False,
                     "auto_parameters": False,
-                    "include_usage": False,
+                    "include_domains": _ACADEMIC_WEB_DOMAINS,
                 },
                 headers={
                     "Authorization": f"Bearer {self._api_key}",
