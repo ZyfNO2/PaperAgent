@@ -19,6 +19,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 from gate_l_acceptance_v3 import DEFAULT_THRESHOLDS, validate_cases
+
 from paperagent.academic_methodology import (
     METHOD_AUDIT_POLICY_VERSION,
     METHOD_PLAN_CONTRACT_VERSION,
