@@ -92,6 +92,8 @@ class RAGEvaluationInput(BaseModel):
             raise ValueError("retrieved evidence tokens cannot exceed total context tokens")
         if self.terminal == "succeeded" and (not self.retrieved or not self.claims):
             raise ValueError("succeeded RAG evaluations require retrieved evidence and claims")
+        if self.terminal == "succeeded" and self.block_reason is not None:
+            raise ValueError("succeeded evaluations cannot carry a block reason")
         if self.terminal == "blocked" and not (self.block_reason and self.block_reason.strip()):
             raise ValueError("blocked evaluations require a block reason")
         return self
@@ -146,6 +148,19 @@ class RAGEvaluationReport(BaseModel):
             self.critical_unsupported_claims
         ):
             raise ValueError("critical unsupported claim IDs must be unique")
+        if self.terminal == "succeeded" and self.block_reason is not None:
+            raise ValueError("succeeded reports cannot carry a block reason")
+        if self.terminal == "blocked" and not (self.block_reason and self.block_reason.strip()):
+            raise ValueError("blocked reports require a block reason")
+        if self.terminal == "succeeded" and not math.isclose(
+            self.citation_support_rate + self.unsupported_claim_rate,
+            1.0,
+            rel_tol=0.0,
+            abs_tol=1e-12,
+        ):
+            raise ValueError("successful report support rates must sum to 1")
+        if self.critical_unsupported_claims and self.unsupported_claim_rate == 0.0:
+            raise ValueError("critical unsupported claims require a non-zero unsupported rate")
         return self
 
 
@@ -174,10 +189,15 @@ class RAGEvaluationAggregate(BaseModel):
         )
         if recall_keys != precision_keys:
             raise ValueError("mean recall and precision must use the same cutoffs")
+        allowed_terminals = {"succeeded", "blocked", "failed"}
+        if set(self.terminal_distribution) - allowed_terminals:
+            raise ValueError("terminal distribution contains an unknown terminal")
         if any(count < 0 for count in self.terminal_distribution.values()):
             raise ValueError("terminal distribution counts must be non-negative")
         if sum(self.terminal_distribution.values()) != self.case_count:
             raise ValueError("terminal distribution must sum to case count")
+        if any(not reason.strip() for reason in self.blocker_distribution):
+            raise ValueError("blocker distribution reasons must be non-blank")
         if any(count < 0 for count in self.blocker_distribution.values()):
             raise ValueError("blocker distribution counts must be non-negative")
         if sum(self.blocker_distribution.values()) > self.case_count:
