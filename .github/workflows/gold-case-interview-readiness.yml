@@ -4,9 +4,16 @@ on:
   pull_request:
     branches: [master]
     paths:
+      - "pyproject.toml"
+      - "src/paperagent/academic_methodology.py"
+      - "src/paperagent/academic_tailoring.py"
+      - "src/paperagent/academic_tailoring_evaluation.py"
+      - "src/paperagent/academic_tailoring_fixtures.py"
       - "src/paperagent/gold_case.py"
       - "src/paperagent/rag_evaluation.py"
       - "src/paperagent/interview_readiness.py"
+      - "evals/academic_tailoring/cases.json"
+      - "evals/academic_tailoring/npc/**"
       - "scripts/run_gold_case_readiness.py"
       - "scripts/build_interview_readiness.py"
       - "tests/evals/test_gold_case_readiness.py"
@@ -21,8 +28,16 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
   focused:
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -30,6 +45,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+      - name: Verify exact source SHA
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -70,9 +90,15 @@ jobs:
 
   full-regression-and-artifact:
     needs: focused
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+      - name: Verify exact source SHA
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -81,7 +107,10 @@ jobs:
       - name: Install project
         run: python -m pip install -e '.[dev]'
       - name: Prepare evidence directory
-        run: mkdir -p build/gold-case
+        shell: bash
+        run: |
+          mkdir -p build/gold-case
+          printf '%s\n' "$SOURCE_SHA" > build/gold-case/source-sha.txt
       - name: Full repository regression
         shell: bash
         run: |
