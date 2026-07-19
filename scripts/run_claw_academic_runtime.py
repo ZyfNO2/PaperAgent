@@ -79,6 +79,12 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--case-id", action="append", default=[])
     parser.add_argument("--max-cases", type=int, default=20)
     parser.add_argument("--max-llm-calls", type=int, default=12)
+    parser.add_argument(
+        "--provider-call-budget",
+        type=int,
+        default=60,
+        help="maximum uncached external search-provider calls across the selected benchmark cases",
+    )
     parser.add_argument("--minimum-score", type=int, default=80)
     parser.add_argument("--require-pass", action="store_true")
     parser.add_argument("--llm-provider", default=None)
@@ -87,9 +93,22 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--enable-web-search",
         action="store_true",
-        help="enable Tavily (when keyed) and DuckDuckGo only as post-academic fallback",
+        help=(
+            "allow Tavily (when keyed) or DuckDuckGo only after a low-risk precise query "
+            "fails to produce sufficient verified academic evidence"
+        ),
     )
     return parser
+
+
+def _provider_budget(search_runtime: object) -> dict[str, int | None] | None:
+    service = getattr(search_runtime, "service", None)
+    reader = getattr(service, "provider_call_budget", None)
+    if callable(reader):
+        value = reader()
+        if isinstance(value, dict):
+            return value
+    return None
 
 
 async def _run(args: argparse.Namespace) -> int:
@@ -101,6 +120,8 @@ async def _run(args: argparse.Namespace) -> int:
         raise ValueError(f"unknown case IDs: {missing}")
     if not 1 <= args.max_cases <= 20:
         raise ValueError("--max-cases must be between 1 and 20")
+    if args.provider_call_budget < 1:
+        raise ValueError("--provider-call-budget must be positive")
     cases = cases[: args.max_cases]
 
     fake_provider = None
@@ -114,6 +135,7 @@ async def _run(args: argparse.Namespace) -> int:
         semantic_scholar_api_key=os.getenv("SEMANTIC_SCHOLAR_API_KEY"),
         tavily_api_key=os.getenv("TAVILY_API_KEY"),
         enable_web_search=bool(args.enable_web_search),
+        max_provider_calls_total=args.provider_call_budget,
     )
     search_runtime = build_benchmark_search_runtime(
         args.search_mode,
@@ -130,6 +152,7 @@ async def _run(args: argparse.Namespace) -> int:
     states: list[object] = []
     traces = []
     errors: list[dict[str, str]] = []
+    provider_budget: dict[str, int | None] | None = None
     try:
         for index, case in enumerate(cases, start=1):
             try:
@@ -151,6 +174,7 @@ async def _run(args: argparse.Namespace) -> int:
                 continue
             states.append({"case_id": case.case_id, "state": state})
             traces.append(trace)
+        provider_budget = _provider_budget(search_runtime)
     finally:
         await search_runtime.aclose()
 
@@ -166,6 +190,7 @@ async def _run(args: argparse.Namespace) -> int:
         "selected_cases": [case.case_id for case in cases],
         "completed": len(traces),
         "errors": errors,
+        "provider_call_budget": provider_budget,
         "report_status": "not_generated",
     }
     exit_code = 1 if errors else 0
