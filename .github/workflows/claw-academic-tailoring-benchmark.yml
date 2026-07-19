@@ -42,7 +42,7 @@ jobs:
         run: |
           set +e
           out="build/claw-benchmark-${{ matrix.python-version }}"
-          mkdir -p "$out"
+          mkdir -p "$out/formatted"
           files=(
             src/paperagent/claw_academic_benchmark.py
             scripts/run_claw_academic_benchmark.py
@@ -61,6 +61,16 @@ jobs:
             --output "$out/report.json" \
             --require-pass > "$out/self-check.log" 2>&1
           self_check_status=$?
+          for file in "${files[@]}"; do
+            mkdir -p "$out/formatted/$(dirname "$file")"
+            cp "$file" "$out/formatted/$file"
+          done
+          formatted_files=()
+          for file in "${files[@]}"; do
+            formatted_files+=("$out/formatted/$file")
+          done
+          ruff check --fix "${formatted_files[@]}" > "$out/autofix.log" 2>&1
+          ruff format "${formatted_files[@]}" >> "$out/autofix.log" 2>&1
           printf '{"ruff":%s,"format":%s,"mypy":%s,"pytest":%s,"self_check":%s}\n' \
             "$ruff_status" "$format_status" "$mypy_status" "$pytest_status" \
             "$self_check_status" > "$out/status.json"
