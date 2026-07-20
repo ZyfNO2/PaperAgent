@@ -1,18 +1,6 @@
 name: CLAW Case 001 Live Retrieval
 
 on:
-  push:
-    branches:
-      - feat/claw-live-search-runtime
-    paths:
-      - ".github/workflows/claw-single-case-live-retrieval.yml"
-      - "scripts/probe_claw_case_retrieval.py"
-      - "src/paperagent/literature/adapter.py"
-      - "src/paperagent/literature/factory.py"
-      - "src/paperagent/literature/service.py"
-      - "src/paperagent/literature/source_policy.py"
-      - "src/paperagent/literature/verification.py"
-      - "src/paperagent/literature/providers/**"
   workflow_dispatch:
 
 permissions:
