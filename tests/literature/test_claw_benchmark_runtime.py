@@ -21,6 +21,7 @@ from paperagent.schemas import (
     FinalOutcome,
     ResearchPlan,
     ResearchRequest,
+    SearchQuery,
 )
 from paperagent.state import PaperAgentState
 
@@ -66,17 +67,34 @@ def _method() -> object:
 
 def _pilot_state(*, references: list[str] | None = None, covered: bool = True) -> PaperAgentState:
     references = references or []
-    gaps = []
-    coverage: dict[str, int] = {}
+    base_gap = EvidenceGap(gap_id="baseline", description="Verify a task-matched baseline.")
+    gaps = [base_gap]
+    queries = [
+        SearchQuery(
+            query_id="baseline-query",
+            gap_id=base_gap.gap_id,
+            query="task matched baseline",
+            source_types=["paper"],
+        )
+    ]
+    coverage: dict[str, int] = {base_gap.gap_id: 1}
     if references:
-        gaps = [
-            EvidenceGap(
-                gap_id="user-material-01-identity",
-                description="Verify the supplied public title.",
-            )
-        ]
+        identity_gap = EvidenceGap(
+            gap_id="user-material-01-identity",
+            description="Verify the supplied public title.",
+        )
+        gaps.insert(0, identity_gap)
+        queries.insert(
+            0,
+            SearchQuery(
+                query_id="user-material-01-lookup",
+                gap_id=identity_gap.gap_id,
+                query="LightGCN: Simplifying and Powering Graph Convolution Network",
+                source_types=["paper"],
+            ),
+        )
         if covered:
-            coverage["user-material-01-identity"] = 1
+            coverage[identity_gap.gap_id] = 1
     return cast(
         PaperAgentState,
         {
@@ -86,6 +104,7 @@ def _pilot_state(*, references: list[str] | None = None, covered: bool = True) -
                 problem_statement="test",
                 scope="test",
                 evidence_gaps=gaps,
+                search_queries=queries,
             ),
             "evidence": EvidenceBundle(coverage_by_gap=coverage),
             "final_outcome": _revise_outcome(),
