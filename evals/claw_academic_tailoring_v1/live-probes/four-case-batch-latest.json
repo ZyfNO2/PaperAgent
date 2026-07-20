@@ -1,5 +1,5 @@
 {
-  "batch_id": "batch-03-cases-010-013-durable-provenance-stability",
+  "batch_id": "batch-03-cases-010-013-case011-role-stability",
   "case_ids": [
     "at-010-chinese-long-document-classification",
     "at-011-few-shot-intent-detection",
@@ -15,8 +15,8 @@
           "provider": "literature_retrieval",
           "supports_gap_ids": [
             "baseline_comparison",
-            "mechanism_limitation",
-            "optional_parallel_methods"
+            "data_optimization_methods",
+            "failure_mechanism"
           ],
           "title": "Hierarchical Multi-modal Transformer for Cross-modal Long Document Classification",
           "verification_status": "accepted"
@@ -27,7 +27,7 @@
           "provider": "literature_retrieval",
           "supports_gap_ids": [
             "baseline_comparison",
-            "optional_parallel_methods"
+            "data_optimization_methods"
           ],
           "title": "An Exploration of Hierarchical Attention Transformers for Efficient Long Document Classification",
           "verification_status": "accepted"
@@ -65,12 +65,12 @@
             },
             {
               "checklist_results": {
-                "cross_gap_reuse": true,
+                "cross_gap_reuse": false,
                 "direct_relevance": true,
                 "fixture_explicit_support": false,
                 "gap_overlap": false,
                 "provenance_qualified": true,
-                "query_provenance_match": false,
+                "query_provenance_match": true,
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
@@ -78,22 +78,22 @@
                 "semantic_gap_binding": true,
                 "supporting_span_present": true
               },
-              "confidence": 0.72,
+              "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "mechanism_limitation",
+              "gap_id": "failure_mechanism",
               "limitations": [
-                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
               "support_type": "direct_support"
             },
             {
               "checklist_results": {
-                "cross_gap_reuse": true,
+                "cross_gap_reuse": false,
                 "direct_relevance": true,
                 "fixture_explicit_support": false,
                 "gap_overlap": false,
                 "provenance_qualified": true,
-                "query_provenance_match": false,
+                "query_provenance_match": true,
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
@@ -101,11 +101,11 @@
                 "semantic_gap_binding": true,
                 "supporting_span_present": true
               },
-              "confidence": 0.72,
+              "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "optional_parallel_methods",
+              "gap_id": "data_optimization_methods",
               "limitations": [
-                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
               "support_type": "direct_support"
             }
@@ -157,7 +157,7 @@
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "mechanism_limitation",
+              "gap_id": "failure_mechanism",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: role-specific evidence structure"
@@ -166,12 +166,12 @@
             },
             {
               "checklist_results": {
-                "cross_gap_reuse": true,
+                "cross_gap_reuse": false,
                 "direct_relevance": true,
                 "fixture_explicit_support": false,
                 "gap_overlap": false,
                 "provenance_qualified": true,
-                "query_provenance_match": false,
+                "query_provenance_match": true,
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
@@ -179,11 +179,11 @@
                 "semantic_gap_binding": true,
                 "supporting_span_present": true
               },
-              "confidence": 0.72,
+              "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "optional_parallel_methods",
+              "gap_id": "data_optimization_methods",
               "limitations": [
-                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
               "support_type": "direct_support"
             }
@@ -236,7 +236,7 @@
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "mechanism_limitation",
+              "gap_id": "failure_mechanism",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: query provenance or qualified cross-gap reuse"
@@ -260,7 +260,7 @@
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "optional_parallel_methods",
+              "gap_id": "data_optimization_methods",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
@@ -317,6 +317,10 @@
             "semantic_scholar",
             "arxiv"
           ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "Chinese long document classification hierarchical transformer",
           "fallback_used": false,
           "informative_terms": [
             "chinese",
@@ -332,11 +336,36 @@
           "policy_reasons": [],
           "precision_risk": "low",
           "provider_call_count": 3,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": "RATE_LIMITED",
+              "provider": "semantic_scholar",
+              "retry_count": 0,
+              "status": "rate_limited"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "arxiv",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
           "query_approved": true,
-          "query_id": "q1_baseline_search",
+          "query_id": "q1_baseline_models",
           "relevant_verified_papers": 3,
+          "returned_candidate_count": 3,
           "returned_papers": 3,
-          "stop_reason": "sufficient_academic_evidence"
+          "stop_reason": "sufficient_academic_evidence",
+          "uncached_provider_call_count": 3
         },
         {
           "attempted_providers": [
@@ -344,6 +373,10 @@
             "semantic_scholar",
             "arxiv"
           ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": null,
           "fallback_used": false,
           "informative_terms": [
             "long",
@@ -352,17 +385,42 @@
             "truncation",
             "context"
           ],
-          "maximum_provider_calls": 3,
+          "maximum_provider_calls": 4,
           "minimum_rank_score": 0.62,
           "minimum_relevance": 0.34,
           "policy_reasons": [],
           "precision_risk": "low",
           "provider_call_count": 3,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": "RATE_LIMITED",
+              "provider": "semantic_scholar",
+              "retry_count": 0,
+              "status": "rate_limited"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "arxiv",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
           "query_approved": true,
-          "query_id": "q2_mechanism_search",
+          "query_id": "q2_failure_modes",
           "relevant_verified_papers": 0,
+          "returned_candidate_count": 0,
           "returned_papers": 0,
-          "stop_reason": "academic_budget_exhausted"
+          "stop_reason": "academic_budget_exhausted",
+          "uncached_provider_call_count": 3
         },
         {
           "attempted_providers": [
@@ -370,6 +428,10 @@
             "semantic_scholar",
             "arxiv"
           ],
+          "budget_exhausted_call_count": 1,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": null,
           "fallback_used": false,
           "informative_terms": [
             "long",
@@ -386,11 +448,36 @@
           "policy_reasons": [],
           "precision_risk": "low",
           "provider_call_count": 3,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": "RATE_LIMITED",
+              "provider": "semantic_scholar",
+              "retry_count": 0,
+              "status": "rate_limited"
+            },
+            {
+              "cache_status": "bypass",
+              "error_code": "PROVIDER_CALL_BUDGET_EXHAUSTED",
+              "provider": "arxiv",
+              "retry_count": 0,
+              "status": "failed"
+            }
+          ],
           "query_approved": true,
-          "query_id": "q3_parallel_methods_search",
+          "query_id": "q3_data_optimization",
           "relevant_verified_papers": 0,
+          "returned_candidate_count": 0,
           "returned_papers": 0,
-          "stop_reason": "academic_budget_exhausted"
+          "stop_reason": "academic_budget_exhausted",
+          "uncached_provider_call_count": 2
         }
       ],
       "status": "passed",
@@ -402,341 +489,37 @@
       "web_search_enabled": false
     },
     {
-      "accepted_evidence": [],
+      "accepted_evidence": [
+        {
+          "evidence_id": "ev-paper-e22e878ca3531163c1d1",
+          "locator": "https://arxiv.org/abs/2010.13009",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_reproducibility",
+            "dataset_availability",
+            "failure_mechanism_limitations"
+          ],
+          "title": "Discriminative Nearest Neighbor Few-Shot Intent Detection by Transferring Natural Language Inference",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-c5415e63650a2abffa83",
+          "locator": "doi:10.1609/aaai.v35i14.17541",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_reproducibility",
+            "dataset_availability",
+            "failure_mechanism_limitations"
+          ],
+          "title": "Few-shot Learning for Multi-label Intent Detection",
+          "verification_status": "accepted"
+        }
+      ],
       "case_id": "at-011-few-shot-intent-detection",
       "decision_matches": true,
       "evidence_review": [
         {
-          "accepted": false,
-          "evidence_id": "ev-paper-fbfe4fac6097769fa0c7",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.2,
-              "decision": "reject",
-              "gap_id": "baseline_comparison",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "mechanism_limitation",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "risk_negative_evidence",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [
-            "NO_VALID_GAP_BINDING"
-          ],
-          "title": "An Explicit-Joint and Supervised-Contrastive Learning Framework for Few-Shot Intent Classification and Slot Filling"
-        },
-        {
-          "accepted": false,
-          "evidence_id": "ev-paper-01d322739b4874b0060e",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.2,
-              "decision": "reject",
-              "gap_id": "baseline_comparison",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "mechanism_limitation",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "risk_negative_evidence",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse"
-              ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [
-            "NO_VALID_GAP_BINDING"
-          ],
-          "title": "Semantic Transportation Prototypical Network for Few-Shot Intent Detection"
-        },
-        {
-          "accepted": false,
-          "evidence_id": "ev-paper-d50e157efd1f1a831265",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.2,
-              "decision": "reject",
-              "gap_id": "baseline_comparison",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "mechanism_limitation",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "risk_negative_evidence",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [
-            "IDENTITY_NOT_VERIFIED",
-            "NO_VALID_GAP_BINDING"
-          ],
-          "title": "PROTAUGMENT: Unsupervised diverse short-texts paraphrasing for intent detection meta-learning"
-        },
-        {
-          "accepted": false,
-          "evidence_id": "ev-paper-c5415e63650a2abffa83",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "baseline_comparison",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.2,
-              "decision": "reject",
-              "gap_id": "mechanism_limitation",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "risk_negative_evidence",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [
-            "NO_VALID_GAP_BINDING"
-          ],
-          "title": "Few-shot Learning for Multi-label Intent Detection"
-        },
-        {
-          "accepted": false,
+          "accepted": true,
           "evidence_id": "ev-paper-e22e878ca3531163c1d1",
           "gap_supports": [
             {
@@ -745,47 +528,22 @@
                 "direct_relevance": true,
                 "fixture_explicit_support": false,
                 "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
                 "role_evidence_present": true,
-                "semantic_gap_binding": false,
+                "semantic_gap_binding": true,
                 "supporting_span_present": true
               },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "baseline_comparison",
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "baseline_reproducibility",
               "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse"
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "mechanism_limitation",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
+              "support_type": "direct_support"
             },
             {
               "checklist_results": {
@@ -798,76 +556,17 @@
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
                 "supporting_span_present": true
               },
-              "confidence": 0.2,
-              "decision": "reject",
-              "gap_id": "risk_negative_evidence",
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "failure_mechanism_limitations",
               "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [
-            "NO_VALID_GAP_BINDING"
-          ],
-          "title": "Discriminative Nearest Neighbor Few-Shot Intent Detection by Transferring Natural Language Inference"
-        },
-        {
-          "accepted": false,
-          "evidence_id": "ev-paper-d31b0b0feeddc7fe1edc",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "baseline_comparison",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "mechanism_limitation",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
+              "support_type": "direct_support"
             },
             {
               "checklist_results": {
@@ -880,499 +579,98 @@
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
                 "supporting_span_present": true
               },
-              "confidence": 0.2,
-              "decision": "reject",
-              "gap_id": "risk_negative_evidence",
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "dataset_availability",
               "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
-              "support_type": "insufficient"
+              "support_type": "direct_support"
             }
           ],
-          "rejection_reasons": [
-            "NO_VALID_GAP_BINDING"
-          ],
+          "rejection_reasons": [],
           "title": "Discriminative Nearest Neighbor Few-Shot Intent Detection by Transferring Natural Language Inference"
-        }
-      ],
-      "execution_status": "completed",
-      "expected_decision": "REVISE_TO_PILOT",
-      "failed_stages": [
-        {
-          "available": 10,
-          "earned": 8,
-          "findings": [
-            "explicit facts, inferences, or proposals were not recorded"
-          ],
-          "passed": false,
-          "stage": "parse_user_input"
         },
-        {
-          "available": 8,
-          "earned": 5,
-          "findings": [
-            "retrieval role parallel_method is missing",
-            "retrieval role strong_comparison is missing"
-          ],
-          "passed": false,
-          "stage": "exploratory_retrieval"
-        },
-        {
-          "available": 10,
-          "earned": 7,
-          "findings": [
-            "clarification did not target a declared high-impact unknown"
-          ],
-          "passed": false,
-          "stage": "clarification_gate"
-        },
-        {
-          "available": 15,
-          "earned": 4,
-          "findings": [
-            "baseline card is missing",
-            "baseline source is not accepted evidence",
-            "baseline freeze contract is incomplete"
-          ],
-          "passed": false,
-          "stage": "freeze_baseline"
-        },
-        {
-          "available": 15,
-          "earned": 0,
-          "findings": [
-            "falsifiable hypothesis is missing condition, limitation, mechanism, intervention, metric, or guardrail"
-          ],
-          "passed": false,
-          "stage": "gap_hypothesis"
-        },
-        {
-          "available": 5,
-          "earned": 1,
-          "findings": [
-            "experiment matrix fields are incomplete",
-            "baseline experiment arm is missing",
-            "strong-comparison experiment arm is missing",
-            "stop conditions are missing"
-          ],
-          "passed": false,
-          "stage": "experiment_matrix"
-        }
-      ],
-      "hard_failures": [
-        {
-          "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-          "details": "stronger baselines or negative results were not preserved"
-        }
-      ],
-      "llm_call_budget": 12,
-      "minimum_score": 80,
-      "model": "mistral-small-latest",
-      "observed_decision": "REVISE_TO_PILOT",
-      "passed": false,
-      "provider": "mistral",
-      "provider_call_budget": {
-        "maximum": 8,
-        "remaining": 0,
-        "used": 8
-      },
-      "report_status": "completed",
-      "score": 62,
-      "search_diagnostics": [
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "few-shot",
-            "intent",
-            "classification",
-            "prototypical",
-            "network"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.68,
-          "minimum_relevance": 0.42,
-          "policy_reasons": [],
-          "precision_risk": "medium",
-          "provider_call_count": 2,
-          "query_approved": true,
-          "query_id": "q1_baseline_search",
-          "relevant_verified_papers": 2,
-          "returned_papers": 3,
-          "stop_reason": "sufficient_academic_evidence"
-        },
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "few-shot",
-            "intent",
-            "classification",
-            "contrastive",
-            "learning",
-            "label",
-            "semantics"
-          ],
-          "maximum_provider_calls": 4,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q2_mechanism_search",
-          "relevant_verified_papers": 1,
-          "returned_papers": 1,
-          "stop_reason": "academic_budget_exhausted"
-        },
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "few-shot",
-            "intent",
-            "detection",
-            "open",
-            "set",
-            "out-of-scope"
-          ],
-          "maximum_provider_calls": 4,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q3_negative_evidence_search",
-          "relevant_verified_papers": 2,
-          "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence"
-        }
-      ],
-      "status": "failed",
-      "verification_call_budget": {
-        "maximum": 16,
-        "remaining": 3,
-        "used": 13
-      },
-      "web_search_enabled": false
-    },
-    {
-      "accepted_evidence": [
-        {
-          "evidence_id": "ev-paper-6bb1b872e93be8573e36",
-          "locator": "https://arxiv.org/abs/2510.25621",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison_rq",
-            "mechanism_limitation_rq",
-            "risk_negative_evidence"
-          ],
-          "title": "FARSIQA: Faithful and Advanced RAG System for Islamic Question Answering",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-9a8ae3d9e50664d0d5d3",
-          "locator": "doi:10.3390/ai6090226",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison_rq",
-            "mechanism_limitation_rq",
-            "risk_negative_evidence"
-          ],
-          "title": "Retrieval-Augmented Generation (RAG) in Healthcare: A Comprehensive Review",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-3d125c775544d8820252",
-          "locator": "https://arxiv.org/abs/2507.23334",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison_rq",
-            "mechanism_limitation_rq",
-            "risk_negative_evidence"
-          ],
-          "title": "MUST-RAG: MUSical Text Question Answering with Retrieval Augmented Generation",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-989e49efcdb2edb10926",
-          "locator": "https://arxiv.org/abs/2601.07528",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison_rq",
-            "mechanism_limitation_rq",
-            "risk_negative_evidence"
-          ],
-          "title": "From RAG to Agentic RAG for Faithful Islamic Question Answering",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-6ca95e083bfafa0b20c8",
-          "locator": "doi:10.71465/fair456",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison_rq",
-            "mechanism_limitation_rq",
-            "risk_negative_evidence"
-          ],
-          "title": "RAG-Based AI Agents for Enterprise Software Development: Implementation Patterns and Production Deployment",
-          "verification_status": "accepted"
-        }
-      ],
-      "case_id": "at-012-enterprise-rag",
-      "decision_matches": true,
-      "evidence_review": [
         {
           "accepted": true,
-          "evidence_id": "ev-paper-6bb1b872e93be8573e36",
+          "evidence_id": "ev-paper-c5415e63650a2abffa83",
           "gap_supports": [
             {
               "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
                 "fixture_explicit_support": false,
-                "gap_overlap": true,
+                "gap_overlap": false,
+                "provenance_qualified": true,
                 "query_provenance_match": true,
-                "relevance_passed": true
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
               },
-              "confidence": 0.9,
+              "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "baseline_comparison_rq",
-              "limitations": [],
+              "gap_id": "baseline_reproducibility",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
               "support_type": "direct_support"
             },
             {
               "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
                 "fixture_explicit_support": false,
-                "gap_overlap": true,
+                "gap_overlap": false,
+                "provenance_qualified": true,
                 "query_provenance_match": true,
-                "relevance_passed": true
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
               },
-              "confidence": 0.9,
+              "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "mechanism_limitation_rq",
-              "limitations": [],
+              "gap_id": "failure_mechanism_limitations",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
               "support_type": "direct_support"
             },
             {
               "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
                 "fixture_explicit_support": false,
-                "gap_overlap": true,
+                "gap_overlap": false,
+                "provenance_qualified": true,
                 "query_provenance_match": true,
-                "relevance_passed": true
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
               },
-              "confidence": 0.9,
+              "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "risk_negative_evidence",
-              "limitations": [],
+              "gap_id": "dataset_availability",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
               "support_type": "direct_support"
             }
           ],
           "rejection_reasons": [],
-          "title": "FARSIQA: Faithful and Advanced RAG System for Islamic Question Answering"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-9a8ae3d9e50664d0d5d3",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "baseline_comparison_rq",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "mechanism_limitation_rq",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "risk_negative_evidence",
-              "limitations": [],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "Retrieval-Augmented Generation (RAG) in Healthcare: A Comprehensive Review"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-3d125c775544d8820252",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "baseline_comparison_rq",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "mechanism_limitation_rq",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "risk_negative_evidence",
-              "limitations": [],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "MUST-RAG: MUSical Text Question Answering with Retrieval Augmented Generation"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-989e49efcdb2edb10926",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "baseline_comparison_rq",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "mechanism_limitation_rq",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "risk_negative_evidence",
-              "limitations": [],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "From RAG to Agentic RAG for Faithful Islamic Question Answering"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-6ca95e083bfafa0b20c8",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "baseline_comparison_rq",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "mechanism_limitation_rq",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "risk_negative_evidence",
-              "limitations": [],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "RAG-Based AI Agents for Enterprise Software Development: Implementation Patterns and Production Deployment"
+          "title": "Few-shot Learning for Multi-label Intent Detection"
         }
       ],
       "execution_status": "completed",
@@ -1406,8 +704,8 @@
       "provider": "mistral",
       "provider_call_budget": {
         "maximum": 8,
-        "remaining": 1,
-        "used": 7
+        "remaining": 0,
+        "used": 8
       },
       "report_status": "completed",
       "score": 95,
@@ -1418,60 +716,54 @@
             "semantic_scholar",
             "arxiv"
           ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "few-shot intent classification prototypical network",
           "fallback_used": false,
           "informative_terms": [
-            "retrieval-augmented",
-            "generation",
-            "rag",
-            "enterprise",
-            "knowledge",
-            "base",
-            "question",
-            "answering",
-            "baseline"
+            "few-shot",
+            "intent",
+            "classification",
+            "prototypical",
+            "network"
           ],
           "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
+          "minimum_rank_score": 0.68,
+          "minimum_relevance": 0.42,
           "policy_reasons": [],
-          "precision_risk": "low",
+          "precision_risk": "medium",
           "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q1_baseline_rq",
-          "relevant_verified_papers": 4,
-          "returned_papers": 4,
-          "stop_reason": "sufficient_academic_evidence"
-        },
-        {
-          "attempted_providers": [
-            "openalex"
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": "RATE_LIMITED",
+              "provider": "semantic_scholar",
+              "retry_count": 0,
+              "status": "rate_limited"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "arxiv",
+              "retry_count": 0,
+              "status": "success"
+            }
           ],
-          "fallback_used": false,
-          "informative_terms": [
-            "enterprise",
-            "rag",
-            "limitations",
-            "failure",
-            "modes",
-            "context",
-            "utilization",
-            "factual",
-            "consistency",
-            "privacy",
-            "compliance",
-            "mechanisms"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 1,
           "query_approved": true,
-          "query_id": "q2_mechanism_rq",
-          "relevant_verified_papers": 2,
-          "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence"
+          "query_id": "q1_baseline_search",
+          "relevant_verified_papers": 1,
+          "returned_candidate_count": 1,
+          "returned_papers": 1,
+          "stop_reason": "academic_budget_exhausted",
+          "uncached_provider_call_count": 3
         },
         {
           "attempted_providers": [
@@ -1479,17 +771,19 @@
             "semantic_scholar",
             "arxiv"
           ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "few-shot intent classification contrastive learning label semantics",
           "fallback_used": false,
           "informative_terms": [
-            "rag",
-            "enterprise",
-            "knowledge",
-            "base",
-            "hallucination",
-            "bias",
-            "compliance",
-            "risk",
-            "negative"
+            "few-shot",
+            "intent",
+            "classification",
+            "contrastive",
+            "learning",
+            "label",
+            "semantics"
           ],
           "maximum_provider_calls": 4,
           "minimum_rank_score": 0.62,
@@ -1497,18 +791,739 @@
           "policy_reasons": [],
           "precision_risk": "low",
           "provider_call_count": 3,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": "RATE_LIMITED",
+              "provider": "semantic_scholar",
+              "retry_count": 0,
+              "status": "rate_limited"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "arxiv",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
           "query_approved": true,
-          "query_id": "q3_risk_evidence",
+          "query_id": "q2_failure_mechanism",
+          "relevant_verified_papers": 1,
+          "returned_candidate_count": 1,
+          "returned_papers": 1,
+          "stop_reason": "academic_budget_exhausted",
+          "uncached_provider_call_count": 3
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "budget_exhausted_call_count": 1,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": null,
+          "fallback_used": false,
+          "informative_terms": [
+            "few-shot",
+            "intent",
+            "classification",
+            "sentence",
+            "encoder"
+          ],
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": "RATE_LIMITED",
+              "provider": "semantic_scholar",
+              "retry_count": 0,
+              "status": "rate_limited"
+            },
+            {
+              "cache_status": "bypass",
+              "error_code": "PROVIDER_CALL_BUDGET_EXHAUSTED",
+              "provider": "arxiv",
+              "retry_count": 0,
+              "status": "failed"
+            }
+          ],
+          "query_approved": true,
+          "query_id": "q3_dataset_protocol",
           "relevant_verified_papers": 0,
+          "returned_candidate_count": 0,
           "returned_papers": 0,
-          "stop_reason": "academic_budget_exhausted"
+          "stop_reason": "academic_budget_exhausted",
+          "uncached_provider_call_count": 2
         }
       ],
       "status": "passed",
       "verification_call_budget": {
         "maximum": 16,
-        "remaining": 6,
-        "used": 10
+        "remaining": 7,
+        "used": 9
+      },
+      "web_search_enabled": false
+    },
+    {
+      "accepted_evidence": [
+        {
+          "evidence_id": "ev-paper-4148cb6563024bede4cb",
+          "locator": "doi:10.3390/bdcc9120320",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison_rq1",
+            "mechanism_limitation_rq2",
+            "privacy_compliance_rq3"
+          ],
+          "title": "A Systematic Literature Review of Retrieval-Augmented Generation: Techniques, Metrics, and Challenges",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-14415a9750047a11859d",
+          "locator": "doi:10.48550/arxiv.2501.13958",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison_rq1",
+            "mechanism_limitation_rq2",
+            "privacy_compliance_rq3"
+          ],
+          "title": "A Survey of Graph Retrieval-Augmented Generation for Customized Large Language Models",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-e9c27bcbf7c966f8d25f",
+          "locator": "doi:10.48550/arxiv.2402.19473",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison_rq1",
+            "mechanism_limitation_rq2",
+            "privacy_compliance_rq3"
+          ],
+          "title": "Retrieval-Augmented Generation for AI-Generated Content: A Survey",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-9a8ae3d9e50664d0d5d3",
+          "locator": "doi:10.3390/ai6090226",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison_rq1",
+            "mechanism_limitation_rq2",
+            "privacy_compliance_rq3"
+          ],
+          "title": "Retrieval-Augmented Generation (RAG) in Healthcare: A Comprehensive Review",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-8fa37a343fe6dfa5a2da",
+          "locator": "doi:10.48550/arxiv.2406.04369",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison_rq1",
+            "mechanism_limitation_rq2",
+            "privacy_compliance_rq3"
+          ],
+          "title": "RAG Does Not Work for Enterprises",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-9f33f60a3c894afa2fd1",
+          "locator": "doi:10.36227/techrxiv.174681482.27435614/v1",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison_rq1",
+            "mechanism_limitation_rq2",
+            "privacy_compliance_rq3"
+          ],
+          "title": "A Review on Vibe Coding: Fundamentals, State-of-the-art, Challenges and Future Directions",
+          "verification_status": "accepted"
+        }
+      ],
+      "case_id": "at-012-enterprise-rag",
+      "decision_matches": true,
+      "evidence_review": [
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-4148cb6563024bede4cb",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "baseline_comparison_rq1",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "mechanism_limitation_rq2",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "privacy_compliance_rq3",
+              "limitations": [],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "A Systematic Literature Review of Retrieval-Augmented Generation: Techniques, Metrics, and Challenges"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-14415a9750047a11859d",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "baseline_comparison_rq1",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "mechanism_limitation_rq2",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "privacy_compliance_rq3",
+              "limitations": [],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "A Survey of Graph Retrieval-Augmented Generation for Customized Large Language Models"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-e9c27bcbf7c966f8d25f",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "baseline_comparison_rq1",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "mechanism_limitation_rq2",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "privacy_compliance_rq3",
+              "limitations": [],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "Retrieval-Augmented Generation for AI-Generated Content: A Survey"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-9a8ae3d9e50664d0d5d3",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "baseline_comparison_rq1",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "mechanism_limitation_rq2",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "privacy_compliance_rq3",
+              "limitations": [],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "Retrieval-Augmented Generation (RAG) in Healthcare: A Comprehensive Review"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-8fa37a343fe6dfa5a2da",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "baseline_comparison_rq1",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "mechanism_limitation_rq2",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "privacy_compliance_rq3",
+              "limitations": [],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "RAG Does Not Work for Enterprises"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-9f33f60a3c894afa2fd1",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "baseline_comparison_rq1",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "mechanism_limitation_rq2",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "privacy_compliance_rq3",
+              "limitations": [],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "A Review on Vibe Coding: Fundamentals, State-of-the-art, Challenges and Future Directions"
+        },
+        {
+          "accepted": false,
+          "evidence_id": "ev-paper-b3c4ef761b8fef89f985",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": false,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.0,
+              "decision": "reject",
+              "gap_id": "baseline_comparison_rq1",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": false,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.0,
+              "decision": "reject",
+              "gap_id": "mechanism_limitation_rq2",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.2,
+              "decision": "reject",
+              "gap_id": "privacy_compliance_rq3",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            }
+          ],
+          "rejection_reasons": [
+            "NO_VALID_GAP_BINDING"
+          ],
+          "title": "Transforming Data Annotation with AI Agents: A Review of Architectures, Reasoning, Applications, and Impact"
+        }
+      ],
+      "execution_status": "completed",
+      "expected_decision": "REVISE_TO_PILOT",
+      "failed_stages": [
+        {
+          "available": 7,
+          "earned": 5,
+          "findings": [
+            "core accepted evidence lacks full-text review"
+          ],
+          "passed": false,
+          "stage": "relevance_review"
+        },
+        {
+          "available": 10,
+          "earned": 7,
+          "findings": [
+            "clarification did not target a declared high-impact unknown"
+          ],
+          "passed": false,
+          "stage": "clarification_gate"
+        }
+      ],
+      "hard_failures": [],
+      "llm_call_budget": 12,
+      "minimum_score": 80,
+      "model": "mistral-small-latest",
+      "observed_decision": "REVISE_TO_PILOT",
+      "passed": true,
+      "provider": "mistral",
+      "provider_call_budget": {
+        "maximum": 8,
+        "remaining": 5,
+        "used": 3
+      },
+      "report_status": "completed",
+      "score": 95,
+      "search_diagnostics": [
+        {
+          "attempted_providers": [
+            "openalex"
+          ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "Retrieval-Augmented Generation for enterprise knowledge base QA baseline retrieval strategies (vector dense hybrid multi-hop) context compression and factual consistency",
+          "fallback_used": false,
+          "informative_terms": [
+            "retrieval-augmented",
+            "generation",
+            "enterprise",
+            "knowledge",
+            "base",
+            "qa",
+            "baseline",
+            "retrieval",
+            "strategies",
+            "vector",
+            "dense",
+            "hybrid",
+            "multi-hop",
+            "context",
+            "compression",
+            "factual",
+            "consistency"
+          ],
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 1,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
+          "query_approved": true,
+          "query_id": "baseline_rq1",
+          "relevant_verified_papers": 3,
+          "returned_candidate_count": 3,
+          "returned_papers": 3,
+          "stop_reason": "sufficient_academic_evidence",
+          "uncached_provider_call_count": 1
+        },
+        {
+          "attempted_providers": [
+            "openalex"
+          ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "Failure mechanisms in RAG for enterprise QA factual inconsistency context compression limits retrieval modes and parallel (e.g. fine-tuning prompt engineering graph-based",
+          "fallback_used": false,
+          "informative_terms": [
+            "failure",
+            "mechanisms",
+            "rag",
+            "enterprise",
+            "qa",
+            "factual",
+            "inconsistency",
+            "context",
+            "compression",
+            "limits",
+            "retrieval",
+            "modes",
+            "parallel",
+            "e.g.",
+            "fine-tuning",
+            "prompt",
+            "engineering",
+            "graph-based"
+          ],
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 1,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
+          "query_approved": true,
+          "query_id": "mechanism_rq2",
+          "relevant_verified_papers": 3,
+          "returned_candidate_count": 3,
+          "returned_papers": 3,
+          "stop_reason": "sufficient_academic_evidence",
+          "uncached_provider_call_count": 1
+        },
+        {
+          "attempted_providers": [
+            "openalex"
+          ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "Privacy-preserving and compliance-aware Retrieval-Augmented Generation for enterprise knowledge bases data anonymization access control audit trails regulatory alignment",
+          "fallback_used": false,
+          "informative_terms": [
+            "privacy-preserving",
+            "compliance-aware",
+            "retrieval-augmented",
+            "generation",
+            "enterprise",
+            "knowledge",
+            "bases",
+            "data",
+            "anonymization",
+            "access",
+            "control",
+            "audit",
+            "trails",
+            "regulatory",
+            "alignment"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 1,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
+          "query_approved": true,
+          "query_id": "privacy_rq3",
+          "relevant_verified_papers": 3,
+          "returned_candidate_count": 3,
+          "returned_papers": 3,
+          "stop_reason": "sufficient_academic_evidence",
+          "uncached_provider_call_count": 1
+        }
+      ],
+      "status": "passed",
+      "verification_call_budget": {
+        "maximum": 16,
+        "remaining": 3,
+        "used": 13
       },
       "web_search_enabled": false
     },
@@ -1519,8 +1534,9 @@
           "locator": "https://arxiv.org/abs/2404.14464",
           "provider": "literature_retrieval",
           "supports_gap_ids": [
-            "baseline_comparison",
-            "mechanism_limitations"
+            "baseline_comparison_evidence",
+            "evaluation_metrics_and_datasets",
+            "failure_mechanism_and_parallel_methods"
           ],
           "title": "Tree of Reviews: A Tree-based Dynamic Iterative Retrieval Framework for Multi-hop Question Answering",
           "verification_status": "accepted"
@@ -1530,9 +1546,9 @@
           "locator": "https://arxiv.org/abs/2406.15927",
           "provider": "literature_retrieval",
           "supports_gap_ids": [
-            "baseline_comparison",
-            "mechanism_limitations",
-            "optional_risk_negative_evidence"
+            "baseline_comparison_evidence",
+            "evaluation_metrics_and_datasets",
+            "failure_mechanism_and_parallel_methods"
           ],
           "title": "Semantic Entropy Probes: Robust and Cheap Hallucination Detection in LLMs",
           "verification_status": "accepted"
@@ -1562,9 +1578,32 @@
               },
               "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "baseline_comparison",
+              "gap_id": "baseline_comparison_evidence",
               "limitations": [
                 "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.72,
+              "decision": "accept",
+              "gap_id": "failure_mechanism_and_parallel_methods",
+              "limitations": [
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
               ],
               "support_type": "direct_support"
             },
@@ -1585,35 +1624,11 @@
               },
               "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "mechanism_limitations",
+              "gap_id": "evaluation_metrics_and_datasets",
               "limitations": [
                 "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
               "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "optional_risk_negative_evidence",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
             }
           ],
           "rejection_reasons": [],
@@ -1640,7 +1655,7 @@
               },
               "confidence": 0.2,
               "decision": "reject",
-              "gap_id": "baseline_comparison",
+              "gap_id": "baseline_comparison_evidence",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: role-specific evidence structure"
@@ -1664,7 +1679,7 @@
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "mechanism_limitations",
+              "gap_id": "failure_mechanism_and_parallel_methods",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
@@ -1677,21 +1692,21 @@
                 "direct_relevance": true,
                 "fixture_explicit_support": false,
                 "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
-                "role_evidence_present": true,
+                "role_evidence_present": false,
                 "semantic_gap_binding": false,
                 "supporting_span_present": true
               },
-              "confidence": 0.0,
+              "confidence": 0.2,
               "decision": "reject",
-              "gap_id": "optional_risk_negative_evidence",
+              "gap_id": "evaluation_metrics_and_datasets",
               "limitations": [
                 "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse"
+                "semantic binding missing: role-specific evidence structure"
               ],
               "support_type": "insufficient"
             }
@@ -1707,12 +1722,12 @@
           "gap_supports": [
             {
               "checklist_results": {
-                "cross_gap_reuse": false,
+                "cross_gap_reuse": true,
                 "direct_relevance": true,
                 "fixture_explicit_support": false,
                 "gap_overlap": false,
                 "provenance_qualified": true,
-                "query_provenance_match": true,
+                "query_provenance_match": false,
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
@@ -1720,11 +1735,11 @@
                 "semantic_gap_binding": true,
                 "supporting_span_present": true
               },
-              "confidence": 0.82,
+              "confidence": 0.72,
               "decision": "accept",
-              "gap_id": "baseline_comparison",
+              "gap_id": "baseline_comparison_evidence",
               "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
               ],
               "support_type": "direct_support"
             },
@@ -1745,7 +1760,7 @@
               },
               "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "mechanism_limitations",
+              "gap_id": "failure_mechanism_and_parallel_methods",
               "limitations": [
                 "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
@@ -1753,12 +1768,12 @@
             },
             {
               "checklist_results": {
-                "cross_gap_reuse": false,
+                "cross_gap_reuse": true,
                 "direct_relevance": true,
                 "fixture_explicit_support": false,
                 "gap_overlap": false,
                 "provenance_qualified": true,
-                "query_provenance_match": true,
+                "query_provenance_match": false,
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
@@ -1766,11 +1781,11 @@
                 "semantic_gap_binding": true,
                 "supporting_span_present": true
               },
-              "confidence": 0.82,
+              "confidence": 0.72,
               "decision": "accept",
-              "gap_id": "optional_risk_negative_evidence",
+              "gap_id": "evaluation_metrics_and_datasets",
               "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
               ],
               "support_type": "direct_support"
             }
@@ -1799,7 +1814,7 @@
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "baseline_comparison",
+              "gap_id": "baseline_comparison_evidence",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
@@ -1823,7 +1838,7 @@
               },
               "confidence": 0.2,
               "decision": "reject",
-              "gap_id": "mechanism_limitations",
+              "gap_id": "failure_mechanism_and_parallel_methods",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: role-specific evidence structure"
@@ -1847,7 +1862,7 @@
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "optional_risk_negative_evidence",
+              "gap_id": "evaluation_metrics_and_datasets",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
@@ -1881,7 +1896,7 @@
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "baseline_comparison",
+              "gap_id": "baseline_comparison_evidence",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
@@ -1905,7 +1920,7 @@
               },
               "confidence": 0.2,
               "decision": "reject",
-              "gap_id": "mechanism_limitations",
+              "gap_id": "failure_mechanism_and_parallel_methods",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: role-specific evidence structure"
@@ -1923,16 +1938,16 @@
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
-                "role_evidence_present": true,
+                "role_evidence_present": false,
                 "semantic_gap_binding": false,
                 "supporting_span_present": true
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "optional_risk_negative_evidence",
+              "gap_id": "evaluation_metrics_and_datasets",
               "limitations": [
                 "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse"
+                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
               ],
               "support_type": "insufficient"
             }
@@ -1963,7 +1978,7 @@
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "baseline_comparison",
+              "gap_id": "baseline_comparison_evidence",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
@@ -1987,7 +2002,7 @@
               },
               "confidence": 0.2,
               "decision": "reject",
-              "gap_id": "mechanism_limitations",
+              "gap_id": "failure_mechanism_and_parallel_methods",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: role-specific evidence structure"
@@ -2005,16 +2020,16 @@
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
-                "role_evidence_present": true,
+                "role_evidence_present": false,
                 "semantic_gap_binding": false,
                 "supporting_span_present": true
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "optional_risk_negative_evidence",
+              "gap_id": "evaluation_metrics_and_datasets",
               "limitations": [
                 "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse"
+                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
               ],
               "support_type": "insufficient"
             }
@@ -2045,7 +2060,7 @@
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "baseline_comparison",
+              "gap_id": "baseline_comparison_evidence",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
@@ -2069,7 +2084,7 @@
               },
               "confidence": 0.2,
               "decision": "reject",
-              "gap_id": "mechanism_limitations",
+              "gap_id": "failure_mechanism_and_parallel_methods",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: role-specific evidence structure"
@@ -2087,16 +2102,16 @@
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
-                "role_evidence_present": true,
+                "role_evidence_present": false,
                 "semantic_gap_binding": false,
                 "supporting_span_present": true
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "optional_risk_negative_evidence",
+              "gap_id": "evaluation_metrics_and_datasets",
               "limitations": [
                 "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse"
+                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
               ],
               "support_type": "insufficient"
             }
@@ -2150,6 +2165,10 @@
             "semantic_scholar",
             "arxiv"
           ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "retrieval augmented question answering hallucination baseline",
           "fallback_used": false,
           "informative_terms": [
             "retrieval",
@@ -2165,11 +2184,36 @@
           "policy_reasons": [],
           "precision_risk": "low",
           "provider_call_count": 3,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": "RATE_LIMITED",
+              "provider": "semantic_scholar",
+              "retry_count": 0,
+              "status": "rate_limited"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "arxiv",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
           "query_approved": true,
-          "query_id": "q1_baseline_methods",
+          "query_id": "q_baseline_rag_factuality",
           "relevant_verified_papers": 2,
+          "returned_candidate_count": 2,
           "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence"
+          "stop_reason": "sufficient_academic_evidence",
+          "uncached_provider_call_count": 3
         },
         {
           "attempted_providers": [
@@ -2177,33 +2221,10 @@
             "semantic_scholar",
             "arxiv"
           ],
-          "fallback_used": false,
-          "informative_terms": [
-            "retrieval",
-            "augmented",
-            "question",
-            "answering",
-            "hallucination",
-            "baseline"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q2_strong_comparison_sota",
-          "relevant_verified_papers": 2,
-          "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence"
-        },
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "semantic entropy probes hallucination detection uncertainty",
           "fallback_used": false,
           "informative_terms": [
             "semantic",
@@ -2219,11 +2240,92 @@
           "policy_reasons": [],
           "precision_risk": "low",
           "provider_call_count": 3,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": "RATE_LIMITED",
+              "provider": "semantic_scholar",
+              "retry_count": 0,
+              "status": "rate_limited"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "arxiv",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
           "query_approved": true,
-          "query_id": "q3_mechanism_intervention",
+          "query_id": "q_hallucination_mechanisms_interventions",
           "relevant_verified_papers": 2,
+          "returned_candidate_count": 5,
           "returned_papers": 5,
-          "stop_reason": "sufficient_academic_evidence"
+          "stop_reason": "sufficient_academic_evidence",
+          "uncached_provider_call_count": 3
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 2,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "retrieval augmented question answering hallucination baseline",
+          "fallback_used": false,
+          "informative_terms": [
+            "retrieval",
+            "augmented",
+            "question",
+            "answering",
+            "hallucination",
+            "baseline"
+          ],
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "provider_results": [
+            {
+              "cache_status": "hit",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": "RATE_LIMITED",
+              "provider": "semantic_scholar",
+              "retry_count": 0,
+              "status": "rate_limited"
+            },
+            {
+              "cache_status": "hit",
+              "error_code": null,
+              "provider": "arxiv",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
+          "query_approved": true,
+          "query_id": "q_evaluation_datasets_metrics_qa",
+          "relevant_verified_papers": 0,
+          "returned_candidate_count": 2,
+          "returned_papers": 2,
+          "stop_reason": "academic_budget_exhausted",
+          "uncached_provider_call_count": 1
         }
       ],
       "status": "passed",
@@ -2235,11 +2337,11 @@
       "web_search_enabled": false
     }
   ],
-  "failed_count": 1,
-  "passed": false,
-  "passed_count": 3,
-  "status": "failed",
+  "failed_count": 0,
+  "passed": true,
+  "passed_count": 4,
+  "status": "passed",
   "web_search_enabled": false,
-  "workflow_head_sha": "0222adf12e943b1b0db2ccaa3d2664e135d2126b",
-  "workflow_run_id": 29744541388
+  "workflow_head_sha": "c5664685b845f3c356b836933f0dffc144ee0cd5",
+  "workflow_run_id": 29749281258
 }
