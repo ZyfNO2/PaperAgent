@@ -74,7 +74,7 @@ def override_task_query(
     elif _contains_any(role, _BASELINE_ROLE_HINTS):
         canonical = "retrieval augmented question answering hallucination baseline"
     elif _contains_any(role, _MECHANISM_ROLE_HINTS):
-        canonical = "large language model hallucination survey causes taxonomy"
+        canonical = "semantic entropy probes hallucination detection uncertainty"
     else:
         canonical = "professional question answering hallucination factuality"
 
