@@ -5,8 +5,17 @@ from typing import cast
 
 from paperagent.academic_methodology import AuditVerdict, ExperimentArmType, audit_method_plan
 from paperagent.method_design_draft import MethodDesignDraft, build_method_proposal
-from paperagent.method_evidence import validate_method_proposal_evidence
-from paperagent.schemas import EvidenceBundle, EvidenceGap, EvidenceItem, ResearchPlan, ResearchRequest
+from paperagent.method_evidence import bind_method_evidence
+from paperagent.schemas import (
+    Claim,
+    EvidenceBundle,
+    EvidenceGap,
+    EvidenceItem,
+    EvidenceSynthesis,
+    GapAssessment,
+    ResearchPlan,
+    ResearchRequest,
+)
 from paperagent.schemas.plan import SearchQuery
 from paperagent.schemas.relevance import (
     EvidenceLedger,
@@ -68,7 +77,8 @@ def _state() -> PaperAgentState:
         success_criteria=["bounded pilot with matched comparisons"],
         risks=["deployment device is unresolved", "dataset split is unresolved"],
         clarification_question=(
-            "Which dataset, deployment device, and accuracy-latency priority should constrain the pilot?"
+            "Which dataset, deployment device, and accuracy-latency priority should constrain "
+            "the pilot?"
         ),
     )
     evidence_item = EvidenceItem(
@@ -85,6 +95,7 @@ def _state() -> PaperAgentState:
         metadata={
             "doi": "10.3390/s24175496",
             "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+            "license": "CC BY 4.0",
         },
     )
     support = (
@@ -108,6 +119,37 @@ def _state() -> PaperAgentState:
         rejected_ids=(),
         coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
     )
+    synthesis = EvidenceSynthesis(
+        gap_assessments=[
+            GapAssessment(
+                gap_id=baseline_gap.gap_id,
+                status="supported",
+                evidence_ids=[_EVIDENCE_ID],
+                summary="A task-matched UAV detector and comparator are available.",
+                limitations=["pilot reproduction remains required"],
+            ),
+            GapAssessment(
+                gap_id=mechanism_gap.gap_id,
+                status="supported",
+                evidence_ids=[_EVIDENCE_ID],
+                summary="Feature fusion is linked to small-object localization limits.",
+                limitations=["causal contribution remains unverified"],
+            ),
+        ],
+        verified_findings=[
+            Claim(
+                claim_id="claim-drone-detr",
+                text=(
+                    "Drone-DETR reports lightweight feature fusion for small-object detection "
+                    "on VisDrone2019."
+                ),
+                evidence_ids=[_EVIDENCE_ID],
+            )
+        ],
+        conflicts=[],
+        feasibility="partially_feasible",
+        limitations=["baseline reproduction remains pending"],
+    )
     return cast(
         PaperAgentState,
         {
@@ -120,6 +162,7 @@ def _state() -> PaperAgentState:
                 coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
             ),
             "evidence_ledger": ledger,
+            "synthesis": synthesis,
         },
     )
 
@@ -158,16 +201,24 @@ def _draft(**updates: object) -> MethodDesignDraft:
     return MethodDesignDraft.model_validate(payload)
 
 
+def _bound_proposal(state: PaperAgentState, draft: MethodDesignDraft):
+    proposal = build_method_proposal(state, draft)
+    evidence = state["evidence"]
+    synthesis = state["synthesis"]
+    assert evidence is not None
+    assert synthesis is not None
+    return bind_method_evidence(proposal, evidence, synthesis)
+
+
 def test_flat_draft_builds_aligned_canonical_method_proposal() -> None:
     state = _state()
-    proposal = build_method_proposal(state, _draft())
+    proposal = _bound_proposal(state, _draft())
 
-    validate_method_proposal_evidence(state, proposal)
     assert proposal.methodology_plan.baseline.name == proposal.baseline.name
     assert proposal.methodology_plan.baseline.dataset == "VisDrone2019"
     assert proposal.methodology_plan.modules[0].name == "shallow_feature_fusion"
     assert proposal.modules[0].module_id == "shallow_feature_fusion"
-    assert proposal.stop_conditions == proposal.methodology_plan.stop_conditions
+    assert proposal.stop_conditions == list(proposal.methodology_plan.stop_conditions)
     assert set(proposal.evidence_ids) == {_EVIDENCE_ID}
 
     arm_types = {experiment.arm_type for experiment in proposal.methodology_plan.experiments}
@@ -183,7 +234,7 @@ def test_flat_draft_builds_aligned_canonical_method_proposal() -> None:
 
 
 def test_ungrounded_dataset_and_comparator_are_not_promoted_to_facts() -> None:
-    proposal = build_method_proposal(
+    proposal = _bound_proposal(
         _state(),
         _draft(
             reported_dataset="InventedDroneBench",
@@ -192,6 +243,7 @@ def test_ungrounded_dataset_and_comparator_are_not_promoted_to_facts() -> None:
     )
 
     baseline = proposal.methodology_plan.baseline
+    assert baseline.dataset is not None
     assert "unresolved task-matched dataset" in baseline.dataset
     strong_comparison = next(
         item
@@ -202,4 +254,5 @@ def test_ungrounded_dataset_and_comparator_are_not_promoted_to_facts() -> None:
         "strong comparison selected from the accepted evidence set before the pilot"
     )
     assert "InventedDroneBench" not in baseline.dataset
+    assert strong_comparison.comparator is not None
     assert "ImaginaryDetector-X" not in strong_comparison.comparator
