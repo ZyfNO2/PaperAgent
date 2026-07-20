@@ -1,14 +1,17 @@
 {
-  "case_id": "at-009-multimodal-medical-fusion",
-  "reason": "verify concrete MultiFusionNet baseline plus role-specific medical evidence",
-  "attempt": 6,
-  "retrieval_gate_run_id": 29738087532,
-  "retrieval_gate_head_sha": "7d3d585d2e52972f09f3fd61d08d7394bb11a4f4",
+  "case_id": "at-010-chinese-long-document-classification",
+  "reason": "verify long-document classification retrieval after rejecting Chinese corpus and OCR false positives",
+  "attempt": 2,
+  "retrieval_gate_run_id": 29739106619,
+  "retrieval_gate_head_sha": "f947327d4d6548788d3c250c2e5e3bfab8dceb45",
   "previous_result": {
-    "score": 63,
-    "hard_failures": 1,
-    "accepted_evidence": 1,
-    "missing_gap": "baseline_comparison"
+    "score": 95,
+    "hard_failures": 0,
+    "quality_rejected": true,
+    "false_positives": [
+      "OpenCSG Chinese Corpus",
+      "Benchmarking Chinese Text Recognition"
+    ]
   },
   "requested_scope": "single_case_only",
   "web_search_enabled": false
