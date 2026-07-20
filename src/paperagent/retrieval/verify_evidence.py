@@ -7,7 +7,14 @@ from langchain_core.runnables import RunnableConfig
 from paperagent.evidence_gap_binding import apply_ledger_to_bundle, build_evidence_ledger
 from paperagent.nodes._shared import execution_with
 from paperagent.runtime import get_services
-from paperagent.schemas import EvidenceBundle, EvidenceConflict, EvidenceItem, SearchCandidate
+from paperagent.schemas import (
+    EvidenceBundle,
+    EvidenceConflict,
+    EvidenceItem,
+    PreparedQuery,
+    ResearchPlan,
+    SearchCandidate,
+)
 from paperagent.state import PaperAgentState, StatePatch
 from paperagent.telemetry import hash_payload, make_event
 
@@ -96,6 +103,24 @@ def _merge_candidate_gap_ids(
     return ",".join(sorted(gap_ids))
 
 
+def _plan_with_prepared_queries(
+    plan: ResearchPlan | None,
+    prepared_queries: list[PreparedQuery],
+) -> ResearchPlan | None:
+    """Use the approved runtime query text for evidence relevance and gap binding."""
+
+    if plan is None or not prepared_queries:
+        return plan
+    prepared_by_id = {query.query_id: query.query for query in prepared_queries}
+    updated_queries = [
+        query.model_copy(update={"query": prepared_by_id.get(query.query_id, query.query)})
+        for query in plan.search_queries
+    ]
+    if updated_queries == plan.search_queries:
+        return plan
+    return plan.model_copy(update={"search_queries": updated_queries})
+
+
 async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -> StatePatch:
     services = get_services(config)
     retrieval = state.get("retrieval")
@@ -180,9 +205,13 @@ async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -
         coverage_by_gap=provisional_coverage,
         conflicts=conflicts,
     )
+    effective_plan = _plan_with_prepared_queries(
+        state.get("plan"),
+        retrieval.prepared_queries,
+    )
     contract, lexical, relevance, gap_support, ledger = build_evidence_ledger(
         request=state.get("request"),
-        plan=state.get("plan"),
+        plan=effective_plan,
         evidence=identity_bundle,
     )
     bundle = apply_ledger_to_bundle(identity_bundle, ledger)
