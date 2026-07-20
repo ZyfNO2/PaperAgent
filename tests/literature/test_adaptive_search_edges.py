@@ -14,6 +14,7 @@ from paperagent.schemas.literature import (
     CoverageReport,
     LiteratureBundle,
     PaperRecord,
+    ProviderPaper,
     ProviderResult,
     RankFeatures,
     RetrievalMetrics,
@@ -86,10 +87,35 @@ def _bundle(
             "error_code": resolved_status.upper(),
             "error_message": resolved_status,
         }
+    provider_papers = [
+        ProviderPaper(
+            provider_record_id=(
+                paper.source_records[0].provider_record_id
+                if paper.source_records
+                else paper.paper_id
+            ),
+            title=paper.canonical_title,
+            authors=paper.authors,
+            year=paper.year,
+            abstract=paper.abstract,
+            venue=paper.venue,
+            doi=paper.doi,
+            arxiv_id=paper.arxiv_id,
+            openalex_id=paper.openalex_id,
+            semantic_scholar_id=paper.semantic_scholar_id,
+            urls=paper.urls,
+            citation_count=paper.citation_count,
+            publication_type=paper.publication_type,
+            language=paper.language,
+            matched_gap_ids=paper.matched_gap_ids,
+        )
+        for paper in selected
+    ]
     result = ProviderResult(
         provider=provider,
         request_id=f"req-{provider}",
         status=resolved_status,  # type: ignore[arg-type]
+        papers=provider_papers,
         started_at=_NOW,
         finished_at=_NOW,
         **result_kwargs,
@@ -274,7 +300,7 @@ def test_query_policy_covers_identifier_recent_cjk_and_rejection_paths() -> None
         _query("recent UAV detector benchmark 2026", source_types=["paper"])
     )
     cjk = review_search_query(_query("无人机小目标检测轻量化方法评估", source_types=["paper"]))
-    empty = review_search_query(_query(" ", source_types=["paper"]))
+    non_informative = review_search_query(_query("??", source_types=["paper"]))
     too_long = review_search_query(_query("specific " * 40, source_types=["paper"]))
 
     assert exact.primary_provider == "arxiv"
@@ -282,5 +308,5 @@ def test_query_policy_covers_identifier_recent_cjk_and_rejection_paths() -> None
     assert recent.primary_provider == "arxiv"
     assert cjk.approved
     assert cjk.precision_risk == "low"
-    assert not empty.approved
+    assert not non_informative.approved
     assert not too_long.approved
