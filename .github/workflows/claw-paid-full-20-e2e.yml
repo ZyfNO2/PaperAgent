@@ -21,7 +21,8 @@ jobs:
     timeout-minutes: 360
     env:
       MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
-      PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL }}
+      PAPERAGENT_CONTACT_EMAIL_SECRET: ${{ secrets.PAPERAGENT_CONTACT_EMAIL }}
+      PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL || 'Z1015558261@outlook.com' }}
       SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
       PAPERAGENT_LLM_PROVIDER: mistral
       PAPERAGENT_LLM_MODEL: mistral-small-latest
@@ -52,37 +53,40 @@ jobs:
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
 
-      - name: Inspect required live secrets
-        id: secrets
+      - name: Inspect live configuration
+        id: preflight
         shell: bash
         run: |
           out="build/claw-paid-full-20"
           mkdir -p "$out"
-          missing=()
-          [[ -z "${MISTRAL_API_KEY:-}" ]] && missing+=(MISTRAL_API_KEY)
-          [[ -z "${PAPERAGENT_CONTACT_EMAIL:-}" ]] && missing+=(PAPERAGENT_CONTACT_EMAIL)
-          if [[ -n "${MISTRAL_API_KEY:-}" ]]; then mistral_present=true; else mistral_present=false; fi
-          if [[ -n "${PAPERAGENT_CONTACT_EMAIL:-}" ]]; then contact_present=true; else contact_present=false; fi
-          if (( ${#missing[@]} )); then required_present=false; else required_present=true; fi
+          if [[ -n "${MISTRAL_API_KEY:-}" ]]; then
+            mistral_present=true
+          else
+            mistral_present=false
+          fi
+          if [[ -n "${PAPERAGENT_CONTACT_EMAIL_SECRET:-}" ]]; then
+            contact_source=secret
+          else
+            contact_source=github_public_profile
+          fi
           echo "mistral_present=$mistral_present" >> "$GITHUB_OUTPUT"
-          echo "contact_present=$contact_present" >> "$GITHUB_OUTPUT"
-          echo "required_present=$required_present" >> "$GITHUB_OUTPUT"
-          python - "$out/secret-preflight.json" "${missing[@]}" <<'PY'
+          python - "$out/secret-preflight.json" "$mistral_present" "$contact_source" <<'PY'
           import json
           import os
           import sys
           from pathlib import Path
 
-          missing = sys.argv[2:]
           payload = {
-              "required": ["MISTRAL_API_KEY", "PAPERAGENT_CONTACT_EMAIL"],
-              "missing": missing,
-              "mistral_api_key_present": "MISTRAL_API_KEY" not in missing,
-              "contact_email_present": "PAPERAGENT_CONTACT_EMAIL" not in missing,
+              "mistral_api_key_present": sys.argv[2] == "true",
+              "contact_email_present": bool(os.environ.get("PAPERAGENT_CONTACT_EMAIL")),
+              "contact_email_source": sys.argv[3],
               "semantic_scholar_api_key_present": bool(
                   os.environ.get("SEMANTIC_SCHOLAR_API_KEY")
               ),
-              "passed": not missing,
+              "web_search_enabled": False,
+              "passed": sys.argv[2] == "true" and bool(
+                  os.environ.get("PAPERAGENT_CONTACT_EMAIL")
+              ),
           }
           Path(sys.argv[1]).write_text(
               json.dumps(payload, indent=2, sort_keys=True) + "\n",
@@ -90,6 +94,7 @@ jobs:
           )
           print(json.dumps(payload, sort_keys=True))
           PY
+          [[ "$mistral_present" == true ]]
 
       - name: Run offline safety and wiring gate
         id: offline
@@ -105,16 +110,14 @@ jobs:
               raise SystemExit(result.findings)
           print("static leakage audit passed")
           PY
-          ruff check \
-            src/paperagent/claw_runtime_evidence.py \
-            scripts/run_claw_academic_runtime.py \
-            tests/evals/test_claw_runtime_evidence.py \
-            | tee "$out/ruff.log"
-          ruff format --check \
-            src/paperagent/claw_runtime_evidence.py \
-            scripts/run_claw_academic_runtime.py \
-            tests/evals/test_claw_runtime_evidence.py \
-            | tee "$out/format.log"
+          files=(
+            src/paperagent/claw_runtime_evidence.py
+            scripts/run_claw_academic_runtime.py
+            tests/evals/test_claw_runtime_evidence.py
+            tests/real_provider/test_mistral_smoke.py
+          )
+          ruff check "${files[@]}" | tee "$out/ruff.log"
+          ruff format --check "${files[@]}" | tee "$out/format.log"
           mypy --config-file pyproject.toml | tee "$out/mypy.log"
           pytest -q \
             tests/evals/test_claw_runtime_evidence.py \
@@ -125,7 +128,7 @@ jobs:
 
       - name: Execute real Mistral smoke
         id: mistral_smoke
-        if: steps.secrets.outputs.mistral_present == 'true' && steps.offline.outcome == 'success'
+        if: steps.preflight.outputs.mistral_present == 'true' && steps.offline.outcome == 'success'
         env:
           PAPERAGENT_RUN_REAL_LLM: "1"
         shell: bash
@@ -136,7 +139,7 @@ jobs:
 
       - name: Execute real literature provider smoke
         id: literature_smoke
-        if: steps.secrets.outputs.contact_present == 'true' && steps.offline.outcome == 'success'
+        if: steps.mistral_smoke.outcome == 'success'
         env:
           PAPERAGENT_RUN_REAL_PROVIDER: "1"
         shell: bash
@@ -148,7 +151,6 @@ jobs:
       - name: Execute paid 20-case runtime
         id: full
         if: >-
-          steps.secrets.outputs.required_present == 'true' &&
           steps.offline.outcome == 'success' &&
           steps.mistral_smoke.outcome == 'success' &&
           steps.literature_smoke.outcome == 'success'
@@ -170,9 +172,8 @@ jobs:
 
       - name: Assemble workflow evidence
         if: always()
-        id: finalize
         env:
-          REQUIRED_PRESENT: ${{ steps.secrets.outputs.required_present }}
+          PREFLIGHT_OUTCOME: ${{ steps.preflight.outcome }}
           OFFLINE_OUTCOME: ${{ steps.offline.outcome }}
           MISTRAL_SMOKE_OUTCOME: ${{ steps.mistral_smoke.outcome }}
           LITERATURE_SMOKE_OUTCOME: ${{ steps.literature_smoke.outcome }}
@@ -187,35 +188,29 @@ jobs:
           root = Path("build/claw-paid-full-20")
           root.mkdir(parents=True, exist_ok=True)
           execution_path = root / "execution-summary.json"
+          preflight_path = root / "secret-preflight.json"
           execution = (
               json.loads(execution_path.read_text(encoding="utf-8"))
               if execution_path.exists()
               else None
           )
-          preflight_path = root / "secret-preflight.json"
           preflight = (
               json.loads(preflight_path.read_text(encoding="utf-8"))
               if preflight_path.exists()
               else None
           )
           outcomes = {
+              "preflight": os.environ.get("PREFLIGHT_OUTCOME"),
               "offline_gate": os.environ.get("OFFLINE_OUTCOME"),
               "mistral_smoke": os.environ.get("MISTRAL_SMOKE_OUTCOME"),
               "literature_smoke": os.environ.get("LITERATURE_SMOKE_OUTCOME"),
               "full_runtime": os.environ.get("FULL_OUTCOME"),
           }
           passed = (
-              os.environ.get("REQUIRED_PRESENT") == "true"
-              and all(value == "success" for value in outcomes.values())
+              all(value == "success" for value in outcomes.values())
               and execution is not None
               and execution.get("passed") is True
           )
-          if passed:
-              status = "passed"
-          elif os.environ.get("REQUIRED_PRESENT") != "true":
-              status = "blocked_missing_required_secret"
-          else:
-              status = "failed"
           payload = {
               "schema": "paperagent.claw-paid-full-20-workflow.v1",
               "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
@@ -225,7 +220,7 @@ jobs:
               "outcomes": outcomes,
               "execution_summary": execution,
               "passed": passed,
-              "status": status,
+              "status": "passed" if passed else "failed",
           }
           (root / "workflow-result.json").write_text(
               json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
