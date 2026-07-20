@@ -1,0 +1,218 @@
+{
+  "accepted_evidence": [
+    {
+      "evidence_id": "ev-paper-b08585196cb858d67fb1",
+      "locator": "https://arxiv.org/abs/2512.09296",
+      "provider": "literature_retrieval",
+      "supports_gap_ids": [
+        "GAP_ALGORITHM_PERFORMANCE",
+        "GAP_DATASET_COVERAGE",
+        "GAP_TRADEOFF_ANALYSIS"
+      ],
+      "title": "Traffic Scene Small Target Detection Method Based on YOLOv8n-SPTS Model for Autonomous Driving",
+      "verification_status": "accepted"
+    }
+  ],
+  "case_id": "at-001-uav-small-object-lightweight",
+  "decision_matches": true,
+  "execution_status": "completed",
+  "expected_decision": "REVISE_TO_PILOT",
+  "failed_stages": [
+    {
+      "available": 10,
+      "earned": 8,
+      "findings": [
+        "explicit facts, inferences, or proposals were not recorded"
+      ],
+      "passed": false,
+      "stage": "parse_user_input"
+    },
+    {
+      "available": 8,
+      "earned": 5,
+      "findings": [
+        "retrieval role baseline is missing",
+        "retrieval role parallel_method is missing"
+      ],
+      "passed": false,
+      "stage": "exploratory_retrieval"
+    },
+    {
+      "available": 10,
+      "earned": 3,
+      "findings": [
+        "clarification count must remain between one and two",
+        "clarification did not target a declared high-impact unknown"
+      ],
+      "passed": false,
+      "stage": "clarification_gate"
+    },
+    {
+      "available": 15,
+      "earned": 4,
+      "findings": [
+        "baseline card is missing",
+        "baseline source is not accepted evidence",
+        "baseline freeze contract is incomplete"
+      ],
+      "passed": false,
+      "stage": "freeze_baseline"
+    },
+    {
+      "available": 15,
+      "earned": 0,
+      "findings": [
+        "falsifiable hypothesis is missing condition, limitation, mechanism, intervention, metric, or guardrail"
+      ],
+      "passed": false,
+      "stage": "gap_hypothesis"
+    },
+    {
+      "available": 5,
+      "earned": 1,
+      "findings": [
+        "experiment matrix fields are incomplete",
+        "baseline experiment arm is missing",
+        "strong-comparison experiment arm is missing",
+        "stop conditions are missing"
+      ],
+      "passed": false,
+      "stage": "experiment_matrix"
+    }
+  ],
+  "hard_failures": [
+    {
+      "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+      "details": "stronger baselines or negative results were not preserved"
+    }
+  ],
+  "llm_call_budget": 12,
+  "minimum_score": 80,
+  "model": "mistral-small-latest",
+  "observed_decision": "REVISE_TO_PILOT",
+  "passed": false,
+  "provider": "mistral",
+  "provider_call_budget": {
+    "maximum": 8,
+    "remaining": 0,
+    "used": 8
+  },
+  "report_status": "completed",
+  "score": 58,
+  "search_diagnostics": [
+    {
+      "attempted_providers": [
+        "openalex",
+        "semantic_scholar",
+        "arxiv"
+      ],
+      "fallback_used": false,
+      "informative_terms": [
+        "yolov5s",
+        "or",
+        "yolov8n",
+        "mobilenet-yolo",
+        "performance",
+        "nvidia",
+        "jetson",
+        "embedded",
+        "platform",
+        "small",
+        "object",
+        "detection",
+        "map",
+        "fps",
+        "power",
+        "consumption"
+      ],
+      "maximum_provider_calls": 4,
+      "minimum_rank_score": 0.62,
+      "minimum_relevance": 0.34,
+      "policy_reasons": [],
+      "precision_risk": "low",
+      "provider_call_count": 3,
+      "query_approved": true,
+      "query_id": "Q_ALGORITHM_PERF_JETSON",
+      "relevant_verified_papers": 1,
+      "returned_papers": 1,
+      "stop_reason": "academic_budget_exhausted"
+    },
+    {
+      "attempted_providers": [
+        "openalex",
+        "semantic_scholar",
+        "arxiv"
+      ],
+      "fallback_used": false,
+      "informative_terms": [
+        "small",
+        "object",
+        "detection",
+        "yolo",
+        "ssd",
+        "faster",
+        "r-cnn",
+        "performance",
+        "raspberry",
+        "pi",
+        "map",
+        "fps",
+        "power",
+        "consumption"
+      ],
+      "maximum_provider_calls": 4,
+      "minimum_rank_score": 0.62,
+      "minimum_relevance": 0.34,
+      "policy_reasons": [],
+      "precision_risk": "low",
+      "provider_call_count": 3,
+      "query_approved": true,
+      "query_id": "Q_ALGORITHM_PERF_RPI",
+      "relevant_verified_papers": 0,
+      "returned_papers": 0,
+      "stop_reason": "academic_budget_exhausted"
+    },
+    {
+      "attempted_providers": [
+        "openalex",
+        "semantic_scholar",
+        "arxiv"
+      ],
+      "fallback_used": false,
+      "informative_terms": [
+        "tiny",
+        "object",
+        "detection",
+        "yolo",
+        "ssd",
+        "esp32-cam",
+        "or",
+        "esp32-s3",
+        "map",
+        "fps",
+        "power",
+        "consumption"
+      ],
+      "maximum_provider_calls": 4,
+      "minimum_rank_score": 0.62,
+      "minimum_relevance": 0.34,
+      "policy_reasons": [],
+      "precision_risk": "low",
+      "provider_call_count": 3,
+      "query_approved": true,
+      "query_id": "Q_ALGORITHM_PERF_ESP32",
+      "relevant_verified_papers": 0,
+      "returned_papers": 0,
+      "stop_reason": "academic_budget_exhausted"
+    }
+  ],
+  "status": "failed",
+  "verification_call_budget": {
+    "maximum": 16,
+    "remaining": 7,
+    "used": 9
+  },
+  "web_search_enabled": false,
+  "workflow_head_sha": "19a283c24b23bf64e376e423559392564af85d6b",
+  "workflow_run_id": 29709895361
+}
