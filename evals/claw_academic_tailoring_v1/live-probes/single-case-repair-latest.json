@@ -1,7 +1,394 @@
 {
-  "passed": false,
-  "status": "validation_failed_before_llm",
-  "web_search_enabled": false,
-  "workflow_head_sha": "f50bc92194aa35336e993f2a319894c66dbc609c",
-  "workflow_run_id": 29739216914
+  "accepted_evidence": [
+    {
+      "evidence_id": "ev-paper-4738beb26137dcaadf9e",
+      "locator": "https://arxiv.org/abs/2407.10105",
+      "provider": "literature_retrieval",
+      "supports_gap_ids": [
+        "baseline_comparison",
+        "mechanism_limitation",
+        "optional_parallel_methods"
+      ],
+      "title": "Hierarchical Multi-modal Transformer for Cross-modal Long Document Classification",
+      "verification_status": "accepted"
+    },
+    {
+      "evidence_id": "ev-paper-e11cfa07c4e67446c9d8",
+      "locator": "https://arxiv.org/abs/2210.05529",
+      "provider": "literature_retrieval",
+      "supports_gap_ids": [
+        "baseline_comparison",
+        "optional_parallel_methods"
+      ],
+      "title": "An Exploration of Hierarchical Attention Transformers for Efficient Long Document Classification",
+      "verification_status": "accepted"
+    }
+  ],
+  "case_id": "at-010-chinese-long-document-classification",
+  "decision_matches": true,
+  "evidence_review": [
+    {
+      "accepted": true,
+      "evidence_id": "ev-paper-4738beb26137dcaadf9e",
+      "gap_supports": [
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "baseline_comparison",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "mechanism_limitation",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "optional_parallel_methods",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        }
+      ],
+      "rejection_reasons": [],
+      "title": "Hierarchical Multi-modal Transformer for Cross-modal Long Document Classification"
+    },
+    {
+      "accepted": true,
+      "evidence_id": "ev-paper-e11cfa07c4e67446c9d8",
+      "gap_supports": [
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "baseline_comparison",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": true,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
+          },
+          "confidence": 0.0,
+          "decision": "reject",
+          "gap_id": "mechanism_limitation",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: role-specific evidence structure"
+          ],
+          "support_type": "insufficient"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "optional_parallel_methods",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        }
+      ],
+      "rejection_reasons": [],
+      "title": "An Exploration of Hierarchical Attention Transformers for Efficient Long Document Classification"
+    },
+    {
+      "accepted": false,
+      "evidence_id": "ev-paper-7452483acb881d00b4bc",
+      "gap_supports": [
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
+          },
+          "confidence": 0.2,
+          "decision": "reject",
+          "gap_id": "baseline_comparison",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: role-specific evidence structure"
+          ],
+          "support_type": "insufficient"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": false,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
+          },
+          "confidence": 0.0,
+          "decision": "reject",
+          "gap_id": "mechanism_limitation",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: query provenance or qualified cross-gap reuse"
+          ],
+          "support_type": "insufficient"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": false,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
+          },
+          "confidence": 0.0,
+          "decision": "reject",
+          "gap_id": "optional_parallel_methods",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+          ],
+          "support_type": "insufficient"
+        }
+      ],
+      "rejection_reasons": [
+        "NO_VALID_GAP_BINDING"
+      ],
+      "title": "Limitations of Transformers on Clinical Text Classification"
+    }
+  ],
+  "execution_status": "completed",
+  "expected_decision": "REVISE_TO_PILOT",
+  "failed_stages": [
+    {
+      "available": 7,
+      "earned": 5,
+      "findings": [
+        "core accepted evidence lacks full-text review"
+      ],
+      "passed": false,
+      "stage": "relevance_review"
+    },
+    {
+      "available": 10,
+      "earned": 7,
+      "findings": [
+        "clarification did not target a declared high-impact unknown"
+      ],
+      "passed": false,
+      "stage": "clarification_gate"
+    }
+  ],
+  "hard_failures": [],
+  "llm_call_budget": 12,
+  "minimum_score": 80,
+  "model": "mistral-small-latest",
+  "observed_decision": "REVISE_TO_PILOT",
+  "passed": true,
+  "provider": "mistral",
+  "provider_call_budget": {
+    "maximum": 8,
+    "remaining": 0,
+    "used": 8
+  },
+  "report_status": "completed",
+  "score": 95,
+  "search_diagnostics": [
+    {
+      "attempted_providers": [
+        "openalex",
+        "semantic_scholar",
+        "arxiv"
+      ],
+      "fallback_used": false,
+      "informative_terms": [
+        "chinese",
+        "long",
+        "document",
+        "classification",
+        "hierarchical",
+        "transformer"
+      ],
+      "maximum_provider_calls": 3,
+      "minimum_rank_score": 0.62,
+      "minimum_relevance": 0.34,
+      "policy_reasons": [],
+      "precision_risk": "low",
+      "provider_call_count": 3,
+      "query_approved": true,
+      "query_id": "q1_baseline_search",
+      "relevant_verified_papers": 3,
+      "returned_papers": 3,
+      "stop_reason": "sufficient_academic_evidence"
+    },
+    {
+      "attempted_providers": [
+        "openalex",
+        "semantic_scholar",
+        "arxiv"
+      ],
+      "fallback_used": false,
+      "informative_terms": [
+        "long",
+        "document",
+        "classification",
+        "truncation",
+        "context"
+      ],
+      "maximum_provider_calls": 3,
+      "minimum_rank_score": 0.62,
+      "minimum_relevance": 0.34,
+      "policy_reasons": [],
+      "precision_risk": "low",
+      "provider_call_count": 3,
+      "query_approved": true,
+      "query_id": "q2_mechanism_search",
+      "relevant_verified_papers": 0,
+      "returned_papers": 0,
+      "stop_reason": "academic_budget_exhausted"
+    },
+    {
+      "attempted_providers": [
+        "openalex",
+        "semantic_scholar",
+        "arxiv"
+      ],
+      "fallback_used": false,
+      "informative_terms": [
+        "long",
+        "document",
+        "classification",
+        "hierarchical",
+        "attention",
+        "sparse",
+        "transformer"
+      ],
+      "maximum_provider_calls": 3,
+      "minimum_rank_score": 0.62,
+      "minimum_relevance": 0.34,
+      "policy_reasons": [],
+      "precision_risk": "low",
+      "provider_call_count": 3,
+      "query_approved": true,
+      "query_id": "q3_parallel_methods_search",
+      "relevant_verified_papers": 0,
+      "returned_papers": 0,
+      "stop_reason": "academic_budget_exhausted"
+    }
+  ],
+  "status": "passed",
+  "verification_call_budget": {
+    "maximum": 16,
+    "remaining": 6,
+    "used": 10
+  },
+  "web_search_enabled": false
 }
