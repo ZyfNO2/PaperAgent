@@ -218,12 +218,13 @@ def assess_gap_support(
     relevance: RelevanceAssessment,
     *,
     query_texts: Iterable[str] = (),
+    allow_cross_gap_reuse: bool = False,
 ) -> GapSupportAssessment:
     """Apply the legacy binding first, then a strict cross-language semantic fallback.
 
-    The fallback never treats query provenance as sufficient by itself. It requires direct
-    relevance, a supporting span, query-specific concept coverage, query-term overlap, and
-    evidence structure appropriate for the declared gap role.
+    The fallback never treats provenance or prior acceptance as sufficient by itself. It
+    requires direct relevance, a supporting span, query-specific concept coverage,
+    query-term overlap, and evidence structure appropriate for the declared gap role.
     """
 
     legacy_result = legacy.assess_gap_support(item, gap, relevance)
@@ -232,6 +233,8 @@ def assess_gap_support(
 
     queries = tuple(value for value in query_texts if value.strip())
     origin_match = gap.gap_id in _candidate_gap_ids(item)
+    cross_gap_reuse = allow_cross_gap_reuse and not origin_match
+    provenance_qualified = origin_match or cross_gap_reuse
     direct_relevance = relevance.evidence_scope == "direct"
     supporting_span_present = bool(relevance.supporting_spans)
     overlap = _query_overlap(item, queries)
@@ -243,7 +246,7 @@ def assess_gap_support(
     role_evidence_present = _role_support(gap, item)
     semantic_binding = all(
         (
-            origin_match,
+            provenance_qualified,
             direct_relevance,
             supporting_span_present,
             query_term_overlap,
@@ -254,6 +257,8 @@ def assess_gap_support(
     checklist = {
         **legacy_result.checklist_results,
         "query_provenance_match": origin_match,
+        "cross_gap_reuse": cross_gap_reuse,
+        "provenance_qualified": provenance_qualified,
         "direct_relevance": direct_relevance,
         "supporting_span_present": supporting_span_present,
         "query_term_overlap": query_term_overlap,
@@ -265,7 +270,10 @@ def assess_gap_support(
         missing = [
             label
             for label, passed in (
-                ("query provenance", origin_match),
+                (
+                    "query provenance or qualified cross-gap reuse",
+                    provenance_qualified,
+                ),
                 ("direct relevance", direct_relevance),
                 ("supporting span", supporting_span_present),
                 ("query-term overlap", query_term_overlap),
@@ -285,6 +293,13 @@ def assess_gap_support(
 
     span = relevance.supporting_spans[0]
     support_type: GapSupportType = "direct_support"
+    binding_basis = (
+        "reused across gaps after an existing accepted binding, direct relevance, "
+        "query concepts, and role-specific evidence cues"
+        if cross_gap_reuse
+        else "bound through verified query provenance, direct relevance, query concepts, "
+        "and role-specific evidence cues"
+    )
     return GapSupportAssessment(
         evidence_id=item.evidence_id,
         gap_id=gap.gap_id,
@@ -292,11 +307,8 @@ def assess_gap_support(
         supported_claim=gap.description,
         supporting_span_hash=hash_payload(span),
         checklist_results=checklist,
-        limitations=[
-            "bound through verified query provenance, direct relevance, query concepts, and "
-            "role-specific evidence cues"
-        ],
-        confidence=0.82,
+        limitations=[binding_basis],
+        confidence=0.72 if cross_gap_reuse else 0.82,
         decision="accept",
     )
 
@@ -331,7 +343,7 @@ def build_evidence_ledger(
     gap_results: list[GapSupportAssessment] = []
     for item in evidence.items:
         item_relevance = relevance_by_id[item.evidence_id]
-        supports = [
+        first_pass = [
             assess_gap_support(
                 item,
                 gap,
@@ -340,6 +352,26 @@ def build_evidence_ledger(
             )
             for gap in plan.evidence_gaps
         ]
+        has_bound_support = any(support.decision == "accept" for support in first_pass)
+        if has_bound_support:
+            supports = [
+                support
+                if support.decision == "accept"
+                else assess_gap_support(
+                    item,
+                    gap,
+                    item_relevance,
+                    query_texts=queries_by_gap.get(gap.gap_id, []),
+                    allow_cross_gap_reuse=True,
+                )
+                for gap, support in zip(
+                    plan.evidence_gaps,
+                    first_pass,
+                    strict=True,
+                )
+            ]
+        else:
+            supports = first_pass
         gap_results.extend(supports)
         accepted_supports = [support for support in supports if support.decision == "accept"]
         legacy_entry = legacy_entries[item.evidence_id]
