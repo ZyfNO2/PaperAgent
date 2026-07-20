@@ -29,9 +29,7 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Format bounded files and disable automatic live probe
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Format bounded regression files
         shell: bash
         run: |
           set -euo pipefail
@@ -43,35 +41,11 @@ jobs:
           )
           ruff format "${files[@]}"
           ruff check --fix "${files[@]}"
-          probe_path=$(gh api repos/${GITHUB_REPOSITORY}/actions/runs/29709781962 --jq '.path')
-          export PROBE_PATH="$probe_path"
-          python - <<'PY'
-          import os
-          from pathlib import Path
-
-          path = Path(os.environ["PROBE_PATH"])
-          lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
-          try:
-              start = next(index for index, line in enumerate(lines) if line.rstrip() == "on:")
-          except StopIteration as exc:
-              raise SystemExit(f"top-level on block not found in {path}") from exc
-          end = next(
-              (
-                  index
-                  for index in range(start + 1, len(lines))
-                  if lines[index].strip() and not lines[index].startswith((" ", "\t"))
-              ),
-              len(lines),
-          )
-          lines[start:end] = ["on:\n", "  workflow_dispatch:\n", "\n"]
-          path.write_text("".join(lines), encoding="utf-8")
-          print(f"disabled automatic trigger for {path}")
-          PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "${files[@]}" "$probe_path"
+          git add "${files[@]}"
           if git diff --cached --quiet; then
             exit 0
           fi
-          git commit -m "fix(search): format regressions and gate live probe manually"
+          git commit -m "style(search): format adaptive retrieval regressions"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
