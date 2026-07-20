@@ -49,6 +49,7 @@ def _revise_outcome(*, invalid_evidence_ids: list[str] | None = None) -> FinalOu
         report_status="completed",
         reason_codes=["Q_REPAIR_BUDGET_EXHAUSTED"],
         invalid_evidence_ids=invalid_evidence_ids or [],
+        recommended_next_actions=["Run one bounded falsification experiment."],
     )
 
 
