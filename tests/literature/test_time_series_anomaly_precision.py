@@ -54,9 +54,7 @@ from paperagent.literature.task_query_overrides import override_task_query
         ),
     ],
 )
-def test_time_series_anomaly_candidate_guard(
-    query: str, candidate: str, expected: bool
-) -> None:
+def test_time_series_anomaly_candidate_guard(query: str, candidate: str, expected: bool) -> None:
     assert matches_specialized_candidate_terms(query, candidate) is expected
 
 
@@ -87,7 +85,7 @@ def test_time_series_anomaly_queries_are_role_specific(
         "generic anomaly transformer query",
         gap_id=gap_id,
         gap_description=description,
-        research_context="小样本时间序列异常检测，以 Anomaly Transformer 为基线",
+        research_context="小样本时间序列异常检测, 以 Anomaly Transformer 为基线",
     )
 
     assert result.changed is True
