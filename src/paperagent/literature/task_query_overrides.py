@@ -67,12 +67,14 @@ def override_task_query(
         return TaskQueryOverride(query=query, changed=False)
 
     role = f"{gap_id} {gap_description}".casefold()
-    if _contains_any(role, _PARALLEL_ROLE_HINTS):
-        canonical = "question answering hallucination reduction retrieval verification uncertainty"
-    elif _contains_any(role, _BASELINE_ROLE_HINTS):
+    if _contains_any(role, _BASELINE_ROLE_HINTS):
         canonical = "retrieval augmented question answering hallucination baseline"
     elif _contains_any(role, _MECHANISM_ROLE_HINTS):
         canonical = "semantic entropy probes hallucination detection uncertainty"
+    elif _contains_any(role, _PARALLEL_ROLE_HINTS):
+        canonical = (
+            "question answering hallucination reduction retrieval verification uncertainty"
+        )
     else:
         canonical = "professional question answering hallucination factuality"
 
