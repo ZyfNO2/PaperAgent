@@ -301,6 +301,82 @@ _DIAGNOSIS_CANDIDATE_TERMS = (
     "prognosis",
     "disease detection",
 )
+_LONG_DOCUMENT_QUERY_HINTS = (
+    "long document",
+    "long text",
+    "long-context",
+    "long context",
+    "long-range",
+    "hierarchical",
+    "chunk",
+    "sparse transformer",
+)
+_LONG_DOCUMENT_CANDIDATE_TERMS = (
+    "long document",
+    "long text",
+    "long-context",
+    "long context",
+    "long-range",
+    "lengthy document",
+    "hierarchical",
+    "chunk-level",
+    "document-level",
+    "segment-level",
+    "sparse attention",
+    "longformer",
+    "bigbird",
+)
+_TEXT_CLASSIFICATION_QUERY_HINTS = (
+    "text classification",
+    "document classification",
+    "document categorization",
+)
+_TEXT_CLASSIFICATION_CANDIDATE_TERMS = (
+    "text classification",
+    "document classification",
+    "document categorization",
+    "classify documents",
+    "classifying documents",
+    "document classifier",
+    "text categorization",
+)
+_FEW_SHOT_QUERY_HINTS = (
+    "few-shot",
+    "few shot",
+    "low-resource",
+    "low resource",
+    "few examples",
+    "prototypical",
+    "prototype",
+)
+_FEW_SHOT_CANDIDATE_TERMS = (
+    "few-shot",
+    "few shot",
+    "low-resource",
+    "low resource",
+    "few examples",
+    "few labeled",
+    "k-shot",
+    "prototypical",
+    "prototype learning",
+)
+_INTENT_QUERY_HINTS = (
+    "intent detection",
+    "intent classification",
+    "intent recognition",
+    "intention recognition",
+    "user intent",
+)
+_INTENT_CANDIDATE_TERMS = (
+    "intent detection",
+    "intent classification",
+    "intent recognition",
+    "user intent",
+    "unknown intent",
+    "out-of-scope intent",
+    "out of scope intent",
+    "task-oriented dialogue intent",
+)
 
 
 def _contains_any(value: str, terms: tuple[str, ...]) -> bool:
@@ -356,6 +432,16 @@ def required_candidate_term_groups(query: str) -> tuple[tuple[str, ...], ...]:
             groups.append(_STRICT_CLASSIFICATION_CANDIDATE_TERMS)
         elif _contains_any(normalized, _DIAGNOSIS_QUERY_HINTS):
             groups.append(_DIAGNOSIS_CANDIDATE_TERMS)
+
+    if _contains_any(normalized, _LONG_DOCUMENT_QUERY_HINTS) and _contains_any(
+        normalized, _TEXT_CLASSIFICATION_QUERY_HINTS
+    ):
+        groups.extend((_LONG_DOCUMENT_CANDIDATE_TERMS, _TEXT_CLASSIFICATION_CANDIDATE_TERMS))
+
+    if _contains_any(normalized, _INTENT_QUERY_HINTS):
+        groups.append(_INTENT_CANDIDATE_TERMS)
+        if _contains_any(normalized, _FEW_SHOT_QUERY_HINTS):
+            groups.append(_FEW_SHOT_CANDIDATE_TERMS)
 
     return tuple(groups)
 
