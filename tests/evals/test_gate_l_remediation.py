@@ -90,9 +90,11 @@ async def test_arxiv_escalation_is_used_only_after_primary_sources_are_insuffici
     )
 
     assert len(service.plans) == 3
-    assert [
-        plan.query_lanes[0].source_preferences for plan in service.plans
-    ] == [["openalex"], ["semantic_scholar"], ["arxiv"]]
+    assert [plan.query_lanes[0].source_preferences for plan in service.plans] == [
+        ["openalex"],
+        ["semantic_scholar"],
+        ["arxiv"],
+    ]
     assert len(candidates) == 1
     assert candidates[0].metadata["fallback_used"] == "false"
     diagnostics = adapter.last_query_diagnostics("q1")

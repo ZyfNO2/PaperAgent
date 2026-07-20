@@ -258,9 +258,7 @@ def test_merge_prefers_verified_richer_and_higher_rank_record() -> None:
 
 
 def test_low_quality_record_is_filtered_and_source_kinds_are_distinct() -> None:
-    policy = review_search_query(
-        _query("lightweight UAV small object detection VisDrone latency")
-    )
+    policy = review_search_query(_query("lightweight UAV small object detection VisDrone latency"))
     assert not LiteratureSearchAdapter._passes_return_relevance(
         PaperRecord(paper_id="no-rank", canonical_title="No rank"),
         policy,
@@ -275,9 +273,7 @@ def test_query_policy_covers_identifier_recent_cjk_and_rejection_paths() -> None
     recent = review_search_query(
         _query("recent UAV detector benchmark 2026", source_types=["paper"])
     )
-    cjk = review_search_query(
-        _query("无人机小目标检测轻量化方法评估", source_types=["paper"])
-    )
+    cjk = review_search_query(_query("无人机小目标检测轻量化方法评估", source_types=["paper"]))
     empty = review_search_query(_query(" ", source_types=["paper"]))
     too_long = review_search_query(_query("specific " * 40, source_types=["paper"]))
 
