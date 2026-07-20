@@ -45,6 +45,30 @@ _METHOD_FAMILIES = (
     "diffusion",
     "p2 branch",
 )
+_LOW_INFORMATION_TERMS = frozenset(
+    {
+        "analysis",
+        "auxiliary",
+        "benchmark",
+        "comparison",
+        "dataset",
+        "evaluation",
+        "method",
+        "methods",
+        "metric",
+        "metrics",
+        "performance",
+        "reproducibility",
+        "result",
+        "results",
+        "survey",
+    }
+)
+_FAILURE_DETAIL_PATTERNS = (
+    r"\bmissed detections?\b",
+    r"\bfalse positives?\b",
+    r"\bboundary ambiguity\b",
+)
 
 
 @dataclass(frozen=True)
@@ -86,38 +110,71 @@ def _remove_family_phrases(query: str, families: tuple[str, ...]) -> str:
     return refined
 
 
+def _compact_long_query(query: str) -> str:
+    """Remove provider-hostile role clutter while preserving the scientific task phrase."""
+
+    if len(query.split()) <= 8:
+        return query
+    refined = query
+    if re.search(r"\bfailure modes?\b", refined, flags=re.IGNORECASE):
+        for pattern in _FAILURE_DETAIL_PATTERNS:
+            refined = re.sub(pattern, " ", refined, flags=re.IGNORECASE)
+    tokens: list[str] = []
+    seen: set[str] = set()
+    for token in refined.split():
+        key = token.casefold().strip(" ,;:+()[]{}")
+        if key in _LOW_INFORMATION_TERMS or not key or key in seen:
+            continue
+        seen.add(key)
+        tokens.append(token.strip(" ,;:+"))
+    compacted = re.sub(r"\s+", " ", " ".join(tokens)).strip(" ,;:+")
+    if len(compacted.split()) < 4:
+        return query
+    return compacted
+
+
 def refine_search_query(
     query: str,
     *,
     gap_id: str,
     gap_description: str,
 ) -> QueryRefinement:
-    """Reduce technique-family conjunctions before rate-limited retrieval.
+    """Reduce overconstrained queries before rate-limited academic retrieval.
 
-    A mechanism query may name one or two plausible families. Three or more families usually
-    encode an unverified method stack and sharply reduce recall, so the families are removed
-    while task, scene, and failure-mode terms are preserved. Exact DOI/arXiv lookups are never
-    changed.
+    Exact DOI/arXiv lookups are never changed. Mechanism queries that name three or more
+    unverified method families drop those families. Long queries also drop generic role words
+    and redundant failure examples while retaining task, domain, scale, and constraint terms.
     """
 
     normalized = " ".join(query.split())
     if _IDENTIFIER.search(normalized):
         return QueryRefinement(query=normalized, changed=False)
-    if not _contains_mechanism_role(gap_id, gap_description):
-        return QueryRefinement(query=normalized, changed=False)
 
-    families = _family_hits(normalized)
-    if len(families) < 3:
-        return QueryRefinement(query=normalized, changed=False)
+    refined = normalized
+    removed_families: tuple[str, ...] = ()
+    reasons: list[str] = []
+    if _contains_mechanism_role(gap_id, gap_description):
+        families = _family_hits(refined)
+        if len(families) >= 3:
+            candidate = _remove_family_phrases(refined, families)
+            if len(candidate.split()) >= 4:
+                refined = candidate
+                removed_families = families
+                reasons.append(
+                    "removed three or more unverified method families to preserve retrieval recall"
+                )
 
-    refined = _remove_family_phrases(normalized, families)
-    if len(refined.split()) < 4:
-        return QueryRefinement(query=normalized, changed=False)
+    compacted = _compact_long_query(refined)
+    if compacted != refined:
+        refined = compacted
+        reasons.append("removed low-information query terms to preserve provider recall")
+
+    changed = refined != normalized
     return QueryRefinement(
         query=refined,
-        changed=refined != normalized,
-        reason="removed three or more unverified method families to preserve retrieval recall",
-        removed_families=families,
+        changed=changed,
+        reason="; ".join(reasons) if changed else None,
+        removed_families=removed_families,
     )
 
 
