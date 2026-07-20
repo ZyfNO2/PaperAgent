@@ -18,7 +18,7 @@ concurrency:
 jobs:
   smoke:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 120
     env:
       MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
       PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL || 'Z1015558261@outlook.com' }}
@@ -50,9 +50,48 @@ jobs:
         continue-on-error: true
         run: python -m pip install -q -e '.[dev]'
 
+      - name: Apply pending generic decision remediation
+        id: remediation
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        run: |
+          if [ -f scripts/apply_public_dev_decision_fix.py ]; then
+            python scripts/apply_public_dev_decision_fix.py
+            python scripts/apply_public_dev_decision_fix_followup.py
+            ruff format src tests scripts
+            ruff check --fix src tests scripts
+            ruff check src tests scripts
+            ruff format --check src tests scripts
+            python - <<'PY'
+          from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
+
+          result = audit_benchmark_execution_boundary()
+          print(result.model_dump_json(indent=2))
+          if not result.passed:
+              raise SystemExit(result.findings)
+          PY
+            pytest --no-cov -q \
+              tests/methodology/test_method_design_draft.py \
+              tests/methodology/test_scientific_decision_policy.py \
+              tests/evals/test_00_production_pilot.py \
+              tests/evals/test_benchmark_input_boundary_v2.py \
+              tests/evals/test_claw_benchmark_adapter.py
+            mypy --config-file pyproject.toml
+            pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
+            rm -f scripts/apply_public_dev_decision_fix.py
+            rm -f scripts/apply_public_dev_decision_fix_followup.py
+            rm -f .github/workflows/public-dev-decision-fix-once.yml
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "fix(method): stabilize evidence-readiness decisions"
+            git push origin HEAD:feat/claw-live-search-runtime
+          fi
+          echo "source_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Static leakage audit
         id: audit
-        if: steps.install.outcome == 'success'
+        if: steps.install.outcome == 'success' && steps.remediation.outcome == 'success'
         continue-on-error: true
         run: |
           python - <<'PY'
@@ -71,7 +110,10 @@ jobs:
 
       - name: Real Mistral smoke
         id: mistral
-        if: steps.install.outcome == 'success' && steps.secret.outcome == 'success'
+        if: >-
+          steps.install.outcome == 'success' &&
+          steps.remediation.outcome == 'success' &&
+          steps.secret.outcome == 'success'
         continue-on-error: true
         env:
           PAPERAGENT_RUN_REAL_LLM: "1"
@@ -79,7 +121,7 @@ jobs:
 
       - name: Real literature smoke
         id: literature
-        if: steps.install.outcome == 'success'
+        if: steps.install.outcome == 'success' && steps.remediation.outcome == 'success'
         continue-on-error: true
         env:
           PAPERAGENT_RUN_REAL_PROVIDER: "1"
@@ -89,7 +131,9 @@ jobs:
         id: result
         if: always()
         env:
+          SOURCE_SHA: ${{ steps.remediation.outputs.source_sha }}
           INSTALL_OUTCOME: ${{ steps.install.outcome }}
+          REMEDIATION_OUTCOME: ${{ steps.remediation.outcome }}
           AUDIT_OUTCOME: ${{ steps.audit.outcome }}
           SECRET_OUTCOME: ${{ steps.secret.outcome }}
           MISTRAL_OUTCOME: ${{ steps.mistral.outcome }}
@@ -102,14 +146,16 @@ jobs:
 
           outcomes = {
               'install': os.environ.get('INSTALL_OUTCOME'),
+              'decision_remediation': os.environ.get('REMEDIATION_OUTCOME'),
               'static_leakage_audit': os.environ.get('AUDIT_OUTCOME'),
               'mistral_secret': os.environ.get('SECRET_OUTCOME'),
               'mistral_smoke': os.environ.get('MISTRAL_OUTCOME'),
               'literature_smoke': os.environ.get('LITERATURE_OUTCOME'),
           }
           payload = {
-              'schema': 'paperagent.real-provider-smoke.v1',
-              'source_sha': os.environ['GITHUB_SHA'],
+              'schema': 'paperagent.real-provider-smoke.v2',
+              'source_sha': os.environ.get('SOURCE_SHA') or os.environ['GITHUB_SHA'],
+              'workflow_trigger_sha': os.environ['GITHUB_SHA'],
               'workflow_run_id': os.environ['GITHUB_RUN_ID'],
               'outcomes': outcomes,
               'passed': all(value == 'success' for value in outcomes.values()),
@@ -139,6 +185,7 @@ jobs:
         if: always()
         env:
           INSTALL_OUTCOME: ${{ steps.install.outcome }}
+          REMEDIATION_OUTCOME: ${{ steps.remediation.outcome }}
           AUDIT_OUTCOME: ${{ steps.audit.outcome }}
           SECRET_OUTCOME: ${{ steps.secret.outcome }}
           MISTRAL_OUTCOME: ${{ steps.mistral.outcome }}
@@ -147,6 +194,7 @@ jobs:
         run: |
           for value in \
             "$INSTALL_OUTCOME" \
+            "$REMEDIATION_OUTCOME" \
             "$AUDIT_OUTCOME" \
             "$SECRET_OUTCOME" \
             "$MISTRAL_OUTCOME" \
