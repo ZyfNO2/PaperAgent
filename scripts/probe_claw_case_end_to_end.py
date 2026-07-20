@@ -87,8 +87,7 @@ def _evidence_items(state: dict[str, Any]) -> dict[str, dict[str, object]]:
     return {
         evidence_id: item
         for item in items
-        if isinstance(item, dict)
-        and isinstance((evidence_id := item.get("evidence_id")), str)
+        if isinstance(item, dict) and isinstance((evidence_id := item.get("evidence_id")), str)
     }
 
 
