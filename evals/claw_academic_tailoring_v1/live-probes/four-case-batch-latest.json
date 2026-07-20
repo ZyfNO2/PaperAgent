@@ -1,77 +1,92 @@
 {
-  "batch_id": "batch-04-cases-014-017-initial-live",
+  "batch_id": "batch-05-cases-015-018-020-live-validation",
   "case_ids": [
-    "at-014-gnn-fraud-detection",
     "at-015-multibehavior-recommendation",
-    "at-016-anomaly-transformer-supplied",
-    "at-017-mobilenetv3-plant-disease-supplied"
+    "at-018-yolox-tinydet-supplied",
+    "at-019-unet-unspecified-medical-segmentation",
+    "at-020-lightgcn-contrastive-supplied"
   ],
   "cases": [
     {
       "accepted_evidence": [
         {
-          "evidence_id": "ev-paper-34333075d321f5c42074",
-          "locator": "doi:10.1609/aaai.v37i12.26702",
+          "evidence_id": "ev-paper-686c49ac719a29964979",
+          "locator": "doi:10.1145/3340531.3412119",
           "provider": "literature_retrieval",
           "supports_gap_ids": [
-            "baseline_comparison_gap"
+            "baseline_repro",
+            "parallel_methods"
           ],
-          "title": "Semi-supervised Credit Card Fraud Detection via Attribute-Driven Graph Representation",
+          "title": "Multiplex Graph Neural Networks for Multi-behavior Recommendation",
           "verification_status": "accepted"
         },
         {
-          "evidence_id": "ev-paper-8d5529a3a178cd2d0f4b",
-          "locator": "doi:10.1109/tkde.2020.3025588",
+          "evidence_id": "ev-paper-1fc3d034f95ff2c09b5e",
+          "locator": "doi:10.24963/ijcai.2022/285",
           "provider": "literature_retrieval",
           "supports_gap_ids": [
-            "baseline_comparison_gap",
-            "failure_mechanism_gap",
-            "optional_negative_evidence_gap"
+            "baseline_repro",
+            "mechanism_limitations",
+            "parallel_methods"
           ],
-          "title": "Graph Neural Network for Fraud Detection via Spatial-Temporal Attention",
+          "title": "Self-supervised Graph Neural Networks for Multi-behavior Recommendation",
           "verification_status": "accepted"
         },
         {
-          "evidence_id": "ev-paper-5853dc355b20e844e374",
-          "locator": "doi:10.1609/aaai.v34i04.5984",
+          "evidence_id": "ev-paper-261852b920b914d50fc3",
+          "locator": "https://arxiv.org/abs/2601.07294",
           "provider": "literature_retrieval",
           "supports_gap_ids": [
-            "baseline_comparison_gap",
-            "failure_mechanism_gap",
-            "optional_negative_evidence_gap"
+            "baseline_repro",
+            "mechanism_limitations",
+            "parallel_methods"
           ],
-          "title": "EvolveGCN: Evolving Graph Convolutional Networks for Dynamic Graphs",
+          "title": "Towards Multi-Behavior Multi-Task Recommendation via Behavior-informed Graph Embedding Learning",
           "verification_status": "accepted"
         },
         {
-          "evidence_id": "ev-paper-0749f0cba3a023d4ed10",
-          "locator": "doi:10.3390/app12199637",
+          "evidence_id": "ev-paper-d2a061fda23a139c7830",
+          "locator": "https://arxiv.org/abs/2404.18166",
           "provider": "literature_retrieval",
           "supports_gap_ids": [
-            "failure_mechanism_gap",
-            "optional_negative_evidence_gap"
+            "baseline_repro",
+            "mechanism_limitations",
+            "parallel_methods"
           ],
-          "title": "Financial Fraud Detection Based on Machine Learning: A Systematic Literature Review",
+          "title": "Behavior-Contextualized Item Preference Modeling for Multi-Behavior Recommendation",
           "verification_status": "accepted"
         },
         {
-          "evidence_id": "ev-paper-b1c0dc55875c2b50110d",
-          "locator": "doi:10.1186/s40649-019-0069-y",
+          "evidence_id": "ev-paper-c4c0b3c1c06c64553524",
+          "locator": "https://arxiv.org/abs/2408.12152",
           "provider": "literature_retrieval",
           "supports_gap_ids": [
-            "failure_mechanism_gap",
-            "optional_negative_evidence_gap"
+            "baseline_repro",
+            "mechanism_limitations",
+            "parallel_methods"
           ],
-          "title": "Graph convolutional networks: a comprehensive review",
+          "title": "Behavior Pattern Mining-based Multi-Behavior Recommendation",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-ad03cc2e552e60d7cacf",
+          "locator": "doi:10.1145/3698192",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_repro",
+            "mechanism_limitations",
+            "parallel_methods"
+          ],
+          "title": "Contrastive Clustering Learning for Multi-Behavior Recommendation",
           "verification_status": "accepted"
         }
       ],
-      "case_id": "at-014-gnn-fraud-detection",
+      "case_id": "at-015-multibehavior-recommendation",
       "decision_matches": true,
       "evidence_review": [
         {
           "accepted": true,
-          "evidence_id": "ev-paper-34333075d321f5c42074",
+          "evidence_id": "ev-paper-686c49ac719a29964979",
           "gap_supports": [
             {
               "checklist_results": {
@@ -90,7 +105,7 @@
               },
               "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "baseline_comparison_gap",
+              "gap_id": "baseline_repro",
               "limitations": [
                 "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
@@ -113,7 +128,7 @@
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "failure_mechanism_gap",
+              "gap_id": "mechanism_limitations",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: role-specific evidence structure"
@@ -122,35 +137,34 @@
             },
             {
               "checklist_results": {
-                "cross_gap_reuse": true,
+                "cross_gap_reuse": false,
                 "direct_relevance": true,
                 "fixture_explicit_support": false,
                 "gap_overlap": false,
                 "provenance_qualified": true,
-                "query_provenance_match": false,
+                "query_provenance_match": true,
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
                 "supporting_span_present": true
               },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "optional_negative_evidence_gap",
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "parallel_methods",
               "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
-              "support_type": "insufficient"
+              "support_type": "direct_support"
             }
           ],
           "rejection_reasons": [],
-          "title": "Semi-supervised Credit Card Fraud Detection via Attribute-Driven Graph Representation"
+          "title": "Multiplex Graph Neural Networks for Multi-behavior Recommendation"
         },
         {
           "accepted": true,
-          "evidence_id": "ev-paper-8d5529a3a178cd2d0f4b",
+          "evidence_id": "ev-paper-1fc3d034f95ff2c09b5e",
           "gap_supports": [
             {
               "checklist_results": {
@@ -169,7 +183,7 @@
               },
               "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "baseline_comparison_gap",
+              "gap_id": "baseline_repro",
               "limitations": [
                 "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
@@ -192,7 +206,7 @@
               },
               "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "failure_mechanism_gap",
+              "gap_id": "mechanism_limitations",
               "limitations": [
                 "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
@@ -215,7 +229,7 @@
               },
               "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "optional_negative_evidence_gap",
+              "gap_id": "parallel_methods",
               "limitations": [
                 "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
@@ -223,11 +237,11 @@
             }
           ],
           "rejection_reasons": [],
-          "title": "Graph Neural Network for Fraud Detection via Spatial-Temporal Attention"
+          "title": "Self-supervised Graph Neural Networks for Multi-behavior Recommendation"
         },
         {
           "accepted": true,
-          "evidence_id": "ev-paper-5853dc355b20e844e374",
+          "evidence_id": "ev-paper-261852b920b914d50fc3",
           "gap_supports": [
             {
               "checklist_results": {
@@ -246,7 +260,7 @@
               },
               "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "baseline_comparison_gap",
+              "gap_id": "baseline_repro",
               "limitations": [
                 "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
@@ -269,7 +283,7 @@
               },
               "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "failure_mechanism_gap",
+              "gap_id": "mechanism_limitations",
               "limitations": [
                 "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
@@ -292,7 +306,7 @@
               },
               "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "optional_negative_evidence_gap",
+              "gap_id": "parallel_methods",
               "limitations": [
                 "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
@@ -300,11 +314,242 @@
             }
           ],
           "rejection_reasons": [],
-          "title": "EvolveGCN: Evolving Graph Convolutional Networks for Dynamic Graphs"
+          "title": "Towards Multi-Behavior Multi-Task Recommendation via Behavior-informed Graph Embedding Learning"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-d2a061fda23a139c7830",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "baseline_repro",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "mechanism_limitations",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "parallel_methods",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "Behavior-Contextualized Item Preference Modeling for Multi-Behavior Recommendation"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-c4c0b3c1c06c64553524",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "baseline_repro",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "mechanism_limitations",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "parallel_methods",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "Behavior Pattern Mining-based Multi-Behavior Recommendation"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-ad03cc2e552e60d7cacf",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "baseline_repro",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "mechanism_limitations",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "parallel_methods",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "Contrastive Clustering Learning for Multi-Behavior Recommendation"
         },
         {
           "accepted": false,
-          "evidence_id": "ev-paper-018e0cabc0eeaed22faa",
+          "evidence_id": "ev-paper-3a58e9708f3b9f2e4fb6",
           "gap_supports": [
             {
               "checklist_results": {
@@ -323,7 +568,31 @@
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "baseline_comparison_gap",
+              "gap_id": "baseline_repro",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": false,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.0,
+              "decision": "reject",
+              "gap_id": "mechanism_limitations",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
@@ -347,34 +616,10 @@
               },
               "confidence": 0.2,
               "decision": "reject",
-              "gap_id": "failure_mechanism_gap",
+              "gap_id": "parallel_methods",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "optional_negative_evidence_gap",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
               ],
               "support_type": "insufficient"
             }
@@ -382,327 +627,7 @@
           "rejection_reasons": [
             "NO_VALID_GAP_BINDING"
           ],
-          "title": "Alleviating the Inconsistency Problem of Applying Graph Neural Network to Fraud Detection"
-        },
-        {
-          "accepted": false,
-          "evidence_id": "ev-paper-3b5a36f5bf475bb24352",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "baseline_comparison_gap",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.2,
-              "decision": "reject",
-              "gap_id": "failure_mechanism_gap",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "optional_negative_evidence_gap",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [
-            "NO_VALID_GAP_BINDING"
-          ],
-          "title": "Crowdsourcing Fraud Detection over Heterogeneous Temporal MMMA Graph"
-        },
-        {
-          "accepted": false,
-          "evidence_id": "ev-paper-0e006b4dbb4e6664da40",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "baseline_comparison_gap",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.2,
-              "decision": "reject",
-              "gap_id": "failure_mechanism_gap",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "optional_negative_evidence_gap",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [
-            "NO_VALID_GAP_BINDING"
-          ],
-          "title": "Credit Card Fraud Detection Using State-of-the-Art Machine Learning and Deep Learning Algorithms"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-0749f0cba3a023d4ed10",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "baseline_comparison_gap",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "failure_mechanism_gap",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "optional_negative_evidence_gap",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "Financial Fraud Detection Based on Machine Learning: A Systematic Literature Review"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-b1c0dc55875c2b50110d",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "baseline_comparison_gap",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "failure_mechanism_gap",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "optional_negative_evidence_gap",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "Graph convolutional networks: a comprehensive review"
+          "title": "Multi-view Multi-behavior Contrastive Learning in Recommendation"
         }
       ],
       "execution_status": "completed",
@@ -749,22 +674,20 @@
           "budget_exhausted_call_count": 0,
           "cache_hit_count": 0,
           "coalesced_provider_call_count": 0,
-          "executed_query": "graph neural network fraud transaction detection baseline",
+          "executed_query": "multi-behavior recommendation graph neural network",
           "fallback_used": false,
           "informative_terms": [
+            "multi-behavior",
+            "recommendation",
             "graph",
             "neural",
-            "network",
-            "fraud",
-            "transaction",
-            "detection",
-            "baseline"
+            "network"
           ],
-          "maximum_provider_calls": 4,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.68,
+          "minimum_relevance": 0.42,
           "policy_reasons": [],
-          "precision_risk": "low",
+          "precision_risk": "medium",
           "provider_call_count": 1,
           "provider_results": [
             {
@@ -776,10 +699,10 @@
             }
           ],
           "query_approved": true,
-          "query_id": "q1_baseline_comparison",
-          "relevant_verified_papers": 3,
-          "returned_candidate_count": 3,
-          "returned_papers": 3,
+          "query_id": "q1_baseline",
+          "relevant_verified_papers": 2,
+          "returned_candidate_count": 2,
+          "returned_papers": 2,
           "stop_reason": "sufficient_academic_evidence",
           "uncached_provider_call_count": 1
         },
@@ -792,18 +715,15 @@
           "budget_exhausted_call_count": 0,
           "cache_hit_count": 0,
           "coalesced_provider_call_count": 0,
-          "executed_query": "graph neural network fraud detection failure mechanism limitation explainability",
+          "executed_query": "multi-behavior recommendation gated auxiliary behavior transfer",
           "fallback_used": false,
           "informative_terms": [
-            "graph",
-            "neural",
-            "network",
-            "fraud",
-            "detection",
-            "failure",
-            "mechanism",
-            "limitation",
-            "explainability"
+            "multi-behavior",
+            "recommendation",
+            "gated",
+            "auxiliary",
+            "behavior",
+            "transfer"
           ],
           "maximum_provider_calls": 4,
           "minimum_rank_score": 0.62,
@@ -835,10 +755,10 @@
             }
           ],
           "query_approved": true,
-          "query_id": "q2_failure_mechanism",
-          "relevant_verified_papers": 2,
-          "returned_candidate_count": 2,
-          "returned_papers": 2,
+          "query_id": "q2_mechanism",
+          "relevant_verified_papers": 3,
+          "returned_candidate_count": 3,
+          "returned_papers": 3,
           "stop_reason": "sufficient_academic_evidence",
           "uncached_provider_call_count": 3
         },
@@ -849,24 +769,19 @@
           "budget_exhausted_call_count": 0,
           "cache_hit_count": 0,
           "coalesced_provider_call_count": 0,
-          "executed_query": "fraud transaction detection graph-based non-graph deep learning traditional machine",
+          "executed_query": "multi-behavior recommendation contrastive learning",
           "fallback_used": false,
           "informative_terms": [
-            "fraud",
-            "transaction",
-            "detection",
-            "graph-based",
-            "non-graph",
-            "deep",
-            "learning",
-            "traditional",
-            "machine"
+            "multi-behavior",
+            "recommendation",
+            "contrastive",
+            "learning"
           ],
-          "maximum_provider_calls": 4,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.68,
+          "minimum_relevance": 0.42,
           "policy_reasons": [],
-          "precision_risk": "low",
+          "precision_risk": "medium",
           "provider_call_count": 1,
           "provider_results": [
             {
@@ -878,10 +793,10 @@
             }
           ],
           "query_approved": true,
-          "query_id": "q3_parallel_methods",
-          "relevant_verified_papers": 3,
-          "returned_candidate_count": 3,
-          "returned_papers": 3,
+          "query_id": "q3_parallel",
+          "relevant_verified_papers": 2,
+          "returned_candidate_count": 2,
+          "returned_papers": 2,
           "stop_reason": "sufficient_academic_evidence",
           "uncached_provider_call_count": 1
         }
@@ -895,259 +810,62 @@
       "web_search_enabled": false
     },
     {
-      "accepted_evidence": [],
-      "case_id": "at-015-multibehavior-recommendation",
-      "decision_matches": false,
-      "evidence_review": [],
-      "execution_status": "blocked",
-      "expected_decision": "REVISE_TO_PILOT",
-      "failed_stages": [
-        {
-          "available": 10,
-          "earned": 8,
-          "findings": [
-            "explicit facts, inferences, or proposals were not recorded"
-          ],
-          "passed": false,
-          "stage": "parse_user_input"
-        },
-        {
-          "available": 7,
-          "earned": 5,
-          "findings": [
-            "no evidence reviews were recorded"
-          ],
-          "passed": false,
-          "stage": "relevance_review"
-        },
-        {
-          "available": 10,
-          "earned": 7,
-          "findings": [
-            "clarification did not target a declared high-impact unknown"
-          ],
-          "passed": false,
-          "stage": "clarification_gate"
-        },
-        {
-          "available": 15,
-          "earned": 4,
-          "findings": [
-            "baseline card is missing",
-            "baseline source is not accepted evidence",
-            "baseline freeze contract is incomplete"
-          ],
-          "passed": false,
-          "stage": "freeze_baseline"
-        },
-        {
-          "available": 15,
-          "earned": 0,
-          "findings": [
-            "falsifiable hypothesis is missing condition, limitation, mechanism, intervention, metric, or guardrail"
-          ],
-          "passed": false,
-          "stage": "gap_hypothesis"
-        },
-        {
-          "available": 5,
-          "earned": 1,
-          "findings": [
-            "experiment matrix fields are incomplete",
-            "baseline experiment arm is missing",
-            "strong-comparison experiment arm is missing",
-            "stop conditions are missing"
-          ],
-          "passed": false,
-          "stage": "experiment_matrix"
-        },
-        {
-          "available": 5,
-          "earned": 2,
-          "findings": [
-            "expected REVISE_TO_PILOT, observed REVISE"
-          ],
-          "passed": false,
-          "stage": "decision"
-        }
-      ],
-      "hard_failures": [
-        {
-          "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-          "details": "stronger baselines or negative results were not preserved"
-        }
-      ],
-      "llm_call_budget": 12,
-      "minimum_score": 80,
-      "model": "mistral-small-latest",
-      "observed_decision": "REVISE",
-      "passed": false,
-      "provider": "mistral",
-      "provider_call_budget": {
-        "maximum": 8,
-        "remaining": 8,
-        "used": 0
-      },
-      "report_status": "blocked",
-      "score": 60,
-      "search_diagnostics": [],
-      "status": "failed",
-      "verification_call_budget": {
-        "maximum": 16,
-        "remaining": 16,
-        "used": 0
-      },
-      "web_search_enabled": false
-    },
-    {
       "accepted_evidence": [
         {
-          "evidence_id": "ev-paper-c8ed9d30f35a68bdc187",
-          "locator": "https://arxiv.org/abs/2507.20019",
+          "evidence_id": "ev-paper-be71d3ba966d60e2d2d9",
+          "locator": "doi:10.3390/electronics12173664",
           "provider": "literature_retrieval",
           "supports_gap_ids": [
-            "baseline_reproducibility",
-            "mechanism_and_limitations",
-            "parallel_methods_and_improvements"
+            "baseline_comparison",
+            "failure_mechanism",
+            "parallel_method_analysis"
           ],
-          "title": "Anomaly Detection in Human Language via Meta-Learning: A Few-Shot Approach",
+          "title": "YOLO-Drone: An Optimized YOLOv8 Network for Tiny UAV Object Detection",
           "verification_status": "accepted"
         },
         {
-          "evidence_id": "ev-paper-f94ae9f33ebe995d55ba",
-          "locator": "https://arxiv.org/abs/2406.12225",
+          "evidence_id": "ev-paper-a96e64d23553bf271132",
+          "locator": "doi:10.3390/rs15204932",
           "provider": "literature_retrieval",
           "supports_gap_ids": [
-            "baseline_reproducibility",
-            "mechanism_and_limitations",
-            "parallel_methods_and_improvements"
+            "baseline_comparison",
+            "failure_mechanism",
+            "parallel_method_analysis"
           ],
-          "title": "The Solution for CVPR2024 Foundational Few-Shot Object Detection Challenge",
+          "title": "GCL-YOLO: A GhostConv-Based Lightweight YOLO Network for UAV Small Object Detection",
           "verification_status": "accepted"
         },
         {
-          "evidence_id": "ev-paper-376d209da5b1c7bfe63e",
-          "locator": "doi:10.1016/j.media.2022.102475",
+          "evidence_id": "ev-paper-4975a520c8947c5d4730",
+          "locator": "doi:10.3390/drones10040283",
           "provider": "literature_retrieval",
           "supports_gap_ids": [
-            "baseline_reproducibility",
-            "mechanism_and_limitations",
-            "parallel_methods_and_improvements"
+            "baseline_comparison",
+            "failure_mechanism",
+            "parallel_method_analysis"
           ],
-          "title": "Unsupervised brain imaging 3D anomaly detection and segmentation with transformers",
+          "title": "YOLO-DAA: Directional Area Attention for Lightweight Tiny Object Detection in Maritime UAV Imagery",
           "verification_status": "accepted"
         },
         {
-          "evidence_id": "ev-paper-b578f057ea9470bba5cf",
-          "locator": "doi:10.1109/access.2023.3349132",
+          "evidence_id": "ev-paper-67a75e50c2cdd12eeafb",
+          "locator": "doi:10.3390/s25154582",
           "provider": "literature_retrieval",
           "supports_gap_ids": [
-            "baseline_reproducibility",
-            "mechanism_and_limitations",
-            "parallel_methods_and_improvements"
+            "baseline_comparison",
+            "failure_mechanism",
+            "parallel_method_analysis"
           ],
-          "title": "A Comprehensive Survey of Deep Transfer Learning for Anomaly Detection in Industrial Time Series: Methods, Applications, and Directions",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-b23308dbbb463d6bf542",
-          "locator": "doi:10.1109/access.2021.3107975",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_reproducibility",
-            "mechanism_and_limitations"
-          ],
-          "title": "Deep Learning for Anomaly Detection in Time-Series Data: Review, Analysis, and Guidelines",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-38070cb3d9861cbf061a",
-          "locator": "doi:10.1016/j.eswa.2024.124678",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_reproducibility",
-            "mechanism_and_limitations",
-            "parallel_methods_and_improvements"
-          ],
-          "title": "Physics-informed machine learning: A comprehensive review on applications in anomaly detection and condition monitoring",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-f7c51e873c431ec7d31a",
-          "locator": "doi:10.1007/s10462-024-11100-x",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_reproducibility",
-            "mechanism_and_limitations",
-            "parallel_methods_and_improvements"
-          ],
-          "title": "Deep learning and computer vision in plant disease detection: a comprehensive review of techniques, models, and trends in precision agriculture",
+          "title": "UAV-DETR: An Enhanced RT-DETR Architecture for Efficient Small Object Detection in UAV Imagery",
           "verification_status": "accepted"
         }
       ],
-      "case_id": "at-016-anomaly-transformer-supplied",
+      "case_id": "at-018-yolox-tinydet-supplied",
       "decision_matches": true,
       "evidence_review": [
         {
           "accepted": true,
-          "evidence_id": "ev-paper-c8ed9d30f35a68bdc187",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "baseline_reproducibility",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "mechanism_and_limitations",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "parallel_methods_and_improvements",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "Anomaly Detection in Human Language via Meta-Learning: A Few-Shot Approach"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-f94ae9f33ebe995d55ba",
+          "evidence_id": "ev-paper-be71d3ba966d60e2d2d9",
           "gap_supports": [
             {
               "checklist_results": {
@@ -1166,286 +884,10 @@
               },
               "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "baseline_reproducibility",
+              "gap_id": "baseline_comparison",
               "limitations": [
                 "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "mechanism_and_limitations",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "parallel_methods_and_improvements",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "The Solution for CVPR2024 Foundational Few-Shot Object Detection Challenge"
-        },
-        {
-          "accepted": false,
-          "evidence_id": "ev-paper-eb575e64c62e9df99a2e",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.2,
-              "decision": "reject",
-              "gap_id": "baseline_reproducibility",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "mechanism_and_limitations",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "parallel_methods_and_improvements",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [
-            "NO_VALID_GAP_BINDING"
-          ],
-          "title": "Exploring Euphemism Detection in Few-Shot and Zero-Shot Settings"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-376d209da5b1c7bfe63e",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "baseline_reproducibility",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "mechanism_and_limitations",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "parallel_methods_and_improvements",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "Unsupervised brain imaging 3D anomaly detection and segmentation with transformers"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-b578f057ea9470bba5cf",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "baseline_reproducibility",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "mechanism_and_limitations",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "parallel_methods_and_improvements",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "A Comprehensive Survey of Deep Transfer Learning for Anomaly Detection in Industrial Time Series: Methods, Applications, and Directions"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-b23308dbbb463d6bf542",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "baseline_reproducibility",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "mechanism_and_limitations",
-              "limitations": [],
               "support_type": "direct_support"
             },
             {
@@ -1459,51 +901,147 @@
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
                 "supporting_span_present": true
               },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "parallel_methods_and_improvements",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "Deep Learning for Anomaly Detection in Time-Series Data: Review, Analysis, and Guidelines"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-38070cb3d9861cbf061a",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
+              "confidence": 0.72,
               "decision": "accept",
-              "gap_id": "baseline_reproducibility",
-              "limitations": [],
+              "gap_id": "parallel_method_analysis",
+              "limitations": [
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+              ],
               "support_type": "direct_support"
             },
             {
               "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
                 "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
               },
-              "confidence": 0.9,
+              "confidence": 0.72,
               "decision": "accept",
-              "gap_id": "mechanism_and_limitations",
-              "limitations": [],
+              "gap_id": "failure_mechanism",
+              "limitations": [
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "YOLO-Drone: An Optimized YOLOv8 Network for Tiny UAV Object Detection"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-a96e64d23553bf271132",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "baseline_comparison",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.72,
+              "decision": "accept",
+              "gap_id": "parallel_method_analysis",
+              "limitations": [
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.72,
+              "decision": "accept",
+              "gap_id": "failure_mechanism",
+              "limitations": [
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "GCL-YOLO: A GhostConv-Based Lightweight YOLO Network for UAV Small Object Detection"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-4975a520c8947c5d4730",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.72,
+              "decision": "accept",
+              "gap_id": "baseline_comparison",
+              "limitations": [
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+              ],
               "support_type": "direct_support"
             },
             {
@@ -1523,126 +1061,64 @@
               },
               "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "parallel_methods_and_improvements",
+              "gap_id": "parallel_method_analysis",
               "limitations": [
                 "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.72,
+              "decision": "accept",
+              "gap_id": "failure_mechanism",
+              "limitations": [
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
               ],
               "support_type": "direct_support"
             }
           ],
           "rejection_reasons": [],
-          "title": "Physics-informed machine learning: A comprehensive review on applications in anomaly detection and condition monitoring"
+          "title": "YOLO-DAA: Directional Area Attention for Lightweight Tiny Object Detection in Maritime UAV Imagery"
         },
         {
-          "accepted": false,
-          "evidence_id": "ev-paper-f86e1af970ff59d754c5",
+          "accepted": true,
+          "evidence_id": "ev-paper-67a75e50c2cdd12eeafb",
           "gap_supports": [
             {
               "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "baseline_reproducibility",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "mechanism_and_limitations",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
+                "cross_gap_reuse": true,
                 "direct_relevance": true,
                 "fixture_explicit_support": false,
                 "gap_overlap": false,
                 "provenance_qualified": true,
-                "query_provenance_match": true,
+                "query_provenance_match": false,
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
                 "supporting_span_present": true
               },
-              "confidence": 0.2,
-              "decision": "reject",
-              "gap_id": "parallel_methods_and_improvements",
+              "confidence": 0.72,
+              "decision": "accept",
+              "gap_id": "baseline_comparison",
               "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
               ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [
-            "NO_VALID_GAP_BINDING"
-          ],
-          "title": "A survey on Image Data Augmentation for Deep Learning"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-f7c51e873c431ec7d31a",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "baseline_reproducibility",
-              "limitations": [],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "fixture_explicit_support": false,
-                "gap_overlap": true,
-                "query_provenance_match": true,
-                "relevance_passed": true
-              },
-              "confidence": 0.9,
-              "decision": "accept",
-              "gap_id": "mechanism_and_limitations",
-              "limitations": [],
               "support_type": "direct_support"
             },
             {
@@ -1662,33 +1138,48 @@
               },
               "confidence": 0.82,
               "decision": "accept",
-              "gap_id": "parallel_methods_and_improvements",
+              "gap_id": "parallel_method_analysis",
               "limitations": [
                 "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.72,
+              "decision": "accept",
+              "gap_id": "failure_mechanism",
+              "limitations": [
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
               ],
               "support_type": "direct_support"
             }
           ],
           "rejection_reasons": [],
-          "title": "Deep learning and computer vision in plant disease detection: a comprehensive review of techniques, models, and trends in precision agriculture"
+          "title": "UAV-DETR: An Enhanced RT-DETR Architecture for Efficient Small Object Detection in UAV Imagery"
         }
       ],
       "execution_status": "completed",
       "expected_decision": "REVISE_TO_PILOT",
       "failed_stages": [
         {
-          "available": 10,
-          "earned": 8,
-          "findings": [
-            "supplied-paper roles were not tracked exactly"
-          ],
-          "passed": false,
-          "stage": "parse_user_input"
-        },
-        {
           "available": 7,
-          "earned": 5,
+          "earned": 4,
           "findings": [
+            "one or more candidates skipped relevance review",
             "core accepted evidence lacks full-text review"
           ],
           "passed": false,
@@ -1717,7 +1208,849 @@
         "used": 5
       },
       "report_status": "completed",
-      "score": 93,
+      "score": 94,
+      "search_diagnostics": [
+        {
+          "attempted_providers": [
+            "openalex"
+          ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "YOLOX small object detection drone speed accuracy official implementation",
+          "fallback_used": false,
+          "informative_terms": [
+            "yolox",
+            "small",
+            "object",
+            "detection",
+            "drone",
+            "speed",
+            "accuracy",
+            "official",
+            "implementation"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 1,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
+          "query_approved": true,
+          "query_id": "q1_yolox_baseline",
+          "relevant_verified_papers": 2,
+          "returned_candidate_count": 2,
+          "returned_papers": 2,
+          "stop_reason": "sufficient_academic_evidence",
+          "uncached_provider_call_count": 1
+        },
+        {
+          "attempted_providers": [
+            "openalex"
+          ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "TinyDet small object detection lightweight drone real-time accuracy efficiency",
+          "fallback_used": false,
+          "informative_terms": [
+            "tinydet",
+            "small",
+            "object",
+            "detection",
+            "lightweight",
+            "drone",
+            "real-time",
+            "accuracy",
+            "efficiency"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 1,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
+          "query_approved": true,
+          "query_id": "q2_tinydet_parallel",
+          "relevant_verified_papers": 2,
+          "returned_candidate_count": 2,
+          "returned_papers": 2,
+          "stop_reason": "sufficient_academic_evidence",
+          "uncached_provider_call_count": 1
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": null,
+          "fallback_used": false,
+          "informative_terms": [
+            "yolox",
+            "tinydet",
+            "failure",
+            "small",
+            "object",
+            "detection",
+            "drone",
+            "limitations",
+            "negative"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "empty"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": "RATE_LIMITED",
+              "provider": "semantic_scholar",
+              "retry_count": 0,
+              "status": "rate_limited"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "arxiv",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
+          "query_approved": true,
+          "query_id": "q3_failure_mechanism",
+          "relevant_verified_papers": 0,
+          "returned_candidate_count": 0,
+          "returned_papers": 0,
+          "stop_reason": "academic_budget_exhausted",
+          "uncached_provider_call_count": 3
+        }
+      ],
+      "status": "passed",
+      "verification_call_budget": {
+        "maximum": 16,
+        "remaining": 10,
+        "used": 6
+      },
+      "web_search_enabled": false
+    },
+    {
+      "accepted_evidence": [
+        {
+          "evidence_id": "ev-paper-8b344c63d4f5cbf84894",
+          "locator": "doi:10.1016/j.media.2022.102680",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_evidence",
+            "dataset_selection"
+          ],
+          "title": "The Liver Tumor Segmentation Benchmark (LiTS)",
+          "verification_status": "accepted"
+        }
+      ],
+      "case_id": "at-019-unet-unspecified-medical-segmentation",
+      "decision_matches": false,
+      "evidence_review": [
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-8b344c63d4f5cbf84894",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "baseline_evidence",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "dataset_selection",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "The Liver Tumor Segmentation Benchmark (LiTS)"
+        },
+        {
+          "accepted": false,
+          "evidence_id": "ev-paper-5c236915717c246ca2ea",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.2,
+              "decision": "reject",
+              "gap_id": "baseline_evidence",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.2,
+              "decision": "reject",
+              "gap_id": "dataset_selection",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            }
+          ],
+          "rejection_reasons": [
+            "NO_VALID_GAP_BINDING"
+          ],
+          "title": "The Medical Segmentation Decathlon"
+        },
+        {
+          "accepted": false,
+          "evidence_id": "ev-paper-34d0984b266bc86a2c69",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.2,
+              "decision": "reject",
+              "gap_id": "baseline_evidence",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": false,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.0,
+              "decision": "reject",
+              "gap_id": "dataset_selection",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            }
+          ],
+          "rejection_reasons": [
+            "NO_VALID_GAP_BINDING"
+          ],
+          "title": "Deep Learning Techniques for Medical Image Segmentation: Achievements and Challenges"
+        }
+      ],
+      "execution_status": "completed",
+      "expected_decision": "REVISE",
+      "failed_stages": [
+        {
+          "available": 7,
+          "earned": 5,
+          "findings": [
+            "one or more candidates skipped relevance review"
+          ],
+          "passed": false,
+          "stage": "relevance_review"
+        },
+        {
+          "available": 10,
+          "earned": 7,
+          "findings": [
+            "clarification did not target a declared high-impact unknown"
+          ],
+          "passed": false,
+          "stage": "clarification_gate"
+        },
+        {
+          "available": 5,
+          "earned": 2,
+          "findings": [
+            "expected REVISE, observed REVISE_TO_PILOT"
+          ],
+          "passed": false,
+          "stage": "decision"
+        }
+      ],
+      "hard_failures": [],
+      "llm_call_budget": 12,
+      "minimum_score": 80,
+      "model": "mistral-small-latest",
+      "observed_decision": "REVISE_TO_PILOT",
+      "passed": false,
+      "provider": "mistral",
+      "provider_call_budget": {
+        "maximum": 8,
+        "remaining": 6,
+        "used": 2
+      },
+      "report_status": "completed",
+      "score": 92,
+      "search_diagnostics": [
+        {
+          "attempted_providers": [
+            "openalex"
+          ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "U-Net medical image segmentation on organ-specific datasets (e.g. liver lung heart) with and limitations",
+          "fallback_used": false,
+          "informative_terms": [
+            "u-net",
+            "medical",
+            "image",
+            "segmentation",
+            "organ-specific",
+            "datasets",
+            "e.g.",
+            "liver",
+            "lung",
+            "heart",
+            "limitations"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 1,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
+          "query_approved": true,
+          "query_id": "q1",
+          "relevant_verified_papers": 3,
+          "returned_candidate_count": 3,
+          "returned_papers": 3,
+          "stop_reason": "sufficient_academic_evidence",
+          "uncached_provider_call_count": 1
+        },
+        {
+          "attempted_providers": [
+            "openalex"
+          ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "public medical image segmentation datasets for organ-specific tasks (e.g. liver lung heart) with annotations and protocols",
+          "fallback_used": false,
+          "informative_terms": [
+            "public",
+            "medical",
+            "image",
+            "segmentation",
+            "datasets",
+            "organ-specific",
+            "tasks",
+            "e.g.",
+            "liver",
+            "lung",
+            "heart",
+            "annotations",
+            "protocols"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 1,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
+          "query_approved": true,
+          "query_id": "q2",
+          "relevant_verified_papers": 2,
+          "returned_candidate_count": 2,
+          "returned_papers": 2,
+          "stop_reason": "sufficient_academic_evidence",
+          "uncached_provider_call_count": 1
+        }
+      ],
+      "status": "failed",
+      "verification_call_budget": {
+        "maximum": 16,
+        "remaining": 10,
+        "used": 6
+      },
+      "web_search_enabled": false
+    },
+    {
+      "accepted_evidence": [
+        {
+          "evidence_id": "ev-paper-f3e9474feb667705085c",
+          "locator": "https://arxiv.org/abs/2002.02126",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison"
+          ],
+          "title": "LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-1108533177a4dfb00f47",
+          "locator": "https://arxiv.org/abs/2505.15103",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison",
+            "contrastive_mechanism_and_limits",
+            "fusion_approach_evidence"
+          ],
+          "title": "Khan-GCL: Kolmogorov-Arnold Network Based Graph Contrastive Learning with Hard Negatives",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-28d31e749f46fb3c7147",
+          "locator": "https://arxiv.org/abs/2209.02544",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison",
+            "contrastive_mechanism_and_limits",
+            "fusion_approach_evidence"
+          ],
+          "title": "XSimGCL: Towards Extremely Simple Graph Contrastive Learning for Recommendation",
+          "verification_status": "accepted"
+        }
+      ],
+      "case_id": "at-020-lightgcn-contrastive-supplied",
+      "decision_matches": false,
+      "evidence_review": [
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-f3e9474feb667705085c",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "baseline_comparison",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.0,
+              "decision": "reject",
+              "gap_id": "contrastive_mechanism_and_limits",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.0,
+              "decision": "reject",
+              "gap_id": "fusion_approach_evidence",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation"
+        },
+        {
+          "accepted": false,
+          "evidence_id": "ev-paper-2f3cf76c0da5b5a59a4c",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": false,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.0,
+              "decision": "reject",
+              "gap_id": "baseline_comparison",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.2,
+              "decision": "reject",
+              "gap_id": "contrastive_mechanism_and_limits",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": false,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.0,
+              "decision": "reject",
+              "gap_id": "fusion_approach_evidence",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            }
+          ],
+          "rejection_reasons": [
+            "NO_VALID_GAP_BINDING"
+          ],
+          "title": "On the Similarities of Embeddings in Contrastive Learning"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-1108533177a4dfb00f47",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.72,
+              "decision": "accept",
+              "gap_id": "baseline_comparison",
+              "limitations": [
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "contrastive_mechanism_and_limits",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": false,
+                "relevance_passed": true
+              },
+              "confidence": 0.7,
+              "decision": "accept",
+              "gap_id": "fusion_approach_evidence",
+              "limitations": [],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "Khan-GCL: Kolmogorov-Arnold Network Based Graph Contrastive Learning with Hard Negatives"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-28d31e749f46fb3c7147",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": false,
+                "relevance_passed": true
+              },
+              "confidence": 0.7,
+              "decision": "accept",
+              "gap_id": "baseline_comparison",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": true,
+                "relevance_passed": true
+              },
+              "confidence": 0.9,
+              "decision": "accept",
+              "gap_id": "contrastive_mechanism_and_limits",
+              "limitations": [],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "fixture_explicit_support": false,
+                "gap_overlap": true,
+                "query_provenance_match": false,
+                "relevance_passed": true
+              },
+              "confidence": 0.7,
+              "decision": "accept",
+              "gap_id": "fusion_approach_evidence",
+              "limitations": [],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "XSimGCL: Towards Extremely Simple Graph Contrastive Learning for Recommendation"
+        }
+      ],
+      "execution_status": "completed",
+      "expected_decision": "REVISE",
+      "failed_stages": [
+        {
+          "available": 7,
+          "earned": 4,
+          "findings": [
+            "one or more candidates skipped relevance review",
+            "core accepted evidence lacks full-text review"
+          ],
+          "passed": false,
+          "stage": "relevance_review"
+        },
+        {
+          "available": 10,
+          "earned": 7,
+          "findings": [
+            "clarification did not target a declared high-impact unknown"
+          ],
+          "passed": false,
+          "stage": "clarification_gate"
+        },
+        {
+          "available": 5,
+          "earned": 2,
+          "findings": [
+            "expected REVISE, observed REVISE_TO_PILOT"
+          ],
+          "passed": false,
+          "stage": "decision"
+        }
+      ],
+      "hard_failures": [],
+      "llm_call_budget": 12,
+      "minimum_score": 80,
+      "model": "mistral-small-latest",
+      "observed_decision": "REVISE_TO_PILOT",
+      "passed": false,
+      "provider": "mistral",
+      "provider_call_budget": {
+        "maximum": 8,
+        "remaining": 0,
+        "used": 8
+      },
+      "report_status": "completed",
+      "score": 91,
       "search_diagnostics": [
         {
           "attempted_providers": [
@@ -1728,19 +2061,19 @@
           "budget_exhausted_call_count": 0,
           "cache_hit_count": 0,
           "coalesced_provider_call_count": 0,
-          "executed_query": "Anomaly Transformer time series detection few-shot zero-shot code",
+          "executed_query": "LightGCN NGCF SGL SimGCL reproducible implementation recommendation code",
           "fallback_used": false,
           "informative_terms": [
-            "anomaly",
-            "transformer",
-            "time",
-            "series",
-            "detection",
-            "few-shot",
-            "zero-shot",
+            "lightgcn",
+            "ngcf",
+            "sgl",
+            "simgcl",
+            "reproducible",
+            "implementation",
+            "recommendation",
             "code"
           ],
-          "maximum_provider_calls": 4,
+          "maximum_provider_calls": 3,
           "minimum_rank_score": 0.62,
           "minimum_relevance": 0.34,
           "policy_reasons": [],
@@ -1770,224 +2103,144 @@
             }
           ],
           "query_approved": true,
-          "query_id": "q1_baseline_evidence",
-          "relevant_verified_papers": 4,
-          "returned_candidate_count": 4,
-          "returned_papers": 4,
+          "query_id": "q1_baseline_lightgcn_ngcf_sgl_simgcl",
+          "relevant_verified_papers": 1,
+          "returned_candidate_count": 1,
+          "returned_papers": 1,
+          "stop_reason": "academic_budget_exhausted",
+          "uncached_provider_call_count": 3
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "budget_exhausted_call_count": 0,
+          "cache_hit_count": 0,
+          "coalesced_provider_call_count": 0,
+          "executed_query": "contrastive learning recommendation mechanism limitations failure modes SGL SimGCL CLRec negative sampling augmentation loss",
+          "fallback_used": false,
+          "informative_terms": [
+            "contrastive",
+            "learning",
+            "recommendation",
+            "mechanism",
+            "limitations",
+            "failure",
+            "modes",
+            "sgl",
+            "simgcl",
+            "clrec",
+            "negative",
+            "sampling",
+            "augmentation",
+            "loss"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "provider_results": [
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "openalex",
+              "retry_count": 0,
+              "status": "empty"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": "RATE_LIMITED",
+              "provider": "semantic_scholar",
+              "retry_count": 0,
+              "status": "rate_limited"
+            },
+            {
+              "cache_status": "miss",
+              "error_code": null,
+              "provider": "arxiv",
+              "retry_count": 0,
+              "status": "success"
+            }
+          ],
+          "query_approved": true,
+          "query_id": "q2_contrastive_recommendation_mechanism_limits",
+          "relevant_verified_papers": 3,
+          "returned_candidate_count": 3,
+          "returned_papers": 3,
           "stop_reason": "sufficient_academic_evidence",
           "uncached_provider_call_count": 3
         },
         {
           "attempted_providers": [
-            "openalex"
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
           ],
-          "budget_exhausted_call_count": 0,
+          "budget_exhausted_call_count": 1,
           "cache_hit_count": 0,
           "coalesced_provider_call_count": 0,
-          "executed_query": "small sample time series anomaly detection mechanism limitations failure modes association discrepancy",
+          "executed_query": null,
           "fallback_used": false,
           "informative_terms": [
-            "small",
-            "sample",
-            "time",
-            "series",
-            "anomaly",
-            "detection",
-            "mechanism",
-            "limitations",
-            "failure",
-            "modes",
-            "association",
-            "discrepancy"
+            "graph",
+            "neural",
+            "network",
+            "contrastive",
+            "learning",
+            "recommendation",
+            "fusion",
+            "lightgcl",
+            "hgcl",
+            "gcl",
+            "experiment"
           ],
-          "maximum_provider_calls": 4,
+          "maximum_provider_calls": 3,
           "minimum_rank_score": 0.62,
           "minimum_relevance": 0.34,
           "policy_reasons": [],
           "precision_risk": "low",
-          "provider_call_count": 1,
+          "provider_call_count": 3,
           "provider_results": [
             {
               "cache_status": "miss",
               "error_code": null,
               "provider": "openalex",
               "retry_count": 0,
-              "status": "success"
-            }
-          ],
-          "query_approved": true,
-          "query_id": "q2_mechanism_and_limitations",
-          "relevant_verified_papers": 3,
-          "returned_candidate_count": 3,
-          "returned_papers": 3,
-          "stop_reason": "sufficient_academic_evidence",
-          "uncached_provider_call_count": 1
-        },
-        {
-          "attempted_providers": [
-            "openalex"
-          ],
-          "budget_exhausted_call_count": 0,
-          "cache_hit_count": 0,
-          "coalesced_provider_call_count": 0,
-          "executed_query": "few-shot time series anomaly detection pretraining meta-learning data augmentation parallel",
-          "fallback_used": false,
-          "informative_terms": [
-            "few-shot",
-            "time",
-            "series",
-            "anomaly",
-            "detection",
-            "pretraining",
-            "meta-learning",
-            "data",
-            "augmentation",
-            "parallel"
-          ],
-          "maximum_provider_calls": 4,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 1,
-          "provider_results": [
+              "status": "empty"
+            },
             {
               "cache_status": "miss",
-              "error_code": null,
-              "provider": "openalex",
+              "error_code": "RATE_LIMITED",
+              "provider": "semantic_scholar",
               "retry_count": 0,
-              "status": "success"
+              "status": "rate_limited"
+            },
+            {
+              "cache_status": "bypass",
+              "error_code": "PROVIDER_CALL_BUDGET_EXHAUSTED",
+              "provider": "arxiv",
+              "retry_count": 0,
+              "status": "failed"
             }
           ],
           "query_approved": true,
-          "query_id": "q3_parallel_methods",
-          "relevant_verified_papers": 2,
-          "returned_candidate_count": 2,
-          "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence",
-          "uncached_provider_call_count": 1
+          "query_id": "q3_fusion_gnn_contrastive_recommendation",
+          "relevant_verified_papers": 0,
+          "returned_candidate_count": 0,
+          "returned_papers": 0,
+          "stop_reason": "academic_budget_exhausted",
+          "uncached_provider_call_count": 2
         }
       ],
-      "status": "passed",
-      "verification_call_budget": {
-        "maximum": 16,
-        "remaining": 7,
-        "used": 9
-      },
-      "web_search_enabled": false
-    },
-    {
-      "accepted_evidence": [],
-      "case_id": "at-017-mobilenetv3-plant-disease-supplied",
-      "decision_matches": false,
-      "evidence_review": [],
-      "execution_status": "blocked",
-      "expected_decision": "REVISE_TO_PILOT",
-      "failed_stages": [
-        {
-          "available": 10,
-          "earned": 5,
-          "findings": [
-            "explicit facts, inferences, or proposals were not recorded",
-            "supplied-paper roles were not tracked exactly"
-          ],
-          "passed": false,
-          "stage": "parse_user_input"
-        },
-        {
-          "available": 8,
-          "earned": 6,
-          "findings": [
-            "retrieval role strong_comparison is missing"
-          ],
-          "passed": false,
-          "stage": "exploratory_retrieval"
-        },
-        {
-          "available": 7,
-          "earned": 5,
-          "findings": [
-            "no evidence reviews were recorded"
-          ],
-          "passed": false,
-          "stage": "relevance_review"
-        },
-        {
-          "available": 10,
-          "earned": 7,
-          "findings": [
-            "clarification did not target a declared high-impact unknown"
-          ],
-          "passed": false,
-          "stage": "clarification_gate"
-        },
-        {
-          "available": 15,
-          "earned": 4,
-          "findings": [
-            "baseline card is missing",
-            "baseline source is not accepted evidence",
-            "baseline freeze contract is incomplete"
-          ],
-          "passed": false,
-          "stage": "freeze_baseline"
-        },
-        {
-          "available": 15,
-          "earned": 0,
-          "findings": [
-            "falsifiable hypothesis is missing condition, limitation, mechanism, intervention, metric, or guardrail"
-          ],
-          "passed": false,
-          "stage": "gap_hypothesis"
-        },
-        {
-          "available": 5,
-          "earned": 1,
-          "findings": [
-            "experiment matrix fields are incomplete",
-            "baseline experiment arm is missing",
-            "strong-comparison experiment arm is missing",
-            "stop conditions are missing"
-          ],
-          "passed": false,
-          "stage": "experiment_matrix"
-        },
-        {
-          "available": 5,
-          "earned": 2,
-          "findings": [
-            "expected REVISE_TO_PILOT, observed REVISE"
-          ],
-          "passed": false,
-          "stage": "decision"
-        }
-      ],
-      "hard_failures": [
-        {
-          "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-          "details": "stronger baselines or negative results were not preserved"
-        }
-      ],
-      "llm_call_budget": 12,
-      "minimum_score": 80,
-      "model": "mistral-small-latest",
-      "observed_decision": "REVISE",
-      "passed": false,
-      "provider": "mistral",
-      "provider_call_budget": {
-        "maximum": 8,
-        "remaining": 8,
-        "used": 0
-      },
-      "report_status": "blocked",
-      "score": 55,
-      "search_diagnostics": [],
       "status": "failed",
       "verification_call_budget": {
         "maximum": 16,
-        "remaining": 16,
-        "used": 0
+        "remaining": 12,
+        "used": 4
       },
       "web_search_enabled": false
     }
@@ -1997,6 +2250,6 @@
   "passed_count": 2,
   "status": "failed",
   "web_search_enabled": false,
-  "workflow_head_sha": "7b9e61306be0f8b6e198b4a20d5bc497d79297d4",
-  "workflow_run_id": 29749625028
+  "workflow_head_sha": "955a107027c1445cb93869d4eb7c47c9d414d226",
+  "workflow_run_id": 29758638711
 }
