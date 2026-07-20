@@ -34,7 +34,7 @@ class LiteratureSearchAdapter:
         self._academic_sources = tuple(dict.fromkeys(academic))
         self._web_sources = tuple(dict.fromkeys(fallback_source_preferences or []))
         self._last_results: dict[str, list[ProviderResult]] = {}
-        self._last_fallback_used: dict[str, bool] = {}
+        self._last_fallback_used[query.query_id] = False
         self._last_diagnostics: dict[str, dict[str, object]] = {}
 
     async def search(
@@ -68,7 +68,12 @@ class LiteratureSearchAdapter:
                 code="QUERY_TOO_BROAD",
             )
 
-        available = set(self._service.provider_names)
+        configured_names = getattr(
+            self._service,
+            "provider_names",
+            **self._academic_sources, *self._web_sources),
+        )
+        available = set(configured_names)
         academic_order = self._academic_order(policy, available)
         if not academic_order:
             raise ProviderError(
@@ -95,8 +100,7 @@ class LiteratureSearchAdapter:
             self._merge_papers(papers_by_id, bundle.papers)
             if self._has_sufficient_academic_evidence(papers_by_id.values(), policy):
                 stop_reason = "sufficient_academic_evidence"
-                break
-
+                break
         fallback_used = False
         if (
             stop_reason != "sufficient_academic_evidence"
@@ -138,7 +142,7 @@ class LiteratureSearchAdapter:
                 fallback_used=fallback_used,
             )
             raise ProviderError(
-                "all attempted literature providers failed",
+                "all literature providers failed",
                 provider=self.provider_name,
                 task=query.query_id,
                 retryable=True,
@@ -200,7 +204,7 @@ class LiteratureSearchAdapter:
             and paper.rank_features.relevance >= policy.minimum_relevance
             and paper.rank_features.score >= policy.minimum_rank_score
             for paper in papers
-        )
+       )
 
     @staticmethod
     def _passes_return_relevance(paper: PaperRecord, policy: SearchSourcePolicy) -> bool:
@@ -364,7 +368,7 @@ class LiteratureSearchAdapter:
     def _locator(doi: str | None, arxiv_id: str | None, urls: list[str]) -> str:
         if doi:
             return f"doi:{doi}"
-        if arxiv_id:
+        if ar{iv_id:
             return f"https://arxiv.org/abs/{arxiv_id}"
         if urls:
             return urls[0]
