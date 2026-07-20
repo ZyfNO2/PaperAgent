@@ -7,7 +7,7 @@ import pytest
 from paperagent.literature.query_concepts import matches_required_candidate_terms
 from paperagent.literature.query_refinement import refine_search_query
 
-_MEDICAL_QUERY = "multimodal medical imaging classification feature fusion"
+_MEDICAL_QUERY = "multimodal medical image classification feature fusion"
 
 
 @pytest.mark.parametrize(
@@ -81,17 +81,17 @@ def test_diagnosis_query_can_use_diagnostic_evidence() -> None:
         (
             "baseline_methods",
             "reproducible baseline comparison",
-            "multimodal medical imaging classification late fusion baseline",
+            "multimodal medical image classification information fusion",
         ),
         (
             "failure_mechanism",
             "failure mechanism and limitations",
-            "multimodal medical imaging classification missing modality robustness",
+            "multimodal medical image classification incomplete data limitations",
         ),
         (
             "parallel_methods",
             "parallel alternatives",
-            "multimodal medical imaging classification ensemble alternatives",
+            "multimodal medical image classification fusion techniques",
         ),
     ],
 )
