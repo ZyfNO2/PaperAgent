@@ -28,7 +28,9 @@ def _need_human_plan(*, include_queries: bool = True) -> ResearchPlan:
         ),
         success_criteria=["Identify one reproducible baseline."],
         risks=["private behavior definitions remain unknown"],
-        clarification_question="Which behavior types and deployment limits should constrain the pilot?",
+        clarification_question=(
+            "Which behavior types and deployment limits should constrain the pilot?"
+        ),
     )
 
 
