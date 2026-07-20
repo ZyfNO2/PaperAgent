@@ -13,7 +13,8 @@ class FreezeEvaluationTests(unittest.TestCase):
         temporary = tempfile.TemporaryDirectory()
         root = Path(temporary.name)
         files = {
-            "scripts/run_public_dev.py": "runner\n",
+            "scripts/run_public_dev.py": "public runner\n",
+            "scripts/run_private_holdout.py": "private runner\n",
             "scripts/score_runs.py": "scorer\n",
             "scripts/scan_production.py": "scanner\n",
             "docs/BENCHMARK_PROTOCOL.md": "protocol\n",
@@ -52,7 +53,8 @@ class FreezeEvaluationTests(unittest.TestCase):
         self.assertEqual(
             set(manifest["file_sha256"]),
             {
-                "runner",
+                "public_runner",
+                "private_runner",
                 "scorer",
                 "production_scanner",
                 "protocol",
@@ -60,6 +62,7 @@ class FreezeEvaluationTests(unittest.TestCase):
                 "public_development_data",
             },
         )
+        self.assertIn("average structured scores", manifest["score_gap_definition"])
         self.assertEqual(len(manifest["freeze_digest"]), 64)
         self.assertNotIn("oracle", manifest["runtime_boundary"])
         self.assertIn("oracle", manifest["scorer_only_fields"])
@@ -78,6 +81,26 @@ class FreezeEvaluationTests(unittest.TestCase):
         (root / "scripts/score_runs.py").write_text("changed scorer\n", encoding="utf-8")
         after = build_freeze_manifest(**kwargs)
         self.assertNotEqual(before["file_sha256"]["scorer"], after["file_sha256"]["scorer"])
+        self.assertNotEqual(before["freeze_digest"], after["freeze_digest"])
+
+    def test_manifest_digest_changes_when_private_runner_changes(self) -> None:
+        temporary, root = self._root()
+        self.addCleanup(temporary.cleanup)
+        kwargs = {
+            "repository_root": root,
+            "production_source_sha": "a" * 40,
+            "benchmark_source_sha": "b" * 40,
+            "production_digest": "c" * 64,
+        }
+        before = build_freeze_manifest(**kwargs)
+        (root / "scripts/run_private_holdout.py").write_text(
+            "changed private runner\n", encoding="utf-8"
+        )
+        after = build_freeze_manifest(**kwargs)
+        self.assertNotEqual(
+            before["file_sha256"]["private_runner"],
+            after["file_sha256"]["private_runner"],
+        )
         self.assertNotEqual(before["freeze_digest"], after["freeze_digest"])
 
     def test_invalid_sha_and_missing_input_fail_closed(self) -> None:
