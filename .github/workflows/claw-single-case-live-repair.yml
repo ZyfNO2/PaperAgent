@@ -58,6 +58,7 @@ jobs:
           PY
           request_status=$?
           files=(
+            src/paperagent/evidence_relevance.py
             src/paperagent/literature/query_concepts.py
             src/paperagent/literature/query_refinement.py
             src/paperagent/literature/ranking.py
@@ -76,6 +77,7 @@ jobs:
             tests/literature/test_qa_hallucination_precision.py
             tests/methodology/test_method_design_draft.py
             tests/review/test_semantic_gap_binding.py
+            tests/review/test_research_contract_priority.py
           )
           ruff check "${files[@]}" > "$out/ruff.log" 2>&1
           ruff_status=$?
@@ -93,6 +95,7 @@ jobs:
             tests/methodology/test_evidence_binding.py \
             tests/review/test_semantic_gap_binding.py \
             tests/review/test_consolidated_regressions.py \
+            tests/review/test_research_contract_priority.py \
             tests/graph/test_full_graph.py \
             tests/graph/test_hitl.py \
             > "$out/pytest.log" 2>&1
