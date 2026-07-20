@@ -17,7 +17,7 @@ from paperagent.nodes.report import report_node
 from paperagent.outcome import derive_final_outcome
 from paperagent.retrieval.graph import build_retrieval_graph
 from paperagent.runtime import get_services
-from paperagent.schemas import QualityDecision
+from paperagent.schemas import EvidenceBundle, QualityDecision, ResearchPlan, RetrievalState
 from paperagent.state import PaperAgentState
 from paperagent.telemetry import make_event
 
@@ -37,6 +37,39 @@ def _after_retrieval(state: PaperAgentState) -> str:
     return "continue"
 
 
+def _retrieval_exhaustion_quality(
+    plan: ResearchPlan,
+    evidence: EvidenceBundle,
+    retrieval: RetrievalState,
+) -> QualityDecision | None:
+    missing_gap_ids = [
+        gap.gap_id
+        for gap in plan.evidence_gaps
+        if gap.required
+        and evidence.coverage_by_gap.get(gap.gap_id, 0) < gap.minimum_accepted_items
+    ]
+    exhausted = retrieval.budget_exhausted or retrieval.round >= retrieval.max_rounds
+    if not missing_gap_ids or not exhausted:
+        return None
+    if evidence.accepted_ids:
+        return QualityDecision(
+            verdict="repair_retrieval",
+            reason_codes=[
+                "Q_RETRIEVAL_BUDGET_EXHAUSTED",
+                "Q_PARTIAL_EVIDENCE_COVERAGE",
+            ],
+            missing_gap_ids=missing_gap_ids,
+        )
+    return QualityDecision(
+        verdict="blocked",
+        reason_codes=[
+            "Q_RETRIEVAL_BUDGET_EXHAUSTED",
+            "Q_INSUFFICIENT_COVERAGE",
+        ],
+        missing_gap_ids=missing_gap_ids,
+    )
+
+
 def build_graph(*, checkpointer: Any | None = None) -> Any:
     retrieval = build_retrieval_graph()
 
@@ -53,24 +86,8 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
         quality = None
         final_outcome = None
         if plan is not None and evidence is not None:
-            missing_gap_ids = [
-                gap.gap_id
-                for gap in plan.evidence_gaps
-                if gap.required
-                and evidence.coverage_by_gap.get(gap.gap_id, 0) < gap.minimum_accepted_items
-            ]
-            exhausted = retrieval_state.budget_exhausted or (
-                retrieval_state.round >= retrieval_state.max_rounds
-            )
-            if missing_gap_ids and exhausted:
-                quality = QualityDecision(
-                    verdict="blocked",
-                    reason_codes=[
-                        "Q_RETRIEVAL_BUDGET_EXHAUSTED",
-                        "Q_INSUFFICIENT_COVERAGE",
-                    ],
-                    missing_gap_ids=missing_gap_ids,
-                )
+            quality = _retrieval_exhaustion_quality(plan, evidence, retrieval_state)
+            if quality is not None and quality.verdict == "blocked":
                 outcome_state: PaperAgentState = {
                     **state,
                     "retrieval": retrieval_state,
