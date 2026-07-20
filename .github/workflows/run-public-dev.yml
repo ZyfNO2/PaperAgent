@@ -1,0 +1,164 @@
+name: Academic Holdout v2 Public Development Run
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - eval/academic-holdout-v2-clean
+    paths:
+      - "data/public-dev-v2-run-trigger.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: academic-holdout-v2-public-dev
+  cancel-in-progress: false
+
+jobs:
+  run-public-development-set:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      PAPERAGENT_PRODUCTION_SHA: c1ddd5b91d8edc575c860f2ecbc7aace4822c676
+      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+      PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL || 'Z1015558261@outlook.com' }}
+      SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+      PAPERAGENT_LLM_PROVIDER: mistral
+      PAPERAGENT_LLM_MODEL: mistral-small-latest
+      PAPERAGENT_MISTRAL_MODEL: mistral-small-latest
+      PAPERAGENT_LLM_BASE_URL: https://api.mistral.ai/v1
+      PAPERAGENT_LLM_PRICE_TABLE: production/config/llm-prices/mistral-small-latest.json
+      PAPERAGENT_LLM_MAX_COST_USD: "1.00"
+      PAPERAGENT_LLM_MAX_ATTEMPTS: "2"
+      PAPERAGENT_LLM_MAX_CALLS: "12"
+      PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "32000"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "4096"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "16384"
+      PAPERAGENT_LLM_TASK_TIMEOUT: "900"
+      PAPERAGENT_ENABLE_WEB_SEARCH: "0"
+    steps:
+      - name: Checkout benchmark branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout frozen production commit
+        uses: actions/checkout@v4
+        with:
+          repository: ZyfNO2/PaperAgent
+          ref: c1ddd5b91d8edc575c860f2ecbc7aace4822c676
+          path: production
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: production/pyproject.toml
+
+      - name: Validate benchmark authoring set
+        run: |
+          python scripts/validate_cases.py data/public-dev-v2.jsonl
+          python -m unittest discover -s tests -v
+
+      - name: Install frozen production package
+        id: install
+        continue-on-error: true
+        run: python -m pip install -q -e 'production[dev]'
+
+      - name: Require Mistral secret
+        id: secret
+        continue-on-error: true
+        run: test -n "$MISTRAL_API_KEY"
+
+      - name: Run public development set
+        id: public_dev
+        if: steps.install.outcome == 'success' && steps.secret.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python scripts/run_public_dev.py \
+            --cases data/public-dev-v2.jsonl \
+            --output-dir build/public-dev-v2 \
+            --max-cases 12 \
+            --max-llm-calls 12 \
+            --provider-call-budget 120 \
+            --llm-provider mistral \
+            --llm-model mistral-small-latest \
+            --llm-price-table "$PAPERAGENT_LLM_PRICE_TABLE" \
+            --require-thresholds
+
+      - name: Write auditable handoff
+        id: handoff
+        if: always()
+        env:
+          INSTALL_OUTCOME: ${{ steps.install.outcome }}
+          SECRET_OUTCOME: ${{ steps.secret.outcome }}
+          PUBLIC_DEV_OUTCOME: ${{ steps.public_dev.outcome }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          summary_path = Path('build/public-dev-v2/execution-summary.json')
+          summary = json.loads(summary_path.read_text()) if summary_path.exists() else None
+          payload = {
+              'schema': 'paperagent.academic-holdout.public-dev-handoff.v2',
+              'benchmark_source_sha': os.environ['GITHUB_SHA'],
+              'production_source_sha': os.environ['PAPERAGENT_PRODUCTION_SHA'],
+              'split': 'development',
+              'result_interpretation': 'public development set; not independent generalization evidence',
+              'outcomes': {
+                  'install': os.environ.get('INSTALL_OUTCOME'),
+                  'mistral_secret': os.environ.get('SECRET_OUTCOME'),
+                  'public_dev_run': os.environ.get('PUBLIC_DEV_OUTCOME'),
+              },
+              'summary': summary,
+          }
+          Path('build/public-dev-v2').mkdir(parents=True, exist_ok=True)
+          serialized = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + '\n'
+          Path('build/public-dev-v2/handoff.json').write_text(serialized)
+          Path('/tmp/public-dev-v2-latest.json').write_text(serialized)
+          print(serialized)
+          PY
+
+      - name: Upload public development artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: academic-holdout-v2-public-dev-${{ github.run_id }}
+          path: build/public-dev-v2
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Commit public development handoff
+        if: always() && steps.handoff.outcome == 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin eval/academic-holdout-v2-clean
+          git reset --hard origin/eval/academic-holdout-v2-clean
+          mkdir -p results
+          cp /tmp/public-dev-v2-latest.json results/public-dev-v2-latest.json
+          git add results/public-dev-v2-latest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "test(eval): record public development run"
+            git push origin HEAD:eval/academic-holdout-v2-clean
+          fi
+
+      - name: Enforce public development thresholds
+        if: always()
+        env:
+          INSTALL_OUTCOME: ${{ steps.install.outcome }}
+          SECRET_OUTCOME: ${{ steps.secret.outcome }}
+          PUBLIC_DEV_OUTCOME: ${{ steps.public_dev.outcome }}
+          HANDOFF_OUTCOME: ${{ steps.handoff.outcome }}
+        run: |
+          for value in \
+            "$INSTALL_OUTCOME" \
+            "$SECRET_OUTCOME" \
+            "$PUBLIC_DEV_OUTCOME" \
+            "$HANDOFF_OUTCOME"; do
+            test "$value" = success || exit 1
+          done
