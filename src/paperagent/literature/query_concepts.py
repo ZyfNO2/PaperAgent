@@ -228,17 +228,26 @@ _MULTIMODAL_FUSION_CANDIDATE_TERMS = (
     "combining medical imaging",
     "imaging and electronic health records",
 )
-_CLASSIFICATION_QUERY_HINTS = (
+_STRICT_CLASSIFICATION_QUERY_HINTS = (
     "classification",
     "classifier",
-    "diagnosis",
-    "diagnostic",
-    "prediction",
 )
-_CLASSIFICATION_CANDIDATE_TERMS = (
+_STRICT_CLASSIFICATION_CANDIDATE_TERMS = (
     "classification",
     "classifier",
     "classify",
+    "categorization",
+    "multi-class",
+    "multiclass",
+    "class label",
+)
+_DIAGNOSIS_QUERY_HINTS = (
+    "diagnosis",
+    "diagnostic",
+    "prediction",
+    "prognosis",
+)
+_DIAGNOSIS_CANDIDATE_TERMS = (
     "diagnosis",
     "diagnostic",
     "prediction",
@@ -292,8 +301,10 @@ def required_candidate_term_groups(query: str) -> tuple[tuple[str, ...], ...]:
         normalized, _MULTIMODAL_FUSION_QUERY_HINTS
     ):
         groups.extend((_MEDICAL_IMAGING_CANDIDATE_TERMS, _MULTIMODAL_FUSION_CANDIDATE_TERMS))
-        if _contains_any(normalized, _CLASSIFICATION_QUERY_HINTS):
-            groups.append(_CLASSIFICATION_CANDIDATE_TERMS)
+        if _contains_any(normalized, _STRICT_CLASSIFICATION_QUERY_HINTS):
+            groups.append(_STRICT_CLASSIFICATION_CANDIDATE_TERMS)
+        elif _contains_any(normalized, _DIAGNOSIS_QUERY_HINTS):
+            groups.append(_DIAGNOSIS_CANDIDATE_TERMS)
 
     return tuple(groups)
 
