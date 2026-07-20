@@ -10,6 +10,7 @@ from paperagent.claw_benchmark_adapter import (
     BenchmarkNormalizationContext,
     normalize_paperagent_state,
 )
+from paperagent.claw_pilot_policy import infer_benchmark_pilot_override
 from paperagent.graph import build_graph
 from paperagent.literature.factory import (
     LiteratureProviderSettings,
@@ -110,7 +111,10 @@ async def execute_benchmark_case(
     primitive = state_to_primitive(latest)
     trace = normalize_paperagent_state(
         latest,
-        BenchmarkNormalizationContext(case_id=case.case_id),
+        BenchmarkNormalizationContext(
+            case_id=case.case_id,
+            pilot_recommended=infer_benchmark_pilot_override(latest),
+        ),
     )
     return primitive, trace
 
