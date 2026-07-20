@@ -58,6 +58,7 @@ def _retrieval_exhaustion_quality(
                 "Q_RETRIEVAL_BUDGET_EXHAUSTED",
                 "Q_PARTIAL_EVIDENCE_COVERAGE",
             ],
+            repair_target="retrieval",
             missing_gap_ids=missing_gap_ids,
         )
     return QualityDecision(
