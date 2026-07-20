@@ -32,15 +32,15 @@ def test_unspecified_medical_target_defers_pilot() -> None:
         PaperAgentState,
         {
             "request": ResearchRequest(
-                question="我上传了 U-Net 论文，想做医学图像分割，但还没有确定具体器官和数据集",
+                question="我上传了 U-Net 论文, 想做医学图像分割, 但还没有确定具体器官和数据集",
                 user_material_refs=[
                     "U-Net: Convolutional Networks for Biomedical Image Segmentation "
                     "[declared role: baseline_candidate]"
                 ],
             ),
             "plan": _plan(
-                clarification="请确认您希望优先研究哪个具体器官或组织类型？",
-                risks=["未确定具体器官与数据集，无法设计可执行的实验计划"],
+                clarification="请确认您希望优先研究哪个具体器官或组织类型?",
+                risks=["未确定具体器官与数据集, 无法设计可执行的实验计划"],
             ),
         },
     )
@@ -77,8 +77,8 @@ def test_business_priority_unknown_keeps_existing_pilot_heuristic() -> None:
         {
             "request": ResearchRequest(question="面向电商场景的多行为推荐系统"),
             "plan": _plan(
-                clarification="请确认转化率、留存或多样性哪个业务目标优先？",
-                risks=["业务目标与延迟约束尚未确定。"],
+                clarification="请确认转化率, 留存或多样性哪个业务目标优先?",
+                risks=["业务目标与延迟约束尚未确定."],
             ),
         },
     )
@@ -93,8 +93,7 @@ def test_concrete_supplied_methods_keep_existing_pilot_heuristic() -> None:
             "request": ResearchRequest(
                 question="Combine YOLOX and TinyDet for UAV small-object detection.",
                 user_material_refs=[
-                    "YOLOX: Exceeding YOLO Series in 2021 "
-                    "[declared role: baseline_candidate]",
+                    "YOLOX: Exceeding YOLO Series in 2021 [declared role: baseline_candidate]",
                     "TinyDet: Accurate Small Object Detection in Lightweight Generic Detectors "
                     "[declared role: parallel_method_candidate]",
                 ],
