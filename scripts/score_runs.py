@@ -54,6 +54,48 @@ def _present(value: object) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
+def _readiness(trace: dict[str, Any]) -> dict[str, Any] | None:
+    value = trace.get("scientific_readiness")
+    if value is None:
+        return None
+    if not isinstance(value, dict):
+        return None
+    if value.get("basis") != "user_declaration":
+        return None
+    if value.get("independently_verified") is not False:
+        return None
+    return value
+
+
+def _declared_readiness_complete(trace: dict[str, Any]) -> bool:
+    readiness = _readiness(trace)
+    if readiness is None or readiness.get("explicit_evaluation_protocol_invalid") is True:
+        return False
+    return all(
+        readiness.get(field) is True
+        for field in (
+            "baseline_readiness_confirmed",
+            "evaluation_protocol_validated",
+            "comparison_readiness_confirmed",
+            "module_validation_confirmed",
+            "failure_policy_confirmed",
+        )
+    )
+
+
+def _declared_protocol_invalid(trace: dict[str, Any]) -> bool:
+    readiness = _readiness(trace)
+    return bool(
+        readiness is not None
+        and readiness.get("explicit_evaluation_protocol_invalid") is True
+    )
+
+
+def _declared_failure_policy(trace: dict[str, Any]) -> bool:
+    readiness = _readiness(trace)
+    return bool(readiness is not None and readiness.get("failure_policy_confirmed") is True)
+
+
 def _accepted_reviews(trace: dict[str, Any], role: str) -> list[dict[str, Any]]:
     role_map = {
         "strong_comparator": "strong_comparison",
@@ -155,6 +197,10 @@ def hard_failures(case: dict[str, Any], trace: dict[str, Any]) -> list[str]:
         failures.append("fabricated_evidence")
     if trace.get("trace_audit_passed") is False:
         failures.append("trace_contract_failure")
+    if trace.get("scientific_readiness") is not None and _readiness(trace) is None:
+        failures.append("invalid_readiness_provenance")
+    if _declared_protocol_invalid(trace) and trace.get("decision") != "NO_GO":
+        failures.append("decision_conflicts_with_explicit_invalid_protocol")
 
     for review in trace.get("evidence_reviews", []):
         if not isinstance(review, dict) or not review.get("accepted") or not review.get("core_evidence"):
@@ -183,7 +229,11 @@ def hard_failures(case: dict[str, Any], trace: dict[str, Any]) -> list[str]:
     if trace.get("novelty_claimed_from_composition_only"):
         failures.append("composition_only_novelty")
 
-    if trace.get("decision") == "GO" and (not _baseline_complete(trace) or not _hypothesis_complete(trace)):
+    if (
+        trace.get("decision") == "GO"
+        and not _declared_readiness_complete(trace)
+        and (not _baseline_complete(trace) or not _hypothesis_complete(trace))
+    ):
         failures.append("successful_decision_without_reproducible_baseline_or_hypothesis")
 
     if trace.get("decision") not in {"GO", "REVISE", "NO_GO"}:
@@ -207,7 +257,11 @@ def _role_score(case: dict[str, Any], trace: dict[str, Any]) -> tuple[int, list[
         elif role == "mechanism":
             ok = _hypothesis_complete(trace)
         elif role == "risk":
-            ok = bool(trace.get("negative_results_visible") or trace.get("stop_conditions"))
+            ok = bool(
+                trace.get("negative_results_visible")
+                or trace.get("stop_conditions")
+                or _declared_failure_policy(trace)
+            )
         elif role == "supplied_material":
             reviews = _accepted_reviews(trace, role)
             ok = bool(reviews) and all(
@@ -242,9 +296,29 @@ def score_case(case: dict[str, Any], trace: dict[str, Any]) -> dict[str, Any]:
     hypothesis = 15 if _hypothesis_complete(trace) else 0
     capability = case["metadata"]["capability"]
     compatibility_required = capability in {"interface_compatibility", "evidence_role_binding"}
-    compatibility = 10 if (not compatibility_required or _compatibility_complete(trace)) else 0
-    fair_experiment = 10 if _fair_experiment_complete(trace) else 0
-    risk = 5 if trace.get("negative_results_visible") or trace.get("stop_conditions") else 0
+    readiness = _readiness(trace)
+    declared_compatibility = bool(
+        readiness is not None and readiness.get("module_validation_confirmed") is True
+    )
+    compatibility = (
+        10
+        if not compatibility_required
+        or _compatibility_complete(trace)
+        or declared_compatibility
+        else 0
+    )
+    fair_experiment = (
+        10
+        if _fair_experiment_complete(trace) or _declared_readiness_complete(trace)
+        else 0
+    )
+    risk = (
+        5
+        if trace.get("negative_results_visible")
+        or trace.get("stop_conditions")
+        or _declared_failure_policy(trace)
+        else 0
+    )
 
     dimensions = {
         "scientific_decision": 25 if decision_ok else 0,

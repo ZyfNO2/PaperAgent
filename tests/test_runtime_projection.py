@@ -77,6 +77,7 @@ class StructuredScorerTests(unittest.TestCase):
             "experiments": [],
             "stop_conditions": [],
             "negative_results_visible": False,
+            "scientific_readiness": None,
         }
 
     def test_disallowed_pilot_is_a_hard_failure(self) -> None:
@@ -108,6 +109,65 @@ class StructuredScorerTests(unittest.TestCase):
         changed = score_case(mutated, self.trace)
         self.assertFalse(changed["decision_matches"])
         self.assertEqual(project_runtime_input(mutated), project_runtime_input(self.case))
+
+    def test_complete_user_declaration_can_support_go_without_fake_evidence(self) -> None:
+        self.trace["decision"] = "GO"
+        self.trace["scientific_readiness"] = {
+            "basis": "user_declaration",
+            "independently_verified": False,
+            "baseline_readiness_confirmed": True,
+            "evaluation_protocol_validated": True,
+            "comparison_readiness_confirmed": True,
+            "module_validation_confirmed": True,
+            "failure_policy_confirmed": True,
+            "explicit_evaluation_protocol_invalid": False,
+        }
+        failures = hard_failures(self.case, self.trace)
+        self.assertNotIn(
+            "successful_decision_without_reproducible_baseline_or_hypothesis",
+            failures,
+        )
+        self.assertEqual(self.trace["evidence_reviews"], [])
+
+    def test_partial_user_declaration_does_not_support_go(self) -> None:
+        self.trace["decision"] = "GO"
+        self.trace["scientific_readiness"] = {
+            "basis": "user_declaration",
+            "independently_verified": False,
+            "baseline_readiness_confirmed": True,
+            "evaluation_protocol_validated": True,
+            "comparison_readiness_confirmed": False,
+            "module_validation_confirmed": True,
+            "failure_policy_confirmed": True,
+            "explicit_evaluation_protocol_invalid": False,
+        }
+        self.assertIn(
+            "successful_decision_without_reproducible_baseline_or_hypothesis",
+            hard_failures(self.case, self.trace),
+        )
+
+    def test_readiness_claim_cannot_be_marked_independently_verified(self) -> None:
+        self.trace["scientific_readiness"] = {
+            "basis": "user_declaration",
+            "independently_verified": True,
+        }
+        self.assertIn("invalid_readiness_provenance", hard_failures(self.case, self.trace))
+
+    def test_explicit_invalid_protocol_requires_no_go(self) -> None:
+        self.trace["scientific_readiness"] = {
+            "basis": "user_declaration",
+            "independently_verified": False,
+            "explicit_evaluation_protocol_invalid": True,
+        }
+        self.assertIn(
+            "decision_conflicts_with_explicit_invalid_protocol",
+            hard_failures(self.case, self.trace),
+        )
+        self.trace["decision"] = "NO_GO"
+        self.assertNotIn(
+            "decision_conflicts_with_explicit_invalid_protocol",
+            hard_failures(self.case, self.trace),
+        )
 
 
 if __name__ == "__main__":
