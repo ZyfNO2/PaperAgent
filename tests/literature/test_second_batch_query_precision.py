@@ -31,9 +31,7 @@ _MEDICAL_QUERY = "multimodal medical imaging classification feature fusion"
         ),
     ],
 )
-def test_second_batch_guards_accept_task_matched_candidates(
-    query: str, candidate: str
-) -> None:
+def test_second_batch_guards_accept_task_matched_candidates(query: str, candidate: str) -> None:
     assert matches_required_candidate_terms(query, candidate) is True
 
 
@@ -66,9 +64,7 @@ def test_second_batch_guards_accept_task_matched_candidates(
         ),
     ],
 )
-def test_second_batch_guards_reject_cross_task_false_positives(
-    query: str, candidate: str
-) -> None:
+def test_second_batch_guards_reject_cross_task_false_positives(query: str, candidate: str) -> None:
     assert matches_required_candidate_terms(query, candidate) is False
 
 
