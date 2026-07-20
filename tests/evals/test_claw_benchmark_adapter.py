@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import cast
+from typing import Literal, cast
 
 from paperagent.claw_benchmark_normalizer import (
     BenchmarkNormalizationContext,
@@ -10,7 +10,17 @@ from paperagent.schemas import FinalOutcome, FinalReport, ResearchRequest
 from paperagent.state import PaperAgentState
 
 
-def _revise_state(*, next_action: str, quality_route: str = "blocked") -> PaperAgentState:
+def _revise_state(
+    *,
+    next_action: str,
+    quality_route: Literal[
+        "pass",
+        "repair_retrieval",
+        "repair_method",
+        "human_review",
+        "blocked",
+    ] = "blocked",
+) -> PaperAgentState:
     return cast(
         PaperAgentState,
         {
@@ -49,7 +59,9 @@ def test_free_text_next_actions_cannot_infer_pilot_label() -> None:
 
 
 def test_explicit_structured_pilot_signal_is_preserved() -> None:
-    state = _revise_state(next_action="Collect one more observation.", quality_route="repair_method")
+    state = _revise_state(
+        next_action="Collect one more observation.", quality_route="repair_method"
+    )
     trace = normalize_paperagent_state(
         state,
         BenchmarkNormalizationContext(
