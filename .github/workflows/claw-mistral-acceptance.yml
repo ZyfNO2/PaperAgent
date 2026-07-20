@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   secret-check:
@@ -19,17 +20,18 @@ jobs:
       MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
     steps:
       - name: Confirm Mistral credential availability
+        id: secret
         shell: bash
         run: |
           mkdir -p build/claw-mistral-acceptance
           if [[ -n "${MISTRAL_API_KEY:-}" ]]; then
-            printf '{"mistral_api_key_present":true}\n' \
-              > build/claw-mistral-acceptance/secret-check.json
-            exit 0
+            present=true
+          else
+            present=false
           fi
-          printf '{"mistral_api_key_present":false}\n' \
+          printf '{"mistral_api_key_present":%s}\n' "$present" \
             > build/claw-mistral-acceptance/secret-check.json
-          exit 1
+          echo "present=$present" >> "$GITHUB_OUTPUT"
       - name: Upload secret check
         if: always()
         uses: actions/upload-artifact@v4
@@ -38,3 +40,16 @@ jobs:
           path: build/claw-mistral-acceptance/secret-check.json
           if-no-files-found: error
           retention-days: 7
+      - name: Publish secret-safe status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRESENT: ${{ steps.secret.outputs.present }}
+        shell: bash
+        run: |
+          pr_number=$(gh pr list --head "$GITHUB_REF_NAME" --state open --json number --jq '.[0].number // empty')
+          [[ -z "$pr_number" ]] && exit 0
+          gh pr comment "$pr_number" --body "Mistral acceptance precheck: credential_present=\`$PRESENT\`, run=\`$GITHUB_RUN_ID\`."
+      - name: Enforce credential availability
+        if: steps.secret.outputs.present != 'true'
+        run: exit 1
