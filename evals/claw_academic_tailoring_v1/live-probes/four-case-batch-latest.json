@@ -1,5 +1,5 @@
 {
-  "batch_id": "batch-02-cases-006-009",
+  "batch_id": "batch-02-cases-006-009-rerun",
   "case_ids": [
     "at-006-low-light-pedestrian",
     "at-007-camera-action-quality",
@@ -15,6 +15,7 @@
           "provider": "literature_retrieval",
           "supports_gap_ids": [
             "baseline_comparison_low_light_pedestrian",
+            "failure_mechanism_limitations_low_light_pedestrian",
             "risk_contradictory_evidence_low_light_pedestrian"
           ],
           "title": "Nighttime Pedestrian Detection Based on Fore-Background Contrast Learning",
@@ -25,13 +26,555 @@
           "locator": "doi:10.3390/s22031082",
           "provider": "literature_retrieval",
           "supports_gap_ids": [
-            "baseline_comparison_low_light_pedestrian"
+            "baseline_comparison_low_light_pedestrian",
+            "failure_mechanism_limitations_low_light_pedestrian"
           ],
           "title": "Adopting the YOLOv4 Architecture for Low-Latency Multispectral Pedestrian Detection in Autonomous Driving",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-805721c2a96afb4f93b6",
+          "locator": "doi:10.3390/app10030809",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison_low_light_pedestrian",
+            "failure_mechanism_limitations_low_light_pedestrian"
+          ],
+          "title": "Pedestrian Detection at Night in Infrared Images Using an Attention-Guided Encoder-Decoder Convolutional Neural Network",
           "verification_status": "accepted"
         }
       ],
       "case_id": "at-006-low-light-pedestrian",
+      "decision_matches": true,
+      "execution_status": "completed",
+      "expected_decision": "REVISE_TO_PILOT",
+      "failed_stages": [
+        {
+          "available": 7,
+          "earned": 5,
+          "findings": [
+            "core accepted evidence lacks full-text review"
+          ],
+          "passed": false,
+          "stage": "relevance_review"
+        },
+        {
+          "available": 10,
+          "earned": 7,
+          "findings": [
+            "clarification did not target a declared high-impact unknown"
+          ],
+          "passed": false,
+          "stage": "clarification_gate"
+        }
+      ],
+      "hard_failures": [],
+      "llm_call_budget": 12,
+      "minimum_score": 80,
+      "model": "mistral-small-latest",
+      "observed_decision": "REVISE_TO_PILOT",
+      "passed": true,
+      "provider": "mistral",
+      "provider_call_budget": {
+        "maximum": 8,
+        "remaining": 0,
+        "used": 8
+      },
+      "report_status": "completed",
+      "score": 95,
+      "search_diagnostics": [
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "low-light",
+            "pedestrian",
+            "detection",
+            "accuracy",
+            "speed",
+            "efficiency",
+            "nighttime"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q1_baseline_low_light_pedestrian",
+          "relevant_verified_papers": 2,
+          "returned_papers": 2,
+          "stop_reason": "sufficient_academic_evidence"
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "low-light",
+            "pedestrian",
+            "detection",
+            "failure",
+            "limitations",
+            "mechanism",
+            "nighttime"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q2_failure_mechanism_low_light_pedestrian",
+          "relevant_verified_papers": 2,
+          "returned_papers": 2,
+          "stop_reason": "sufficient_academic_evidence"
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "low-light",
+            "pedestrian",
+            "detection",
+            "contradictory",
+            "evidence",
+            "limitations",
+            "bias",
+            "inconsistency"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q3_risk_contradictory_low_light_pedestrian",
+          "relevant_verified_papers": 0,
+          "returned_papers": 0,
+          "stop_reason": "academic_budget_exhausted"
+        }
+      ],
+      "status": "passed",
+      "verification_call_budget": {
+        "maximum": 16,
+        "remaining": 2,
+        "used": 14
+      },
+      "web_search_enabled": false
+    },
+    {
+      "accepted_evidence": [
+        {
+          "evidence_id": "ev-paper-ff3a776f73c0d17f7858",
+          "locator": "https://arxiv.org/abs/2111.08492",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_repro",
+            "parallel_methods"
+          ],
+          "title": "Real-time 3D human action recognition based on Hyperpoint sequence",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-f7648a4b6276f6496c7f",
+          "locator": "https://arxiv.org/abs/2107.00606",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_repro",
+            "parallel_methods"
+          ],
+          "title": "Action Transformer: A Self-Attention Model for Short-Time Pose-Based Human Action Recognition",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-2400e1e5e599e9bb099b",
+          "locator": "doi:10.3390/s18020679",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_repro",
+            "parallel_methods"
+          ],
+          "title": "Comparison of Feature Learning Methods for Human Activity Recognition Using Wearable Sensors",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-9c7441f46678b667d7a7",
+          "locator": "https://arxiv.org/abs/2209.11750",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_repro",
+            "parallel_methods"
+          ],
+          "title": "Transformer-based Models to Deal with Heterogeneous Environments in Human Activity Recognition",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-12785fc5ca8504e315ab",
+          "locator": "https://arxiv.org/abs/1409.0908",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "failure_mechanism"
+          ],
+          "title": "Action Recognition in the Frequency Domain",
+          "verification_status": "accepted"
+        }
+      ],
+      "case_id": "at-007-camera-action-quality",
+      "decision_matches": true,
+      "execution_status": "completed",
+      "expected_decision": "REVISE_TO_PILOT",
+      "failed_stages": [
+        {
+          "available": 7,
+          "earned": 5,
+          "findings": [
+            "core accepted evidence lacks full-text review"
+          ],
+          "passed": false,
+          "stage": "relevance_review"
+        },
+        {
+          "available": 10,
+          "earned": 7,
+          "findings": [
+            "clarification did not target a declared high-impact unknown"
+          ],
+          "passed": false,
+          "stage": "clarification_gate"
+        }
+      ],
+      "hard_failures": [],
+      "llm_call_budget": 12,
+      "minimum_score": 80,
+      "model": "mistral-small-latest",
+      "observed_decision": "REVISE_TO_PILOT",
+      "passed": true,
+      "provider": "mistral",
+      "provider_call_budget": {
+        "maximum": 8,
+        "remaining": 0,
+        "used": 8
+      },
+      "report_status": "completed",
+      "score": 95,
+      "search_diagnostics": [
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "human",
+            "action",
+            "recognition",
+            "baseline",
+            "reproducible",
+            "efficiency"
+          ],
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q_baseline_repro",
+          "relevant_verified_papers": 3,
+          "returned_papers": 4,
+          "stop_reason": "sufficient_academic_evidence"
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "human",
+            "action",
+            "recognition",
+            "failure",
+            "modes",
+            "occlusion",
+            "viewpoint",
+            "generalization",
+            "limitations"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q_failure_mechanism",
+          "relevant_verified_papers": 3,
+          "returned_papers": 3,
+          "stop_reason": "sufficient_academic_evidence"
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "human",
+            "action",
+            "recognition",
+            "deep",
+            "learning",
+            "classical",
+            "approaches"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q_parallel_methods",
+          "relevant_verified_papers": 1,
+          "returned_papers": 1,
+          "stop_reason": "academic_budget_exhausted"
+        }
+      ],
+      "status": "passed",
+      "verification_call_budget": {
+        "maximum": 16,
+        "remaining": 8,
+        "used": 8
+      },
+      "web_search_enabled": false
+    },
+    {
+      "accepted_evidence": [
+        {
+          "evidence_id": "ev-paper-20a87dc07bc41b7bbc0a",
+          "locator": "https://arxiv.org/abs/2003.00951",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison",
+            "failure_mechanism_limitation"
+          ],
+          "title": "DriverMHG: A Multi-Modal Dataset for Dynamic Recognition of Driver Micro Hand Gestures and a Real-Time Recognition Framework",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-d62c5435a6f513f4c957",
+          "locator": "https://arxiv.org/abs/2505.13784",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison",
+            "failure_mechanism_limitation"
+          ],
+          "title": "Transfer Learning from Visual Speech Recognition to Mouthing Recognition in German Sign Language",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-fd8a801991ddacbd8a7c",
+          "locator": "https://arxiv.org/abs/2412.01508",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison",
+            "failure_mechanism_limitation"
+          ],
+          "title": "HaGRIDv2: 1M Images for Static and Dynamic Hand Gesture Recognition",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-84d4b2cc8ebcee5c7870",
+          "locator": "doi:10.3390/app13053029",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison",
+            "failure_mechanism_limitation"
+          ],
+          "title": "Korean Sign Language Recognition Using Transformer-Based Deep Neural Network",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-093aa541135a1b4f0a26",
+          "locator": "doi:10.1109/tmc.2022.3153717",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_comparison",
+            "failure_mechanism_limitation"
+          ],
+          "title": "Tesla-Rapture: A Lightweight Gesture Recognition System From mmWave Radar Sparse Point Clouds",
+          "verification_status": "accepted"
+        }
+      ],
+      "case_id": "at-008-mobile-hand-gesture",
+      "decision_matches": true,
+      "execution_status": "completed",
+      "expected_decision": "REVISE_TO_PILOT",
+      "failed_stages": [
+        {
+          "available": 7,
+          "earned": 5,
+          "findings": [
+            "core accepted evidence lacks full-text review"
+          ],
+          "passed": false,
+          "stage": "relevance_review"
+        },
+        {
+          "available": 10,
+          "earned": 7,
+          "findings": [
+            "clarification did not target a declared high-impact unknown"
+          ],
+          "passed": false,
+          "stage": "clarification_gate"
+        }
+      ],
+      "hard_failures": [],
+      "llm_call_budget": 12,
+      "minimum_score": 80,
+      "model": "mistral-small-latest",
+      "observed_decision": "REVISE_TO_PILOT",
+      "passed": true,
+      "provider": "mistral",
+      "provider_call_budget": {
+        "maximum": 8,
+        "remaining": 1,
+        "used": 7
+      },
+      "report_status": "completed",
+      "score": 95,
+      "search_diagnostics": [
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "lightweight",
+            "gesture",
+            "recognition",
+            "mobile",
+            "devices",
+            "latency",
+            "accuracy",
+            "size"
+          ],
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q_baseline_gesture_mobile",
+          "relevant_verified_papers": 3,
+          "returned_papers": 3,
+          "stop_reason": "sufficient_academic_evidence"
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "gesture",
+            "recognition",
+            "failure",
+            "modes",
+            "limitations",
+            "mobile",
+            "deployment",
+            "efficiency",
+            "accuracy",
+            "bias"
+          ],
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q_failure_mechanism_gesture",
+          "relevant_verified_papers": 1,
+          "returned_papers": 1,
+          "stop_reason": "academic_budget_exhausted"
+        },
+        {
+          "attempted_providers": [
+            "openalex"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "mobile",
+            "gesture",
+            "recognition",
+            "parallel",
+            "lightweight",
+            "cnn",
+            "transformer",
+            "efficiency",
+            "accuracy"
+          ],
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 1,
+          "query_approved": true,
+          "query_id": "q_parallel_methods_gesture",
+          "relevant_verified_papers": 2,
+          "returned_papers": 2,
+          "stop_reason": "sufficient_academic_evidence"
+        }
+      ],
+      "status": "passed",
+      "verification_call_budget": {
+        "maximum": 16,
+        "remaining": 6,
+        "used": 10
+      },
+      "web_search_enabled": false
+    },
+    {
+      "accepted_evidence": [
+        {
+          "evidence_id": "ev-paper-e93379beb67d881fbe1f",
+          "locator": "doi:10.32604/cmc.2025.065571",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "failure_mechanism_limitations"
+          ],
+          "title": "A Comprehensive Review of Multimodal Deep Learning for Enhanced Medical Diagnostics",
+          "verification_status": "accepted"
+        }
+      ],
+      "case_id": "at-009-multimodal-medical-fusion",
       "decision_matches": true,
       "execution_status": "completed",
       "expected_decision": "REVISE_TO_PILOT",
@@ -47,22 +590,12 @@
         },
         {
           "available": 8,
-          "earned": 5,
+          "earned": 6,
           "findings": [
-            "retrieval role parallel_method is missing",
-            "retrieval role strong_comparison is missing"
+            "retrieval role parallel_method is missing"
           ],
           "passed": false,
           "stage": "exploratory_retrieval"
-        },
-        {
-          "available": 7,
-          "earned": 5,
-          "findings": [
-            "core accepted evidence lacks full-text review"
-          ],
-          "passed": false,
-          "stage": "relevance_review"
         },
         {
           "available": 10,
@@ -124,7 +657,7 @@
         "used": 7
       },
       "report_status": "completed",
-      "score": 60,
+      "score": 63,
       "search_diagnostics": [
         {
           "attempted_providers": [
@@ -134,13 +667,20 @@
           ],
           "fallback_used": false,
           "informative_terms": [
-            "low-light",
-            "pedestrian",
-            "detection",
-            "accuracy",
-            "speed",
-            "efficiency",
-            "nighttime"
+            "multimodal",
+            "medical",
+            "imaging",
+            "disease",
+            "classification",
+            "feature",
+            "fusion",
+            "baseline",
+            "traditional",
+            "machine",
+            "learning",
+            "deep",
+            "review",
+            "reproducible"
           ],
           "maximum_provider_calls": 4,
           "minimum_rank_score": 0.62,
@@ -149,591 +689,32 @@
           "precision_risk": "low",
           "provider_call_count": 3,
           "query_approved": true,
-          "query_id": "q1_baseline_low_light_pedestrian",
-          "relevant_verified_papers": 2,
-          "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence"
-        },
-        {
-          "attempted_providers": [
-            "openalex"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "low-light",
-            "pedestrian",
-            "detection",
-            "failure",
-            "limitations",
-            "mechanism",
-            "nighttime"
-          ],
-          "maximum_provider_calls": 4,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 1,
-          "query_approved": true,
-          "query_id": "q2_failure_mechanism_low_light_pedestrian",
-          "relevant_verified_papers": 2,
-          "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence"
-        },
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "low-light",
-            "pedestrian",
-            "detection",
-            "contradictory",
-            "evidence",
-            "limitations",
-            "bias",
-            "inconsistency"
-          ],
-          "maximum_provider_calls": 4,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q3_risk_contradictory_low_light_pedestrian",
+          "query_id": "q_baseline_methods",
           "relevant_verified_papers": 0,
           "returned_papers": 0,
           "stop_reason": "academic_budget_exhausted"
-        }
-      ],
-      "status": "failed",
-      "verification_call_budget": {
-        "maximum": 16,
-        "remaining": 7,
-        "used": 9
-      },
-      "web_search_enabled": false
-    },
-    {
-      "accepted_evidence": [
-        {
-          "evidence_id": "ev-paper-6d51223aa99e44716954",
-          "locator": "doi:10.1109/tpami.2018.2868668",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison",
-            "failure_mechanism_limitations",
-            "parallel_methods_robustness"
-          ],
-          "title": "Temporal Segment Networks for Action Recognition in Videos",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-12785fc5ca8504e315ab",
-          "locator": "https://arxiv.org/abs/1409.0908",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "failure_mechanism_limitations"
-          ],
-          "title": "Action Recognition in the Frequency Domain",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-f7648a4b6276f6496c7f",
-          "locator": "https://arxiv.org/abs/2107.00606",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison",
-            "parallel_methods_robustness"
-          ],
-          "title": "Action Transformer: A Self-Attention Model for Short-Time Pose-Based Human Action Recognition",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-3bae677c55be07c326ba",
-          "locator": "doi:10.34133/cbsystems.0100",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "failure_mechanism_limitations",
-            "parallel_methods_robustness"
-          ],
-          "title": "A Survey on 3D Skeleton-Based Action Recognition Using Learning Method",
-          "verification_status": "accepted"
-        }
-      ],
-      "case_id": "at-007-camera-action-quality",
-      "decision_matches": true,
-      "execution_status": "completed",
-      "expected_decision": "REVISE_TO_PILOT",
-      "failed_stages": [
-        {
-          "available": 7,
-          "earned": 5,
-          "findings": [
-            "core accepted evidence lacks full-text review"
-          ],
-          "passed": false,
-          "stage": "relevance_review"
-        },
-        {
-          "available": 10,
-          "earned": 7,
-          "findings": [
-            "clarification did not target a declared high-impact unknown"
-          ],
-          "passed": false,
-          "stage": "clarification_gate"
-        }
-      ],
-      "hard_failures": [],
-      "llm_call_budget": 12,
-      "minimum_score": 80,
-      "model": "mistral-small-latest",
-      "observed_decision": "REVISE_TO_PILOT",
-      "passed": true,
-      "provider": "mistral",
-      "provider_call_budget": {
-        "maximum": 8,
-        "remaining": 3,
-        "used": 5
-      },
-      "report_status": "completed",
-      "score": 95,
-      "search_diagnostics": [
-        {
-          "attempted_providers": [
-            "openalex"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "single",
-            "rgb",
-            "camera",
-            "human",
-            "action",
-            "recognition",
-            "baseline",
-            "efficiency"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 1,
-          "query_approved": true,
-          "query_id": "q1_baseline_methods",
-          "relevant_verified_papers": 2,
-          "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence"
         },
         {
           "attempted_providers": [
+            "arxiv",
             "openalex",
-            "semantic_scholar",
-            "arxiv"
+            "semantic_scholar"
           ],
           "fallback_used": false,
           "informative_terms": [
-            "human",
-            "action",
-            "recognition",
-            "failure",
-            "modes",
-            "occlusion",
-            "lighting",
-            "variation",
-            "speed",
-            "invariance",
-            "robustness"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q2_failure_mechanisms",
-          "relevant_verified_papers": 3,
-          "returned_papers": 3,
-          "stop_reason": "sufficient_academic_evidence"
-        },
-        {
-          "attempted_providers": [
-            "openalex"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "single",
-            "rgb",
-            "human",
-            "action",
-            "recognition",
-            "skeleton",
-            "optical",
-            "flow",
+            "multimodal",
+            "medical",
+            "imaging",
+            "disease",
+            "classification",
+            "feature",
+            "fusion",
+            "state-of-the-art",
+            "deep",
+            "learning",
             "transformer",
-            "accuracy",
-            "latency",
-            "robustness"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 1,
-          "query_approved": true,
-          "query_id": "q3_parallel_methods",
-          "relevant_verified_papers": 3,
-          "returned_papers": 3,
-          "stop_reason": "sufficient_academic_evidence"
-        }
-      ],
-      "status": "passed",
-      "verification_call_budget": {
-        "maximum": 16,
-        "remaining": 8,
-        "used": 8
-      },
-      "web_search_enabled": false
-    },
-    {
-      "accepted_evidence": [
-        {
-          "evidence_id": "ev-paper-0d4ffa692c7188bb9f5f",
-          "locator": "doi:10.1109/access.2021.3140175",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison",
-            "failure_mechanism_limitation"
-          ],
-          "title": "A Metaverse: Taxonomy, Components, Applications, and Open Challenges",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-84d4b2cc8ebcee5c7870",
-          "locator": "doi:10.3390/app13053029",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison",
-            "failure_mechanism_limitation"
-          ],
-          "title": "Korean Sign Language Recognition Using Transformer-Based Deep Neural Network",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-093aa541135a1b4f0a26",
-          "locator": "doi:10.1109/tmc.2022.3153717",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison",
-            "failure_mechanism_limitation"
-          ],
-          "title": "Tesla-Rapture: A Lightweight Gesture Recognition System From mmWave Radar Sparse Point Clouds",
-          "verification_status": "accepted"
-        }
-      ],
-      "case_id": "at-008-mobile-hand-gesture",
-      "decision_matches": true,
-      "execution_status": "completed",
-      "expected_decision": "REVISE_TO_PILOT",
-      "failed_stages": [
-        {
-          "available": 7,
-          "earned": 5,
-          "findings": [
-            "core accepted evidence lacks full-text review"
-          ],
-          "passed": false,
-          "stage": "relevance_review"
-        },
-        {
-          "available": 10,
-          "earned": 7,
-          "findings": [
-            "clarification did not target a declared high-impact unknown"
-          ],
-          "passed": false,
-          "stage": "clarification_gate"
-        }
-      ],
-      "hard_failures": [],
-      "llm_call_budget": 12,
-      "minimum_score": 80,
-      "model": "mistral-small-latest",
-      "observed_decision": "REVISE_TO_PILOT",
-      "passed": true,
-      "provider": "mistral",
-      "provider_call_budget": {
-        "maximum": 8,
-        "remaining": 5,
-        "used": 3
-      },
-      "report_status": "completed",
-      "score": 95,
-      "search_diagnostics": [
-        {
-          "attempted_providers": [
-            "openalex"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "lightweight",
-            "gesture",
-            "recognition",
-            "mobile",
-            "devices",
-            "latency",
-            "accuracy",
-            "size"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 1,
-          "query_approved": true,
-          "query_id": "q_baseline_gesture_mobile",
-          "relevant_verified_papers": 2,
-          "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence"
-        },
-        {
-          "attempted_providers": [
-            "openalex"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "gesture",
-            "recognition",
-            "failure",
-            "modes",
-            "limitations",
-            "mobile",
-            "deployment",
-            "efficiency",
-            "accuracy",
-            "bias"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 1,
-          "query_approved": true,
-          "query_id": "q_failure_mechanism_gesture",
-          "relevant_verified_papers": 2,
-          "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence"
-        },
-        {
-          "attempted_providers": [
-            "openalex"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "mobile",
-            "gesture",
-            "recognition",
-            "parallel",
-            "lightweight",
-            "cnn",
-            "transformer",
-            "efficiency",
-            "accuracy"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 1,
-          "query_approved": true,
-          "query_id": "q_parallel_methods_gesture",
-          "relevant_verified_papers": 2,
-          "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence"
-        }
-      ],
-      "status": "passed",
-      "verification_call_budget": {
-        "maximum": 16,
-        "remaining": 6,
-        "used": 10
-      },
-      "web_search_enabled": false
-    },
-    {
-      "accepted_evidence": [],
-      "case_id": "at-009-multimodal-medical-fusion",
-      "decision_matches": true,
-      "execution_status": "completed",
-      "expected_decision": "REVISE_TO_PILOT",
-      "failed_stages": [
-        {
-          "available": 10,
-          "earned": 8,
-          "findings": [
-            "explicit facts, inferences, or proposals were not recorded"
-          ],
-          "passed": false,
-          "stage": "parse_user_input"
-        },
-        {
-          "available": 8,
-          "earned": 5,
-          "findings": [
-            "retrieval role parallel_method is missing",
-            "retrieval role strong_comparison is missing"
-          ],
-          "passed": false,
-          "stage": "exploratory_retrieval"
-        },
-        {
-          "available": 10,
-          "earned": 7,
-          "findings": [
-            "clarification did not target a declared high-impact unknown"
-          ],
-          "passed": false,
-          "stage": "clarification_gate"
-        },
-        {
-          "available": 15,
-          "earned": 4,
-          "findings": [
-            "baseline card is missing",
-            "baseline source is not accepted evidence",
-            "baseline freeze contract is incomplete"
-          ],
-          "passed": false,
-          "stage": "freeze_baseline"
-        },
-        {
-          "available": 15,
-          "earned": 0,
-          "findings": [
-            "falsifiable hypothesis is missing condition, limitation, mechanism, intervention, metric, or guardrail"
-          ],
-          "passed": false,
-          "stage": "gap_hypothesis"
-        },
-        {
-          "available": 5,
-          "earned": 1,
-          "findings": [
-            "experiment matrix fields are incomplete",
-            "baseline experiment arm is missing",
-            "strong-comparison experiment arm is missing",
-            "stop conditions are missing"
-          ],
-          "passed": false,
-          "stage": "experiment_matrix"
-        }
-      ],
-      "hard_failures": [
-        {
-          "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-          "details": "stronger baselines or negative results were not preserved"
-        }
-      ],
-      "llm_call_budget": 12,
-      "minimum_score": 80,
-      "model": "mistral-small-latest",
-      "observed_decision": "REVISE_TO_PILOT",
-      "passed": false,
-      "provider": "mistral",
-      "provider_call_budget": {
-        "maximum": 8,
-        "remaining": 0,
-        "used": 8
-      },
-      "report_status": "completed",
-      "score": 62,
-      "search_diagnostics": [
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "multimodal",
-            "medical",
-            "image",
-            "fusion",
-            "classification",
-            "baseline"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "baseline_papers",
-          "relevant_verified_papers": 1,
-          "returned_papers": 3,
-          "stop_reason": "academic_budget_exhausted"
-        },
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "multimodal",
-            "medical",
-            "image",
-            "fusion",
-            "classification",
-            "mechanism",
-            "limitation",
-            "failure",
-            "mode"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "mechanism_limitation",
-          "relevant_verified_papers": 1,
-          "returned_papers": 1,
-          "stop_reason": "academic_budget_exhausted"
-        },
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "multimodal",
-            "medical",
-            "image",
-            "fusion",
-            "classification",
-            "negative",
-            "limitations",
-            "generalization",
-            "noise",
-            "sensitivity"
+            "attention",
+            "mechanism"
           ],
           "maximum_provider_calls": 4,
           "minimum_rank_score": 0.62,
@@ -742,10 +723,45 @@
           "precision_risk": "low",
           "provider_call_count": 3,
           "query_approved": true,
-          "query_id": "risk_negative_evidence",
-          "relevant_verified_papers": 1,
-          "returned_papers": 1,
+          "query_id": "q_strong_comparison_methods",
+          "relevant_verified_papers": 0,
+          "returned_papers": 0,
           "stop_reason": "academic_budget_exhausted"
+        },
+        {
+          "attempted_providers": [
+            "openalex"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "medical",
+            "imaging",
+            "disease",
+            "classification",
+            "failure",
+            "mechanism",
+            "limitation",
+            "modality",
+            "misalignment",
+            "noise",
+            "small",
+            "sample",
+            "class",
+            "imbalance",
+            "alignment",
+            "module"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 1,
+          "query_approved": true,
+          "query_id": "q_failure_mechanism_limitations",
+          "relevant_verified_papers": 2,
+          "returned_papers": 2,
+          "stop_reason": "sufficient_academic_evidence"
         }
       ],
       "status": "failed",
@@ -757,11 +773,11 @@
       "web_search_enabled": false
     }
   ],
-  "failed_count": 2,
+  "failed_count": 1,
   "passed": false,
-  "passed_count": 2,
+  "passed_count": 3,
   "status": "failed",
   "web_search_enabled": false,
-  "workflow_head_sha": "e8b8056a6926a6053e98c56c26803a8a7d13c150",
-  "workflow_run_id": 29713633858
+  "workflow_head_sha": "87bbd63feaf7067f6f847c9cf43366f50bd6b36f",
+  "workflow_run_id": 29714692149
 }
