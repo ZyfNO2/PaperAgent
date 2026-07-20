@@ -7,6 +7,7 @@ from paperagent.nodes._shared import call_structured
 from paperagent.runtime import get_option
 from paperagent.schemas import EvidenceGap, ResearchPlan, ResearchRequest, SearchQuery
 from paperagent.state import PaperAgentState, StatePatch
+from paperagent.user_materials import user_material_identities
 
 NODE = "planning_node"
 
@@ -37,65 +38,58 @@ def _unique_identifier(base: str, existing: set[str]) -> str:
     return candidate
 
 
-def _material_title(reference: str) -> str:
-    return reference.split(" [declared role:", 1)[0].strip()
-
-
 def _ensure_user_material_identity_queries(
     plan: ResearchPlan,
     request: ResearchRequest,
     *,
     query_budget: int,
 ) -> ResearchPlan:
-    """Ensure public user-supplied titles receive identity and role verification.
+    """Prioritize exact-title verification for identifiable public supplied materials.
 
-    This only adds exact-title public searches. It does not accept the material, infer
-    compatibility, or turn an unidentified generic reference into evidence.
+    Generic upload placeholders stay unverified. The function does not accept a material or infer
+    compatibility; it only creates explicit identity-and-role evidence gaps within the query budget.
     """
 
     if plan.status == "blocked" or not request.user_material_refs:
         return plan
-    gaps = list(plan.evidence_gaps)
-    queries = list(plan.search_queries)
-    existing_gap_ids = {gap.gap_id for gap in gaps}
-    existing_query_ids = {query.query_id for query in queries}
-    existing_query_text = " ".join(query.query.casefold() for query in queries)
+    identity_gaps: list[EvidenceGap] = []
+    identity_queries: list[SearchQuery] = []
+    existing_gap_ids = {gap.gap_id for gap in plan.evidence_gaps}
+    existing_query_ids = {query.query_id for query in plan.search_queries}
+    available_slots = max(query_budget - len(plan.search_queries), 0)
 
-    for index, reference in enumerate(request.user_material_refs, start=1):
-        title = _material_title(reference)
-        if not title or title.casefold() in existing_query_text:
+    for identity in user_material_identities(request.user_material_refs):
+        if not identity.identifiable or available_slots <= 0:
             continue
-        if len(queries) >= query_budget:
-            break
-        gap_id = _unique_identifier(f"user-material-{index:02d}-identity", existing_gap_ids)
-        query_id = _unique_identifier(f"user-material-{index:02d}-lookup", existing_query_ids)
-        gaps.append(
+        gap_id = _unique_identifier(identity.gap_id, existing_gap_ids)
+        query_id = _unique_identifier(identity.query_id, existing_query_ids)
+        identity_gaps.append(
             EvidenceGap(
                 gap_id=gap_id,
                 description=(
                     "Verify the public identity, method details, declared role, and task "
-                    f"compatibility of the user-supplied material titled {title!r}."
+                    f"compatibility of the user-supplied material titled {identity.title!r}."
                 ),
                 required=True,
                 minimum_accepted_items=1,
             )
         )
-        queries.append(
+        identity_queries.append(
             SearchQuery(
                 query_id=query_id,
                 gap_id=gap_id,
-                query=title,
+                query=identity.title,
                 source_types=["paper", "repository"],
             )
         )
-        existing_query_text = f"{existing_query_text} {title.casefold()}"
+        available_slots -= 1
 
-    if len(queries) == len(plan.search_queries):
+    if not identity_queries:
         return plan
     return plan.model_copy(
         update={
-            "evidence_gaps": gaps,
-            "search_queries": queries,
+            "evidence_gaps": [*identity_gaps, *plan.evidence_gaps],
+            "search_queries": [*identity_queries, *plan.search_queries],
             "status": "ready" if plan.status == "need_human" else plan.status,
         }
     )
@@ -144,10 +138,6 @@ def planning_route(state: PaperAgentState, config: RunnableConfig) -> str:
     plan = state.get("plan")
     if plan is None:
         raise ValueError("plan is required for planning route")
-    # Defensive: real LLMs may return a plan.status that the graph's
-    # conditional_edges does not map (e.g. "draft"). Route any unknown status
-    # to "blocked" so the graph always reaches report_node -> persist_node
-    # instead of silently stopping after planning.
     if plan.status not in ("ready", "need_human", "blocked"):
         return "blocked"
     if (
