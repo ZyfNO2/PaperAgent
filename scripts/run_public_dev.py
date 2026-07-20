@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -21,6 +22,29 @@ def _write_jsonl(path: Path, values: list[object]) -> None:
         "".join(json.dumps(value, ensure_ascii=False, sort_keys=True) + "\n" for value in values),
         encoding="utf-8",
     )
+
+
+def _report_digest(report: dict[str, Any]) -> str:
+    value = {key: item for key, item in report.items() if key != "report_digest"}
+    canonical = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def _metamorphic_consistency(
+    cases: list[dict[str, Any]], traces: list[dict[str, Any]]
+) -> tuple[float | None, int]:
+    decisions = {trace["case_id"]: trace.get("decision") for trace in traces}
+    groups: dict[str, list[object]] = {}
+    for case in cases:
+        group = case["metadata"].get("metamorphic_group")
+        if not isinstance(group, str) or not group:
+            continue
+        groups.setdefault(group, []).append(decisions.get(case["case_id"]))
+    comparable = [values for values in groups.values() if len(values) >= 2]
+    if not comparable:
+        return None, 0
+    consistent = sum(len(set(values)) == 1 for values in comparable)
+    return consistent / len(comparable), len(comparable)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -137,15 +161,25 @@ async def _run(args: argparse.Namespace) -> int:
     _write_jsonl(output_dir / "run-traces.jsonl", traces)
 
     report = score_dataset(selected, traces) if not errors and len(traces) == len(selected) else None
+    metamorphic_consistency: float | None = None
+    metamorphic_group_count = 0
     if report is not None:
+        metamorphic_consistency, metamorphic_group_count = _metamorphic_consistency(selected, traces)
+        report["metamorphic_decision_consistency"] = metamorphic_consistency
+        report["metamorphic_group_count"] = metamorphic_group_count
+        report["report_digest"] = _report_digest(report)
         _write_json(output_dir / "report.json", report)
 
+    metamorphic_passed = (
+        metamorphic_consistency is None or metamorphic_consistency >= 0.85
+    )
     thresholds_passed = bool(
         report is not None
         and report["decision_accuracy"] >= 0.80
         and report["hard_failure_count"] == 0
         and report["fabricated_evidence_count"] == 0
         and report["unsupported_comparator_count"] == 0
+        and metamorphic_passed
     )
     summary = {
         "schema": "paperagent.academic-holdout.public-dev-run.v2",
@@ -165,6 +199,8 @@ async def _run(args: argparse.Namespace) -> int:
             "hard_failures_maximum": 0,
             "fabricated_evidence_maximum": 0,
             "unsupported_comparator_maximum": 0,
+            "metamorphic_decision_consistency_minimum": 0.85,
+            "public_private_score_gap_maximum_percentage_points": 10,
         },
         "thresholds_passed": thresholds_passed,
         "report": report,
