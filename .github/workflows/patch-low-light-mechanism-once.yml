@@ -30,30 +30,30 @@ jobs:
 
           path = Path('src/paperagent/evidence_gap_binding.py')
           text = path.read_text(encoding='utf-8')
-          anchor = '''            "redundant computation",
-          '''.replace('          ', '')
-          addition = '''            "redundant computation",
-                      "low-light",
-                      "low light",
-                      "nighttime",
-                      "less effective",
-                      "drawback",
-                      "low-resolution",
-                      "low resolution",
-                      "noise",
-                      "degradation",
-                      "background interference",
-                      "illumination",
-                      "domain shift",
-                      "distribution shift",
-                      "missing modality",
-                      "modality absence",
-                      "misregistration",
-          '''.replace('          ', '')
+          anchor = '            "redundant computation",\n'
+          additions = (
+              anchor
+              + '            "low-light",\n'
+              + '            "low light",\n'
+              + '            "nighttime",\n'
+              + '            "less effective",\n'
+              + '            "drawback",\n'
+              + '            "low-resolution",\n'
+              + '            "low resolution",\n'
+              + '            "noise",\n'
+              + '            "degradation",\n'
+              + '            "background interference",\n'
+              + '            "illumination",\n'
+              + '            "domain shift",\n'
+              + '            "distribution shift",\n'
+              + '            "missing modality",\n'
+              + '            "modality absence",\n'
+              + '            "misregistration",\n'
+          )
           if '"background interference",' not in text:
               if anchor not in text:
                   raise RuntimeError('mechanism vocabulary anchor not found')
-              text = text.replace(anchor, addition, 1)
+              text = text.replace(anchor, additions, 1)
           path.write_text(text, encoding='utf-8')
           PY
           ruff check --fix \
