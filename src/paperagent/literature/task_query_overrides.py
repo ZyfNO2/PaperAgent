@@ -66,6 +66,24 @@ def _result(query: str, canonical: str, reason: str) -> TaskQueryOverride:
     return TaskQueryOverride(query=canonical, changed=True, reason=reason)
 
 
+def _query_role(gap_id: str, gap_description: str) -> str:
+    identifier = gap_id.casefold()
+    description = gap_description.casefold()
+    if _contains_any(identifier, _PARALLEL_ROLE_HINTS):
+        return "parallel"
+    if _contains_any(identifier, _MECHANISM_ROLE_HINTS):
+        return "mechanism"
+    if _contains_any(identifier, _BASELINE_ROLE_HINTS):
+        return "baseline"
+    if _contains_any(description, _PARALLEL_ROLE_HINTS):
+        return "parallel"
+    if _contains_any(description, _MECHANISM_ROLE_HINTS):
+        return "mechanism"
+    if _contains_any(description, _BASELINE_ROLE_HINTS):
+        return "baseline"
+    return "general"
+
+
 def override_task_query(
     query: str,
     *,
@@ -74,18 +92,18 @@ def override_task_query(
     research_context: str,
 ) -> TaskQueryOverride:
     combined = f"{query} {research_context}".casefold()
-    role = f"{gap_id} {gap_description}".casefold()
+    role = _query_role(gap_id, gap_description)
 
     if _contains_any(combined, _TIME_SERIES_ANOMALY_HINTS):
-        if _contains_any(role, _BASELINE_ROLE_HINTS):
+        if role == "baseline":
             canonical = (
                 "Anomaly Transformer time series anomaly detection association discrepancy baseline"
             )
-        elif _contains_any(role, _MECHANISM_ROLE_HINTS):
+        elif role == "mechanism":
             canonical = (
                 "time series anomaly detection association discrepancy limitation failure mechanism"
             )
-        elif _contains_any(role, _PARALLEL_ROLE_HINTS):
+        elif role == "parallel":
             canonical = "few-shot time series anomaly detection meta-learning transfer learning"
         else:
             canonical = "time series anomaly detection transformer few-shot"
@@ -101,11 +119,11 @@ def override_task_query(
     ):
         return TaskQueryOverride(query=query, changed=False)
 
-    if _contains_any(role, _BASELINE_ROLE_HINTS):
+    if role == "baseline":
         canonical = "retrieval augmented question answering hallucination baseline"
-    elif _contains_any(role, _MECHANISM_ROLE_HINTS):
+    elif role == "mechanism":
         canonical = "semantic entropy probes hallucination detection uncertainty"
-    elif _contains_any(role, _PARALLEL_ROLE_HINTS):
+    elif role == "parallel":
         canonical = "question answering hallucination reduction retrieval verification uncertainty"
     else:
         canonical = "professional question answering hallucination factuality"
