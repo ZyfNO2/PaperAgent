@@ -41,6 +41,52 @@ _RELIABILITY_CANDIDATE_TERMS = (
     "verification",
     "citation accuracy",
 )
+_TIME_SERIES_ANOMALY_QUERY_TERMS = (
+    "time series anomaly",
+    "time-series anomaly",
+    "anomaly transformer",
+    "时间序列异常",
+)
+_TIME_SERIES_CANDIDATE_TERMS = (
+    "time series",
+    "time-series",
+    "multivariate time series",
+    "temporal sequence",
+    "temporal data",
+    "sensor series",
+    "sensor data stream",
+    "industrial time series",
+)
+_ANOMALY_CANDIDATE_TERMS = (
+    "anomaly detection",
+    "anomaly detector",
+    "anomalous sequence",
+    "anomalous point",
+    "outlier detection",
+)
+_FEW_SHOT_QUERY_TERMS = (
+    "few-shot",
+    "few shot",
+    "zero-shot",
+    "zero shot",
+    "small sample",
+    "low-resource",
+    "low resource",
+    "meta-learning",
+)
+_FEW_SHOT_CANDIDATE_TERMS = (
+    "few-shot",
+    "few shot",
+    "zero-shot",
+    "zero shot",
+    "small sample",
+    "low-resource",
+    "low resource",
+    "few labeled",
+    "few examples",
+    "meta-learning",
+    "transfer learning",
+)
 
 
 def _contains_any(value: str, terms: tuple[str, ...]) -> bool:
@@ -58,7 +104,26 @@ def matches_specialized_candidate_terms(query: str, candidate_text: str) -> bool
     reliability_match = not _contains_any(
         normalized_query, _RELIABILITY_QUERY_TERMS
     ) or _contains_any(normalized_candidate, _RELIABILITY_CANDIDATE_TERMS)
-    return qa_match and reliability_match
+
+    time_series_query = _contains_any(normalized_query, _TIME_SERIES_ANOMALY_QUERY_TERMS)
+    time_series_match = not time_series_query or (
+        _contains_any(normalized_candidate, _TIME_SERIES_CANDIDATE_TERMS)
+        and _contains_any(normalized_candidate, _ANOMALY_CANDIDATE_TERMS)
+    )
+    anomaly_transformer_match = "anomaly transformer" not in normalized_query or (
+        "anomaly transformer" in normalized_candidate
+    )
+    few_shot_match = not (
+        time_series_query and _contains_any(normalized_query, _FEW_SHOT_QUERY_TERMS)
+    ) or _contains_any(normalized_candidate, _FEW_SHOT_CANDIDATE_TERMS)
+
+    return (
+        qa_match
+        and reliability_match
+        and time_series_match
+        and anomaly_transformer_match
+        and few_shot_match
+    )
 
 
 __all__ = ["matches_specialized_candidate_terms"]
