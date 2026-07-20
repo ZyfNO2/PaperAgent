@@ -1,159 +1,185 @@
 {
-  "accepted_evidence": [],
+  "accepted_evidence": [
+    {
+      "evidence_id": "ev-paper-defbb5881fb0e747d2e6",
+      "locator": "https://arxiv.org/abs/2404.14464",
+      "provider": "literature_retrieval",
+      "supports_gap_ids": [
+        "baseline_comparison",
+        "mechanism_limitations"
+      ],
+      "title": "Tree of Reviews: A Tree-based Dynamic Iterative Retrieval Framework for Multi-hop Question Answering",
+      "verification_status": "accepted"
+    },
+    {
+      "evidence_id": "ev-paper-cccd3124d92be1cc007c",
+      "locator": "https://arxiv.org/abs/2406.15927",
+      "provider": "literature_retrieval",
+      "supports_gap_ids": [
+        "baseline_comparison",
+        "mechanism_limitations",
+        "optional_risk_negative_evidence"
+      ],
+      "title": "Semantic Entropy Probes: Robust and Cheap Hallucination Detection in LLMs",
+      "verification_status": "accepted"
+    }
+  ],
   "case_id": "at-013-professional-qa-hallucination",
   "decision_matches": true,
   "evidence_review": [
     {
-      "accepted": false,
+      "accepted": true,
       "evidence_id": "ev-paper-defbb5881fb0e747d2e6",
       "gap_supports": [
         {
           "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
             "gap_overlap": false,
-            "relevance_passed": false
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
           },
-          "confidence": 0.0,
-          "decision": "reject",
+          "confidence": 0.82,
+          "decision": "accept",
           "gap_id": "baseline_comparison",
           "limitations": [
-            "evidence failed relevance assessment"
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
           ],
-          "support_type": "unrelated"
+          "support_type": "direct_support"
         },
         {
           "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
             "gap_overlap": false,
-            "relevance_passed": false
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
           },
-          "confidence": 0.0,
-          "decision": "reject",
+          "confidence": 0.82,
+          "decision": "accept",
           "gap_id": "mechanism_limitations",
           "limitations": [
-            "evidence failed relevance assessment"
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
           ],
-          "support_type": "unrelated"
+          "support_type": "direct_support"
         },
         {
           "checklist_results": {
+            "cross_gap_reuse": true,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
             "gap_overlap": false,
-            "relevance_passed": false
+            "provenance_qualified": true,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
           },
           "confidence": 0.0,
           "decision": "reject",
           "gap_id": "optional_risk_negative_evidence",
           "limitations": [
-            "evidence failed relevance assessment"
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: role-specific evidence structure"
           ],
-          "support_type": "unrelated"
+          "support_type": "insufficient"
         }
       ],
-      "rejection_reasons": [
-        "LEXICAL_NO_MATCH",
-        "ABSTRACT_REJECTED_BY_LEXICAL_GATE",
-        "NO_VALID_GAP_BINDING"
-      ],
+      "rejection_reasons": [],
       "title": "Tree of Reviews: A Tree-based Dynamic Iterative Retrieval Framework for Multi-hop Question Answering"
     },
     {
-      "accepted": false,
-      "evidence_id": "ev-paper-560c52c88ca9af676ff2",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "gap_overlap": false,
-            "relevance_passed": false
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "baseline_comparison",
-          "limitations": [
-            "evidence failed relevance assessment"
-          ],
-          "support_type": "unrelated"
-        },
-        {
-          "checklist_results": {
-            "gap_overlap": false,
-            "relevance_passed": false
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "mechanism_limitations",
-          "limitations": [
-            "evidence failed relevance assessment"
-          ],
-          "support_type": "unrelated"
-        },
-        {
-          "checklist_results": {
-            "gap_overlap": false,
-            "relevance_passed": false
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "optional_risk_negative_evidence",
-          "limitations": [
-            "evidence failed relevance assessment"
-          ],
-          "support_type": "unrelated"
-        }
-      ],
-      "rejection_reasons": [
-        "LEXICAL_NO_MATCH",
-        "ABSTRACT_REJECTED_BY_LEXICAL_GATE",
-        "NO_VALID_GAP_BINDING"
-      ],
-      "title": "Enhancing Retrieval-Augmented Large Language Models with Iterative Retrieval-Generation Synergy"
-    },
-    {
-      "accepted": false,
+      "accepted": true,
       "evidence_id": "ev-paper-cccd3124d92be1cc007c",
       "gap_supports": [
         {
           "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
             "gap_overlap": false,
-            "relevance_passed": false
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
           },
-          "confidence": 0.0,
-          "decision": "reject",
+          "confidence": 0.82,
+          "decision": "accept",
           "gap_id": "baseline_comparison",
           "limitations": [
-            "evidence failed relevance assessment"
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
           ],
-          "support_type": "unrelated"
+          "support_type": "direct_support"
         },
         {
           "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
             "gap_overlap": false,
-            "relevance_passed": false
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
           },
-          "confidence": 0.0,
-          "decision": "reject",
+          "confidence": 0.82,
+          "decision": "accept",
           "gap_id": "mechanism_limitations",
           "limitations": [
-            "evidence failed relevance assessment"
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
           ],
-          "support_type": "unrelated"
+          "support_type": "direct_support"
         },
         {
           "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
             "gap_overlap": false,
-            "relevance_passed": false
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
           },
-          "confidence": 0.0,
-          "decision": "reject",
+          "confidence": 0.82,
+          "decision": "accept",
           "gap_id": "optional_risk_negative_evidence",
           "limitations": [
-            "evidence failed relevance assessment"
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
           ],
-          "support_type": "unrelated"
+          "support_type": "direct_support"
         }
       ],
-      "rejection_reasons": [
-        "LEXICAL_NO_MATCH",
-        "ABSTRACT_REJECTED_BY_LEXICAL_GATE",
-        "NO_VALID_GAP_BINDING"
-      ],
+      "rejection_reasons": [],
       "title": "Semantic Entropy Probes: Robust and Cheap Hallucination Detection in LLMs"
     },
     {
@@ -162,225 +188,94 @@
       "gap_supports": [
         {
           "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
             "gap_overlap": false,
-            "relevance_passed": false
+            "provenance_qualified": false,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
           },
           "confidence": 0.0,
           "decision": "reject",
           "gap_id": "baseline_comparison",
           "limitations": [
-            "evidence failed relevance assessment"
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
           ],
-          "support_type": "unrelated"
+          "support_type": "insufficient"
         },
         {
           "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
             "gap_overlap": false,
-            "relevance_passed": false
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
           },
-          "confidence": 0.0,
+          "confidence": 0.2,
           "decision": "reject",
           "gap_id": "mechanism_limitations",
           "limitations": [
-            "evidence failed relevance assessment"
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: role-specific evidence structure"
           ],
-          "support_type": "unrelated"
+          "support_type": "insufficient"
         },
         {
           "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
             "gap_overlap": false,
-            "relevance_passed": false
+            "provenance_qualified": false,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
           },
           "confidence": 0.0,
           "decision": "reject",
           "gap_id": "optional_risk_negative_evidence",
           "limitations": [
-            "evidence failed relevance assessment"
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
           ],
-          "support_type": "unrelated"
+          "support_type": "insufficient"
         }
       ],
       "rejection_reasons": [
-        "LEXICAL_NO_MATCH",
-        "ABSTRACT_REJECTED_BY_LEXICAL_GATE",
         "NO_VALID_GAP_BINDING"
       ],
       "title": "Efficient Hallucination Detection: Adaptive Bayesian Estimation of Semantic Entropy with Guided Semantic Exploration"
-    },
-    {
-      "accepted": false,
-      "evidence_id": "ev-paper-169b46a0558590f0e767",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "gap_overlap": false,
-            "relevance_passed": false
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "baseline_comparison",
-          "limitations": [
-            "evidence failed relevance assessment"
-          ],
-          "support_type": "unrelated"
-        },
-        {
-          "checklist_results": {
-            "gap_overlap": false,
-            "relevance_passed": false
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "mechanism_limitations",
-          "limitations": [
-            "evidence failed relevance assessment"
-          ],
-          "support_type": "unrelated"
-        },
-        {
-          "checklist_results": {
-            "gap_overlap": false,
-            "relevance_passed": false
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "optional_risk_negative_evidence",
-          "limitations": [
-            "evidence failed relevance assessment"
-          ],
-          "support_type": "unrelated"
-        }
-      ],
-      "rejection_reasons": [
-        "LEXICAL_NO_MATCH",
-        "ABSTRACT_REJECTED_BY_LEXICAL_GATE",
-        "NO_VALID_GAP_BINDING"
-      ],
-      "title": "🧜Siren’s Song in the AI Ocean: A Survey on Hallucination in Large Language Models"
-    },
-    {
-      "accepted": false,
-      "evidence_id": "ev-paper-6086aa0787191e851fa2",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "gap_overlap": false,
-            "relevance_passed": false
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "baseline_comparison",
-          "limitations": [
-            "evidence failed relevance assessment"
-          ],
-          "support_type": "unrelated"
-        },
-        {
-          "checklist_results": {
-            "gap_overlap": false,
-            "relevance_passed": false
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "mechanism_limitations",
-          "limitations": [
-            "evidence failed relevance assessment"
-          ],
-          "support_type": "unrelated"
-        },
-        {
-          "checklist_results": {
-            "gap_overlap": false,
-            "relevance_passed": false
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "optional_risk_negative_evidence",
-          "limitations": [
-            "evidence failed relevance assessment"
-          ],
-          "support_type": "unrelated"
-        }
-      ],
-      "rejection_reasons": [
-        "LEXICAL_NO_MATCH",
-        "ABSTRACT_REJECTED_BY_LEXICAL_GATE",
-        "NO_VALID_GAP_BINDING"
-      ],
-      "title": "A Survey on Hallucination in Large Language Models: Principles, Taxonomy, Challenges, and Open Questions"
-    },
-    {
-      "accepted": false,
-      "evidence_id": "ev-paper-121068e7ef5f5488508c",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "gap_overlap": false,
-            "relevance_passed": false
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "baseline_comparison",
-          "limitations": [
-            "evidence failed relevance assessment"
-          ],
-          "support_type": "unrelated"
-        },
-        {
-          "checklist_results": {
-            "gap_overlap": false,
-            "relevance_passed": false
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "mechanism_limitations",
-          "limitations": [
-            "evidence failed relevance assessment"
-          ],
-          "support_type": "unrelated"
-        },
-        {
-          "checklist_results": {
-            "gap_overlap": false,
-            "relevance_passed": false
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "optional_risk_negative_evidence",
-          "limitations": [
-            "evidence failed relevance assessment"
-          ],
-          "support_type": "unrelated"
-        }
-      ],
-      "rejection_reasons": [
-        "LEXICAL_NO_MATCH",
-        "ABSTRACT_REJECTED_BY_LEXICAL_GATE",
-        "NO_VALID_GAP_BINDING"
-      ],
-      "title": "Siren's Song in the AI Ocean: A Survey on Hallucination in Large Language Models"
     }
   ],
   "execution_status": "completed",
   "expected_decision": "REVISE_TO_PILOT",
   "failed_stages": [
     {
-      "available": 10,
-      "earned": 8,
+      "available": 7,
+      "earned": 5,
       "findings": [
-        "explicit facts, inferences, or proposals were not recorded"
+        "core accepted evidence lacks full-text review"
       ],
       "passed": false,
-      "stage": "parse_user_input"
-    },
-    {
-      "available": 8,
-      "earned": 6,
-      "findings": [
-        "retrieval role parallel_method is missing"
-      ],
-      "passed": false,
-      "stage": "exploratory_retrieval"
+      "stage": "relevance_review"
     },
     {
       "available": 10,
@@ -390,59 +285,22 @@
       ],
       "passed": false,
       "stage": "clarification_gate"
-    },
-    {
-      "available": 15,
-      "earned": 4,
-      "findings": [
-        "baseline card is missing",
-        "baseline source is not accepted evidence",
-        "baseline freeze contract is incomplete"
-      ],
-      "passed": false,
-      "stage": "freeze_baseline"
-    },
-    {
-      "available": 15,
-      "earned": 0,
-      "findings": [
-        "falsifiable hypothesis is missing condition, limitation, mechanism, intervention, metric, or guardrail"
-      ],
-      "passed": false,
-      "stage": "gap_hypothesis"
-    },
-    {
-      "available": 5,
-      "earned": 1,
-      "findings": [
-        "experiment matrix fields are incomplete",
-        "baseline experiment arm is missing",
-        "strong-comparison experiment arm is missing",
-        "stop conditions are missing"
-      ],
-      "passed": false,
-      "stage": "experiment_matrix"
     }
   ],
-  "hard_failures": [
-    {
-      "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-      "details": "stronger baselines or negative results were not preserved"
-    }
-  ],
+  "hard_failures": [],
   "llm_call_budget": 12,
   "minimum_score": 80,
   "model": "mistral-small-latest",
   "observed_decision": "REVISE_TO_PILOT",
-  "passed": false,
+  "passed": true,
   "provider": "mistral",
   "provider_call_budget": {
     "maximum": 8,
-    "remaining": 1,
-    "used": 7
+    "remaining": 0,
+    "used": 8
   },
   "report_status": "completed",
-  "score": 63,
+  "score": 95,
   "search_diagnostics": [
     {
       "attempted_providers": [
@@ -467,9 +325,9 @@
       "provider_call_count": 3,
       "query_approved": true,
       "query_id": "q1_baseline_methods",
-      "relevant_verified_papers": 2,
-      "returned_papers": 2,
-      "stop_reason": "sufficient_academic_evidence"
+      "relevant_verified_papers": 1,
+      "returned_papers": 1,
+      "stop_reason": "academic_budget_exhausted"
     },
     {
       "attempted_providers": [
@@ -494,9 +352,9 @@
       "provider_call_count": 3,
       "query_approved": true,
       "query_id": "q2_strong_comparison_sota",
-      "relevant_verified_papers": 2,
-      "returned_papers": 2,
-      "stop_reason": "sufficient_academic_evidence"
+      "relevant_verified_papers": 1,
+      "returned_papers": 1,
+      "stop_reason": "academic_budget_exhausted"
     },
     {
       "attempted_providers": [
@@ -522,15 +380,15 @@
       "query_approved": true,
       "query_id": "q3_mechanism_intervention",
       "relevant_verified_papers": 2,
-      "returned_papers": 5,
+      "returned_papers": 2,
       "stop_reason": "sufficient_academic_evidence"
     }
   ],
-  "status": "failed",
+  "status": "passed",
   "verification_call_budget": {
     "maximum": 16,
-    "remaining": 5,
-    "used": 11
+    "remaining": 16,
+    "used": 0
   },
   "web_search_enabled": false
 }
