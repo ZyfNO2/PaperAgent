@@ -1,14 +1,14 @@
 {
   "case_id": "at-013-professional-qa-hallucination",
-  "reason": "verify distinct baseline, Semantic Entropy mechanism, and parallel QA queries after role-priority fix",
-  "attempt": 4,
-  "retrieval_gate_run_id": 29742702060,
-  "retrieval_gate_head_sha": "08a91e44a274fa9a0d9c840b0a95671fd01ca9aa",
+  "reason": "verify prepared runtime queries drive both retrieval and Evidence Ledger relevance",
+  "attempt": 5,
+  "retrieval_gate_run_id": 29743175875,
+  "retrieval_gate_head_sha": "3cd30a97dbadcfa5a6f7692cf7e9aa9760bb7bfb",
   "previous_result": {
-    "score": 95,
-    "hard_failures": 0,
-    "accepted_evidence": 2,
-    "issue": "all three evidence roles collapsed to the same query despite passing"
+    "score": 63,
+    "hard_failures": 1,
+    "accepted_evidence": 0,
+    "issue": "refined queries retrieved correct papers but lexical contract still used original plan queries"
   },
   "requested_scope": "single_case_only",
   "web_search_enabled": false
