@@ -6,6 +6,7 @@ on:
       - feat/claw-live-search-runtime
     paths:
       - ".github/workflows/method-design-draft-offline-gate.yml"
+      - "src/paperagent/academic_methodology.py"
       - "src/paperagent/method_design_draft.py"
       - "src/paperagent/nodes/_shared.py"
       - "src/paperagent/nodes/method_design.py"
@@ -40,6 +41,7 @@ jobs:
           out="build/method-design-draft"
           mkdir -p "$out"
           files=(
+            src/paperagent/academic_methodology.py
             src/paperagent/method_design_draft.py
             src/paperagent/nodes/_shared.py
             src/paperagent/nodes/method_design.py
