@@ -20,6 +20,15 @@ class ProductionScanTests(unittest.TestCase):
             "    return benchmark_input\n",
             encoding="utf-8",
         )
+        normalizer = root / "src/paperagent/claw_benchmark_normalizer.py"
+        normalizer.write_text(
+            "def normalize_paperagent_state(state, context):\n"
+            "    outcome = state.get('final_outcome')\n"
+            "    pilot_recommended = bool(outcome is not None and outcome.pilot_recommended)\n"
+            "    trace = legacy(state, context)\n"
+            "    return trace.model_copy(update={'pilot_recommended': pilot_recommended})\n",
+            encoding="utf-8",
+        )
         return temporary, root
 
     def test_clean_input_only_signature_passes(self) -> None:
@@ -31,7 +40,8 @@ class ProductionScanTests(unittest.TestCase):
         report = scan_production(root)
         self.assertTrue(report["passed"])
         self.assertEqual(report["private_ngram_count"], 0)
-        self.assertEqual(report["scanned_file_count"], 1)
+        self.assertEqual(report["scanned_file_count"], 2)
+        self.assertTrue(report["pilot_recommendation_source_verified"])
 
     def test_scorer_field_in_runtime_signature_fails(self) -> None:
         temporary, root = self._production_tree(
@@ -69,11 +79,39 @@ class ProductionScanTests(unittest.TestCase):
         self.assertNotIn("sealed phrase", json.dumps(findings))
         self.assertEqual(report["private_ngram_count"], 1)
 
+    def test_pilot_value_not_sourced_from_final_outcome_fails(self) -> None:
+        temporary, root = self._production_tree(
+            "*, benchmark_input, llm, search, max_llm_calls, task_id"
+        )
+        self.addCleanup(temporary.cleanup)
+        normalizer = root / "src/paperagent/claw_benchmark_normalizer.py"
+        normalizer.write_text(
+            "def normalize_paperagent_state(state, context):\n"
+            "    pilot_recommended = True\n"
+            "    trace = legacy(state, context)\n"
+            "    return trace.model_copy(update={'pilot_recommended': pilot_recommended})\n",
+            encoding="utf-8",
+        )
+
+        report = scan_production(root)
+
+        self.assertFalse(report["passed"])
+        self.assertFalse(report["pilot_recommendation_source_verified"])
+        findings = [
+            item
+            for item in report["findings"]
+            if item["code"] == "PILOT_RECOMMENDATION_SOURCE_UNVERIFIED"
+        ]
+        self.assertEqual(len(findings), 1)
+
     def test_missing_executor_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             report = scan_production(Path(directory))
         self.assertFalse(report["passed"])
-        self.assertEqual(report["findings"][0]["code"], "RUNTIME_FILE_MISSING")
+        codes = {item["code"] for item in report["findings"]}
+        self.assertIn("RUNTIME_FILE_MISSING", codes)
+        self.assertIn("PILOT_NORMALIZER_FILE_MISSING", codes)
+        self.assertFalse(report["pilot_recommendation_source_verified"])
 
 
 if __name__ == "__main__":

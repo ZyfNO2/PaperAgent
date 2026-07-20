@@ -90,6 +90,69 @@ def _runtime_signature_findings(production_root: Path) -> list[dict[str, object]
     return findings
 
 
+def _pilot_source_findings(production_root: Path) -> list[dict[str, object]]:
+    path = production_root / "src/paperagent/claw_benchmark_normalizer.py"
+    if not path.exists():
+        return [{"code": "PILOT_NORMALIZER_FILE_MISSING", "path": str(path)}]
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    target: ast.FunctionDef | ast.AsyncFunctionDef | None = None
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef) and node.name == (
+            "normalize_paperagent_state"
+        ):
+            target = node
+            break
+    relative = str(path.relative_to(production_root))
+    if target is None:
+        return [{"code": "PILOT_NORMALIZER_FUNCTION_MISSING", "path": relative}]
+
+    assignments = []
+    for node in ast.walk(target):
+        if not isinstance(node, ast.Assign):
+            continue
+        if any(
+            isinstance(assigned, ast.Name) and assigned.id == "pilot_recommended"
+            for assigned in node.targets
+        ):
+            assignments.append(node.value)
+    expected = ast.parse(
+        "bool(outcome is not None and outcome.pilot_recommended)",
+        mode="eval",
+    ).body
+    assignment_verified = bool(
+        len(assignments) == 1
+        and ast.dump(assignments[0], include_attributes=False)
+        == ast.dump(expected, include_attributes=False)
+    )
+
+    update_verified = False
+    for node in ast.walk(target):
+        if not isinstance(node, ast.Dict):
+            continue
+        for key, value in zip(node.keys, node.values, strict=True):
+            if (
+                isinstance(key, ast.Constant)
+                and key.value == "pilot_recommended"
+                and isinstance(value, ast.Name)
+                and value.id == "pilot_recommended"
+            ):
+                update_verified = True
+                break
+        if update_verified:
+            break
+
+    if assignment_verified and update_verified:
+        return []
+    return [
+        {
+            "code": "PILOT_RECOMMENDATION_SOURCE_UNVERIFIED",
+            "path": relative,
+            "assignment_verified": assignment_verified,
+            "trace_update_verified": update_verified,
+        }
+    ]
+
+
 def scan_production(
     production_root: Path,
     *,
@@ -99,7 +162,13 @@ def scan_production(
     forbidden_ngrams, manifest_sha256 = _load_private_manifest(private_manifest)
     excluded_files = {private_manifest.resolve()} if private_manifest is not None else set()
     files = _iter_text_files(root, excluded_files=excluded_files)
-    findings = _runtime_signature_findings(root)
+    findings = [
+        *_runtime_signature_findings(root),
+        *_pilot_source_findings(root),
+    ]
+    pilot_recommendation_source_verified = not any(
+        str(item.get("code", "")).startswith("PILOT_") for item in findings
+    )
     file_hashes: dict[str, str] = {}
 
     for path in files:
@@ -124,12 +193,13 @@ def scan_production(
         "".join(f"{path}:{file_hashes[path]}\n" for path in sorted(file_hashes)).encode("utf-8")
     ).hexdigest()
     report: dict[str, object] = {
-        "schema": "paperagent.academic-holdout.production-scan.v2",
+        "schema": "paperagent.academic-holdout.production-scan.v3",
         "production_root": str(root),
         "scanned_file_count": len(files),
         "production_digest": production_digest,
         "private_manifest_sha256": manifest_sha256,
         "private_ngram_count": len(forbidden_ngrams),
+        "pilot_recommendation_source_verified": pilot_recommendation_source_verified,
         "passed": not findings,
         "findings": findings,
         "file_sha256": file_hashes,

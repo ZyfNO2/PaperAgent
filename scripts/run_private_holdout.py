@@ -147,7 +147,9 @@ async def _run(args: argparse.Namespace) -> int:
     public_average = float(public_report["average_score"])
     private_average = float(structured["average_score"]) if structured is not None else 0.0
     score_gap = abs(public_average - private_average)
-    adapter_created_pilot_count = 0 if production_scan.get("passed") is True else 1
+    adapter_created_pilot_count = (
+        0 if production_scan.get("pilot_recommendation_source_verified") is True else 1
+    )
 
     metrics = {
         "completed_case_count": len(traces),
