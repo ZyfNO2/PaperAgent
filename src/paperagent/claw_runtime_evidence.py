@@ -72,13 +72,19 @@ def summarize_llm_providers(
         record.usage.input_tokens is not None and record.usage.output_tokens is not None
         for record in records
     )
-    cost_estimate_complete = bool(records) and price_table is not None and all(
-        record.usage.estimated_cost_usd is not None for record in records
+    cost_estimate_complete = (
+        bool(records)
+        and price_table is not None
+        and all(record.usage.estimated_cost_usd is not None for record in records)
     )
     estimated_cost_usd = round(sum(estimated_costs), 8) if estimated_costs else None
     maximum = config.max_estimated_cost_usd
     within_configured_cost: bool | None = None
-    if maximum is not None and estimated_cost_usd is not None and cost_estimate_complete:
+    if (
+        maximum is not None
+        and estimated_cost_usd is not None
+        and cost_estimate_complete
+    ):
         within_configured_cost = estimated_cost_usd <= maximum
     per_case_maximum = maximum / selected_case_count if maximum is not None else None
 
