@@ -58,9 +58,7 @@ def _has_actionable_recovery_path(next_actions: tuple[str, ...]) -> bool:
     placeholders = {
         "capture missing evidence and rerun the bounded workflow",
     }
-    actionable = tuple(
-        item for item in next_actions if item.strip().casefold() not in placeholders
-    )
+    actionable = tuple(item for item in next_actions if item.strip().casefold() not in placeholders)
     if not actionable:
         return False
     _concrete_markers = (
