@@ -59,6 +59,9 @@ jobs:
           request_status=$?
           files=(
             src/paperagent/claw_benchmark_adapter.py
+            src/paperagent/claw_benchmark_runtime.py
+            src/paperagent/claw_pilot_policy.py
+            src/paperagent/claw_trace_reconciliation.py
             src/paperagent/nodes/planning.py
             src/paperagent/evidence_relevance.py
             src/paperagent/literature/query_concepts.py
@@ -75,9 +78,12 @@ jobs:
             src/paperagent/nodes/method_design.py
             scripts/probe_claw_case_end_to_end.py
             tests/evals/test_claw_benchmark_adapter.py
+            tests/evals/test_claw_pilot_policy.py
+            tests/evals/test_claw_trace_reconciliation.py
             tests/nodes/test_planning_nonblocking.py
             tests/literature/test_time_series_anomaly_precision.py
             tests/literature/test_multibehavior_recommendation_precision.py
+            tests/literature/test_lightgcn_recommendation_precision.py
             tests/literature/test_query_concepts.py
             tests/literature/test_query_refinement.py
             tests/literature/test_qa_hallucination_precision.py
@@ -95,10 +101,13 @@ jobs:
           mypy_status=$?
           pytest -q \
             tests/evals/test_claw_benchmark_adapter.py \
+            tests/evals/test_claw_pilot_policy.py \
+            tests/evals/test_claw_trace_reconciliation.py \
             tests/nodes/test_planning_nonblocking.py \
             tests/schemas/test_plan_nonblocking_clarification.py \
             tests/literature/test_time_series_anomaly_precision.py \
             tests/literature/test_multibehavior_recommendation_precision.py \
+            tests/literature/test_lightgcn_recommendation_precision.py \
             tests/literature/test_query_concepts.py \
             tests/literature/test_query_refinement.py \
             tests/literature/test_qa_hallucination_precision.py \
