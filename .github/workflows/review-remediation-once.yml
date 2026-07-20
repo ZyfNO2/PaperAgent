@@ -37,25 +37,15 @@ jobs:
         run: |
           set +e
           mkdir -p /tmp/remediation-diagnostics
-
           python scripts/run_review_remediation.py > /tmp/remediation-diagnostics/apply.log 2>&1
           APPLY=$?
           if [ "$APPLY" -eq 0 ]; then
             rm -f scripts/.review-remediation-*.b64 scripts/run_review_remediation.py
             rm -f .review-remediation-trigger.json
-
-            mapfile -t files < <(git diff --name-only --diff-filter=ACM | grep -E '\.py$' || true)
-            if ((${#files[@]})); then
-              ruff format "${files[@]}" > /tmp/remediation-diagnostics/format.log 2>&1
-              FORMAT=$?
-              ruff check --fix "${files[@]}" > /tmp/remediation-diagnostics/ruff-fix.log 2>&1
-              RUFF_FIX=$?
-            else
-              FORMAT=0
-              RUFF_FIX=0
-              : > /tmp/remediation-diagnostics/format.log
-              : > /tmp/remediation-diagnostics/ruff-fix.log
-            fi
+            ruff format src tests scripts > /tmp/remediation-diagnostics/format.log 2>&1
+            FORMAT=$?
+            ruff check --fix src tests scripts > /tmp/remediation-diagnostics/ruff-fix.log 2>&1
+            RUFF_FIX=$?
 
             python - <<'PY' > /tmp/remediation-diagnostics/audit.log 2>&1
           from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
@@ -78,7 +68,6 @@ jobs:
               tests/nodes/test_synthesis_method_quality_report.py \
               > /tmp/remediation-diagnostics/targeted.log 2>&1
             TARGETED=$?
-
             pytest --no-cov -q > /tmp/remediation-diagnostics/full.log 2>&1
             FULL=$?
             mypy --config-file pyproject.toml > /tmp/remediation-diagnostics/mypy.log 2>&1
