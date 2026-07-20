@@ -142,9 +142,7 @@ def test_verified_bound_paper_can_cover_second_gap_only_after_independent_checks
         "baseline_comparison": 1,
         "failure_mechanism_limitations": 1,
     }
-    mechanism = next(
-        item for item in support if item.gap_id == "failure_mechanism_limitations"
-    )
+    mechanism = next(item for item in support if item.gap_id == "failure_mechanism_limitations")
     assert mechanism.decision == "accept"
     assert mechanism.confidence == 0.72
     assert mechanism.checklist_results["query_provenance_match"] is False
