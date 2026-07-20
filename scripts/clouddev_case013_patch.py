@@ -5,6 +5,7 @@ import os
 import subprocess
 from pathlib import Path
 
+# trigger: case013-role-transaction-v2
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE_PATH = ROOT / "src/paperagent/evidence_gap_binding.py"
 WORKFLOW_PATH = ROOT / ".github/workflows/second-batch-retrieval-offline-gate.yml"
@@ -112,16 +113,17 @@ def main() -> int:
     STATUS_PATH.parent.mkdir(parents=True, exist_ok=True)
     STATUS_PATH.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
-    subprocess.run(
-        [
-            "git",
-            "show",
-            "HEAD^:.github/workflows/second-batch-retrieval-offline-gate.yml",
-        ],
-        cwd=ROOT,
-        check=True,
-        stdout=WORKFLOW_PATH.open("w", encoding="utf-8"),
-    )
+    with WORKFLOW_PATH.open("w", encoding="utf-8") as handle:
+        subprocess.run(
+            [
+                "git",
+                "show",
+                "HEAD^:.github/workflows/second-batch-retrieval-offline-gate.yml",
+            ],
+            cwd=ROOT,
+            check=True,
+            stdout=handle,
+        )
     if not passed:
         subprocess.run(
             ["git", "restore", "src/paperagent/evidence_gap_binding.py"],
