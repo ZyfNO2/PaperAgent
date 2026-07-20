@@ -53,15 +53,21 @@ def build_benchmark_search_runtime(
     raise ValueError(f"unsupported benchmark search mode: {mode}")
 
 
-async def execute_benchmark_case(
+async def execute_benchmark_input(
     *,
     benchmark_input: BenchmarkInput,
-    case_id: str,
     llm: LLMProvider,
     search: SearchProvider,
     max_llm_calls: int,
     task_id: str,
-) -> tuple[dict[str, Any], AcademicTailoringRunTrace]:
+) -> tuple[dict[str, Any], PaperAgentState]:
+    """Execute only user-visible benchmark input through the production graph.
+
+    Case identifiers, oracle fields, metadata, scoring rules, and metamorphic-group
+    identifiers are intentionally absent from this function's signature and graph
+    configuration. External evaluation may attach those fields only after execution.
+    """
+
     services = RuntimeServices(
         llm=llm,
         search=search,
@@ -88,10 +94,29 @@ async def execute_benchmark_case(
         if isinstance(raw_state, Mapping):
             latest = cast(PaperAgentState, raw_state)
     if latest is None:
-        raise RuntimeError(f"benchmark case {case_id} emitted no state")
+        raise RuntimeError("benchmark input execution emitted no state")
+    return state_to_primitive(latest), latest
 
+
+async def execute_benchmark_case(
+    *,
+    benchmark_input: BenchmarkInput,
+    case_id: str,
+    llm: LLMProvider,
+    search: SearchProvider,
+    max_llm_calls: int,
+    task_id: str,
+) -> tuple[dict[str, Any], AcademicTailoringRunTrace]:
+    """Execute clean input first, then attach external case metadata for scoring."""
+
+    primitive, latest = await execute_benchmark_input(
+        benchmark_input=benchmark_input,
+        llm=llm,
+        search=search,
+        max_llm_calls=max_llm_calls,
+        task_id=task_id,
+    )
     leakage_audit = audit_benchmark_execution_boundary()
-    primitive = state_to_primitive(latest)
     trace = normalize_paperagent_state(
         latest,
         BenchmarkNormalizationContext(
@@ -108,4 +133,5 @@ __all__ = [
     "SearchMode",
     "build_benchmark_search_runtime",
     "execute_benchmark_case",
+    "execute_benchmark_input",
 ]
