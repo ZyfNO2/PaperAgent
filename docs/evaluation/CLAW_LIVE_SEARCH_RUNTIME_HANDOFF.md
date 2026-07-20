@@ -5,8 +5,19 @@
 - Repository: `ZyfNO2/PaperAgent`
 - Branch: `feat/claw-live-search-runtime`
 - Base: `feat/claw-academic-tailoring-benchmark-v1`
-- Pull request: `#34`
+- Pull request: `#34` (Draft; do not merge or mark ready automatically)
 - Scope: connect the 20-case CLAW benchmark to the existing Literature Runtime and add bounded Web supplementation.
+
+## Live verification progress
+
+- Case 017 (`at-017-mobilenetv3-plant-disease-supplied`) attempt 2 completed successfully with Web search disabled.
+- Persisted result commit: `bf473916e3c0c9bacbb485712b39eab56e66f5aa`.
+- Result: `status=passed`, `score=94`, expected and observed decision both `REVISE_TO_PILOT`, and zero hard failures.
+- The accepted evidence includes the exact original paper `Searching for MobileNetV3`; task evidence is restricted to plant-disease candidates and rejects retinal, skin-lesion, and healthy-leaf species-classification candidates.
+- Case 017 offline gate: workflow run `29757888425`; Ruff, formatter, Mypy, and pytest all returned zero; pytest reported `91 passed`.
+- Case 015 has a successful offline patch gate (`29755802086`, `72 passed`) but is not considered live-passed without a real single-case or batch result.
+- Final live validation was triggered by commit `955a107027c1445cb93869d4eb7c47c9d414d226` for Cases 015, 018, 019, and 020. The batch result remains pending until `four-case-batch-latest.json` is written back.
+- Web search remains disabled for these live validations.
 
 ## Corrected problem statement
 
@@ -113,8 +124,23 @@ The branch adds tests for:
 - Tavily authentication, low-cost request parameters, DOI extraction, and non-self-verification;
 - DuckDuckGo redirect parsing and bot-challenge isolation;
 - explicit Fake Search fixture requirement;
-- production Literature Runtime construction.
+- production Literature Runtime construction;
+- exact MobileNetV3 identity retrieval and Case 017 plant-disease domain precision.
 
 ## Acceptance boundary
 
-This work establishes the connection layer and deterministic enforcement rules. It does not claim that a paid real-LLM 20-case run has passed, that live provider recall/precision has been measured, that full text was reviewed for every result, or that the scientific benchmark achieved 20/20. Those claims require a separately recorded live execution and semantic review.
+This work establishes the connection layer and deterministic enforcement rules. Case 017 now has a recorded real-LLM/live-provider single-case pass, but this does not establish a paid full-corpus 20/20 result, full-text review for every result, reproduced scientific baselines, or measured full-corpus retrieval recall/precision. Those claims require separately recorded live executions and semantic review.
+
+## Current handoff state
+
+- Current status: `PARTIAL / LIVE VALIDATION IN PROGRESS`.
+- Do not merge PR #34 or mark it ready automatically.
+- Next step: inspect the persisted final batch result for Cases 015, 018, 019, and 020; repair only failed cases; rerun targeted offline gates before consuming another live attempt.
+- Verification commands for the Case 017 precision path:
+
+```bash
+ruff check src/paperagent/literature/specialized_guards.py src/paperagent/literature/task_query_overrides.py tests/literature/test_mobilenetv3_plant_disease_precision.py
+ruff format --check src/paperagent/literature/specialized_guards.py src/paperagent/literature/task_query_overrides.py tests/literature/test_mobilenetv3_plant_disease_precision.py
+mypy --config-file pyproject.toml
+pytest -q tests/literature/test_mobilenetv3_plant_disease_precision.py tests/literature/test_second_batch_query_precision.py tests/literature/test_third_batch_query_precision.py
+```
