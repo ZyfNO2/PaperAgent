@@ -4,7 +4,7 @@ from typing import Literal
 
 from langchain_core.runnables import RunnableConfig
 
-from paperagent.evidence_relevance import apply_ledger_to_bundle, build_evidence_ledger
+from paperagent.evidence_gap_binding import apply_ledger_to_bundle, build_evidence_ledger
 from paperagent.nodes._shared import execution_with
 from paperagent.runtime import get_services
 from paperagent.schemas import EvidenceBundle, EvidenceConflict, EvidenceItem, SearchCandidate
