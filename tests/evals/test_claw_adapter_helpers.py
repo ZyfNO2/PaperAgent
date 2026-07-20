@@ -109,9 +109,7 @@ def test_supplied_material_reviews_use_declared_roles_without_accepting_claims()
     remaining = adapter._supplied_material_reviews(state, existing_count=1)
     assert len(remaining) == 2
     assert adapter._supplied_material_reviews(state, existing_count=3) == ()
-    assert adapter._supplied_material_reviews(
-        cast(PaperAgentState, {}), existing_count=0
-    ) == ()
+    assert adapter._supplied_material_reviews(cast(PaperAgentState, {}), existing_count=0) == ()
 
 
 @pytest.mark.parametrize(
@@ -144,9 +142,7 @@ def test_fact_partition_fallback_prefers_plan_then_request() -> None:
         "Use reproducible comparisons and explicit failure analysis.",
     )
     assert partitions.proposed == ()
-    assert partitions.unknown == (
-        "A negative result may invalidate the proposed mechanism.",
-    )
+    assert partitions.unknown == ("A negative result may invalidate the proposed mechanism.",)
 
     requested = cast(
         PaperAgentState,
