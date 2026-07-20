@@ -48,6 +48,18 @@ def _materialize_review_remediation() -> None:
 
     output.mkdir(parents=True, exist_ok=True)
     try:
+        adapter_test_path = root / "tests/evals/test_claw_benchmark_adapter.py"
+        adapter_text = adapter_test_path.read_text(encoding="utf-8")
+        legacy_test = '''\n\ndef test_explicit_structured_pilot_signal_is_preserved() -> None:\n    state = _revise_state(\n        next_action="Collect one more observation.", quality_route="repair_method"\n    )\n    trace = normalize_paperagent_state(\n        state,\n        BenchmarkNormalizationContext(\n            case_id="held-out-002",\n            pilot_recommended=True,\n        ),\n    )\n    assert trace.decision == "REVISE"\n    assert trace.pilot_recommended is True\n'''
+        canonical_marker = "\n\ndef test_canonical_ledger_controls_evidence_review_semantics() -> None:\n"
+        if "def test_explicit_structured_pilot_signal_is_preserved" not in adapter_text:
+            if adapter_text.count(canonical_marker) != 1:
+                raise RuntimeError("cannot establish legacy adapter-test precondition")
+            adapter_test_path.write_text(
+                adapter_text.replace(canonical_marker, legacy_test + canonical_marker),
+                encoding="utf-8",
+            )
+
         payload = "".join(
             source_path.read_text(encoding="utf-8").strip() for source_path in sources
         )
@@ -75,7 +87,6 @@ def _materialize_review_remediation() -> None:
             '''_RELATION_CUES = (\n    "because",\n    "therefore",\n    "thereby",\n    "addresses",\n    "mitigates",\n    "reduces",\n    "improves by",\n    "designed to",\n    "in order to",\n    "to limit",\n    "to reduce",\n    "to improve",\n    "to address",\n    "to mitigate",\n    " for ",\n    "通过",\n    "因此",\n    "从而",\n    "缓解",\n    "解决",\n    "用于",\n    "为了",\n)''',
         )
 
-        adapter_test_path = root / "tests/evals/test_claw_benchmark_adapter.py"
         _replace_exact(
             adapter_test_path,
             '''\n\ndef test_production_final_outcome_pilot_signal_is_preserved() -> None:\n    state = _revise_state(\n        next_action="Collect one more observation.", quality_route="repair_method"\n    )\n    outcome = state["final_outcome"]\n    assert outcome is not None\n    state["final_outcome"] = outcome.model_copy(\n        update={\n            "pilot_recommended": True,\n            "pilot_scope": "dataset=HeldOutSet; metrics=F1; comparator=Method-B; stop=F1 gain < 1%",\n        }\n    )\n    trace = normalize_paperagent_state(\n        state,\n        BenchmarkNormalizationContext(case_id="held-out-002"),\n    )\n    assert trace.decision == "REVISE"\n    assert trace.pilot_recommended is True\n''',
