@@ -10,7 +10,7 @@ _OVERSTUFFED_QUERY = (
     "drone small object detection failure mechanism limitation parallel method "
     "feature enhancement multi-scale fusion knowledge distillation"
 )
-_REFINED_QUERY = "drone small object detection failure mechanism limitation methods"
+_REFINED_QUERY = "drone small object detection failure mechanism limitation"
 _MECHANISM_DESCRIPTION = (
     "failure mechanism, limitation, and parallel method evidence for aerial small objects"
 )
@@ -88,6 +88,55 @@ def test_one_or_two_method_families_are_kept(query: str) -> None:
 
     assert result.changed is False
     assert result.query == query
+
+
+@pytest.mark.parametrize(
+    ("query", "gap_id", "description", "expected", "removed_families"),
+    [
+        (
+            "remote sensing dense small object detection benchmark dataset evaluation metrics survey",
+            "baseline_comparison",
+            "reproducible baseline, dataset, and comparison evidence",
+            "remote sensing dense small object detection",
+            set(),
+        ),
+        (
+            "remote sensing small object detection failure modes missed detections false positives "
+            "boundary ambiguity analysis",
+            "failure_mechanism_and_parallel_methods",
+            "failure mechanism and parallel method evidence",
+            "remote sensing small object detection failure modes",
+            set(),
+        ),
+        (
+            "remote sensing small object detection multi-scale feature fusion attention mechanism "
+            "super-resolution auxiliary methods",
+            "failure_mechanism_and_parallel_methods",
+            "failure mechanism and parallel method evidence",
+            "remote sensing small object detection mechanism",
+            {"multi-scale feature fusion", "attention", "super-resolution"},
+        ),
+    ],
+)
+def test_case005_queries_are_compacted_without_losing_domain_and_task(
+    query: str,
+    gap_id: str,
+    description: str,
+    expected: str,
+    removed_families: set[str],
+) -> None:
+    result = refine_search_query(
+        query,
+        gap_id=gap_id,
+        gap_description=description,
+    )
+
+    assert result.changed is True
+    assert result.query == expected
+    assert set(result.removed_families) == removed_families
+    assert result.reason is not None
+    assert "remote sensing" in result.query
+    assert "small object detection" in result.query
 
 
 def test_prepared_query_requires_complete_refinement_audit() -> None:
