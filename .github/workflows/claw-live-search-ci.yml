@@ -28,12 +28,18 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
+      - name: Apply canonical Ruff fixes
+        run: |
+          ruff check --fix tests/literature/test_mobilenetv3_plant_disease_precision.py
+          ruff format \
+            src/paperagent/literature/task_query_overrides.py \
+            tests/literature/test_mobilenetv3_plant_disease_precision.py
       - name: Verify Case 017 precision and stable regressions
         shell: bash
         run: |
           set +e
           out="build/case017-precision-verification"
-          mkdir -p "$out"
+          mkdir -p "$out/bundle/src/paperagent/literature" "$out/bundle/tests/literature"
           files=(
             src/paperagent/literature/specialized_guards.py
             src/paperagent/literature/task_query_overrides.py
@@ -63,6 +69,10 @@ jobs:
             tests/nodes/test_retrieval.py \
             > "$out/pytest.log" 2>&1
           pytest_status=$?
+          cp src/paperagent/literature/task_query_overrides.py \
+            "$out/bundle/src/paperagent/literature/task_query_overrides.py"
+          cp tests/literature/test_mobilenetv3_plant_disease_precision.py \
+            "$out/bundle/tests/literature/test_mobilenetv3_plant_disease_precision.py"
           printf '{"head":"%s","run_id":%s,"ruff":%s,"format":%s,"mypy":%s,"pytest":%s}\n' \
             "$GITHUB_SHA" "$GITHUB_RUN_ID" "$ruff_status" "$format_status" \
             "$mypy_status" "$pytest_status" > "$out/status.json"
