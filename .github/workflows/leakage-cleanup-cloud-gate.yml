@@ -1,0 +1,180 @@
+name: Benchmark Leakage Cleanup Cloud Gate
+
+on:
+  push:
+    branches:
+      - feat/claw-live-search-runtime
+    paths:
+      - ".leakage-cleanup-trigger"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: benchmark-leakage-cleanup-cloud-gate
+  cancel-in-progress: true
+
+jobs:
+  cleanup-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/claw-live-search-runtime
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Remove remaining benchmark-conditioned adapter paths
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          adapter = Path("src/paperagent/claw_benchmark_adapter.py")
+          text = adapter.read_text(encoding="utf-8")
+          text = text.replace(
+              "pilot_recommended: bool | None = None",
+              "pilot_recommended: bool = False",
+          )
+          start = text.find("def _has_actionable_recovery_path(")
+          end = text.find("def _fact_partitions(")
+          if start >= 0 and end > start:
+              text = text[:start] + text[end:]
+          old = '''    pilot_recommended = (
+              context.pilot_recommended
+              if context.pilot_recommended is not None
+              else decision == "REVISE" and _has_actionable_recovery_path(next_actions)
+          )
+          '''
+          if old not in text:
+              raise SystemExit("pilot inference block not found")
+          text = text.replace(old, "    pilot_recommended = context.pilot_recommended\n")
+          adapter.write_text(text, encoding="utf-8")
+
+          stale = (
+              Path("src/paperagent/claw_trace_reconciliation.py"),
+              Path("tests/evals/test_claw_trace_reconciliation.py"),
+          )
+          for path in stale:
+              path.unlink(missing_ok=True)
+
+          removed_names = (
+              "src/paperagent/literature/task_query_overrides.py",
+              "tests/evals/test_claw_pilot_policy.py",
+              "src/paperagent/claw_trace_reconciliation.py",
+              "tests/evals/test_claw_trace_reconciliation.py",
+          )
+          for workflow in Path(".github/workflows").glob("*.yml"):
+              lines = workflow.read_text(encoding="utf-8").splitlines()
+              cleaned = [
+                  line for line in lines
+                  if not any(name in line for name in removed_names)
+              ]
+              workflow.write_text("\n".join(cleaned) + "\n", encoding="utf-8")
+          PY
+
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+
+      - name: Format
+        run: ruff format src tests scripts
+
+      - name: Static leakage scan
+        run: |
+          test ! -e src/paperagent/literature/task_query_overrides.py
+          test ! -e src/paperagent/claw_pilot_policy.py
+          test ! -e src/paperagent/claw_trace_reconciliation.py
+          ! grep -RInE 'override_task_query|_has_actionable_recovery_path|exactly two consolidated required gaps|role-explicit gap descriptions' src/paperagent
+          ! grep -RInE 'at-[0-9]{3}' \
+            src/paperagent/retrieval \
+            src/paperagent/literature/query_concepts.py \
+            src/paperagent/literature/query_refinement.py \
+            src/paperagent/literature/specialized_guards.py
+
+      - name: Ruff
+        run: ruff check src tests scripts
+
+      - name: Mypy
+        run: mypy --config-file pyproject.toml
+
+      - name: Full test suite
+        run: pytest -q
+
+      - name: Held-out smoke matrix
+        run: |
+          python - <<'PY'
+          from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
+          from paperagent.literature.query_concepts import matches_required_candidate_terms
+          from paperagent.literature.specialized_guards import matches_specialized_candidate_terms
+
+          cases = [
+              (
+                  "physics-informed glacier calving surrogate finite-volume simulation",
+                  "A physics-informed surrogate accelerates finite-volume glacier calving simulation.",
+                  True,
+              ),
+              (
+                  "coral bleaching thermal stress satellite monitoring",
+                  "Satellite monitoring links coral bleaching to thermal stress anomalies.",
+                  True,
+              ),
+              (
+                  "peatland methane flux chamber modelling",
+                  "Methane combustion modelling in industrial chambers.",
+                  False,
+              ),
+              (
+                  "ancient manuscript script identification multispectral",
+                  "Multispectral crop disease identification in field images.",
+                  False,
+              ),
+              (
+                  "AeroFormer-X2 marine debris hyperspectral mapping",
+                  "AeroFormer-X2 forecasts lithium battery degradation.",
+                  False,
+              ),
+              (
+                  "日语长文本情感分析 long-context",
+                  "面向日语长文本的情感分析与长上下文建模方法",
+                  True,
+              ),
+          ]
+          for query, candidate, expected in cases:
+              observed = matches_required_candidate_terms(query, candidate)
+              if observed is not expected:
+                  raise AssertionError((query, candidate, expected, observed))
+
+          if not matches_specialized_candidate_terms(
+              "original RiverNet-Z4 architecture paper",
+              "RiverNet-Z4: a neural architecture for river discharge forecasting.",
+          ):
+              raise AssertionError("identity query rejected the exact unseen identifier")
+          if matches_specialized_candidate_terms(
+              "original RiverNet-Z4 architecture paper",
+              "RiverNet-Z3 is applied to river discharge forecasting.",
+          ):
+              raise AssertionError("identity query accepted a different identifier")
+
+          audit = audit_benchmark_execution_boundary()
+          if not audit.passed:
+              raise AssertionError(audit.findings)
+          print("held-out smoke matrix passed")
+          PY
+
+      - name: Commit verified cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No additional cleanup changes to commit."
+            exit 0
+          fi
+          git commit -m "fix(eval): complete benchmark leakage cleanup"
+          git push origin HEAD:feat/claw-live-search-runtime
