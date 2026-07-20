@@ -73,8 +73,7 @@ def _search_diagnostics(state: dict[str, Any], adapter: object) -> list[dict[str
     return [
         value
         for query_id in completed
-        if isinstance(query_id, str)
-        and isinstance((value := reader(query_id)), dict)
+        if isinstance(query_id, str) and isinstance((value := reader(query_id)), dict)
     ]
 
 
@@ -151,13 +150,9 @@ async def _run(args: argparse.Namespace) -> int:
                 failure.model_dump(mode="json") for failure in evaluation.hard_failures
             ],
             "failed_stages": [
-                stage.model_dump(mode="json")
-                for stage in evaluation.stages
-                if not stage.passed
+                stage.model_dump(mode="json") for stage in evaluation.stages if not stage.passed
             ],
-            "execution_status": (
-                execution.get("status") if isinstance(execution, dict) else None
-            ),
+            "execution_status": (execution.get("status") if isinstance(execution, dict) else None),
             "report_status": report.get("status") if isinstance(report, dict) else None,
             "provider": provider_config.provider.value,
             "model": provider_config.model,
