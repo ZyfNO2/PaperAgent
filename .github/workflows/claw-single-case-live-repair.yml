@@ -58,6 +58,8 @@ jobs:
           PY
           request_status=$?
           files=(
+            src/paperagent/claw_benchmark_adapter.py
+            src/paperagent/nodes/planning.py
             src/paperagent/evidence_relevance.py
             src/paperagent/literature/query_concepts.py
             src/paperagent/literature/query_refinement.py
@@ -72,6 +74,9 @@ jobs:
             src/paperagent/nodes/_shared.py
             src/paperagent/nodes/method_design.py
             scripts/probe_claw_case_end_to_end.py
+            tests/evals/test_claw_benchmark_adapter.py
+            tests/nodes/test_planning_nonblocking.py
+            tests/literature/test_time_series_anomaly_precision.py
             tests/literature/test_query_concepts.py
             tests/literature/test_query_refinement.py
             tests/literature/test_qa_hallucination_precision.py
@@ -87,6 +92,10 @@ jobs:
           mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
           mypy_status=$?
           pytest -q \
+            tests/evals/test_claw_benchmark_adapter.py \
+            tests/nodes/test_planning_nonblocking.py \
+            tests/schemas/test_plan_nonblocking_clarification.py \
+            tests/literature/test_time_series_anomaly_precision.py \
             tests/literature/test_query_concepts.py \
             tests/literature/test_query_refinement.py \
             tests/literature/test_qa_hallucination_precision.py \
