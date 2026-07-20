@@ -1,0 +1,156 @@
+name: CLAW Real Provider Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/claw-live-search-runtime
+    paths:
+      - ".claw-real-provider-smoke-trigger.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: claw-real-provider-smoke
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+      PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL || 'Z1015558261@outlook.com' }}
+      SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+      PAPERAGENT_LLM_PROVIDER: mistral
+      PAPERAGENT_LLM_MODEL: mistral-small-latest
+      PAPERAGENT_MISTRAL_MODEL: mistral-small-latest
+      PAPERAGENT_LLM_BASE_URL: https://api.mistral.ai/v1
+      PAPERAGENT_LLM_MAX_ATTEMPTS: "2"
+      PAPERAGENT_LLM_MAX_CALLS: "4"
+      PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "16000"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "2048"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "4096"
+      PAPERAGENT_LLM_TASK_TIMEOUT: "300"
+      PAPERAGENT_ENABLE_WEB_SEARCH: "0"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install project
+        id: install
+        continue-on-error: true
+        run: python -m pip install -q -e '.[dev]'
+
+      - name: Static leakage audit
+        id: audit
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python - <<'PY'
+          from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
+
+          result = audit_benchmark_execution_boundary()
+          print(result.model_dump_json(indent=2))
+          if not result.passed:
+              raise SystemExit(result.findings)
+          PY
+
+      - name: Require Mistral secret
+        id: secret
+        continue-on-error: true
+        run: test -n "$MISTRAL_API_KEY"
+
+      - name: Real Mistral smoke
+        id: mistral
+        if: steps.install.outcome == 'success' && steps.secret.outcome == 'success'
+        continue-on-error: true
+        env:
+          PAPERAGENT_RUN_REAL_LLM: "1"
+        run: pytest --no-cov -q tests/real_provider/test_mistral_smoke.py
+
+      - name: Real literature smoke
+        id: literature
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        env:
+          PAPERAGENT_RUN_REAL_PROVIDER: "1"
+        run: pytest --no-cov -q tests/real_provider/test_literature_smoke.py
+
+      - name: Write smoke result
+        id: result
+        if: always()
+        env:
+          INSTALL_OUTCOME: ${{ steps.install.outcome }}
+          AUDIT_OUTCOME: ${{ steps.audit.outcome }}
+          SECRET_OUTCOME: ${{ steps.secret.outcome }}
+          MISTRAL_OUTCOME: ${{ steps.mistral.outcome }}
+          LITERATURE_OUTCOME: ${{ steps.literature.outcome }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          outcomes = {
+              'install': os.environ.get('INSTALL_OUTCOME'),
+              'static_leakage_audit': os.environ.get('AUDIT_OUTCOME'),
+              'mistral_secret': os.environ.get('SECRET_OUTCOME'),
+              'mistral_smoke': os.environ.get('MISTRAL_OUTCOME'),
+              'literature_smoke': os.environ.get('LITERATURE_OUTCOME'),
+          }
+          payload = {
+              'schema': 'paperagent.real-provider-smoke.v1',
+              'source_sha': os.environ['GITHUB_SHA'],
+              'workflow_run_id': os.environ['GITHUB_RUN_ID'],
+              'outcomes': outcomes,
+              'passed': all(value == 'success' for value in outcomes.values()),
+          }
+          serialized = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + '\n'
+          Path('/tmp/real-provider-smoke-latest.json').write_text(serialized)
+          print(serialized)
+          PY
+
+      - name: Commit smoke result
+        if: always() && steps.result.outcome == 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin feat/claw-live-search-runtime
+          git reset --hard origin/feat/claw-live-search-runtime
+          mkdir -p evals/claw_academic_tailoring_v1/live-probes
+          cp /tmp/real-provider-smoke-latest.json \
+            evals/claw_academic_tailoring_v1/live-probes/real-provider-smoke-latest.json
+          git add evals/claw_academic_tailoring_v1/live-probes/real-provider-smoke-latest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "test(eval): record real-provider smoke"
+            git push origin HEAD:feat/claw-live-search-runtime
+          fi
+
+      - name: Enforce smoke result
+        if: always()
+        env:
+          INSTALL_OUTCOME: ${{ steps.install.outcome }}
+          AUDIT_OUTCOME: ${{ steps.audit.outcome }}
+          SECRET_OUTCOME: ${{ steps.secret.outcome }}
+          MISTRAL_OUTCOME: ${{ steps.mistral.outcome }}
+          LITERATURE_OUTCOME: ${{ steps.literature.outcome }}
+          RESULT_OUTCOME: ${{ steps.result.outcome }}
+        run: |
+          for value in \
+            "$INSTALL_OUTCOME" \
+            "$AUDIT_OUTCOME" \
+            "$SECRET_OUTCOME" \
+            "$MISTRAL_OUTCOME" \
+            "$LITERATURE_OUTCOME" \
+            "$RESULT_OUTCOME"; do
+            test "$value" = success || exit 1
+          done
