@@ -48,12 +48,12 @@ def test_professional_qa_candidate_guards(query: str, candidate: str, expected: 
     [
         (
             "baseline_comparison_evidence",
-            "baseline comparison for professional QA",
+            "baseline comparison for professional QA hallucination reduction",
             "retrieval augmented question answering hallucination baseline",
         ),
         (
             "failure_mechanism_limitation_evidence",
-            "hallucination failure mechanism and limitations",
+            "hallucination reduction failure mechanism and limitations",
             "semantic entropy probes hallucination detection uncertainty",
         ),
         (
