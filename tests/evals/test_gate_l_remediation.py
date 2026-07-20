@@ -55,10 +55,10 @@ class _FallbackService:
         )
 
 
-def test_planning_prompt_v012_is_budget_aware_and_fail_closed() -> None:
+def test_planning_prompt_v013_is_budget_aware_and_fail_closed() -> None:
     prompt = get_prompt("planning")
 
-    assert prompt.version == "planning.v0.1.2"
+    assert prompt.version == "planning.v0.1.3"
     assert "Choose the number and boundaries of evidence gaps" in prompt.system
     assert "Keep minimum_accepted_items at 1" in prompt.system
     assert "cannot exist in public search" in prompt.system
