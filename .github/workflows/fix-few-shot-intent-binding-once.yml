@@ -1,5 +1,4 @@
 name: Fix Few-Shot Intent Binding Once
-# Trigger the registered one-off workflow.
 
 on:
   push:
@@ -12,13 +11,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: fix-few-shot-intent-binding-once
+  group: isolated-case011-role-repair
   cancel-in-progress: true
 
 jobs:
   patch-and-verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -28,333 +27,138 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Patch narrow few-shot intent role evidence
+      - name: Harden the existing transaction
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          source = Path("src/paperagent/evidence_gap_binding.py")
-          text = source.read_text(encoding="utf-8")
-          old = '''def _role_support(gap: EvidenceGap, item: EvidenceItem) -> bool:
-              text = f"{item.title}. {item.summary}".casefold()
-              role = _gap_role(gap)
-              if role == "baseline":
-                  return _baseline_role_support(text)
-              if role == "mechanism":
-                  return _mechanism_role_support(text)
-              if role == "risk":
-                  return _risk_role_support(text)
-              return True
+          path = Path("scripts/clouddev_fix_few_shot_intent_roles.py")
+          text = path.read_text(encoding="utf-8")
+          text = text.replace(
+              "updated, count = pattern.subn(replacement, text, count=1)",
+              "updated, count = pattern.subn(lambda _: replacement, text, count=1)",
+          )
+          start = text.index("def commit_result() -> None:\n")
+          end = text.index("\n\ndef main() -> None:\n", start)
+          replacement = '''def commit_result() -> None:
+              subprocess.run(
+                  ["git", "config", "user.name", "github-actions[bot]"],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  [
+                      "git",
+                      "config",
+                      "user.email",
+                      "41898282+github-actions[bot]@users.noreply.github.com",
+                  ],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  [
+                      "git",
+                      "add",
+                      str(SOURCE.relative_to(ROOT)),
+                      str(TEST.relative_to(ROOT)),
+                      str(GATE.relative_to(ROOT)),
+                      str(STATUS.relative_to(ROOT)),
+                  ],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  [
+                      "git",
+                      "rm",
+                      "--ignore-unmatch",
+                      "scripts/clouddev_fix_few_shot_intent_roles.py",
+                      ".github/workflows/fix-few-shot-intent-binding-once.yml",
+                      ".github/workflows/add-few-shot-intent-binding-once.yml",
+                  ],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  [
+                      "git",
+                      "commit",
+                      "-m",
+                      "fix(evidence): bind evaluated Case 011 intent evidence",
+                  ],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  ["git", "pull", "--rebase", "origin", "feat/claw-live-search-runtime"],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  ["git", "push", "origin", "HEAD:feat/claw-live-search-runtime"],
+                  cwd=ROOT,
+                  check=True,
+              )
           '''
-          new = '''def _is_few_shot_intent_evidence(text: str) -> bool:
-              return "few-shot" in text and any(
-                  cue in text
-                  for cue in (
-                      "intent classification",
-                      "intent detection",
-                      "user intent",
-                  )
-              )
-
-
-          def _few_shot_intent_baseline_support(text: str) -> bool:
-              if not _is_few_shot_intent_evidence(text):
-                  return False
-              evaluation = any(
-                  cue in text
-                  for cue in (
-                      "experiment",
-                      "dataset",
-                      "benchmark",
-                      "evaluation",
-                      "test set",
-                  )
-              )
-              comparator = any(
-                  cue in text
-                  for cue in (
-                      "baseline",
-                      "state-of-the-art",
-                      "outperform",
-                      "performance",
-                      "accuracy",
-                      "prototypical network",
-                      "nearest neighbor",
-                  )
-              )
-              return evaluation and comparator
-
-
-          def _few_shot_intent_mechanism_support(text: str) -> bool:
-              if not _is_few_shot_intent_evidence(text):
-                  return False
-              problem = any(
-                  cue in text
-                  for cue in (
-                      "data scarcity",
-                      "scarce data",
-                      "few annotated",
-                      "few examples",
-                      "few utterances",
-                      "overfitting",
-                      "noisy signal",
-                      "unseen intent",
-                      "out-of-scope",
-                      "oos detection",
-                      "threshold",
-                      "domain shift",
-                      "data-rich domains",
-                  )
-              )
-              intervention = any(
-                  cue in text
-                  for cue in (
-                      "we propose",
-                      "we introduce",
-                      "prototypical network",
-                      "contrastive learning",
-                      "label name embedding",
-                      "calibration",
-                      "meta-learning",
-                      "natural language inference",
-                      "nearest neighbor",
-                      "distance metric",
-                      "semantic mechanism",
-                  )
-              )
-              return problem and intervention
-
-
-          def _few_shot_intent_risk_support(text: str) -> bool:
-              return _is_few_shot_intent_evidence(text) and any(
-                  cue in text
-                  for cue in (
-                      "out-of-scope",
-                      "oos detection",
-                      "more challenging",
-                      "overfitting",
-                      "performance degradation",
-                      "data scarcity",
-                      "scarce data",
-                      "few annotated",
-                  )
-              )
-
-
-          def _role_support(gap: EvidenceGap, item: EvidenceItem) -> bool:
-              text = f"{item.title}. {item.summary}".casefold()
-              role = _gap_role(gap)
-              if role == "baseline":
-                  return _baseline_role_support(text) or _few_shot_intent_baseline_support(text)
-              if role == "mechanism":
-                  return _mechanism_role_support(text) or _few_shot_intent_mechanism_support(text)
-              if role == "risk":
-                  return _risk_role_support(text) or _few_shot_intent_risk_support(text)
-              return True
-          '''
-          if old not in text:
-              raise SystemExit("expected role support block was not found")
-          source.write_text(text.replace(old, new, 1), encoding="utf-8")
-
-          tests = Path("tests/review/test_semantic_gap_binding.py")
-          test_text = tests.read_text(encoding="utf-8")
-          addition = r'''
-
-
-def _few_shot_intent_plan() -> ResearchPlan:
-    gaps = [
-        EvidenceGap(
-            gap_id="baseline_comparison",
-            description="小样本行业文本意图识别的可复现基线与强比较证据。",
-        ),
-        EvidenceGap(
-            gap_id="mechanism_limitation",
-            description="小样本意图识别的数据稀缺机制、领域适配方法与局限。",
-        ),
-        EvidenceGap(
-            gap_id="risk_negative_evidence",
-            description="小样本意图识别的失败案例、开放集风险与负面证据。",
-            required=False,
-            minimum_accepted_items=0,
-        ),
-    ]
-    queries = [
-        SearchQuery(
-            query_id="q1",
-            gap_id="baseline_comparison",
-            query="few-shot intent classification prototypical network",
-            source_types=["paper"],
-        ),
-        SearchQuery(
-            query_id="q2",
-            gap_id="mechanism_limitation",
-            query="few-shot intent classification contrastive learning label semantics",
-            source_types=["paper"],
-        ),
-        SearchQuery(
-            query_id="q3",
-            gap_id="risk_negative_evidence",
-            query="few-shot intent detection open set out-of-scope",
-            source_types=["paper"],
-        ),
-    ]
-    return ResearchPlan(
-        status="ready",
-        problem_statement="小样本行业文本意图识别",
-        scope="few-shot intent classification and detection",
-        evidence_gaps=gaps,
-        search_queries=queries,
-        success_criteria=["每个必要角色至少有一项可核验证据"],
-        risks=["领域偏移与开放集意图"],
-    )
-
-
-def _few_shot_item(
-    *,
-    evidence_id: str,
-    gap_id: str,
-    query_text: str,
-    title: str,
-    summary: str,
-) -> EvidenceItem:
-    return EvidenceItem(
-        evidence_id=evidence_id,
-        source_type="paper",
-        title=title,
-        locator=f"doi:10.1000/{evidence_id}",
-        retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
-        verification_status="accepted",
-        supports_gap_ids=[gap_id],
-        summary=summary,
-        content_hash=f"sha256:{evidence_id}",
-        provider="literature_retrieval",
-        metadata={"candidate_gap_ids": gap_id, "query_text": query_text},
-    )
-
-
-def test_few_shot_intent_role_evidence_accepts_domain_specific_wording() -> None:
-    plan = _few_shot_intent_plan()
-    items = [
-        _few_shot_item(
-            evidence_id="ev-baseline",
-            gap_id="baseline_comparison",
-            query_text="few-shot intent classification prototypical network",
-            title="Semantic Transportation Prototypical Network for Few-Shot Intent Detection",
-            summary=(
-                "Few-shot intent detection has few annotated examples and may overfit. The method "
-                "extends a prototypical network and comprehensive experiments on two benchmark "
-                "datasets validate its performance against an existing state-of-the-art model."
-            ),
-        ),
-        _few_shot_item(
-            evidence_id="ev-mechanism",
-            gap_id="mechanism_limitation",
-            query_text="few-shot intent classification contrastive learning label semantics",
-            title="Few-shot Learning for Multi-label Intent Detection",
-            summary=(
-                "Few-shot user intent detection has only a few examples. We introduce label name "
-                "embedding and adapt thresholds with nonparametric calibration from data-rich "
-                "domains; experiments show improvements over strong baselines."
-            ),
-        ),
-        _few_shot_item(
-            evidence_id="ev-risk",
-            gap_id="risk_negative_evidence",
-            query_text="few-shot intent detection open set out-of-scope",
-            title="Discriminative Nearest Neighbor Few-Shot Intent Detection",
-            summary=(
-                "Few-shot intent detection mitigates data scarcity, but out-of-scope detection is "
-                "more challenging. A natural language inference nearest-neighbor intervention is "
-                "evaluated on in-domain and OOS detection accuracy."
-            ),
-        ),
-    ]
-    evidence = EvidenceBundle(
-        items=items,
-        accepted_ids=[item.evidence_id for item in items],
-        identity_verified_ids=[item.evidence_id for item in items],
-        coverage_by_gap={item.supports_gap_ids[0]: 1 for item in items},
-    )
-
-    _, _, _, supports, ledger = build_evidence_ledger(
-        request=ResearchRequest(question="小样本行业文本意图识别"),
-        plan=plan,
-        evidence=evidence,
-    )
-
-    assert set(ledger.accepted_ids) == {"ev-baseline", "ev-mechanism", "ev-risk"}
-    assert ledger.coverage_by_gap == {
-        "baseline_comparison": 3,
-        "mechanism_limitation": 3,
-        "risk_negative_evidence": 3,
-    }
-    direct = {
-        (support.evidence_id, support.gap_id): support
-        for support in supports
-        if support.checklist_results.get("query_provenance_match")
-    }
-    assert direct[("ev-baseline", "baseline_comparison")].decision == "accept"
-    assert direct[("ev-mechanism", "mechanism_limitation")].decision == "accept"
-    assert direct[("ev-risk", "risk_negative_evidence")].decision == "accept"
-
-
-def test_few_shot_image_baseline_does_not_gain_intent_role_support() -> None:
-    full_plan = _few_shot_intent_plan()
-    plan = full_plan.model_copy(
-        update={
-            "evidence_gaps": [full_plan.evidence_gaps[0]],
-            "search_queries": [full_plan.search_queries[0]],
-        }
-    )
-    item = _few_shot_item(
-        evidence_id="ev-image",
-        gap_id="baseline_comparison",
-        query_text="few-shot intent classification prototypical network",
-        title="Meta-Baseline for Few-Shot Image Classification",
-        summary=(
-            "A prototypical network is evaluated on image classification benchmark datasets and "
-            "outperforms visual baselines."
-        ),
-    )
-    evidence = EvidenceBundle(
-        items=[item],
-        accepted_ids=[item.evidence_id],
-        identity_verified_ids=[item.evidence_id],
-        coverage_by_gap={"baseline_comparison": 1},
-    )
-
-    _, _, _, supports, ledger = build_evidence_ledger(
-        request=ResearchRequest(question="小样本行业文本意图识别"),
-        plan=plan,
-        evidence=evidence,
-    )
-
-    assert ledger.accepted_ids == []
-    binding = next(support for support in supports if support.gap_id == "baseline_comparison")
-    assert binding.decision == "reject"
-    assert binding.checklist_results["required_concepts_match"] is False
-'''
-          if "test_few_shot_intent_role_evidence_accepts_domain_specific_wording" in test_text:
-              raise SystemExit("few-shot intent tests already exist")
-          tests.write_text(test_text + addition, encoding="utf-8")
+          path.write_text(text[:start] + replacement + text[end:], encoding="utf-8")
           PY
-          ruff format src/paperagent/evidence_gap_binding.py tests/review/test_semantic_gap_binding.py
-      - name: Verify repair
+      - name: Apply and verify the strict role patch
+        run: python scripts/clouddev_fix_few_shot_intent_roles.py
+      - name: Restore live workflows and include the new regression
         run: |
-          ruff check src/paperagent/evidence_gap_binding.py tests/review/test_semantic_gap_binding.py
-          ruff format --check --diff src/paperagent/evidence_gap_binding.py tests/review/test_semantic_gap_binding.py
-          mypy --config-file pyproject.toml
-          pytest -q \
-            tests/review/test_semantic_gap_binding.py \
-            tests/literature/test_third_batch_query_precision.py \
-            tests/literature/test_qa_hallucination_precision.py \
-            tests/review/test_consolidated_regressions.py
-      - name: Commit repair and remove one-off workflow
-        run: |
+          git show 8a627ff77522af766265bdbbe2dbd11c0afe79f7:.github/workflows/claw-single-case-live-repair.yml \
+            > .github/workflows/claw-single-case-live-repair.yml
+          python - <<'PY'
+          from pathlib import Path
+
+          def insert_after(path: Path, anchor: str, addition: str) -> None:
+              text = path.read_text(encoding="utf-8")
+              if addition.strip() in text:
+                  return
+              if anchor not in text:
+                  raise SystemExit(f"missing anchor in {path}: {anchor!r}")
+              path.write_text(text.replace(anchor, anchor + addition, 1), encoding="utf-8")
+
+          single = Path(".github/workflows/claw-single-case-live-repair.yml")
+          insert_after(
+              single,
+              "            tests/review/test_research_contract_priority.py\n",
+              "            tests/review/test_few_shot_intent_role_binding.py\n",
+          )
+          insert_after(
+              single,
+              "            tests/review/test_research_contract_priority.py \\\n",
+              "            tests/review/test_few_shot_intent_role_binding.py \\\n",
+          )
+
+          batch = Path(".github/workflows/claw-four-case-live-batch.yml")
+          insert_after(
+              batch,
+              "            tests/review/test_semantic_gap_binding.py\n",
+              "            tests/review/test_few_shot_intent_role_binding.py\n",
+          )
+          insert_after(
+              batch,
+              "            tests/review/test_semantic_gap_binding.py \\\n",
+              "            tests/review/test_few_shot_intent_role_binding.py \\\n",
+          )
+          PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/paperagent/evidence_gap_binding.py tests/review/test_semantic_gap_binding.py
-          git rm .github/workflows/fix-few-shot-intent-binding-once.yml
-          git commit -m "fix(evidence): bind few-shot intent role evidence narrowly"
-          git pull --rebase origin feat/claw-live-search-runtime
-          git push origin HEAD:feat/claw-live-search-runtime
+          git add \
+            .github/workflows/claw-single-case-live-repair.yml \
+            .github/workflows/claw-four-case-live-batch.yml
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(ci): cover Case 011 role binding in live preflights"
+            git pull --rebase origin feat/claw-live-search-runtime
+            git push origin HEAD:feat/claw-live-search-runtime
+          fi
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: strict-case011-role-repair-${{ github.run_id }}
+          path: build/few-shot-intent-roles/
+          if-no-files-found: warn
+          retention-days: 30
