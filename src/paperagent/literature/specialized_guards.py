@@ -118,6 +118,38 @@ _MULTI_BEHAVIOR_CANDIDATE_TERMS = (
     "view and purchase",
     "interaction types",
 )
+_PLANT_DISEASE_QUERY_TERMS = (
+    "plant disease",
+    "plant pathology",
+    "crop disease",
+    "leaf disease",
+    "植物病害",
+    "作物病害",
+)
+_PLANT_CANDIDATE_TERMS = (
+    "plant",
+    "crop",
+    "leaf",
+    "rice",
+    "tomato",
+    "wheat",
+    "maize",
+    "cassava",
+    "grape",
+    "potato",
+)
+_PLANT_DISEASE_CANDIDATE_TERMS = (
+    "disease",
+    "pathology",
+    "pest",
+    "nutrition deficiency",
+    "lesion",
+    "symptom",
+    "blight",
+    "rust",
+    "mildew",
+)
+_MOBILENETV3_IDENTITY_QUERY = "searching for mobilenetv3"
 
 
 def _contains_any(value: str, terms: tuple[str, ...]) -> bool:
@@ -156,6 +188,16 @@ def matches_specialized_candidate_terms(query: str, candidate_text: str) -> bool
         and _contains_any(normalized_candidate, _MULTI_BEHAVIOR_CANDIDATE_TERMS)
     )
 
+    mobilenetv3_identity_match = (
+        _MOBILENETV3_IDENTITY_QUERY not in normalized_query
+        or _MOBILENETV3_IDENTITY_QUERY in normalized_candidate
+    )
+    plant_disease_query = _contains_any(normalized_query, _PLANT_DISEASE_QUERY_TERMS)
+    plant_disease_match = not plant_disease_query or (
+        _contains_any(normalized_candidate, _PLANT_CANDIDATE_TERMS)
+        and _contains_any(normalized_candidate, _PLANT_DISEASE_CANDIDATE_TERMS)
+    )
+
     return (
         qa_match
         and reliability_match
@@ -163,6 +205,8 @@ def matches_specialized_candidate_terms(query: str, candidate_text: str) -> bool
         and anomaly_transformer_match
         and few_shot_match
         and multi_behavior_match
+        and mobilenetv3_identity_match
+        and plant_disease_match
     )
 
 

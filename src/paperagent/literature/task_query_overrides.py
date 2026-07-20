@@ -42,6 +42,34 @@ _RECOMMENDATION_RISK_HINTS = (
     "冷启动",
     "长尾",
 )
+_PLANT_DISEASE_HINTS = (
+    "plant disease",
+    "plant pathology",
+    "crop disease",
+    "leaf disease",
+    "植物病害",
+    "作物病害",
+)
+_MOBILENETV3_HINTS = (
+    "mobilenetv3",
+    "searching for mobilenetv3",
+)
+_MOBILE_COMPARISON_HINTS = (
+    "mobilenetv2",
+    "efficientnet",
+    "shufflenet",
+)
+_DATASET_METRIC_HINTS = (
+    "dataset",
+    "metric",
+    "macro-f1",
+    "calibration",
+    "latency",
+    "数据集",
+    "指标",
+    "校准",
+    "延迟",
+)
 _BASELINE_ROLE_HINTS = ("baseline", "comparison", "reproducible", "基线", "比较", "复现")
 _PARALLEL_ROLE_HINTS = (
     "parallel",
@@ -110,8 +138,47 @@ def override_task_query(
     gap_description: str,
     research_context: str,
 ) -> TaskQueryOverride:
+    normalized_query = query.casefold()
     combined = f"{query} {research_context}".casefold()
     role = _query_role(gap_id, gap_description)
+
+    if _contains_any(combined, _PLANT_DISEASE_HINTS) and _contains_any(
+        combined, _MOBILENETV3_HINTS
+    ):
+        role_text = f"{gap_id} {gap_description}".casefold()
+        if (
+            role == "baseline"
+            and "mobilenetv3" in normalized_query
+            and not _contains_any(normalized_query, _MOBILE_COMPARISON_HINTS)
+        ):
+            canonical = "Searching for MobileNetV3"
+        elif role == "baseline":
+            canonical = (
+                "MobileNetV2 EfficientNet-Lite ShuffleNetV2 "
+                "plant disease classification benchmark"
+            )
+        elif role == "mechanism":
+            canonical = (
+                "plant disease classification field imagery small lesions "
+                "background shift class imbalance"
+            )
+        elif role == "parallel":
+            canonical = (
+                "plant disease classification knowledge distillation "
+                "INT8 quantization mobile deployment"
+            )
+        elif _contains_any(role_text, _DATASET_METRIC_HINTS):
+            canonical = (
+                "plant disease classification field dataset macro F1 "
+                "calibration device latency"
+            )
+        else:
+            canonical = "MobileNetV3 plant disease classification lightweight backbone"
+        return _result(
+            query,
+            canonical,
+            "separated MobileNetV3 identity verification from plant-disease task retrieval",
+        )
 
     if _contains_any(combined, _MULTI_BEHAVIOR_RECOMMENDATION_HINTS):
         role_text = f"{gap_id} {gap_description}".casefold()
