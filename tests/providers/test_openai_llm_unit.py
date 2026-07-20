@@ -115,12 +115,10 @@ def test_parse_response_fails_closed(response: httpx.Response, code: str) -> Non
 def test_parse_response_accepts_plain_and_fenced_json() -> None:
     provider = _provider()
     assert (
-        provider._parse_response(
-            _response('{"answer":"plain"}'), ExampleOutput, "task"
-        ).answer
+        provider._parse_response(_response('{"answer":"plain"}'), ExampleOutput, "task").answer
         == "plain"
     )
-    fenced = "```json\n{\"answer\":\"fenced\"}\n```"
+    fenced = '```json\n{"answer":"fenced"}\n```'
     assert provider._parse_response(_response(fenced), ExampleOutput, "task").answer == "fenced"
 
 
@@ -328,7 +326,7 @@ async def test_unsupported_response_format_uses_plain_fallback(
                 400,
                 json={"error": {"message": "response_format is not supported"}},
             )
-        return _response("```json\n{\"answer\":\"fallback\"}\n```")
+        return _response('```json\n{"answer":"fallback"}\n```')
 
     _install_transport(monkeypatch, handle)
     provider = _provider()
