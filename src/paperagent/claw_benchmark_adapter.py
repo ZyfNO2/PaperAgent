@@ -55,6 +55,14 @@ def _has_actionable_recovery_path(next_actions: tuple[str, ...]) -> bool:
     """
     if not next_actions:
         return False
+    placeholders = {
+        "capture missing evidence and rerun the bounded workflow",
+    }
+    actionable = tuple(
+        item for item in next_actions if item.strip().casefold() not in placeholders
+    )
+    if not actionable:
+        return False
     _concrete_markers = (
         "pilot",
         "retrieval",
@@ -67,7 +75,7 @@ def _has_actionable_recovery_path(next_actions: tuple[str, ...]) -> bool:
         "freeze baseline",
     )
     return any(
-        any(marker in item.casefold() for marker in _concrete_markers) for item in next_actions
+        any(marker in item.casefold() for marker in _concrete_markers) for item in actionable
     )
 
 
