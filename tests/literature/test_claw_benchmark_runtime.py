@@ -1,17 +1,21 @@
 from __future__ import annotations
 
 import inspect
+from typing import cast
 
 import pytest
 
 from paperagent.benchmark_input import BenchmarkInput, benchmark_input_to_request
 from paperagent.claw_academic_benchmark import GoldCase, SpecialAssertions, SuppliedMaterial
 from paperagent.claw_benchmark_runtime import (
+    _structured_pilot_recommendation,
     build_benchmark_search_runtime,
     execute_benchmark_case,
 )
 from paperagent.claw_gold_adapter import benchmark_input_from_gold
 from paperagent.providers import FakeSearchProvider
+from paperagent.schemas import FinalOutcome
+from paperagent.state import PaperAgentState
 
 
 def _case() -> GoldCase:
@@ -37,6 +41,17 @@ def _case() -> GoldCase:
     )
 
 
+def _revise_outcome(*, invalid_evidence_ids: list[str] | None = None) -> FinalOutcome:
+    return FinalOutcome(
+        execution_status="succeeded",
+        scientific_verdict="REVISE",
+        quality_route="blocked",
+        report_status="completed",
+        reason_codes=["Q_REPAIR_BUDGET_EXHAUSTED"],
+        invalid_evidence_ids=invalid_evidence_ids or [],
+    )
+
+
 def test_fake_mode_requires_explicit_fixture_provider() -> None:
     with pytest.raises(ValueError, match="explicit fixture"):
         build_benchmark_search_runtime("fake")
@@ -46,6 +61,30 @@ def test_fake_mode_preserves_injected_provider() -> None:
     provider = FakeSearchProvider(fixtures={})
     runtime = build_benchmark_search_runtime("fake", fake_provider=provider)
     assert runtime.adapter is provider
+
+
+def test_structured_method_artifact_recommends_bounded_pilot() -> None:
+    state = cast(
+        PaperAgentState,
+        {
+            "final_outcome": _revise_outcome(),
+            "method": object(),
+        },
+    )
+
+    assert _structured_pilot_recommendation(state) is True
+
+
+def test_invalid_evidence_prevents_bounded_pilot() -> None:
+    state = cast(
+        PaperAgentState,
+        {
+            "final_outcome": _revise_outcome(invalid_evidence_ids=["ev-invalid"]),
+            "method": object(),
+        },
+    )
+
+    assert _structured_pilot_recommendation(state) is False
 
 
 def test_gold_projection_uses_only_user_visible_input() -> None:
