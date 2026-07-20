@@ -1,14 +1,14 @@
 {
   "case_id": "at-013-professional-qa-hallucination",
-  "reason": "verify question-answering guard, Semantic Entropy Probes mechanism evidence, and removal of code-generation RAG false positives",
-  "attempt": 3,
-  "retrieval_gate_run_id": 29742197166,
-  "retrieval_gate_head_sha": "d3b240f7cba87a78ef6e3e5701f79006d8f71bcd",
+  "reason": "verify distinct baseline, Semantic Entropy mechanism, and parallel QA queries after role-priority fix",
+  "attempt": 4,
+  "retrieval_gate_run_id": 29742702060,
+  "retrieval_gate_head_sha": "08a91e44a274fa9a0d9c840b0a95671fd01ca9aa",
   "previous_result": {
-    "score": 61,
-    "hard_failures": 1,
-    "accepted_evidence": 3,
-    "issue": "code-generation RAG accepted as QA baseline and mechanism gap uncovered"
+    "score": 95,
+    "hard_failures": 0,
+    "accepted_evidence": 2,
+    "issue": "all three evidence roles collapsed to the same query despite passing"
   },
   "requested_scope": "single_case_only",
   "web_search_enabled": false
