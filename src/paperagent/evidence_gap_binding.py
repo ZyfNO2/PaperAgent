@@ -258,7 +258,8 @@ def assess_gap_support(
     if legacy_result.decision == "accept" or relevance.decision == "reject":
         return legacy_result
 
-    queries = tuple(value for value in query_texts if value.strip())
+    query_provenance = item.metadata.get("query_text", "").strip()
+    queries = tuple(value for value in (*query_texts, query_provenance) if value.strip())
     origin_match = gap.gap_id in _candidate_gap_ids(item)
     cross_gap_reuse = allow_cross_gap_reuse and not origin_match
     provenance_qualified = origin_match or cross_gap_reuse

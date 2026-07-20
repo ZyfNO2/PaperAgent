@@ -126,12 +126,14 @@ def assess_lexical_relevance(
     contract: ResearchContract,
 ) -> LexicalRelevanceAssessment:
     text = f"{item.title}\n{item.summary}".lower()
-    matched = [term for term in contract.positive_terms if term in text]
+    query_terms = _terms(item.metadata.get("query_text"))
+    positive_terms = _dedupe([*query_terms, *contract.positive_terms])
+    matched = [term for term in positive_terms if term in text]
     negative = [term for term in contract.negative_terms if term in text]
     domain_terms = _terms(contract.domain)
     domain_matches = [term for term in domain_terms if term in text]
     missing_mandatory = [] if not domain_terms or domain_matches else domain_terms
-    strict_contract = len(contract.positive_terms) >= 2 or bool(domain_terms)
+    strict_contract = len(positive_terms) >= 2 or bool(domain_terms)
     reason_codes: list[str] = []
     decision: Literal["pass", "reject"] = "pass"
     if negative:
@@ -145,7 +147,7 @@ def assess_lexical_relevance(
         reason_codes.append("LEXICAL_NO_MATCH")
     elif not strict_contract:
         reason_codes.append("LEXICAL_WEAK_CONTRACT_COMPATIBILITY")
-    denominator = max(1, min(5, len(contract.positive_terms)))
+    denominator = max(1, min(5, len(positive_terms)))
     score = min(1.0, len(matched) / denominator)
     if not strict_contract and decision == "pass":
         score = max(score, 0.5)

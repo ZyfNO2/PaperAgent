@@ -233,6 +233,7 @@ class LiteratureSearchAdapter:
             snippet=paper.abstract or paper.canonical_title,
             provider=self.provider_name,
             metadata={
+                "query_text": query.query,
                 "verification_status": paper.verification_status,
                 "providers": ",".join(providers),
                 "provider_classes": source_kind,
