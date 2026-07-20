@@ -40,6 +40,23 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
+      - name: Validate Case 001 changes before using LLM quota
+        run: |
+          files=(
+            src/paperagent/schemas/plan.py
+            src/paperagent/literature/query_concepts.py
+            src/paperagent/literature/ranking.py
+            scripts/probe_claw_case_retrieval.py
+            scripts/probe_claw_case_end_to_end.py
+            tests/literature/test_query_concepts.py
+            tests/schemas/test_plan_nonblocking_clarification.py
+          )
+          ruff check "${files[@]}"
+          ruff format --check "${files[@]}"
+          pytest -q \
+            tests/literature/test_query_concepts.py \
+            tests/literature/test_source_selection_policy.py \
+            tests/schemas/test_plan_nonblocking_clarification.py
       - name: Execute Case 001
         id: execute
         shell: bash
@@ -164,6 +181,6 @@ jobs:
           PY
           )
           else
-            summary="result file was not produced"
+            summary="result file was not produced; validation may have failed before LLM execution"
           fi
           gh pr comment "$pr_number" --body "Case 001 end-to-end probe\n\n- Run: $GITHUB_RUN_ID\n- Head: \`$GITHUB_SHA\`\n- $summary\n- Artifact: \`claw-case-001-e2e-$GITHUB_RUN_ID\`"
