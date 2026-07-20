@@ -94,7 +94,8 @@ def test_one_or_two_method_families_are_kept(query: str) -> None:
     ("query", "gap_id", "description", "expected", "removed_families"),
     [
         (
-            "remote sensing dense small object detection benchmark dataset evaluation metrics survey",
+            "remote sensing dense small object detection benchmark dataset "
+            "evaluation metrics survey",
             "baseline_comparison",
             "reproducible baseline, dataset, and comparison evidence",
             "remote sensing dense small object detection",
