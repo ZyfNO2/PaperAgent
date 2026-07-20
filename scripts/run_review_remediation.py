@@ -126,4 +126,4 @@ replace_once(
     '''isinstance(node, ast.Assign | ast.AnnAssign)''',
 )
 
-print("review remediation applied and finalized")
+print("review remediation applied and finalized for clean-source verification")
