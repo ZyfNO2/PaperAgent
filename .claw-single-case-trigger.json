@@ -1,12 +1,13 @@
 {
   "case_id": "at-020-lightgcn-contrastive-supplied",
-  "reason": "verify that an unidentified supplied contrastive recommendation paper keeps the result at REVISE instead of promoting it to a premature pilot",
-  "attempt": 2,
-  "offline_gate_run_id": 29760078105,
+  "reason": "verify REVISE decision and reject cross-domain energy forecasting evidence from recommendation-system queries",
+  "attempt": 3,
+  "offline_gate_run_id": 29760569864,
   "previous_result": {
-    "score": 91,
+    "score": 94,
     "hard_failures": 0,
-    "issue": "expected REVISE but benchmark normalization inferred REVISE_TO_PILOT before the supplied contrastive method identity was resolved"
+    "passed": true,
+    "issue": "the case passed, but accepted evidence still contained a solar and wind forecasting paper unrelated to recommendation systems"
   },
   "requested_scope": "single_case_only",
   "web_search_enabled": false
