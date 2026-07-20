@@ -1,13 +1,14 @@
 {
-  "case_id": "at-005-remote-sensing-dense-small-objects",
-  "reason": "rerun after PreparedQuery generic-refinement contract fix",
+  "case_id": "at-006-low-light-pedestrian",
+  "reason": "repair low-light pedestrian mechanism binding with second-batch domain guards",
   "attempt": 2,
-  "query_gate_run_id": 29713529425,
-  "query_gate_head_sha": "b0f1bcd3a357f740128cca889e2ff7329920bcbb",
+  "verified_patch_commit": "42951672163c11eeed6950bb97d8ff5bf9c3a266",
   "previous_result": {
-    "status": "execution_error",
-    "provider_calls_used": 0,
-    "verification_calls_used": 0
+    "score": 60,
+    "decision": "REVISE_TO_PILOT",
+    "hard_failures": 1,
+    "accepted_evidence": 2,
+    "missing_gap": "failure_mechanism_limitations_low_light_pedestrian"
   },
   "requested_scope": "single_case_only",
   "web_search_enabled": false
