@@ -1,12 +1,22 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import Literal, cast
 
 from paperagent.claw_benchmark_normalizer import (
     BenchmarkNormalizationContext,
     normalize_paperagent_state,
 )
-from paperagent.schemas import FinalOutcome, FinalReport, ResearchRequest
+from paperagent.schemas import (
+    EvidenceBundle,
+    EvidenceItem,
+    EvidenceLedger,
+    EvidenceLedgerEntry,
+    FinalOutcome,
+    FinalReport,
+    GapSupportAssessment,
+    ResearchRequest,
+)
 from paperagent.state import PaperAgentState
 
 
@@ -71,6 +81,73 @@ def test_explicit_structured_pilot_signal_is_preserved() -> None:
     )
     assert trace.decision == "REVISE"
     assert trace.pilot_recommended is True
+
+
+def test_canonical_ledger_controls_evidence_review_semantics() -> None:
+    evidence_id = "ev-held-out"
+    state = cast(
+        PaperAgentState,
+        {
+            **_revise_state(next_action="Collect one more observation."),
+            "evidence": EvidenceBundle(
+                items=[
+                    EvidenceItem(
+                        evidence_id=evidence_id,
+                        source_type="paper",
+                        title="Held-out evidence",
+                        locator="https://example.invalid/paper",
+                        retrieved_at=datetime(2026, 1, 1, tzinfo=UTC),
+                        verification_status="accepted",
+                        supports_gap_ids=["gap-held-out"],
+                        summary="Task-matched evidence.",
+                        content_hash="sha256:held-out",
+                    )
+                ],
+                accepted_ids=[evidence_id],
+                identity_verified_ids=[evidence_id],
+                coverage_by_gap={"gap-held-out": 1},
+            ),
+            "evidence_ledger": EvidenceLedger(
+                entries=[
+                    EvidenceLedgerEntry(
+                        evidence_id=evidence_id,
+                        identity_verified=True,
+                        relevance_scope="direct",
+                        gap_supports=[
+                            GapSupportAssessment(
+                                evidence_id=evidence_id,
+                                gap_id="gap-held-out",
+                                support_type="direct_support",
+                                supported_claim="The evidence directly supports the gap.",
+                                supporting_span_hash="sha256:span",
+                                checklist_results={"relevance_passed": True},
+                                confidence=0.9,
+                                decision="accept",
+                            )
+                        ],
+                        supported_claims=["claim-held-out"],
+                        accepted=True,
+                    )
+                ],
+                accepted_ids=[evidence_id],
+                coverage_by_gap={"gap-held-out": 1},
+            ),
+        },
+    )
+
+    trace = normalize_paperagent_state(
+        state,
+        BenchmarkNormalizationContext(case_id="held-out-ledger"),
+    )
+
+    review = trace.evidence_reviews[0]
+    assert review.identity_verified is True
+    assert review.relevance_reviewed is True
+    assert review.relevance_passed is True
+    assert review.accepted is True
+    assert review.role == "gap"
+    assert review.gap_ids == ("gap-held-out",)
+    assert review.claim_ids == ("claim-held-out",)
 
 
 def test_leakage_signal_is_live_and_not_a_model_default() -> None:
