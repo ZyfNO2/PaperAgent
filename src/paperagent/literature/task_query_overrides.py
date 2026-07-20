@@ -23,6 +23,25 @@ _TIME_SERIES_ANOMALY_HINTS = (
     "anomaly transformer",
     "时间序列异常",
 )
+_MULTI_BEHAVIOR_RECOMMENDATION_HINTS = (
+    "multi-behavior recommendation",
+    "multi behavior recommendation",
+    "multiple behavior recommendation",
+    "multi-relational recommendation",
+    "multi-action recommendation",
+    "多行为推荐",
+    "多行为推荐系统",
+)
+_RECOMMENDATION_RISK_HINTS = (
+    "risk",
+    "negative",
+    "cold_start",
+    "long_tail",
+    "风险",
+    "负面",
+    "冷启动",
+    "长尾",
+)
 _BASELINE_ROLE_HINTS = ("baseline", "comparison", "reproducible", "基线", "比较", "复现")
 _PARALLEL_ROLE_HINTS = (
     "parallel",
@@ -93,6 +112,24 @@ def override_task_query(
 ) -> TaskQueryOverride:
     combined = f"{query} {research_context}".casefold()
     role = _query_role(gap_id, gap_description)
+
+    if _contains_any(combined, _MULTI_BEHAVIOR_RECOMMENDATION_HINTS):
+        role_text = f"{gap_id} {gap_description}".casefold()
+        if role == "baseline":
+            canonical = "multi-behavior recommendation graph neural network"
+        elif _contains_any(role_text, _RECOMMENDATION_RISK_HINTS):
+            canonical = "multi-behavior recommendation data sparsity cold-start long-tail"
+        elif role == "mechanism":
+            canonical = "multi-behavior recommendation gated auxiliary behavior transfer"
+        elif role == "parallel":
+            canonical = "multi-behavior recommendation contrastive learning"
+        else:
+            canonical = "multi-behavior recommendation e-commerce"
+        return _result(
+            query,
+            canonical,
+            "canonicalized multi-behavior recommendation retrieval by evidence role",
+        )
 
     if _contains_any(combined, _TIME_SERIES_ANOMALY_HINTS):
         if role == "baseline":

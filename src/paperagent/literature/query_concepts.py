@@ -379,6 +379,37 @@ _INTENT_CANDIDATE_TERMS = (
 )
 
 
+_MULTI_BEHAVIOR_RECOMMENDATION_QUERY_HINTS = (
+    "multi-behavior recommendation",
+    "multi behavior recommendation",
+    "multiple behavior recommendation",
+    "multi-relational recommendation",
+    "multi-action recommendation",
+)
+_RECOMMENDATION_CANDIDATE_TERMS = (
+    "recommendation",
+    "recommender",
+    "collaborative filtering",
+    "user-item",
+    "item recommendation",
+)
+_MULTI_BEHAVIOR_CANDIDATE_TERMS = (
+    "multi-behavior",
+    "multi behavior",
+    "multiple behavior",
+    "multi-action",
+    "multi action",
+    "multi-relational",
+    "auxiliary behavior",
+    "behavior-aware",
+    "behavior-specific",
+    "heterogeneous behavior",
+    "click and purchase",
+    "view and purchase",
+    "interaction types",
+)
+
+
 def _contains_any(value: str, terms: tuple[str, ...]) -> bool:
     return any(term in value for term in terms)
 
@@ -442,6 +473,9 @@ def required_candidate_term_groups(query: str) -> tuple[tuple[str, ...], ...]:
         groups.append(_INTENT_CANDIDATE_TERMS)
         if _contains_any(normalized, _FEW_SHOT_QUERY_HINTS):
             groups.append(_FEW_SHOT_CANDIDATE_TERMS)
+
+    if _contains_any(normalized, _MULTI_BEHAVIOR_RECOMMENDATION_QUERY_HINTS):
+        groups.extend((_RECOMMENDATION_CANDIDATE_TERMS, _MULTI_BEHAVIOR_CANDIDATE_TERMS))
 
     return tuple(groups)
 

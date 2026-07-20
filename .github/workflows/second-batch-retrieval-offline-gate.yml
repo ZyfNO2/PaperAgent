@@ -1,12 +1,38 @@
 name: Retrieval Precision Offline Gate
+# Validates task precision, benchmark normalization, and evidence binding.
 
 on:
   push:
     branches:
       - feat/claw-live-search-runtime
     paths:
+      - ".retrieval-precision-trigger.json"
+      - ".cases-015-017-patch-trigger.json"
       - ".github/workflows/second-batch-retrieval-offline-gate.yml"
-      - "scripts/clouddev_patch_case_015_multibehavior_v2.py"
+      - "scripts/clouddev_patch_cases_015_017.py"
+      - "src/paperagent/claw_benchmark_adapter.py"
+      - "src/paperagent/nodes/planning.py"
+      - "src/paperagent/evidence_relevance.py"
+      - "src/paperagent/evidence_gap_binding.py"
+      - "src/paperagent/literature/adapter.py"
+      - "src/paperagent/literature/query_concepts.py"
+      - "src/paperagent/literature/query_refinement.py"
+      - "src/paperagent/literature/ranking.py"
+      - "src/paperagent/literature/specialized_guards.py"
+      - "src/paperagent/literature/task_query_overrides.py"
+      - "src/paperagent/retrieval/prepare_search.py"
+      - "src/paperagent/retrieval/verify_evidence.py"
+      - "tests/evals/test_claw_benchmark_adapter.py"
+      - "tests/nodes/test_planning_nonblocking.py"
+      - "tests/literature/test_time_series_anomaly_precision.py"
+      - "tests/literature/test_prepared_query_contract.py"
+      - "tests/literature/test_second_batch_query_precision.py"
+      - "tests/literature/test_third_batch_query_precision.py"
+      - "tests/literature/test_qa_hallucination_precision.py"
+      - "tests/review/test_action_mechanism_binding.py"
+      - "tests/review/test_few_shot_intent_role_binding.py"
+      - "tests/review/test_low_light_mechanism_binding.py"
+      - "tests/review/test_research_contract_priority.py"
   workflow_dispatch:
 
 permissions:
@@ -17,9 +43,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  patch-and-verify:
+  verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,147 +57,121 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Run auditable Case 015 transaction
+      - name: Apply requested deterministic benchmark patch
+        shell: bash
+        run: |
+          if [[ -f .cases-015-017-patch-trigger.json ]]; then
+            python scripts/clouddev_patch_cases_015_017.py
+            ruff format \
+              src/paperagent/claw_benchmark_adapter.py \
+              tests/evals/test_claw_benchmark_adapter.py
+          fi
+      - name: Run retrieval and benchmark precision checks
         shell: bash
         run: |
           set +e
-          out="build/case015-multibehavior-patch"
-          status_file="evals/claw_academic_tailoring_v1/live-probes/case015-multibehavior-patch-latest.json"
-          mkdir -p "$out" "$(dirname "$status_file")"
-
-          git show 4e6a9b7c16c66ce5d79be31912675385e7e12866:.github/workflows/second-batch-retrieval-offline-gate.yml \
-            > .github/workflows/second-batch-retrieval-offline-gate.yml
-          restore_status=$?
-
-          if (( restore_status == 0 )); then
-            python scripts/clouddev_patch_case_015_multibehavior_v2.py \
-              > "$out/patch.log" 2>&1
-            patch_status=$?
-          else
-            patch_status=99
-            echo "failed to restore permanent gate" > "$out/patch.log"
-          fi
-
-          if (( patch_status == 0 )); then
-            ruff format \
-              src/paperagent/evidence_gap_binding.py \
-              src/paperagent/literature/query_concepts.py \
-              src/paperagent/literature/specialized_guards.py \
-              src/paperagent/literature/task_query_overrides.py \
-              tests/literature/test_multibehavior_recommendation_precision.py \
-              tests/review/test_multibehavior_recommendation_binding.py \
-              > "$out/format-apply.log" 2>&1
-            format_apply_status=$?
-          else
-            format_apply_status=99
-          fi
-
+          out="build/retrieval-precision"
+          mkdir -p "$out"
           files=(
+            src/paperagent/claw_benchmark_adapter.py
+            src/paperagent/nodes/planning.py
+            src/paperagent/evidence_relevance.py
             src/paperagent/evidence_gap_binding.py
+            src/paperagent/literature/adapter.py
             src/paperagent/literature/query_concepts.py
+            src/paperagent/literature/query_refinement.py
+            src/paperagent/literature/ranking.py
             src/paperagent/literature/specialized_guards.py
             src/paperagent/literature/task_query_overrides.py
+            src/paperagent/retrieval/prepare_search.py
+            src/paperagent/retrieval/verify_evidence.py
+            tests/evals/test_claw_benchmark_adapter.py
+            tests/nodes/test_planning_nonblocking.py
+            tests/literature/test_time_series_anomaly_precision.py
             tests/literature/test_multibehavior_recommendation_precision.py
+            tests/literature/test_prepared_query_contract.py
+            tests/literature/test_second_batch_query_precision.py
+            tests/literature/test_third_batch_query_precision.py
+            tests/literature/test_qa_hallucination_precision.py
+            tests/review/test_action_mechanism_binding.py
+            tests/review/test_few_shot_intent_role_binding.py
             tests/review/test_multibehavior_recommendation_binding.py
+            tests/review/test_low_light_mechanism_binding.py
+            tests/review/test_research_contract_priority.py
           )
-          if (( patch_status == 0 && format_apply_status == 0 )); then
-            ruff check "${files[@]}" > "$out/ruff.log" 2>&1
-            ruff_status=$?
-            ruff format --check --diff "${files[@]}" > "$out/format.log" 2>&1
-            format_status=$?
-            mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
-            mypy_status=$?
-            pytest -q \
-              tests/literature/test_multibehavior_recommendation_precision.py \
-              tests/review/test_multibehavior_recommendation_binding.py \
-              tests/literature/test_time_series_anomaly_precision.py \
-              tests/literature/test_qa_hallucination_precision.py \
-              tests/literature/test_third_batch_query_precision.py \
-              tests/review/test_few_shot_intent_role_binding.py \
-              tests/review/test_semantic_gap_binding.py \
-              tests/review/test_consolidated_regressions.py \
-              tests/nodes/test_retrieval.py \
-              > "$out/pytest.log" 2>&1
-            pytest_status=$?
+          ruff check "${files[@]}" --output-format=concise > "$out/ruff.log" 2>&1
+          ruff_status=$?
+          ruff format --check --diff "${files[@]}" > "$out/format.log" 2>&1
+          format_status=$?
+          mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
+          mypy_status=$?
+          pytest -q \
+            tests/evals/test_claw_benchmark_adapter.py \
+            tests/nodes/test_planning_nonblocking.py \
+            tests/schemas/test_plan_nonblocking_clarification.py \
+            tests/literature/test_time_series_anomaly_precision.py \
+            tests/literature/test_multibehavior_recommendation_precision.py \
+            tests/literature/test_prepared_query_contract.py \
+            tests/literature/test_second_batch_query_precision.py \
+            tests/literature/test_third_batch_query_precision.py \
+            tests/literature/test_qa_hallucination_precision.py \
+            tests/literature/test_query_concepts.py \
+            tests/literature/test_query_refinement.py \
+            tests/review/test_action_mechanism_binding.py \
+            tests/review/test_few_shot_intent_role_binding.py \
+            tests/review/test_multibehavior_recommendation_binding.py \
+            tests/review/test_low_light_mechanism_binding.py \
+            tests/review/test_semantic_gap_binding.py \
+            tests/review/test_consolidated_regressions.py \
+            tests/review/test_research_contract_priority.py \
+            tests/nodes/test_retrieval.py \
+            > "$out/pytest.log" 2>&1
+          pytest_status=$?
+          if [[ -f .cases-015-017-patch-trigger.json ]]; then
+            target="evals/claw_academic_tailoring_v1/live-probes/cases-015-017-offline-gate-latest.json"
           else
-            ruff_status=99
-            format_status=99
-            mypy_status=99
-            pytest_status=99
+            target="evals/claw_academic_tailoring_v1/live-probes/second-batch-retrieval-gate-latest.json"
           fi
-
-          python - "$status_file" \
-            "$restore_status" "$patch_status" "$format_apply_status" \
-            "$ruff_status" "$format_status" "$mypy_status" "$pytest_status" <<'PY'
+          mkdir -p "$(dirname "$target")"
+          python - "$target" "$ruff_status" "$format_status" "$mypy_status" "$pytest_status" <<'PY'
           import json
           import os
           import sys
 
-          names = (
-              "restore_gate",
-              "patch",
-              "format_apply",
-              "ruff",
-              "format",
-              "mypy",
-              "pytest",
-          )
           payload = {
               "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
               "workflow_head_sha": os.environ["GITHUB_SHA"],
-              **{name: int(value) for name, value in zip(names, sys.argv[2:], strict=True)},
+              "ruff": int(sys.argv[2]),
+              "format": int(sys.argv[3]),
+              "mypy": int(sys.argv[4]),
+              "pytest": int(sys.argv[5]),
           }
-          payload["passed"] = all(payload[name] == 0 for name in names)
+          payload["passed"] = all(
+              payload[key] == 0 for key in ("ruff", "format", "mypy", "pytest")
+          )
           with open(sys.argv[1], "w", encoding="utf-8") as handle:
               json.dump(payload, handle, indent=2, sort_keys=True)
               handle.write("\n")
           PY
-
-          passed="$(python - <<'PY'
-          import json
-          from pathlib import Path
-          value = json.loads(Path('evals/claw_academic_tailoring_v1/live-probes/case015-multibehavior-patch-latest.json').read_text(encoding='utf-8'))
-          print('true' if value.get('passed') is True else 'false')
-          PY
-          )"
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [[ "$passed" == "true" ]]; then
+          git add "$target"
+          if [[ -f .cases-015-017-patch-trigger.json ]]; then
             git add \
-              src/paperagent/evidence_gap_binding.py \
-              src/paperagent/literature/query_concepts.py \
-              src/paperagent/literature/specialized_guards.py \
-              src/paperagent/literature/task_query_overrides.py \
-              tests/literature/test_multibehavior_recommendation_precision.py \
-              tests/review/test_multibehavior_recommendation_binding.py \
-              .github/workflows/second-batch-retrieval-offline-gate.yml \
-              .github/workflows/claw-single-case-live-repair.yml \
-              .github/workflows/claw-four-case-live-batch.yml \
-              "$status_file"
-            git rm \
-              .github/workflows/patch-case-015-multibehavior-once.yml \
-              .github/workflows/patch-case-015-multibehavior-v2.yml \
-              scripts/clouddev_patch_case_015_multibehavior.py \
-              scripts/clouddev_patch_case_015_multibehavior_v2.py \
-              .case015-multibehavior-patch-trigger.json
-            git commit -m "fix(search): canonicalize and bind multi-behavior recommendation evidence"
-          else
-            cp "$status_file" /tmp/case015-status.json
-            git reset --hard HEAD
-            cp /tmp/case015-status.json "$status_file"
-            git add "$status_file"
-            git commit -m "chore(search): persist Case 015 patch failure [skip ci]"
+              src/paperagent/claw_benchmark_adapter.py \
+              tests/evals/test_claw_benchmark_adapter.py
           fi
-
+          git commit -m "chore(search): persist retrieval precision gate [skip ci]" || true
           git pull --rebase origin feat/claw-live-search-runtime
           git push origin HEAD:feat/claw-live-search-runtime
-          [[ "$passed" == "true" ]]
-      - name: Upload transaction logs
+          if (( ruff_status || format_status || mypy_status || pytest_status )); then
+            exit 1
+          fi
+      - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: case015-multibehavior-patch-${{ github.run_id }}
-          path: build/case015-multibehavior-patch/
-          if-no-files-found: warn
+          name: retrieval-precision-${{ github.run_id }}
+          path: build/retrieval-precision/
+          if-no-files-found: error
           retention-days: 30

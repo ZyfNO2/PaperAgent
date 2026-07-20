@@ -74,6 +74,7 @@ jobs:
             tests/methodology/test_method_design_draft.py
             tests/review/test_semantic_gap_binding.py
             tests/review/test_few_shot_intent_role_binding.py
+            tests/review/test_multibehavior_recommendation_binding.py
           )
           ruff check "${files[@]}" > "$out/ruff.log" 2>&1
           ruff_status=$?
@@ -85,11 +86,13 @@ jobs:
             tests/methodology/test_method_design_draft.py \
             tests/methodology/test_evidence_binding.py \
             tests/literature/test_query_concepts.py \
+            tests/literature/test_multibehavior_recommendation_precision.py \
             tests/literature/test_query_refinement.py \
             tests/literature/test_source_selection_policy.py \
             tests/nodes/test_retrieval.py \
             tests/review/test_semantic_gap_binding.py \
             tests/review/test_few_shot_intent_role_binding.py \
+            tests/review/test_multibehavior_recommendation_binding.py \
             tests/review/test_consolidated_regressions.py \
             tests/graph/test_full_graph.py \
             tests/graph/test_hitl.py \

@@ -237,6 +237,153 @@ def _few_shot_intent_risk_support(text: str) -> bool:
     )
 
 
+_MULTI_BEHAVIOR_RECOMMENDATION_TASK_CUES = (
+    "multi-behavior recommendation",
+    "multi behavior recommendation",
+    "multiple behavior recommendation",
+    "multi-relational recommendation",
+    "multi-action recommendation",
+)
+_RECOMMENDATION_TASK_CUES = (
+    "recommendation",
+    "recommender",
+    "collaborative filtering",
+    "user-item",
+)
+_MULTI_BEHAVIOR_EVIDENCE_CUES = (
+    "multi-behavior",
+    "multi behavior",
+    "multiple behavior",
+    "multi-action",
+    "multi action",
+    "multi-relational",
+    "auxiliary behavior",
+    "behavior-aware",
+    "behavior-specific",
+    "heterogeneous behavior",
+    "click and purchase",
+    "view and purchase",
+    "interaction types",
+)
+
+
+def _is_multi_behavior_recommendation_evidence(text: str) -> bool:
+    explicit_task = any(cue in text for cue in _MULTI_BEHAVIOR_RECOMMENDATION_TASK_CUES)
+    paired_task = any(cue in text for cue in _RECOMMENDATION_TASK_CUES) and any(
+        cue in text for cue in _MULTI_BEHAVIOR_EVIDENCE_CUES
+    )
+    return explicit_task or paired_task
+
+
+def _multi_behavior_recommendation_baseline_support(text: str) -> bool:
+    if not _is_multi_behavior_recommendation_evidence(text):
+        return False
+    evaluation = any(
+        cue in text
+        for cue in (
+            "experiment",
+            "experimental",
+            "dataset",
+            "benchmark",
+            "evaluation",
+            "evaluate",
+            "result",
+            "performance",
+            "recall",
+            "ndcg",
+            "hit ratio",
+            "top-k",
+        )
+    )
+    method_or_comparison = any(
+        cue in text
+        for cue in (
+            "we propose",
+            "we introduce",
+            "framework",
+            "network",
+            "model",
+            "graph convolution",
+            "graph neural",
+            "collaborative filtering",
+            "baseline",
+            "state-of-the-art",
+            "outperform",
+        )
+    )
+    return evaluation and method_or_comparison
+
+
+def _multi_behavior_recommendation_mechanism_support(text: str) -> bool:
+    if not _is_multi_behavior_recommendation_evidence(text):
+        return False
+    problem = any(
+        cue in text
+        for cue in (
+            "sparse",
+            "sparsity",
+            "noisy",
+            "noise",
+            "imbalance",
+            "heterogeneous",
+            "different semantics",
+            "behavior dependency",
+            "target behavior",
+            "auxiliary behavior",
+            "negative transfer",
+            "weak behavior",
+            "data scarcity",
+            "long-tail",
+            "cold-start",
+        )
+    )
+    intervention = any(
+        cue in text
+        for cue in (
+            "gated",
+            "gate",
+            "graph convolution",
+            "graph neural",
+            "message passing",
+            "transfer",
+            "contrastive",
+            "multi-task",
+            "multitask",
+            "attention",
+            "behavior-specific",
+            "relation-specific",
+            "cascading",
+            "fusion",
+            "disentangle",
+        )
+    )
+    return problem and intervention
+
+
+def _multi_behavior_recommendation_risk_support(text: str) -> bool:
+    if not _is_multi_behavior_recommendation_evidence(text):
+        return False
+    return any(
+        cue in text
+        for cue in (
+            "cold-start",
+            "cold start",
+            "long-tail",
+            "long tail",
+            "sparsity",
+            "sparse",
+            "noisy auxiliary",
+            "negative transfer",
+            "target behavior degradation",
+            "popularity bias",
+            "behavior imbalance",
+            "chronological split",
+            "future interaction",
+            "target leakage",
+        )
+    )
+
+
 def _dedupe(values: Iterable[str]) -> list[str]:
     output: list[str] = []
     for raw in values:
@@ -277,6 +424,8 @@ def _query_overlap(item: EvidenceItem, query_texts: Iterable[str]) -> list[str]:
 def _baseline_role_support(text: str) -> bool:
     if _few_shot_intent_baseline_support(text):
         return True
+    if _multi_behavior_recommendation_baseline_support(text):
+        return True
     evaluation_context = any(
         cue in text
         for cue in (
@@ -308,6 +457,8 @@ def _baseline_role_support(text: str) -> bool:
 
 def _mechanism_role_support(text: str) -> bool:
     if _few_shot_intent_mechanism_support(text):
+        return True
+    if _multi_behavior_recommendation_mechanism_support(text):
         return True
     problem = any(
         cue in text
@@ -373,6 +524,8 @@ def _mechanism_role_support(text: str) -> bool:
 
 def _risk_role_support(text: str) -> bool:
     if _few_shot_intent_risk_support(text):
+        return True
+    if _multi_behavior_recommendation_risk_support(text):
         return True
     return any(
         cue in text

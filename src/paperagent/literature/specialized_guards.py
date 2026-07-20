@@ -87,6 +87,37 @@ _FEW_SHOT_CANDIDATE_TERMS = (
     "meta-learning",
     "transfer learning",
 )
+_MULTI_BEHAVIOR_RECOMMENDATION_QUERY_TERMS = (
+    "multi-behavior recommendation",
+    "multi behavior recommendation",
+    "multiple behavior recommendation",
+    "multi-relational recommendation",
+    "multi-action recommendation",
+    "多行为推荐",
+)
+_RECOMMENDATION_CANDIDATE_TERMS = (
+    "recommendation",
+    "recommender",
+    "collaborative filtering",
+    "user-item",
+    "item recommendation",
+    "ranking recommendation",
+)
+_MULTI_BEHAVIOR_CANDIDATE_TERMS = (
+    "multi-behavior",
+    "multi behavior",
+    "multiple behavior",
+    "multi-action",
+    "multi action",
+    "multi-relational",
+    "auxiliary behavior",
+    "behavior-aware",
+    "behavior-specific",
+    "heterogeneous behavior",
+    "click and purchase",
+    "view and purchase",
+    "interaction types",
+)
 
 
 def _contains_any(value: str, terms: tuple[str, ...]) -> bool:
@@ -117,12 +148,21 @@ def matches_specialized_candidate_terms(query: str, candidate_text: str) -> bool
         time_series_query and _contains_any(normalized_query, _FEW_SHOT_QUERY_TERMS)
     ) or _contains_any(normalized_candidate, _FEW_SHOT_CANDIDATE_TERMS)
 
+    multi_behavior_query = _contains_any(
+        normalized_query, _MULTI_BEHAVIOR_RECOMMENDATION_QUERY_TERMS
+    )
+    multi_behavior_match = not multi_behavior_query or (
+        _contains_any(normalized_candidate, _RECOMMENDATION_CANDIDATE_TERMS)
+        and _contains_any(normalized_candidate, _MULTI_BEHAVIOR_CANDIDATE_TERMS)
+    )
+
     return (
         qa_match
         and reliability_match
         and time_series_match
         and anomaly_transformer_match
         and few_shot_match
+        and multi_behavior_match
     )
 
 
