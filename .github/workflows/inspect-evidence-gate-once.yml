@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: feat/claw-live-search-runtime
-      - name: Persist latest offline gate status
+      - name: Persist latest formatted offline gate status
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
