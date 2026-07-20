@@ -28,12 +28,23 @@ async def prepare_search_node(state: PaperAgentState, config: RunnableConfig) ->
         next_round = current.round + 1
         selected = available[: run.budgets.max_queries_per_round]
         gap_descriptions = {gap.gap_id: gap.description for gap in plan.evidence_gaps}
+        request = state.get("request")
+        research_context = " ".join(
+            value
+            for value in (
+                request.question if request is not None else "",
+                plan.problem_statement,
+                plan.scope,
+            )
+            if value
+        )
         prepared: list[PreparedQuery] = []
         for query in selected:
             refinement = refine_search_query(
                 query.query,
                 gap_id=query.gap_id,
                 gap_description=gap_descriptions.get(query.gap_id, ""),
+                research_context=research_context,
             )
             prepared.append(
                 PreparedQuery(
