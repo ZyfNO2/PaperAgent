@@ -131,7 +131,7 @@ async def test_adapter_all_provider_failures_raise_provider_error() -> None:
         verifier=VerificationService([]),
     )
     adapter = LiteratureSearchAdapter(service=service, source_preferences=["openalex"])
-    with pytest.raises(ProviderError, match="all literature providers failed"):
+    with pytest.raises(ProviderError, match="all attempted literature providers failed"):
         await adapter.search(
             query=SearchQuery(query_id="q1", gap_id="method", query="retrieval method"),
             scenario="ignored",
