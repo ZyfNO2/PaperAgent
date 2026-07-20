@@ -52,15 +52,13 @@ def matches_specialized_candidate_terms(query: str, candidate_text: str) -> bool
 
     normalized_query = query.casefold()
     normalized_candidate = candidate_text.casefold()
-    if _QA_QUERY.search(normalized_query) and not _contains_any(
+    qa_match = not _QA_QUERY.search(normalized_query) or _contains_any(
         normalized_candidate, _QA_CANDIDATE_TERMS
-    ):
-        return False
-    if _contains_any(normalized_query, _RELIABILITY_QUERY_TERMS) and not _contains_any(
-        normalized_candidate, _RELIABILITY_CANDIDATE_TERMS
-    ):
-        return False
-    return True
+    )
+    reliability_match = not _contains_any(
+        normalized_query, _RELIABILITY_QUERY_TERMS
+    ) or _contains_any(normalized_candidate, _RELIABILITY_CANDIDATE_TERMS)
+    return qa_match and reliability_match
 
 
 __all__ = ["matches_specialized_candidate_terms"]
