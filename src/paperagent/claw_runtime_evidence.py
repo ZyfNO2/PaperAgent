@@ -50,7 +50,7 @@ def summarize_search_budgets(
     *,
     configured_total: int,
 ) -> dict[str, Any]:
-    case_rows = []
+    case_rows: list[dict[str, str | int | None]] = []
     total_used = 0
     total_remaining = 0
     complete = True
