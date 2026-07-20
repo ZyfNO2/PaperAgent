@@ -1,9 +1,14 @@
 {
   "case_id": "at-017-mobilenetv3-plant-disease-supplied",
-  "reason": "verify supplied MobileNetV3 identity as a backbone candidate, plant-disease task evidence, field-domain mechanism, and mobile deployment constraints",
-  "attempt": 1,
-  "offline_gate_run_id": 29756040722,
-  "previous_result": null,
+  "reason": "verify exact Searching for MobileNetV3 identity, task-specific plant-disease evidence, and rejection of retinal or skin-disease cross-domain candidates",
+  "attempt": 2,
+  "offline_gate_run_id": 29757888425,
+  "previous_result": {
+    "score": 94,
+    "hard_failures": 0,
+    "accepted_evidence": 6,
+    "issue": "original MobileNetV3 paper was not accepted and diabetic-retinopathy evidence crossed the plant-disease boundary"
+  },
   "requested_scope": "single_case_only",
   "web_search_enabled": false
 }
