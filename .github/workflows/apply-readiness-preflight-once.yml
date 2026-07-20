@@ -8,7 +8,6 @@ on:
     paths:
       - "scripts/apply_readiness_preflight.py"
       - "scripts/apply_readiness_test_contracts.py"
-      - "scripts/apply_acceptance_workflow_hardening.py"
       - "src/paperagent/nodes/readiness_preflight.py"
       - "tests/nodes/test_readiness_preflight.py"
       - ".github/workflows/apply-readiness-preflight-once.yml"
@@ -39,18 +38,15 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Apply integration and remove one-shot files
+      - name: Apply source integration
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p build/readiness-preflight
           python scripts/apply_readiness_preflight.py
           python scripts/apply_readiness_test_contracts.py
-          python scripts/apply_acceptance_workflow_hardening.py
           rm scripts/apply_readiness_preflight.py
           rm scripts/apply_readiness_test_contracts.py
-          rm scripts/apply_acceptance_workflow_hardening.py
-          rm .github/workflows/apply-readiness-preflight-once.yml
           ruff format src tests scripts
           ruff check --fix src tests scripts
       - name: Ruff and format gate
