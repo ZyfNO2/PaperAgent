@@ -117,15 +117,10 @@ def _runtime_query_texts(
     runtime_by_id = {
         candidate.query_id: query_text.strip()
         for candidate in candidates
-        if (query_text := candidate.metadata.get("query_text")) is not None
-        and query_text.strip()
+        if (query_text := candidate.metadata.get("query_text")) is not None and query_text.strip()
     }
     runtime_by_id.update(
-        {
-            query.query_id: query.query.strip()
-            for query in prepared_queries
-            if query.query.strip()
-        }
+        {query.query_id: query.query.strip() for query in prepared_queries if query.query.strip()}
     )
     return runtime_by_id
 
