@@ -10,11 +10,20 @@ on:
       - "scripts/probe_claw_case_retrieval.py"
       - "src/paperagent/prompts/v0_1/planning.md"
       - "src/paperagent/schemas/plan.py"
+      - "src/paperagent/evidence_gap_binding.py"
+      - "src/paperagent/retrieval/verify_evidence.py"
+      - "src/paperagent/retrieval/prepare_search.py"
       - "src/paperagent/literature/query_concepts.py"
+      - "src/paperagent/literature/query_refinement.py"
       - "src/paperagent/literature/ranking.py"
       - "tests/literature/test_query_concepts.py"
+      - "tests/literature/test_query_refinement.py"
       - "tests/literature/test_source_selection_policy.py"
+      - "tests/nodes/test_retrieval.py"
+      - "tests/review/test_semantic_gap_binding.py"
+      - "tests/review/test_consolidated_regressions.py"
       - "tests/schemas/test_plan_nonblocking_clarification.py"
+      - "tests/unit/test_schemas.py"
   workflow_dispatch:
 
 permissions:
@@ -28,7 +37,7 @@ concurrency:
 jobs:
   case-001:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 30
     env:
       MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
       PAPERAGENT_LLM_PROVIDER: mistral
@@ -57,31 +66,52 @@ jobs:
           mkdir -p "$out"
           files=(
             src/paperagent/schemas/plan.py
+            src/paperagent/evidence_gap_binding.py
+            src/paperagent/retrieval/verify_evidence.py
+            src/paperagent/retrieval/prepare_search.py
             src/paperagent/literature/query_concepts.py
+            src/paperagent/literature/query_refinement.py
             src/paperagent/literature/ranking.py
             scripts/probe_claw_case_retrieval.py
             scripts/probe_claw_case_end_to_end.py
             tests/literature/test_query_concepts.py
+            tests/literature/test_query_refinement.py
+            tests/nodes/test_retrieval.py
+            tests/review/test_semantic_gap_binding.py
             tests/schemas/test_plan_nonblocking_clarification.py
+            tests/unit/test_schemas.py
           )
           ruff check "${files[@]}" > "$out/ruff.log" 2>&1
           ruff_status=$?
           ruff format --check "${files[@]}" > "$out/format.log" 2>&1
           format_status=$?
+          mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
+          mypy_status=$?
           pytest -q \
             tests/literature/test_query_concepts.py \
+            tests/literature/test_query_refinement.py \
             tests/literature/test_source_selection_policy.py \
+            tests/nodes/test_retrieval.py \
+            tests/review/test_semantic_gap_binding.py \
+            tests/review/test_consolidated_regressions.py \
             tests/schemas/test_plan_nonblocking_clarification.py \
+            tests/unit/test_schemas.py \
             > "$out/pytest.log" 2>&1
           pytest_status=$?
-          python - "$out/validation.json" "$ruff_status" "$format_status" "$pytest_status" <<'PY'
+          python - \
+            "$out/validation.json" \
+            "$ruff_status" \
+            "$format_status" \
+            "$mypy_status" \
+            "$pytest_status" <<'PY'
           import json
           import sys
 
           payload = {
               "ruff": int(sys.argv[2]),
               "format": int(sys.argv[3]),
-              "pytest": int(sys.argv[4]),
+              "mypy": int(sys.argv[4]),
+              "pytest": int(sys.argv[5]),
           }
           payload["passed"] = all(value == 0 for value in payload.values())
           with open(sys.argv[1], "w", encoding="utf-8") as handle:
@@ -89,8 +119,13 @@ jobs:
               handle.write("\n")
           print(json.dumps(payload, sort_keys=True))
           PY
-          if (( ruff_status || format_status || pytest_status )); then
-            python - "$out/summary.json" "$ruff_status" "$format_status" "$pytest_status" <<'PY'
+          if (( ruff_status || format_status || mypy_status || pytest_status )); then
+            python - \
+              "$out/summary.json" \
+              "$ruff_status" \
+              "$format_status" \
+              "$mypy_status" \
+              "$pytest_status" <<'PY'
           import json
           import sys
 
@@ -101,7 +136,8 @@ jobs:
               "validation": {
                   "ruff": int(sys.argv[2]),
                   "format": int(sys.argv[3]),
-                  "pytest": int(sys.argv[4]),
+                  "mypy": int(sys.argv[4]),
+                  "pytest": int(sys.argv[5]),
               },
               "web_search_enabled": False,
           }
