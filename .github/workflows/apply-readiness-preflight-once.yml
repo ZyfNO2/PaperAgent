@@ -7,6 +7,7 @@ on:
     types: [opened, reopened, synchronize]
     paths:
       - "scripts/apply_readiness_preflight.py"
+      - "scripts/apply_readiness_test_contracts.py"
       - "src/paperagent/nodes/readiness_preflight.py"
       - "tests/nodes/test_readiness_preflight.py"
       - ".github/workflows/apply-readiness-preflight-once.yml"
@@ -43,7 +44,9 @@ jobs:
           set -euo pipefail
           mkdir -p build/readiness-preflight
           python scripts/apply_readiness_preflight.py
+          python scripts/apply_readiness_test_contracts.py
           rm scripts/apply_readiness_preflight.py
+          rm scripts/apply_readiness_test_contracts.py
           rm .github/workflows/apply-readiness-preflight-once.yml
           ruff format src tests scripts
           ruff check --fix src tests scripts
@@ -70,7 +73,15 @@ jobs:
             tests/nodes/test_readiness_preflight.py \
             tests/evals/test_claw_benchmark_adapter.py \
             tests/evals/test_benchmark_input_boundary_v2.py \
-            tests/unit/test_schemas.py
+            tests/unit/test_schemas.py \
+            tests/graph/test_full_graph.py \
+            tests/e2e/test_graph_e2e_blocked.py \
+            tests/e2e/test_graph_e2e_bounded_failure.py \
+            tests/e2e/test_graph_e2e_happy_path.py \
+            tests/e2e/test_graph_e2e_malformed.py \
+            tests/e2e/test_graph_e2e_method_repair.py \
+            tests/e2e/test_graph_e2e_retrieval_retry.py \
+            tests/e2e/test_graph_e2e_timeout.py
       - name: Strict Mypy
         run: mypy --config-file pyproject.toml
       - name: Full tests and branch coverage
