@@ -75,9 +75,10 @@ def is_identifiable_public_title(title: str) -> bool:
     tokens = _TOKEN.findall(normalized)
     discriminative = [token for token in tokens if token.casefold() not in _GENERIC_TOKENS]
     has_identifier = any(_has_identifier_form(token) for token in discriminative)
-    has_cjk_title = any("\u3400" <= character <= "\u9fff" for character in normalized) and len(
-        normalized.replace(" ", "")
-    ) >= 8
+    has_cjk_title = (
+        any("\u3400" <= character <= "\u9fff" for character in normalized)
+        and len(normalized.replace(" ", "")) >= 8
+    )
     return len(discriminative) >= 3 or (len(tokens) >= 3 and has_identifier) or has_cjk_title
 
 
