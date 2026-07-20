@@ -1,23 +1,49 @@
 {
   "accepted_evidence": [
     {
-      "evidence_id": "ev-paper-b90fda0fa618c67ebbf8",
-      "locator": "https://arxiv.org/abs/2602.03622",
+      "evidence_id": "ev-paper-f7648a4b6276f6496c7f",
+      "locator": "https://arxiv.org/abs/2107.00606",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_comparison",
-        "failure_mechanism_limitation",
-        "parallel_methods_evidence"
+        "baseline_repro",
+        "parallel_methods"
       ],
-      "title": "Quasi-multimodal-based pathophysiological feature learning for retinal disease diagnosis",
+      "title": "Action Transformer: A Self-Attention Model for Short-Time Pose-Based Human Action Recognition",
       "verification_status": "accepted"
     }
   ],
-  "case_id": "at-009-multimodal-medical-fusion",
+  "case_id": "at-007-camera-action-quality",
   "decision_matches": true,
   "execution_status": "completed",
   "expected_decision": "REVISE_TO_PILOT",
   "failed_stages": [
+    {
+      "available": 10,
+      "earned": 8,
+      "findings": [
+        "explicit facts, inferences, or proposals were not recorded"
+      ],
+      "passed": false,
+      "stage": "parse_user_input"
+    },
+    {
+      "available": 8,
+      "earned": 6,
+      "findings": [
+        "retrieval role parallel_method is missing"
+      ],
+      "passed": false,
+      "stage": "exploratory_retrieval"
+    },
+    {
+      "available": 7,
+      "earned": 5,
+      "findings": [
+        "core accepted evidence lacks full-text review"
+      ],
+      "passed": false,
+      "stage": "relevance_review"
+    },
     {
       "available": 10,
       "earned": 7,
@@ -26,14 +52,51 @@
       ],
       "passed": false,
       "stage": "clarification_gate"
+    },
+    {
+      "available": 15,
+      "earned": 4,
+      "findings": [
+        "baseline card is missing",
+        "baseline source is not accepted evidence",
+        "baseline freeze contract is incomplete"
+      ],
+      "passed": false,
+      "stage": "freeze_baseline"
+    },
+    {
+      "available": 15,
+      "earned": 0,
+      "findings": [
+        "falsifiable hypothesis is missing condition, limitation, mechanism, intervention, metric, or guardrail"
+      ],
+      "passed": false,
+      "stage": "gap_hypothesis"
+    },
+    {
+      "available": 5,
+      "earned": 1,
+      "findings": [
+        "experiment matrix fields are incomplete",
+        "baseline experiment arm is missing",
+        "strong-comparison experiment arm is missing",
+        "stop conditions are missing"
+      ],
+      "passed": false,
+      "stage": "experiment_matrix"
     }
   ],
-  "hard_failures": [],
+  "hard_failures": [
+    {
+      "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+      "details": "stronger baselines or negative results were not preserved"
+    }
+  ],
   "llm_call_budget": 12,
   "minimum_score": 80,
   "model": "mistral-small-latest",
   "observed_decision": "REVISE_TO_PILOT",
-  "passed": true,
+  "passed": false,
   "provider": "mistral",
   "provider_call_budget": {
     "maximum": 8,
@@ -41,7 +104,7 @@
     "used": 8
   },
   "report_status": "completed",
-  "score": 97,
+  "score": 61,
   "search_diagnostics": [
     {
       "attempted_providers": [
@@ -51,19 +114,15 @@
       ],
       "fallback_used": false,
       "informative_terms": [
-        "multimodal",
-        "medical",
-        "imaging",
-        "disease",
-        "classification",
-        "feature",
-        "fusion",
+        "camera",
+        "video",
+        "pose",
+        "human",
+        "action",
+        "recognition",
         "baseline",
         "reproducible",
-        "ct",
-        "mri",
-        "pet",
-        "x-ray"
+        "efficiency"
       ],
       "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
@@ -72,10 +131,10 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q1_baseline",
-      "relevant_verified_papers": 0,
-      "returned_papers": 0,
-      "stop_reason": "academic_budget_exhausted"
+      "query_id": "q_baseline_repro",
+      "relevant_verified_papers": 3,
+      "returned_papers": 3,
+      "stop_reason": "sufficient_academic_evidence"
     },
     {
       "attempted_providers": [
@@ -85,32 +144,30 @@
       ],
       "fallback_used": false,
       "informative_terms": [
-        "multimodal",
-        "medical",
-        "imaging",
-        "disease",
-        "classification",
-        "feature",
-        "fusion",
+        "camera",
+        "video",
+        "pose",
+        "human",
+        "action",
+        "recognition",
         "failure",
-        "mode",
-        "limitation",
-        "mechanism",
-        "noise",
-        "modality",
-        "incompatibility"
+        "modes",
+        "occlusion",
+        "viewpoint",
+        "generalization",
+        "limitations"
       ],
-      "maximum_provider_calls": 3,
+      "maximum_provider_calls": 4,
       "minimum_rank_score": 0.62,
       "minimum_relevance": 0.34,
       "policy_reasons": [],
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q2_failure_mechanism",
-      "relevant_verified_papers": 1,
-      "returned_papers": 1,
-      "stop_reason": "academic_budget_exhausted"
+      "query_id": "q_failure_mechanism",
+      "relevant_verified_papers": 2,
+      "returned_papers": 2,
+      "stop_reason": "sufficient_academic_evidence"
     },
     {
       "attempted_providers": [
@@ -120,33 +177,35 @@
       ],
       "fallback_used": false,
       "informative_terms": [
-        "medical",
-        "imaging",
-        "disease",
-        "classification",
-        "alternatives",
-        "single-modal",
-        "ensemble",
-        "learning"
+        "camera",
+        "video",
+        "pose",
+        "human",
+        "action",
+        "recognition",
+        "deep",
+        "learning",
+        "classical",
+        "approaches"
       ],
-      "maximum_provider_calls": 3,
+      "maximum_provider_calls": 4,
       "minimum_rank_score": 0.62,
       "minimum_relevance": 0.34,
       "policy_reasons": [],
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q3_parallel_methods",
+      "query_id": "q_parallel_methods",
       "relevant_verified_papers": 0,
       "returned_papers": 0,
       "stop_reason": "academic_budget_exhausted"
     }
   ],
-  "status": "passed",
+  "status": "failed",
   "verification_call_budget": {
     "maximum": 16,
-    "remaining": 7,
-    "used": 9
+    "remaining": 6,
+    "used": 10
   },
   "web_search_enabled": false
 }
