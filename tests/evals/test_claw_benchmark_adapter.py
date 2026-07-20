@@ -262,7 +262,7 @@ def test_revise_with_only_placeholder_recovery_defers_pilot() -> None:
                 executive_summary="Evidence was insufficient.",
                 verified_findings=[],
                 inferred_findings=[],
-                limitations=[],
+                limitations=["Public evidence remains insufficient."],
                 next_actions=[],
                 evidence_ids=[],
             ),
