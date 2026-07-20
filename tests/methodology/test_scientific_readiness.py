@@ -7,9 +7,9 @@ from paperagent.scientific_readiness import derive_scientific_readiness
 
 def test_chinese_completed_workflow_is_detected() -> None:
     signals = derive_scientific_readiness(
-        "项目已经复现并冻结具体基线及代码版本；使用独立测试划分；"
-        "找到同协议强对比；验证模块与基线输入语义兼容；"
-        "单模块消融在三个种子上稳定改善；失败样本和停止条件已记录。"
+        "项目已经复现并冻结具体基线及代码版本;使用独立测试划分;"
+        "找到同协议强对比;验证模块与基线输入语义兼容;"
+        "单模块消融在三个种子上稳定改善;失败样本和停止条件已记录。"
     )
 
     assert signals.baseline_readiness_confirmed is True
@@ -32,7 +32,7 @@ def test_train_test_overlap_is_invalid_and_overrides_independence() -> None:
 
 def test_chinese_train_test_overlap_is_invalid() -> None:
     signals = derive_scientific_readiness(
-        "检查发现相同对象同时出现在训练集和测试集，当前随机划分分数不能作为证据。"
+        "检查发现相同对象同时出现在训练集和测试集,当前随机划分分数不能作为证据。"
     )
 
     assert signals.explicit_evaluation_protocol_invalid is True

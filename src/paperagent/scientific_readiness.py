@@ -58,6 +58,7 @@ def _invalid_evaluation(text: str) -> bool:
             (
                 "overlap",
                 "appears in both",
+                "appear in both",
                 "present in both",
                 "duplicate",
                 "同时出现",

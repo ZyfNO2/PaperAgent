@@ -27,6 +27,7 @@ from paperagent.schemas.method import (
     MethodModule,
     MethodProposal,
 )
+from paperagent.scientific_readiness import derive_scientific_readiness
 from paperagent.state import PaperAgentState
 
 
@@ -205,6 +206,32 @@ def build_method_proposal(
     evidence_bundle = state.get("evidence")
     if request is None or plan is None or evidence_bundle is None:
         raise ValueError("request, research plan, and evidence are required")
+
+    explicit = derive_scientific_readiness(request.question)
+    invalid_protocol = (
+        draft.explicit_evaluation_protocol_invalid or explicit.explicit_evaluation_protocol_invalid
+    )
+    draft = draft.model_copy(
+        update={
+            "baseline_readiness_confirmed": (
+                draft.baseline_readiness_confirmed or explicit.baseline_readiness_confirmed
+            ),
+            "evaluation_protocol_validated": (
+                (draft.evaluation_protocol_validated or explicit.evaluation_protocol_validated)
+                and not invalid_protocol
+            ),
+            "comparison_readiness_confirmed": (
+                draft.comparison_readiness_confirmed or explicit.comparison_readiness_confirmed
+            ),
+            "module_validation_confirmed": (
+                draft.module_validation_confirmed or explicit.module_validation_confirmed
+            ),
+            "failure_policy_confirmed": (
+                draft.failure_policy_confirmed or explicit.failure_policy_confirmed
+            ),
+            "explicit_evaluation_protocol_invalid": invalid_protocol,
+        }
+    )
 
     accepted = tuple(evidence_bundle.accepted_items())
     if not accepted:
