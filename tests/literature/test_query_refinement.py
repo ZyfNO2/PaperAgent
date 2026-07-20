@@ -7,9 +7,10 @@ from paperagent.literature.query_refinement import refine_search_query
 from paperagent.schemas import PreparedQuery
 
 _OVERSTUFFED_QUERY = (
-    "drone small object detection failure mode limitation parallel methods "
-    "multimodal temporal super-resolution"
+    "drone small object detection failure mechanism limitation parallel method "
+    "feature enhancement multi-scale fusion knowledge distillation"
 )
+_REFINED_QUERY = "drone small object detection failure mechanism limitation methods"
 _MECHANISM_DESCRIPTION = (
     "failure mechanism, limitation, and parallel method evidence for aerial small objects"
 )
@@ -23,14 +24,19 @@ def test_overconstrained_mechanism_query_is_refined_without_losing_task_terms() 
     )
 
     assert result.changed is True
-    assert result.query == "drone small object detection failure mode limitation methods"
+    assert result.query == _REFINED_QUERY
     assert set(result.removed_families) == {
-        "multimodal",
-        "temporal",
-        "super-resolution",
+        "feature enhancement",
+        "multi-scale fusion",
+        "knowledge distillation",
     }
     assert result.reason is not None
-    for preserved in ("drone", "small object detection", "failure mode", "limitation"):
+    for preserved in (
+        "drone",
+        "small object detection",
+        "failure mechanism",
+        "limitation",
+    ):
         assert preserved in result.query
 
 
@@ -66,9 +72,14 @@ def test_exact_identifier_query_is_never_refined(query: str) -> None:
     assert result.query == query
 
 
-def test_one_or_two_method_families_are_kept() -> None:
-    query = "drone small object detection knowledge distillation attention"
-
+@pytest.mark.parametrize(
+    "query",
+    [
+        "drone small object detection knowledge distillation attention",
+        "drone small object detection feature enhancement multi-scale fusion",
+    ],
+)
+def test_one_or_two_method_families_are_kept(query: str) -> None:
     result = refine_search_query(
         query,
         gap_id="parallel_method",
@@ -152,12 +163,12 @@ async def test_prepare_search_refines_once_and_preserves_audit_fields(fixed_time
 
     assert len(prepared) == 1
     assert prepared[0].query_id == "q-mechanism"
-    assert prepared[0].query == "drone small object detection failure mode limitation methods"
+    assert prepared[0].query == _REFINED_QUERY
     assert prepared[0].original_query == _OVERSTUFFED_QUERY
     assert prepared[0].refinement_reason is not None
     assert set(prepared[0].removed_families) == {
-        "multimodal",
-        "temporal",
-        "super-resolution",
+        "feature enhancement",
+        "multi-scale fusion",
+        "knowledge distillation",
     }
     assert plan.search_queries[0].query == _OVERSTUFFED_QUERY
