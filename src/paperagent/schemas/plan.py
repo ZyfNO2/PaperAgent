@@ -42,8 +42,6 @@ class PreparedQuery(FrozenModel):
         if self.original_query is not None:
             if not self.refinement_reason:
                 raise ValueError("refined query requires refinement_reason")
-            if not self.removed_families:
-                raise ValueError("refined query requires removed_families")
             if self.original_query.strip() == self.query.strip():
                 raise ValueError("refined query must differ from original_query")
         elif self.refinement_reason is not None or self.removed_families:
