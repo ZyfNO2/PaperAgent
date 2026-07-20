@@ -1,15 +1,28 @@
 {
-  "artifact_name": "claw-paid-full-20-29766449726",
+  "artifact_name": "claw-paid-full-20-29766613097",
   "execution_summary": null,
   "outcomes": {
     "full_runtime": "skipped",
-    "live_smoke": "skipped",
-    "offline_gate": "skipped",
-    "secret_preflight": "failure"
+    "literature_smoke": "skipped",
+    "mistral_smoke": "skipped",
+    "offline_gate": "failure"
   },
   "passed": false,
   "schema": "paperagent.claw-paid-full-20-workflow.v1",
-  "source_sha": "6f28a9ba995e8e93e2c757fdeec500357453e5ee",
-  "status": "failed",
-  "workflow_run_id": 29766449726
+  "secret_preflight": {
+    "contact_email_present": false,
+    "missing": [
+      "PAPERAGENT_CONTACT_EMAIL"
+    ],
+    "mistral_api_key_present": true,
+    "passed": false,
+    "required": [
+      "MISTRAL_API_KEY",
+      "PAPERAGENT_CONTACT_EMAIL"
+    ],
+    "semantic_scholar_api_key_present": false
+  },
+  "source_sha": "e2ede3de0b198cb85e4907b109eb0b1befe33959",
+  "status": "blocked_missing_required_secret",
+  "workflow_run_id": 29766613097
 }
