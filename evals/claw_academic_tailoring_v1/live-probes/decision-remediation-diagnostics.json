@@ -18,12 +18,12 @@
     "leakage": "skipped because patch application failed",
     "mypy": "skipped because patch application failed",
     "patch_followup": "skipped because main patch failed",
-    "patch_main": "Traceback (most recent call last):\n  File \"/home/runner/work/PaperAgent/PaperAgent/scripts/apply_public_dev_decision_fix.py\", line 7, in <module>\n    runpy.run_path(str(path), run_name=\"__main__\")\n  File \"<frozen runpy>\", line 287, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/runner/work/PaperAgent/PaperAgent/scripts/apply_public_dev_decision_fix_v2.py\", line 43, in <module>\n    replace_once(\n  File \"/home/runner/work/PaperAgent/PaperAgent/scripts/apply_public_dev_decision_fix_v2.py\", line 13, in replace_once\n    raise RuntimeError(\nRuntimeError: expected one replacement in src/paperagent/method_design_draft.py, found 0: '    accepted_by_id = {item.evidence_id: item for item in evidence.items}\\n    accepted = tuple(accepted_by_id[item_id] fo'",
+    "patch_main": "Traceback (most recent call last):\n  File \"/home/runner/work/PaperAgent/PaperAgent/scripts/apply_public_dev_decision_fix.py\", line 8, in <module>\n    runpy.run_path(str(current), run_name=\"__main__\")\n  File \"<frozen runpy>\", line 286, in run_path\n  File \"<frozen runpy>\", line 254, in _get_code_from_file\nFileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/PaperAgent/PaperAgent/scripts/apply_public_dev_decision_fix_v3.py'",
     "ruff": "skipped because patch application failed",
     "ruff_fix": "skipped because patch application failed",
     "targeted": "skipped because patch application failed"
   },
   "passed": false,
   "schema": "paperagent.decision-remediation-diagnostics.v1",
-  "workflow_trigger_sha": "5e88e1bb4e5cd964794825d11c87c5b86567f550"
+  "workflow_trigger_sha": "734f52e72a1e23a5892bccb8ac578a07a1fbd25e"
 }
