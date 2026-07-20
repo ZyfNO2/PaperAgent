@@ -12,6 +12,7 @@ from paperagent.claw_benchmark_runtime import (
     build_benchmark_search_runtime,
     execute_benchmark_case,
 )
+from paperagent.claw_gold_adapter import benchmark_input_from_gold
 from paperagent.literature.factory import LiteratureProviderSettings
 from paperagent.providers import FakeSearchProvider
 from paperagent.providers.config import load_provider_config
@@ -157,7 +158,8 @@ async def _run(args: argparse.Namespace) -> int:
         for index, case in enumerate(cases, start=1):
             try:
                 state, trace = await execute_benchmark_case(
-                    case=case,
+                    benchmark_input=benchmark_input_from_gold(case),
+                    case_id=case.case_id,
                     llm=llm,
                     search=search_runtime.adapter,
                     max_llm_calls=args.max_llm_calls,
