@@ -6,25 +6,32 @@ from collections.abc import Iterable
 from pydantic import Field
 
 from paperagent.academic_methodology import (
-    BaselineSpec,
-    ExperimentArm,
+    BaselineCard,
+    EvidenceItem as MethodEvidenceItem,
     ExperimentArmType,
+    ExperimentCard,
     FalsifiableHypothesis,
     MethodPlan,
-    ProposedModule,
+    ModuleCard,
     ResearchContract,
 )
-from paperagent.method_evidence import canonical_methodology_evidence
 from paperagent.schemas.base import FrozenModel
-from paperagent.schemas.method import MethodProposal, MethodVariables
+from paperagent.schemas.method import (
+    AblationPlan,
+    BaselineProposal,
+    ExperimentPlan,
+    IntegrationContract,
+    MethodModule,
+    MethodProposal,
+)
 from paperagent.state import PaperAgentState
 
 
 class MethodDesignDraft(FrozenModel):
     """Low-nesting LLM surface for method design.
 
-    Provenance, experiment fairness, implementation switches, baseline parity, and all duplicated
-    legacy summary fields are created by the server after this draft validates.
+    Provenance, experiment fairness, implementation switches, baseline parity,
+    and duplicated legacy fields are created by the server after validation.
     """
 
     problem_method_insight: str = Field(min_length=10)
@@ -59,6 +66,10 @@ def _dedupe(values: Iterable[str]) -> tuple[str, ...]:
     return tuple(output)
 
 
+def _dedupe_list(values: Iterable[str]) -> list[str]:
+    return list(_dedupe(values))
+
+
 def _slug(value: str) -> str:
     normalized = re.sub(r"[^a-z0-9]+", "_", value.casefold()).strip("_")
     return normalized[:48] or "candidate_module"
@@ -80,10 +91,40 @@ def _grounded_optional(value: str | None, evidence_text: str) -> str | None:
     return normalized if normalized.casefold() in evidence_text.casefold() else None
 
 
+def _metadata_text(metadata: dict[str, str], key: str) -> str | None:
+    value = metadata.get(key)
+    if value is None:
+        return None
+    normalized = value.strip()
+    return normalized or None
+
+
 def _hypothesis_sentence(draft: MethodDesignDraft) -> str:
     return (
-        f"Under {draft.condition}, {draft.intervention} should {draft.predicted_metric_change} "
-        f"because {draft.mechanism} addresses {draft.limitation}, while {draft.guardrail}."
+        f"Under {draft.condition}, {draft.intervention} should "
+        f"{draft.predicted_metric_change} because {draft.mechanism} addresses "
+        f"{draft.limitation}, while {draft.guardrail}."
+    )
+
+
+def _canonical_evidence(state: PaperAgentState) -> tuple[MethodEvidenceItem, ...]:
+    evidence = state.get("evidence")
+    if evidence is None:
+        return ()
+    return tuple(
+        MethodEvidenceItem(
+            evidence_id=item.evidence_id,
+            source_type=item.source_type,
+            title=item.title,
+            stable_identifier=item.stable_identifier,
+            verified=True,
+            supported_claims=(),
+            limitations=(),
+            content_hash=item.content_hash,
+            license=_metadata_text(item.metadata, "license"),
+            repository_ref=_metadata_text(item.metadata, "repository_ref"),
+        )
+        for item in evidence.accepted_items()
     )
 
 
@@ -100,8 +141,8 @@ def _experiment(
     metrics: tuple[str, ...],
     resource_measures: tuple[str, ...],
     stopping_criteria: str,
-) -> ExperimentArm:
-    return ExperimentArm(
+) -> ExperimentCard:
+    return ExperimentCard(
         name=name,
         arm_type=arm_type,
         included_modules=included_modules,
@@ -132,11 +173,11 @@ def build_method_proposal(
 ) -> MethodProposal:
     request = state.get("request")
     plan = state.get("plan")
-    if request is None or plan is None:
-        raise ValueError("request and research plan are required for method canonicalization")
+    evidence_bundle = state.get("evidence")
+    if request is None or plan is None or evidence_bundle is None:
+        raise ValueError("request, research plan, and evidence are required")
 
-    evidence = canonical_methodology_evidence(state)
-    accepted = tuple(item for item in evidence if item.verified and item.relevance_passed)
+    accepted = tuple(evidence_bundle.accepted_items())
     if not accepted:
         raise ValueError("method canonicalization requires accepted methodology evidence")
     primary = accepted[0]
@@ -145,8 +186,8 @@ def build_method_proposal(
     grounded_comparator = _grounded_optional(draft.reported_comparator, evidence_text)
 
     dataset = grounded_dataset or (
-        "unresolved task-matched dataset; select and freeze a public UAV small-object benchmark "
-        "before the pilot"
+        "unresolved task-matched dataset; select and freeze a public UAV small-object "
+        "benchmark before the pilot"
     )
     baseline_name = primary.title
     comparator = grounded_comparator or (
@@ -155,13 +196,6 @@ def build_method_proposal(
     module_name = draft.module_name.strip()
     module_switch = f"enable_{_slug(module_name)}"
     plan_risks = tuple(plan.risks)
-    unresolved = _dedupe(
-        (
-            plan.clarification_question or "",
-            *plan_risks,
-            "exact baseline implementation version, dataset split, and deployment device remain unresolved",
-        )
-    )
 
     contract = ResearchContract(
         target_problem=request.question,
@@ -172,28 +206,26 @@ def build_method_proposal(
         observed_problem=draft.limitation,
         proposed_mechanism=draft.mechanism,
     )
-    baseline = BaselineSpec(
+    baseline = BaselineCard(
         name=baseline_name,
-        version_or_commit=f"published artifact {primary.stable_identifier}; implementation commit unresolved",
+        version_or_commit=(
+            f"published source {primary.stable_identifier}; implementation commit unresolved"
+        ),
         source_evidence_id=primary.evidence_id,
-        license=primary.license,
-        repository_ref=primary.repository_ref,
+        license=_metadata_text(primary.metadata, "license"),
         dataset=dataset,
         split="not yet frozen; preserve the documented benchmark split and record data hashes",
         environment=(
-            "not yet frozen; record hardware, framework, precision, export path, and dependency lock"
+            "not yet frozen; record hardware, framework, precision, export path, "
+            "and dependency lock"
         ),
         seed_policy="three fixed seeds (1, 2, 3) for all pilot comparisons",
         reproduced=False,
         reproduced_metric=None,
-        disabled_module_parity_path=(
-            f"set {module_switch}=false and execute the unchanged baseline graph and preprocessing"
-        ),
-        baseline_parity_verified=False,
         compute_fit=None,
-        weight_fingerprint=None,
-        config_fingerprint=None,
+        baseline_parity_verified=False,
         dataset_fingerprint=None,
+        environment_fingerprint=None,
     )
     hypothesis = FalsifiableHypothesis(
         condition=draft.condition,
@@ -203,24 +235,26 @@ def build_method_proposal(
         predicted_metric_change=draft.predicted_metric_change,
         guardrail=draft.guardrail,
     )
-    module = ProposedModule(
+    module = ModuleCard(
         name=module_name,
         evidence_id=primary.evidence_id,
         original_role=draft.module_original_role,
         proposed_role=draft.module_proposed_role,
-        license=primary.license,
+        license=_metadata_text(primary.metadata, "license"),
         input_semantics=draft.input_semantics,
         output_semantics=draft.output_semantics,
         input_shape=(
-            "shape-preserving detector feature map at the selected insertion point; exact channels "
-            "are resolved after the baseline is frozen"
+            "shape-preserving detector feature map at the selected insertion point; "
+            "exact channels are resolved after the baseline is frozen"
         ),
-        output_shape="same spatial and channel contract required by the downstream baseline stage",
+        output_shape=(
+            "same spatial and channel contract required by the downstream baseline stage"
+        ),
         normalization="inherit and freeze the baseline normalization contract",
-        masks="inherit baseline target and padding masks; introduce no new mask semantics initially",
-        ordering=(
-            "insert one independently switchable module at the evidence-motivated feature stage"
+        masks=(
+            "inherit baseline target and padding masks; introduce no new mask semantics initially"
         ),
+        ordering="insert one independently switchable module at the selected feature stage",
         trainable=True,
         loss_terms=("inherit baseline detection losses and weights for the first pilot",),
         gradient_expectation=(
@@ -229,14 +263,19 @@ def build_method_proposal(
         parameter_update_scope=(
             "train the candidate module and matched baseline parameters under the same budget"
         ),
-        loss_scale="keep baseline loss scaling unchanged unless a documented pilot failure requires repair",
+        loss_scale=(
+            "keep baseline loss scaling unchanged unless a documented pilot failure requires repair"
+        ),
         compute_cost=draft.compute_cost,
-        assumptions=_dedupe((*plan_risks, "the selected insertion point preserves tensor semantics")),
+        assumptions=_dedupe(
+            (*plan_risks, "the selected insertion point preserves tensor semantics")
+        ),
         predicted_effect=draft.predicted_effect,
         failure_mode=draft.failure_mode,
         implementation_switch=module_switch,
         baseline_parity_behavior=(
-            "when disabled, the module contributes no parameters, operations, preprocessing, or loss terms"
+            "when disabled, the module contributes no parameters, operations, "
+            "preprocessing, or loss terms"
         ),
     )
     metrics = _dedupe((draft.primary_metric, "AP_small", "latency"))
@@ -287,7 +326,7 @@ def build_method_proposal(
             included_modules=(),
             source_evidence_id=primary.evidence_id,
             comparator=comparator,
-            purpose="test whether the proposed contribution survives a stronger matched comparator",
+            purpose="test whether the contribution survives a stronger matched comparator",
             contrast="full method versus accepted-evidence strong comparison",
             dataset=dataset,
             metrics=metrics,
@@ -295,49 +334,85 @@ def build_method_proposal(
             stopping_criteria=draft.stopping_criteria,
         ),
     )
+    stop_conditions = _dedupe(
+        (
+            draft.stopping_criteria,
+            "stop if the target gain disappears under matched data and tuning",
+            "revise if latency, memory, or compute guardrails fail on the selected device",
+            "do not claim novelty if a stronger comparison implements the same mechanism",
+        )
+    )
     methodology_plan = MethodPlan(
-        research_contract=contract,
-        evidence=evidence,
+        research=contract,
+        evidence=_canonical_evidence(state),
         baseline=baseline,
         hypothesis=hypothesis,
         modules=(module,),
         experiments=experiments,
-        stop_conditions=_dedupe(
-            (
-                draft.stopping_criteria,
-                "stop if the target gain disappears under matched data, preprocessing, and tuning",
-                "revise if latency, memory, or compute guardrails fail on the selected device",
-                "do not claim novelty if an accepted stronger comparison implements the same mechanism",
-            )
-        ),
-        unresolved_questions=unresolved,
+        stop_conditions=stop_conditions,
     )
-    hypothesis_text = _hypothesis_sentence(draft)
-    reproducibility_risks = _dedupe(
+    risks = _dedupe_list(
         (
             *plan_risks,
-            "baseline reproduction and disabled-module parity have not yet been verified",
+            plan.clarification_question or "",
+            "baseline reproduction and disabled-module parity are not yet verified",
             "implementation and evidence licenses must be resolved before code reuse",
         )
     )
+    hypothesis_text = _hypothesis_sentence(draft)
+    evidence_ids = [item.evidence_id for item in accepted]
+
     return MethodProposal(
-        problem_method_insight=draft.problem_method_insight,
-        proposed_method_summary=draft.proposed_method_summary,
-        falsifiable_hypothesis=hypothesis_text,
-        variables=MethodVariables(
-            independent=(module_switch,),
-            dependent=metrics,
-            controlled=(
-                "dataset split",
-                "preprocessing",
-                "training and tuning budget",
-                "random seeds",
-                "inference precision and hardware",
+        baseline=BaselineProposal(
+            name=baseline_name,
+            description=(
+                "Accepted-evidence baseline candidate; implementation version, reproduction, "
+                "and deployment fit remain pilot gates."
             ),
         ),
-        ablations=tuple(item.name for item in experiments),
-        reproducibility_risks=reproducibility_risks,
-        evidence_ids=tuple(item.evidence_id for item in accepted),
+        modules=[
+            MethodModule(
+                module_id=module_name,
+                name=module_name,
+                purpose=draft.module_proposed_role,
+            )
+        ],
+        integration_contracts=[
+            IntegrationContract(
+                from_module="frozen_baseline_feature_stage",
+                to_module=module_name,
+                input=draft.input_semantics,
+                output=draft.output_semantics,
+            )
+        ],
+        problem_method_insight=draft.problem_method_insight,
+        falsifiable_hypothesis=hypothesis_text,
+        minimum_key_experiment=ExperimentPlan(
+            name="matched frozen-baseline pilot",
+            conditions=[
+                "run the frozen baseline with the module disabled",
+                f"run the same configuration with {module_switch}=true",
+                "hold data, preprocessing, tuning budget, seeds, precision, and hardware fixed",
+            ],
+            metrics=list(metrics),
+            baseline=baseline_name,
+            success_threshold=draft.stopping_criteria,
+        ),
+        ablations=[
+            AblationPlan(
+                name="module-off parity",
+                change=f"set {module_switch}=false",
+                expected_observation="recover the unchanged frozen baseline path",
+            ),
+            AblationPlan(
+                name="single-module causal test",
+                change=f"enable only {module_name} under the matched budget",
+                expected_observation=draft.predicted_effect,
+            ),
+        ],
+        risks=risks,
+        stop_conditions=list(stop_conditions),
+        evidence_ids=evidence_ids,
         methodology_plan=methodology_plan,
     )
 
