@@ -59,11 +59,13 @@ def test_planning_prompt_v012_is_budget_aware_and_fail_closed() -> None:
     prompt = get_prompt("planning")
 
     assert prompt.version == "planning.v0.1.2"
-    assert "2-4 scientifically indispensable gaps" in prompt.system
+    assert "Choose the number and boundaries of evidence gaps" in prompt.system
     assert "Keep minimum_accepted_items at 1" in prompt.system
     assert "cannot exist in public search" in prompt.system
     assert "return blocked" in prompt.system
     assert "Never fabricate" in prompt.system
+    assert "exactly two consolidated required gaps" not in prompt.system
+    assert "role-explicit gap descriptions" not in prompt.system
 
 
 @pytest.mark.asyncio
