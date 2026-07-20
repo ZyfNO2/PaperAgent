@@ -6,6 +6,7 @@ on:
       - feat/claw-live-search-runtime
     paths:
       - scripts/apply_public_dev_decision_fix.py
+      - scripts/apply_public_dev_decision_fix_followup.py
 
 permissions:
   contents: write
@@ -33,7 +34,9 @@ jobs:
         run: python -m pip install -q -e '.[dev]'
 
       - name: Apply generic decision-policy fix
-        run: python scripts/apply_public_dev_decision_fix.py
+        run: |
+          python scripts/apply_public_dev_decision_fix.py
+          python scripts/apply_public_dev_decision_fix_followup.py
 
       - name: Format and lint
         run: |
@@ -70,6 +73,7 @@ jobs:
       - name: Commit clean source and remove one-shot machinery
         run: |
           rm -f scripts/apply_public_dev_decision_fix.py
+          rm -f scripts/apply_public_dev_decision_fix_followup.py
           rm -f .github/workflows/public-dev-decision-fix-once.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
