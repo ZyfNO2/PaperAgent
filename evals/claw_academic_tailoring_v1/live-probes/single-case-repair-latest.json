@@ -1,36 +1,35 @@
 {
   "accepted_evidence": [
     {
-      "evidence_id": "ev-paper-defbb5881fb0e747d2e6",
-      "locator": "https://arxiv.org/abs/2404.14464",
+      "evidence_id": "ev-paper-e22e878ca3531163c1d1",
+      "locator": "https://arxiv.org/abs/2010.13009",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_comparison_evidence",
-        "evaluation_metrics_and_datasets",
-        "failure_mechanism_and_parallel_methods"
+        "baseline_comparison",
+        "mechanism_limitation_parallel",
+        "risk_negative_evidence"
       ],
-      "title": "Tree of Reviews: A Tree-based Dynamic Iterative Retrieval Framework for Multi-hop Question Answering",
+      "title": "Discriminative Nearest Neighbor Few-Shot Intent Detection by Transferring Natural Language Inference",
       "verification_status": "accepted"
     },
     {
-      "evidence_id": "ev-paper-cccd3124d92be1cc007c",
-      "locator": "https://arxiv.org/abs/2406.15927",
+      "evidence_id": "ev-paper-c5415e63650a2abffa83",
+      "locator": "doi:10.1609/aaai.v35i14.17541",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_comparison_evidence",
-        "evaluation_metrics_and_datasets",
-        "failure_mechanism_and_parallel_methods"
+        "baseline_comparison",
+        "mechanism_limitation_parallel"
       ],
-      "title": "Semantic Entropy Probes: Robust and Cheap Hallucination Detection in LLMs",
+      "title": "Few-shot Learning for Multi-label Intent Detection",
       "verification_status": "accepted"
     }
   ],
-  "case_id": "at-013-professional-qa-hallucination",
+  "case_id": "at-011-few-shot-intent-detection",
   "decision_matches": true,
   "evidence_review": [
     {
       "accepted": true,
-      "evidence_id": "ev-paper-defbb5881fb0e747d2e6",
+      "evidence_id": "ev-paper-e22e878ca3531163c1d1",
       "gap_supports": [
         {
           "checklist_results": {
@@ -49,7 +48,7 @@
           },
           "confidence": 0.82,
           "decision": "accept",
-          "gap_id": "baseline_comparison_evidence",
+          "gap_id": "baseline_comparison",
           "limitations": [
             "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
           ],
@@ -72,7 +71,7 @@
           },
           "confidence": 0.72,
           "decision": "accept",
-          "gap_id": "failure_mechanism_and_parallel_methods",
+          "gap_id": "mechanism_limitation_parallel",
           "limitations": [
             "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
           ],
@@ -80,12 +79,12 @@
         },
         {
           "checklist_results": {
-            "cross_gap_reuse": false,
+            "cross_gap_reuse": true,
             "direct_relevance": true,
             "fixture_explicit_support": false,
             "gap_overlap": false,
             "provenance_qualified": true,
-            "query_provenance_match": true,
+            "query_provenance_match": false,
             "query_term_overlap": true,
             "relevance_passed": true,
             "required_concepts_match": true,
@@ -93,103 +92,21 @@
             "semantic_gap_binding": true,
             "supporting_span_present": true
           },
-          "confidence": 0.82,
+          "confidence": 0.72,
           "decision": "accept",
-          "gap_id": "evaluation_metrics_and_datasets",
+          "gap_id": "risk_negative_evidence",
           "limitations": [
-            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
           ],
           "support_type": "direct_support"
         }
       ],
       "rejection_reasons": [],
-      "title": "Tree of Reviews: A Tree-based Dynamic Iterative Retrieval Framework for Multi-hop Question Answering"
-    },
-    {
-      "accepted": false,
-      "evidence_id": "ev-paper-560c52c88ca9af676ff2",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": true,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.2,
-          "decision": "reject",
-          "gap_id": "baseline_comparison_evidence",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": false,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "failure_mechanism_and_parallel_methods",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": true,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.2,
-          "decision": "reject",
-          "gap_id": "evaluation_metrics_and_datasets",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        }
-      ],
-      "rejection_reasons": [
-        "NO_VALID_GAP_BINDING"
-      ],
-      "title": "Enhancing Retrieval-Augmented Large Language Models with Iterative Retrieval-Generation Synergy"
+      "title": "Discriminative Nearest Neighbor Few-Shot Intent Detection by Transferring Natural Language Inference"
     },
     {
       "accepted": true,
-      "evidence_id": "ev-paper-cccd3124d92be1cc007c",
+      "evidence_id": "ev-paper-c5415e63650a2abffa83",
       "gap_supports": [
         {
           "checklist_results": {
@@ -208,7 +125,7 @@
           },
           "confidence": 0.72,
           "decision": "accept",
-          "gap_id": "baseline_comparison_evidence",
+          "gap_id": "baseline_comparison",
           "limitations": [
             "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
           ],
@@ -231,7 +148,7 @@
           },
           "confidence": 0.82,
           "decision": "accept",
-          "gap_id": "failure_mechanism_and_parallel_methods",
+          "gap_id": "mechanism_limitation_parallel",
           "limitations": [
             "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
           ],
@@ -248,25 +165,26 @@
             "query_term_overlap": true,
             "relevance_passed": true,
             "required_concepts_match": true,
-            "role_evidence_present": true,
-            "semantic_gap_binding": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
             "supporting_span_present": true
           },
-          "confidence": 0.72,
-          "decision": "accept",
-          "gap_id": "evaluation_metrics_and_datasets",
+          "confidence": 0.0,
+          "decision": "reject",
+          "gap_id": "risk_negative_evidence",
           "limitations": [
-            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: role-specific evidence structure"
           ],
-          "support_type": "direct_support"
+          "support_type": "insufficient"
         }
       ],
       "rejection_reasons": [],
-      "title": "Semantic Entropy Probes: Robust and Cheap Hallucination Detection in LLMs"
+      "title": "Few-shot Learning for Multi-label Intent Detection"
     },
     {
       "accepted": false,
-      "evidence_id": "ev-paper-b35d61790d21a2280635",
+      "evidence_id": "ev-paper-d31b0b0feeddc7fe1edc",
       "gap_supports": [
         {
           "checklist_results": {
@@ -285,7 +203,31 @@
           },
           "confidence": 0.0,
           "decision": "reject",
-          "gap_id": "baseline_comparison_evidence",
+          "gap_id": "baseline_comparison",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+          ],
+          "support_type": "insufficient"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": false,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
+          },
+          "confidence": 0.0,
+          "decision": "reject",
+          "gap_id": "mechanism_limitation_parallel",
           "limitations": [
             "no claim-level overlap with the requested gap",
             "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
@@ -309,34 +251,10 @@
           },
           "confidence": 0.2,
           "decision": "reject",
-          "gap_id": "failure_mechanism_and_parallel_methods",
+          "gap_id": "risk_negative_evidence",
           "limitations": [
             "no claim-level overlap with the requested gap",
             "semantic binding missing: role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": false,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "evaluation_metrics_and_datasets",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
           ],
           "support_type": "insufficient"
         }
@@ -344,253 +262,7 @@
       "rejection_reasons": [
         "NO_VALID_GAP_BINDING"
       ],
-      "title": "Efficient Hallucination Detection: Adaptive Bayesian Estimation of Semantic Entropy with Guided Semantic Exploration"
-    },
-    {
-      "accepted": false,
-      "evidence_id": "ev-paper-169b46a0558590f0e767",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": false,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "baseline_comparison_evidence",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": true,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.2,
-          "decision": "reject",
-          "gap_id": "failure_mechanism_and_parallel_methods",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": false,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "evaluation_metrics_and_datasets",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        }
-      ],
-      "rejection_reasons": [
-        "NO_VALID_GAP_BINDING"
-      ],
-      "title": "🧜Siren’s Song in the AI Ocean: A Survey on Hallucination in Large Language Models"
-    },
-    {
-      "accepted": false,
-      "evidence_id": "ev-paper-6086aa0787191e851fa2",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": false,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "baseline_comparison_evidence",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": true,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.2,
-          "decision": "reject",
-          "gap_id": "failure_mechanism_and_parallel_methods",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": false,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "evaluation_metrics_and_datasets",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        }
-      ],
-      "rejection_reasons": [
-        "NO_VALID_GAP_BINDING"
-      ],
-      "title": "A Survey on Hallucination in Large Language Models: Principles, Taxonomy, Challenges, and Open Questions"
-    },
-    {
-      "accepted": false,
-      "evidence_id": "ev-paper-121068e7ef5f5488508c",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": false,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "baseline_comparison_evidence",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": true,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.2,
-          "decision": "reject",
-          "gap_id": "failure_mechanism_and_parallel_methods",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": false,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "evaluation_metrics_and_datasets",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        }
-      ],
-      "rejection_reasons": [
-        "NO_VALID_GAP_BINDING"
-      ],
-      "title": "Siren's Song in the AI Ocean: A Survey on Hallucination in Large Language Models"
+      "title": "Discriminative Nearest Neighbor Few-Shot Intent Detection by Transferring Natural Language Inference"
     }
   ],
   "execution_status": "completed",
@@ -624,8 +296,8 @@
   "provider": "mistral",
   "provider_call_budget": {
     "maximum": 8,
-    "remaining": 1,
-    "used": 7
+    "remaining": 0,
+    "used": 8
   },
   "report_status": "completed",
   "score": 95,
@@ -636,26 +308,54 @@
         "semantic_scholar",
         "arxiv"
       ],
+      "budget_exhausted_call_count": 0,
+      "cache_hit_count": 0,
+      "coalesced_provider_call_count": 0,
+      "executed_query": "few-shot intent classification prototypical network",
       "fallback_used": false,
       "informative_terms": [
-        "retrieval",
-        "augmented",
-        "question",
-        "answering",
-        "hallucination",
-        "baseline"
+        "few-shot",
+        "intent",
+        "classification",
+        "prototypical",
+        "network"
       ],
       "maximum_provider_calls": 3,
-      "minimum_rank_score": 0.62,
-      "minimum_relevance": 0.34,
+      "minimum_rank_score": 0.68,
+      "minimum_relevance": 0.42,
       "policy_reasons": [],
-      "precision_risk": "low",
+      "precision_risk": "medium",
       "provider_call_count": 3,
+      "provider_results": [
+        {
+          "cache_status": "miss",
+          "error_code": null,
+          "provider": "openalex",
+          "retry_count": 0,
+          "status": "success"
+        },
+        {
+          "cache_status": "miss",
+          "error_code": "RATE_LIMITED",
+          "provider": "semantic_scholar",
+          "retry_count": 0,
+          "status": "rate_limited"
+        },
+        {
+          "cache_status": "miss",
+          "error_code": null,
+          "provider": "arxiv",
+          "retry_count": 0,
+          "status": "success"
+        }
+      ],
       "query_approved": true,
-      "query_id": "q_baseline_rag_factuality",
-      "relevant_verified_papers": 2,
-      "returned_papers": 2,
-      "stop_reason": "sufficient_academic_evidence"
+      "query_id": "q1_baseline",
+      "relevant_verified_papers": 1,
+      "returned_candidate_count": 1,
+      "returned_papers": 1,
+      "stop_reason": "academic_budget_exhausted",
+      "uncached_provider_call_count": 3
     },
     {
       "attempted_providers": [
@@ -663,60 +363,119 @@
         "semantic_scholar",
         "arxiv"
       ],
+      "budget_exhausted_call_count": 0,
+      "cache_hit_count": 0,
+      "coalesced_provider_call_count": 0,
+      "executed_query": "few-shot intent classification contrastive learning label semantics",
       "fallback_used": false,
       "informative_terms": [
-        "semantic",
-        "entropy",
-        "probes",
-        "hallucination",
+        "few-shot",
+        "intent",
+        "classification",
+        "contrastive",
+        "learning",
+        "label",
+        "semantics"
+      ],
+      "maximum_provider_calls": 3,
+      "minimum_rank_score": 0.62,
+      "minimum_relevance": 0.34,
+      "policy_reasons": [],
+      "precision_risk": "low",
+      "provider_call_count": 3,
+      "provider_results": [
+        {
+          "cache_status": "miss",
+          "error_code": null,
+          "provider": "openalex",
+          "retry_count": 0,
+          "status": "success"
+        },
+        {
+          "cache_status": "miss",
+          "error_code": "RATE_LIMITED",
+          "provider": "semantic_scholar",
+          "retry_count": 0,
+          "status": "rate_limited"
+        },
+        {
+          "cache_status": "miss",
+          "error_code": null,
+          "provider": "arxiv",
+          "retry_count": 0,
+          "status": "success"
+        }
+      ],
+      "query_approved": true,
+      "query_id": "q2_mechanism",
+      "relevant_verified_papers": 1,
+      "returned_candidate_count": 1,
+      "returned_papers": 1,
+      "stop_reason": "academic_budget_exhausted",
+      "uncached_provider_call_count": 3
+    },
+    {
+      "attempted_providers": [
+        "openalex",
+        "semantic_scholar",
+        "arxiv"
+      ],
+      "budget_exhausted_call_count": 1,
+      "cache_hit_count": 0,
+      "coalesced_provider_call_count": 0,
+      "executed_query": "few-shot intent detection open set out-of-scope",
+      "fallback_used": false,
+      "informative_terms": [
+        "few-shot",
+        "intent",
         "detection",
-        "uncertainty"
+        "open",
+        "set",
+        "out-of-scope"
       ],
-      "maximum_provider_calls": 3,
+      "maximum_provider_calls": 4,
       "minimum_rank_score": 0.62,
       "minimum_relevance": 0.34,
       "policy_reasons": [],
       "precision_risk": "low",
       "provider_call_count": 3,
-      "query_approved": true,
-      "query_id": "q_hallucination_mechanisms_interventions",
-      "relevant_verified_papers": 2,
-      "returned_papers": 5,
-      "stop_reason": "sufficient_academic_evidence"
-    },
-    {
-      "attempted_providers": [
-        "openalex",
-        "semantic_scholar",
-        "arxiv"
+      "provider_results": [
+        {
+          "cache_status": "miss",
+          "error_code": null,
+          "provider": "openalex",
+          "retry_count": 0,
+          "status": "success"
+        },
+        {
+          "cache_status": "miss",
+          "error_code": "RATE_LIMITED",
+          "provider": "semantic_scholar",
+          "retry_count": 0,
+          "status": "rate_limited"
+        },
+        {
+          "cache_status": "bypass",
+          "error_code": "PROVIDER_CALL_BUDGET_EXHAUSTED",
+          "provider": "arxiv",
+          "retry_count": 0,
+          "status": "failed"
+        }
       ],
-      "fallback_used": false,
-      "informative_terms": [
-        "retrieval",
-        "augmented",
-        "question",
-        "answering",
-        "hallucination",
-        "baseline"
-      ],
-      "maximum_provider_calls": 3,
-      "minimum_rank_score": 0.62,
-      "minimum_relevance": 0.34,
-      "policy_reasons": [],
-      "precision_risk": "low",
-      "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q_evaluation_datasets_metrics_qa",
-      "relevant_verified_papers": 0,
-      "returned_papers": 2,
-      "stop_reason": "academic_budget_exhausted"
+      "query_id": "q3_negative_evidence",
+      "relevant_verified_papers": 1,
+      "returned_candidate_count": 1,
+      "returned_papers": 1,
+      "stop_reason": "academic_budget_exhausted",
+      "uncached_provider_call_count": 2
     }
   ],
   "status": "passed",
   "verification_call_budget": {
     "maximum": 16,
-    "remaining": 5,
-    "used": 11
+    "remaining": 7,
+    "used": 9
   },
   "web_search_enabled": false
 }
