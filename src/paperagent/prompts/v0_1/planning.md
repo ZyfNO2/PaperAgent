@@ -28,7 +28,8 @@ method but omit experimental details:
 - Do not invent a named dataset, hardware platform, metric threshold, model version, annotation
   scheme, or deployment environment. Do not fan out into arbitrary examples such as several devices
   or datasets. Keep such choices unknown and ask one non-blocking clarification question.
-- Normally create exactly two consolidated required gaps, each with minimum_accepted_items=1:
+- Normally create exactly two consolidated required gaps. Unless multiple independent sources are
+  scientifically necessary, normally set minimum_accepted_items=1 for each required gap:
   1. a reproducible baseline and strong-comparison evidence gap;
   2. a failure-mechanism, limitation, and parallel-method evidence gap.
 - Add at most one optional risk or contradictory-evidence gap when the budget permits. Optional
@@ -44,8 +45,9 @@ method but omit experimental details:
 
 Design evidence coverage to be achievable within the supplied budgets. Prefer a small set of
 consolidated, decision-relevant gaps over one gap per output detail. Every required gap must have at
-least one query. Keep minimum_accepted_items=1 unless multiple independent items are scientifically
-necessary. Do not weaken a required gap merely to pass a gate; narrow or consolidate it instead.
+least one query. Keep minimum_accepted_items at 1 unless multiple independent items are
+scientifically necessary. Do not weaken a required gap merely to pass a gate; narrow or consolidate
+it instead.
 
 Use a budget-aware evidence plan:
 - Mark only 2-4 scientifically indispensable gaps as required; supporting context is optional.
