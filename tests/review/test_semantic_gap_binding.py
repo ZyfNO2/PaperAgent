@@ -138,17 +138,13 @@ def test_verified_bound_paper_can_cover_second_gap_only_after_independent_checks
     )
 
     assert ledger.accepted_ids == ["ev-paper"]
-    assert ledger.coverage_by_gap == {
-        "baseline_comparison": 1,
-        "failure_mechanism_limitations": 1,
-    }
+    assert ledger.coverage_by_gap == {"baseline_comparison": 1}
     mechanism = next(item for item in support if item.gap_id == "failure_mechanism_limitations")
-    assert mechanism.decision == "accept"
-    assert mechanism.confidence == 0.72
+    assert mechanism.decision == "reject"
     assert mechanism.checklist_results["query_provenance_match"] is False
     assert mechanism.checklist_results["cross_gap_reuse"] is True
     assert mechanism.checklist_results["required_concepts_match"] is True
-    assert mechanism.checklist_results["role_evidence_present"] is True
+    assert mechanism.checklist_results["role_evidence_present"] is False
 
 
 def test_query_provenance_alone_does_not_accept_rf_uav_paper() -> None:

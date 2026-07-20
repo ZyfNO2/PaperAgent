@@ -4,7 +4,11 @@ import re
 from collections.abc import Iterable
 
 from paperagent import evidence_relevance as legacy
-from paperagent.literature.query_concepts import matches_required_candidate_terms
+from paperagent.literature.query_concepts import (
+    concept_tokens,
+    matches_required_candidate_terms,
+    named_identifiers,
+)
 from paperagent.schemas import (
     EvidenceBundle,
     EvidenceGap,
@@ -42,346 +46,161 @@ _ROLE_ONLY_TERMS = frozenset(
         "support",
     }
 )
-_BASELINE_ROLE_HINTS = (
-    "baseline",
-    "comparison",
-    "strong_comparison",
-    "基线",
-    "比较",
-    "对比",
-)
+_BASELINE_ROLE_HINTS = ("baseline", "comparison", "reproduction", "基线", "比较", "对比", "复现")
 _MECHANISM_ROLE_HINTS = (
     "mechanism",
-    "parallel",
     "intervention",
-    "failure_mechanism",
+    "failure mechanism",
     "机制",
-    "并行",
-    "改进",
+    "干预",
+    "改进原理",
 )
 _RISK_ROLE_HINTS = (
     "risk",
-    "negative",
-    "limitation",
-    "failure",
+    "negative result",
+    "failure condition",
     "风险",
-    "负面",
-    "局限",
-    "失败",
+    "负面结果",
+    "失败条件",
 )
 _METRIC_PATTERN = re.compile(
-    r"\b(?:m?ap(?:50|75|_small)?|f1|auc|accuracy|precision|recall|fps|latency|"
-    r"flops?|parameters?|params?|memory|energy|power)\b",
+    r"\b(?:m?ap(?:50|75)?|f1|auc|accuracy|precision|recall|ndcg|rmse|mae|"
+    r"latency|throughput|fps|flops?|parameters?|params?|memory|energy|power)\b",
     re.IGNORECASE,
 )
-_FEW_SHOT_INTENT_TASK_CUES = (
-    "few-shot intent",
-    "few shot intent",
-    "low-resource intent",
-    "low resource intent",
-    "intent classification",
-    "intent detection",
-    "intent recognition",
-    "multi-label intent",
-    "multilabel intent",
-    "user intent",
+_NUMBER_PATTERN = re.compile(r"(?<![A-Za-z])\d+(?:\.\d+)?\s*(?:%|ms|s|mb|gb|w|fps)?", re.IGNORECASE)
+_EVALUATION_CUES = (
+    "dataset",
+    "corpus",
+    "cohort",
+    "test set",
+    "validation set",
+    "evaluation protocol",
+    "experimental setting",
+    "train/validation/test",
+    "cross-validation",
+    "数据集",
+    "语料库",
+    "测试集",
+    "验证集",
+    "实验设置",
 )
-_FEW_SHOT_CUES = (
-    "few-shot",
-    "few shot",
-    "low-resource",
-    "low resource",
-    "k-shot",
-    "few examples",
-    "few utterances",
-    "few annotated",
-    "limited labeled",
-    "limited training",
-    "data scarcity",
-    "scarce data",
-    "prototypical",
-    "prototype",
+_RESULT_CUES = (
+    "reports",
+    "reported",
+    "achieves",
+    "achieved",
+    "measured",
+    "result",
+    "outperform",
+    "improvement",
+    "degradation",
+    "报告",
+    "达到",
+    "结果",
+    "提升",
+    "下降",
 )
-
-
-def _is_few_shot_intent_evidence(text: str) -> bool:
-    return any(cue in text for cue in _FEW_SHOT_INTENT_TASK_CUES) and any(
-        cue in text for cue in _FEW_SHOT_CUES
-    )
-
-
-def _few_shot_intent_baseline_support(text: str) -> bool:
-    if not _is_few_shot_intent_evidence(text):
-        return False
-    evaluation = any(
-        cue in text
-        for cue in (
-            "experiment",
-            "experimental",
-            "dataset",
-            "benchmark",
-            "evaluation",
-            "evaluate",
-            "test set",
-            "validation set",
-            "result",
-            "performance",
-            "accuracy",
-            "f1",
-        )
-    )
-    method_or_comparison = any(
-        cue in text
-        for cue in (
-            "we propose",
-            "we introduce",
-            "framework",
-            "network",
-            "model",
-            "approach",
-            "method",
-            "prototypical",
-            "prototype",
-            "nearest neighbor",
-            "contrastive learning",
-            "natural language inference",
-            "baseline",
-            "state-of-the-art",
-            "outperform",
-        )
-    )
-    return evaluation and method_or_comparison
-
-
-def _few_shot_intent_mechanism_support(text: str) -> bool:
-    if not _is_few_shot_intent_evidence(text):
-        return False
-    problem = any(
-        cue in text
-        for cue in (
-            "data scarcity",
-            "scarce data",
-            "few annotated",
-            "few examples",
-            "few utterances",
-            "limited labeled",
-            "limited training",
-            "insufficient training",
-            "lack of training",
-            "low-resource",
-            "low resource",
-            "overfitting",
-            "noisy",
-            "confusion",
-            "semantically similar",
-            "unseen intent",
-            "out-of-scope",
-            "out of scope",
-            "oos detection",
-            "threshold",
-            "domain shift",
-            "data-rich domains",
-        )
-    )
-    intervention = any(
-        cue in text
-        for cue in (
-            "we propose",
-            "we introduce",
-            "framework",
-            "network",
-            "prototypical",
-            "prototype",
-            "contrastive",
-            "label semantics",
-            "label name embedding",
-            "label description",
-            "calibration",
-            "meta-learning",
-            "natural language inference",
-            "entailment",
-            "nearest neighbor",
-            "distance metric",
-            "paraphras",
-            "transfer",
-        )
-    )
-    return problem and intervention
-
-
-def _few_shot_intent_risk_support(text: str) -> bool:
-    if not _is_few_shot_intent_evidence(text):
-        return False
-    return any(
-        cue in text
-        for cue in (
-            "unknown intent",
-            "unknown intents",
-            "unseen intent",
-            "out-of-scope",
-            "out of scope",
-            "oos detection",
-            "open-set",
-            "open set",
-            "novel intent",
-            "reject option",
-            "rejection",
-            "more challenging",
-            "overfitting",
-            "performance degradation",
-            "data scarcity",
-            "scarce data",
-            "few annotated",
-            "limited labeled",
-        )
-    )
-
-
-_MULTI_BEHAVIOR_RECOMMENDATION_TASK_CUES = (
-    "multi-behavior recommendation",
-    "multi behavior recommendation",
-    "multiple behavior recommendation",
-    "multi-relational recommendation",
-    "multi-action recommendation",
+_LIMITATION_CUES = (
+    "limitation",
+    "fails",
+    "failure",
+    "degrades",
+    "degradation",
+    "bottleneck",
+    "sensitive to",
+    "struggles",
+    "drawback",
+    "challenge",
+    "challenging",
+    "constraint",
+    "computational cost",
+    "energy request",
+    "resource demand",
+    "difficult",
+    "complex",
+    "局限",
+    "失败",
+    "退化",
+    "瓶颈",
+    "敏感",
 )
-_RECOMMENDATION_TASK_CUES = (
-    "recommendation",
-    "recommender",
-    "collaborative filtering",
-    "user-item",
+_INTERVENTION_CUES = (
+    "we propose",
+    "we introduce",
+    "we use",
+    "uses",
+    "using",
+    "intervention",
+    "module",
+    "component",
+    "objective",
+    "regularizer",
+    "algorithm",
+    "procedure",
+    "strategy",
+    "architecture",
+    "approach",
+    "我们提出",
+    "模块",
+    "组件",
+    "目标函数",
+    "算法",
+    "策略",
 )
-_MULTI_BEHAVIOR_EVIDENCE_CUES = (
-    "multi-behavior",
-    "multi behavior",
-    "multiple behavior",
-    "multi-action",
-    "multi action",
-    "multi-relational",
-    "auxiliary behavior",
-    "behavior-aware",
-    "behavior-specific",
-    "heterogeneous behavior",
-    "click and purchase",
-    "view and purchase",
-    "interaction types",
+_RELATION_CUES = (
+    "because",
+    "therefore",
+    "thereby",
+    "addresses",
+    "mitigates",
+    "reduces",
+    "improves by",
+    "designed to",
+    "in order to",
+    "to limit",
+    "to reduce",
+    "to improve",
+    "to address",
+    "to mitigate",
+    "通过",
+    "因此",
+    "从而",
+    "缓解",
+    "解决",
+    "用于",
 )
-
-
-def _is_multi_behavior_recommendation_evidence(text: str) -> bool:
-    explicit_task = any(cue in text for cue in _MULTI_BEHAVIOR_RECOMMENDATION_TASK_CUES)
-    paired_task = any(cue in text for cue in _RECOMMENDATION_TASK_CUES) and any(
-        cue in text for cue in _MULTI_BEHAVIOR_EVIDENCE_CUES
-    )
-    return explicit_task or paired_task
-
-
-def _multi_behavior_recommendation_baseline_support(text: str) -> bool:
-    if not _is_multi_behavior_recommendation_evidence(text):
-        return False
-    evaluation = any(
-        cue in text
-        for cue in (
-            "experiment",
-            "experimental",
-            "dataset",
-            "benchmark",
-            "evaluation",
-            "evaluate",
-            "result",
-            "performance",
-            "recall",
-            "ndcg",
-            "hit ratio",
-            "top-k",
-        )
-    )
-    method_or_comparison = any(
-        cue in text
-        for cue in (
-            "we propose",
-            "we introduce",
-            "framework",
-            "network",
-            "model",
-            "graph convolution",
-            "graph neural",
-            "collaborative filtering",
-            "baseline",
-            "state-of-the-art",
-            "outperform",
-        )
-    )
-    return evaluation and method_or_comparison
-
-
-def _multi_behavior_recommendation_mechanism_support(text: str) -> bool:
-    if not _is_multi_behavior_recommendation_evidence(text):
-        return False
-    problem = any(
-        cue in text
-        for cue in (
-            "sparse",
-            "sparsity",
-            "noisy",
-            "noise",
-            "imbalance",
-            "heterogeneous",
-            "different semantics",
-            "behavior dependency",
-            "target behavior",
-            "auxiliary behavior",
-            "negative transfer",
-            "weak behavior",
-            "data scarcity",
-            "long-tail",
-            "cold-start",
-        )
-    )
-    intervention = any(
-        cue in text
-        for cue in (
-            "gated",
-            "gate",
-            "graph convolution",
-            "graph neural",
-            "message passing",
-            "transfer",
-            "contrastive",
-            "multi-task",
-            "multitask",
-            "attention",
-            "behavior-specific",
-            "relation-specific",
-            "cascading",
-            "fusion",
-            "disentangle",
-        )
-    )
-    return problem and intervention
-
-
-def _multi_behavior_recommendation_risk_support(text: str) -> bool:
-    if not _is_multi_behavior_recommendation_evidence(text):
-        return False
-    return any(
-        cue in text
-        for cue in (
-            "cold-start",
-            "cold start",
-            "long-tail",
-            "long tail",
-            "sparsity",
-            "sparse",
-            "noisy auxiliary",
-            "negative transfer",
-            "target behavior degradation",
-            "popularity bias",
-            "behavior imbalance",
-            "chronological split",
-            "future interaction",
-            "target leakage",
-        )
-    )
+_NEGATIVE_RESULT_CUES = (
+    "no improvement",
+    "not improve",
+    "failed to improve",
+    "worse than",
+    "underperform",
+    "performance drop",
+    "statistically insignificant",
+    "did not converge",
+    "unstable training",
+    "negative transfer",
+    "没有提升",
+    "未能提升",
+    "低于",
+    "性能下降",
+    "不显著",
+    "未收敛",
+    "训练不稳定",
+)
+_CONDITION_CUES = (
+    " when ",
+    " under ",
+    " if ",
+    " unless ",
+    " fails on ",
+    " failure occurs ",
+    "在以下条件",
+    "当",
+    "如果",
+    "条件下",
+)
 
 
 def _dedupe(values: Iterable[str]) -> list[str]:
@@ -421,137 +240,44 @@ def _query_overlap(item: EvidenceItem, query_texts: Iterable[str]) -> list[str]:
     return [term for term in _query_terms(query_texts) if term in text]
 
 
-def _baseline_role_support(text: str) -> bool:
-    if _few_shot_intent_baseline_support(text):
+def _has_concrete_method_identity(item: EvidenceItem) -> bool:
+    title = item.title.strip()
+    if named_identifiers(title):
         return True
-    if _multi_behavior_recommendation_baseline_support(text):
-        return True
-    evaluation_context = any(
-        cue in text
-        for cue in (
-            "dataset",
-            "benchmark",
-            "experimental result",
-            "experiment result",
-            "evaluation",
-            "test set",
-            "validation set",
-        )
+    concepts = concept_tokens(title)
+    generic_titles = ("review", "survey", "taxonomy", "overview", "综述", "回顾")
+    return len(concepts) >= 2 and not any(cue in title.casefold() for cue in generic_titles)
+
+
+def _baseline_role_support(item: EvidenceItem, text: str) -> bool:
+    concrete_method = _has_concrete_method_identity(item)
+    evaluation_setting = any(cue in text for cue in _EVALUATION_CUES)
+    measured_result = bool(_METRIC_PATTERN.search(text)) and (
+        bool(_NUMBER_PATTERN.search(text)) or any(cue in text for cue in _RESULT_CUES)
     )
-    measured_result = bool(_METRIC_PATTERN.search(text))
-    comparison = any(
-        cue in text
-        for cue in (
-            "compared",
-            "comparison",
-            "baseline",
-            "outperform",
-            "improvement over",
-            "enhancement over",
-            "versus",
-            " than ",
-        )
-    )
-    return sum((evaluation_context, measured_result, comparison)) >= 2
+    return concrete_method and evaluation_setting and measured_result
 
 
 def _mechanism_role_support(text: str) -> bool:
-    if _few_shot_intent_mechanism_support(text):
-        return True
-    if _multi_behavior_recommendation_mechanism_support(text):
-        return True
-    problem = any(
-        cue in text
-        for cue in (
-            "challenge",
-            "limitation",
-            "failure",
-            "difficult",
-            "occlusion",
-            "small object",
-            "tiny object",
-            "complex background",
-            "redundant computation",
-            "low-light",
-            "low light",
-            "nighttime",
-            "less effective",
-            "drawback",
-            "low-resolution",
-            "low resolution",
-            "noise",
-            "degradation",
-            "background interference",
-            "illumination",
-            "domain shift",
-            "distribution shift",
-            "missing modality",
-            "modality absence",
-            "misregistration",
-            "computational and energy requests",
-            "computational request",
-            "energy request",
-            "energy demand",
-            "temporal order",
-            "similar poses",
-            "crowded scene",
-            "complex environment",
-        )
-    )
-    intervention = any(
-        cue in text
-        for cue in (
-            "we propose",
-            "we introduce",
-            "module",
-            "architecture",
-            "network",
-            "feature fusion",
-            "attention",
-            "self-attention",
-            "self-attentional",
-            "pose representation",
-            "loss",
-            "branch",
-            "detection head",
-            "super-resolution",
-            "temporal",
-            "multimodal",
-        )
-    )
-    return problem and intervention
+    limitation = any(cue in text for cue in _LIMITATION_CUES)
+    intervention = any(cue in text for cue in _INTERVENTION_CUES)
+    relation = any(cue in text for cue in _RELATION_CUES)
+    return limitation and intervention and relation
 
 
 def _risk_role_support(text: str) -> bool:
-    if _few_shot_intent_risk_support(text):
-        return True
-    if _multi_behavior_recommendation_risk_support(text):
-        return True
-    return any(
-        cue in text
-        for cue in (
-            "limitation",
-            "failure",
-            "degradation",
-            "performance drop",
-            "bottleneck",
-            "unacceptable",
-            "challenge",
-            "high latency",
-            "power consumption",
-            "energy consumption",
-            "computational cost",
-            "occlusion",
-            "domain shift",
-        )
+    explicit_negative = any(cue in text for cue in _NEGATIVE_RESULT_CUES)
+    conditional_failure = any(cue in f" {text} " for cue in _CONDITION_CUES) and any(
+        cue in text for cue in _LIMITATION_CUES
     )
+    return explicit_negative or conditional_failure
 
 
 def _role_support(gap: EvidenceGap, item: EvidenceItem) -> bool:
     text = f"{item.title}. {item.summary}".casefold()
     role = _gap_role(gap)
     if role == "baseline":
-        return _baseline_role_support(text)
+        return _baseline_role_support(item, text)
     if role == "mechanism":
         return _mechanism_role_support(text)
     if role == "risk":
@@ -567,15 +293,25 @@ def assess_gap_support(
     query_texts: Iterable[str] = (),
     allow_cross_gap_reuse: bool = False,
 ) -> GapSupportAssessment:
-    """Apply the legacy binding first, then a strict cross-language semantic fallback.
+    """Bind evidence through a corpus-independent, structured role contract.
 
-    The fallback never treats provenance or prior acceptance as sufficient by itself. It
-    requires direct relevance, a supporting span, query-specific concept coverage,
-    query-term overlap, and evidence structure appropriate for the declared gap role.
+    Provenance or prior acceptance is never sufficient. The semantic fallback requires direct
+    relevance, a supporting span, query-derived concept coverage, and evidence structure appropriate
+    for the declared role. No task, dataset, model, or application-domain vocabulary is embedded.
     """
 
     legacy_result = legacy.assess_gap_support(item, gap, relevance)
-    if legacy_result.decision == "accept" or relevance.decision == "reject":
+    if relevance.decision == "reject":
+        return legacy_result
+    fixture_gap_ids = {
+        value.strip()
+        for value in item.metadata.get("fixture_gap_support_ids", "").split(",")
+        if value.strip()
+    }
+    explicit_fixture_support = relevance.assessment_source == "fixture" and (
+        gap.gap_id in fixture_gap_ids or gap.gap_id in item.supports_gap_ids
+    )
+    if legacy_result.decision == "accept" and explicit_fixture_support:
         return legacy_result
 
     query_provenance = item.metadata.get("query_text", "").strip()
@@ -618,15 +354,12 @@ def assess_gap_support(
         missing = [
             label
             for label, passed in (
-                (
-                    "query provenance or qualified cross-gap reuse",
-                    provenance_qualified,
-                ),
+                ("query provenance or qualified cross-gap reuse", provenance_qualified),
                 ("direct relevance", direct_relevance),
                 ("supporting span", supporting_span_present),
                 ("query-term overlap", query_term_overlap),
                 ("required query concepts", required_concepts_match),
-                ("role-specific evidence structure", role_evidence_present),
+                ("role-specific evidence contract", role_evidence_present),
             )
             if not passed
         ]
@@ -642,11 +375,9 @@ def assess_gap_support(
     span = relevance.supporting_spans[0]
     support_type: GapSupportType = "direct_support"
     binding_basis = (
-        "reused across gaps after an existing accepted binding, direct relevance, "
-        "query concepts, and role-specific evidence cues"
+        "reused across gaps after an accepted binding and a complete role contract"
         if cross_gap_reuse
-        else "bound through verified query provenance, direct relevance, query concepts, "
-        "and role-specific evidence cues"
+        else "bound through query provenance and a complete role contract"
     )
     return GapSupportAssessment(
         evidence_id=item.evidence_id,
@@ -712,11 +443,7 @@ def build_evidence_ledger(
                     query_texts=queries_by_gap.get(gap.gap_id, []),
                     allow_cross_gap_reuse=True,
                 )
-                for gap, support in zip(
-                    plan.evidence_gaps,
-                    first_pass,
-                    strict=True,
-                )
+                for gap, support in zip(plan.evidence_gaps, first_pass, strict=True)
             ]
         else:
             supports = first_pass
@@ -772,8 +499,4 @@ def build_evidence_ledger(
 
 apply_ledger_to_bundle = legacy.apply_ledger_to_bundle
 
-__all__ = [
-    "apply_ledger_to_bundle",
-    "assess_gap_support",
-    "build_evidence_ledger",
-]
+__all__ = ["apply_ledger_to_bundle", "assess_gap_support", "build_evidence_ledger"]

@@ -245,17 +245,13 @@ def test_ungrounded_dataset_and_comparator_are_not_promoted_to_facts() -> None:
     baseline = proposal.methodology_plan.baseline
     assert baseline.dataset is not None
     assert "unresolved task-matched" in baseline.dataset
-    strong_comparison = next(
+    strong_comparisons = [
         item
         for item in proposal.methodology_plan.experiments
         if item.arm_type is ExperimentArmType.STRONG_COMPARISON
-    )
-    assert strong_comparison.comparator == (
-        "strong comparison selected from the accepted evidence set before the pilot"
-    )
+    ]
     assert "InventedDroneBench" not in baseline.dataset
-    assert strong_comparison.comparator is not None
-    assert "ImaginaryDetector-X" not in strong_comparison.comparator
+    assert strong_comparisons == []
 
 
 def test_non_vision_task_does_not_inherit_detector_specific_contracts() -> None:

@@ -12,15 +12,10 @@ from paperagent.state import PaperAgentState
 
 
 class BenchmarkNormalizationContext(FrozenModel):
-    """Explicit, gold-independent normalization inputs.
-
-    Decision routing and leakage flags are required structured inputs. The normalizer never
-    infers them from free-text actions, clarification wording, fixture labels, or case text.
-    """
+    """Gold-independent metadata required only for trace serialization."""
 
     case_id: str = Field(min_length=1)
     resolved_unknowns: tuple[str, ...] = ()
-    pilot_recommended: bool = False
     asked_user_to_design_method: bool = False
     full_text_evidence_ids: tuple[str, ...] = ()
     stronger_baselines_considered: bool | None = None
@@ -33,13 +28,6 @@ def _ledger_grounded_reviews(
     state: PaperAgentState,
     reviews: tuple[EvidenceReview, ...],
 ) -> tuple[EvidenceReview, ...]:
-    """Use the canonical Evidence Ledger as the normalization source of truth.
-
-    The ledger is produced by the production verification path and already records identity,
-    relevance scope, accepted gap bindings, claims, and the final acceptance decision. This
-    function does not upgrade rejected evidence or infer facts from titles or free text.
-    """
-
     ledger = state.get("evidence_ledger")
     if ledger is None:
         return reviews
@@ -57,13 +45,12 @@ def _ledger_grounded_reviews(
         role = review.role
         if role is None and accepted_supports:
             role = "gap"
-        relevance_passed = entry.relevance_scope in {"direct", "indirect"}
         normalized.append(
             review.model_copy(
                 update={
                     "identity_verified": entry.identity_verified,
                     "relevance_reviewed": True,
-                    "relevance_passed": relevance_passed,
+                    "relevance_passed": entry.relevance_scope in {"direct", "indirect"},
                     "accepted": entry.accepted,
                     "role": role,
                     "gap_ids": gap_ids or review.gap_ids,
@@ -79,14 +66,15 @@ def normalize_paperagent_state(
     state: PaperAgentState,
     context: BenchmarkNormalizationContext,
 ) -> AcademicTailoringRunTrace:
-    """Normalize state while disabling all text-derived benchmark label inference."""
+    """Project production state without creating scientific decisions."""
 
+    outcome = state.get("final_outcome")
+    pilot_recommended = bool(outcome is not None and outcome.pilot_recommended)
     trace = _legacy_normalize(
         state,
         LegacyNormalizationContext(
             case_id=context.case_id,
             resolved_unknowns=context.resolved_unknowns,
-            pilot_recommended=context.pilot_recommended,
             asked_user_to_design_method=context.asked_user_to_design_method,
             full_text_evidence_ids=context.full_text_evidence_ids,
             stronger_baselines_considered=context.stronger_baselines_considered,
@@ -99,7 +87,7 @@ def normalize_paperagent_state(
     return trace.model_copy(
         update={
             "evidence_reviews": _ledger_grounded_reviews(state, trace.evidence_reviews),
-            "pilot_recommended": context.pilot_recommended,
+            "pilot_recommended": pilot_recommended,
             "future_or_test_leakage": context.future_or_test_leakage,
             "trace_error_codes": error_codes,
         }

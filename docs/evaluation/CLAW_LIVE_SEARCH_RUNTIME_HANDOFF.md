@@ -190,3 +190,19 @@ pytest -q \
 3. If a fresh full 20-case run is required, obtain explicit provider/LLM budget approval, run it from the final branch HEAD, and persist a new full-corpus report rather than extrapolating from the targeted repairs.
 4. Before merge, rebase or update the branch against the intended base and rerun all four CI workflows.
 5. Do not enable Web search merely to increase evidence count; preserve academic-first retrieval and the existing precision gates.
+
+## Leakage remediation status
+
+The original 20 CLAW cases are a **development benchmark / contaminated evaluation set**. They may
+be used for regression diagnostics only and are not independent evidence of generalization.
+
+Production evidence binding now uses a corpus-independent role contract. A baseline needs a concrete
+method identity, an experimental setting, and a measured result; mechanism evidence needs an explicit
+limitation-intervention relation; risk evidence needs a failure condition or negative result. The
+method builder no longer injects task-specific metrics and no longer creates a scoreable strong
+comparison without a concrete comparator bound to accepted evidence. Pilot recommendation is emitted
+by the production Quality Gate and is only projected by the benchmark adapter.
+
+A new private holdout must be created and sealed outside this branch before it is run. After results
+are opened, further changes informed by those results make that set a development set and require a
+new holdout.

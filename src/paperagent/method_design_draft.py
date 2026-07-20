@@ -18,6 +18,7 @@ from paperagent.academic_methodology import (
     EvidenceItem as MethodEvidenceItem,
 )
 from paperagent.schemas.base import FrozenModel
+from paperagent.schemas.evidence import EvidenceItem
 from paperagent.schemas.method import (
     AblationPlan,
     BaselineProposal,
@@ -93,6 +94,20 @@ def _grounded_optional(value: str | None, evidence_text: str) -> str | None:
     return normalized if normalized.casefold() in evidence_text.casefold() else None
 
 
+def _grounded_evidence_id(value: str | None, accepted: tuple[EvidenceItem, ...]) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip().casefold()
+    if not normalized:
+        return None
+    for item in accepted:
+        title = getattr(item, "title", "")
+        summary = getattr(item, "summary", "")
+        if normalized in f"{title}\n{summary}".casefold():
+            return item.evidence_id
+    return None
+
+
 def _metadata_text(metadata: dict[str, str], key: str) -> str | None:
     value = metadata.get(key)
     if value is None:
@@ -104,21 +119,6 @@ def _metadata_text(metadata: dict[str, str], key: str) -> str | None:
 def _is_review_evidence(title: str, summary: str) -> bool:
     text = f"{title} {summary}".casefold()
     return any(cue in text for cue in ("review", "survey", "taxonomy"))
-
-
-def _is_small_object_task(state: PaperAgentState) -> bool:
-    request = state.get("request")
-    plan = state.get("plan")
-    text = " ".join(
-        value
-        for value in (
-            request.question if request is not None else "",
-            plan.problem_statement if plan is not None else "",
-            plan.scope if plan is not None else "",
-        )
-        if value
-    ).casefold()
-    return any(term in text for term in ("small object", "tiny object", "小目标"))
 
 
 def _hypothesis_sentence(draft: MethodDesignDraft) -> str:
@@ -207,6 +207,7 @@ def build_method_proposal(
     evidence_text = _evidence_text(state)
     grounded_dataset = _grounded_optional(draft.reported_dataset, evidence_text)
     grounded_comparator = _grounded_optional(draft.reported_comparator, evidence_text)
+    comparator_evidence_id = _grounded_evidence_id(grounded_comparator, accepted)
 
     dataset = grounded_dataset or (
         "unresolved task-matched public dataset; select and freeze the dataset, split, "
@@ -218,9 +219,7 @@ def build_method_proposal(
         if review_primary
         else primary.title
     )
-    comparator = grounded_comparator or (
-        "strong comparison selected from the accepted evidence set before the pilot"
-    )
+    comparator = grounded_comparator if comparator_evidence_id is not None else None
     module_name = draft.module_name.strip()
     module_switch = f"enable_{_slug(module_name)}"
     plan_risks = tuple(plan.risks)
@@ -306,10 +305,9 @@ def build_method_proposal(
             "preprocessing, or loss terms"
         ),
     )
-    task_metrics = ("AP_small",) if _is_small_object_task(state) else ()
-    metrics = _dedupe((draft.primary_metric, *task_metrics, "latency"))
+    metrics = _dedupe((draft.primary_metric, "latency"))
     resources = _dedupe((*draft.resource_measures, "parameters", "memory", "latency"))
-    experiments = (
+    experiments = [
         _experiment(
             name="E0-frozen-baseline",
             arm_type=ExperimentArmType.BASELINE,
@@ -349,20 +347,23 @@ def build_method_proposal(
             resource_measures=resources,
             stopping_criteria=draft.stopping_criteria,
         ),
-        _experiment(
-            name="E3-strong-comparison",
-            arm_type=ExperimentArmType.STRONG_COMPARISON,
-            included_modules=(),
-            source_evidence_id=primary.evidence_id,
-            comparator=comparator,
-            purpose="test whether the contribution survives a stronger matched comparator",
-            contrast="full method versus accepted-evidence strong comparison",
-            dataset=dataset,
-            metrics=metrics,
-            resource_measures=resources,
-            stopping_criteria=draft.stopping_criteria,
-        ),
-    )
+    ]
+    if comparator is not None and comparator_evidence_id is not None:
+        experiments.append(
+            _experiment(
+                name="E3-strong-comparison",
+                arm_type=ExperimentArmType.STRONG_COMPARISON,
+                included_modules=(),
+                source_evidence_id=comparator_evidence_id,
+                comparator=comparator,
+                purpose="test whether the contribution survives a stronger matched comparator",
+                contrast="full method versus the evidence-bound strong comparison",
+                dataset=dataset,
+                metrics=metrics,
+                resource_measures=resources,
+                stopping_criteria=draft.stopping_criteria,
+            )
+        )
     stop_conditions = _dedupe(
         (
             draft.stopping_criteria,
@@ -377,7 +378,7 @@ def build_method_proposal(
         baseline=baseline,
         hypothesis=hypothesis,
         modules=(module,),
-        experiments=experiments,
+        experiments=tuple(experiments),
         stop_conditions=stop_conditions,
     )
     risks = _dedupe_list(

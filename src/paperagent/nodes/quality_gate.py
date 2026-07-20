@@ -8,6 +8,7 @@ from paperagent.academic_methodology import (
     METHOD_AUDIT_POLICY_VERSION,
     METHOD_PLAN_CONTRACT_VERSION,
     AuditVerdict,
+    ExperimentArmType,
     MethodAuditReport,
     audit_method_plan,
     method_plan_fingerprint,
@@ -45,6 +46,68 @@ def _current_methodology_audit(state: PaperAgentState) -> MethodAuditReport | No
     ):
         return audit_method_plan(method.methodology_plan)
     return methodology_audit
+
+
+def _concrete(value: str | None) -> bool:
+    if value is None:
+        return False
+    normalized = value.strip().casefold()
+    return bool(normalized) and not any(
+        marker in normalized
+        for marker in ("unresolved", "not yet", "to be selected", "before the pilot", "unknown")
+    )
+
+
+def _production_pilot_recommendation(
+    state: PaperAgentState,
+    decision: QualityDecision,
+) -> tuple[bool, str | None]:
+    """Return a pilot decision only from concrete, accepted, production artifacts."""
+
+    method = state.get("method")
+    ledger = state.get("evidence_ledger")
+    if decision.verdict not in {"repair_method", "blocked"}:
+        return False, None
+    if method is None or ledger is None or decision.invalid_evidence_ids:
+        return False, None
+    plan = method.methodology_plan
+    accepted = set(ledger.accepted_ids)
+    baseline = plan.baseline
+    if (
+        baseline.source_evidence_id not in accepted
+        or not _concrete(baseline.name)
+        or not _concrete(baseline.dataset)
+    ):
+        return False, None
+    if not plan.modules or any(module.evidence_id not in accepted for module in plan.modules):
+        return False, None
+    strong = [
+        experiment
+        for experiment in plan.experiments
+        if experiment.arm_type is ExperimentArmType.STRONG_COMPARISON
+        and experiment.source_evidence_id in accepted
+        and _concrete(experiment.comparator)
+    ]
+    if not strong:
+        return False, None
+    pilot = next(
+        (
+            experiment
+            for experiment in plan.experiments
+            if experiment.arm_type in {ExperimentArmType.SINGLE_MODULE, ExperimentArmType.FULL}
+            and _concrete(experiment.dataset)
+            and experiment.metrics
+            and _concrete(experiment.stopping_criteria)
+        ),
+        None,
+    )
+    if pilot is None:
+        return False, None
+    scope = (
+        f"dataset={pilot.dataset}; metrics={', '.join(pilot.metrics)}; "
+        f"comparator={strong[0].comparator}; stop={pilot.stopping_criteria}"
+    )
+    return True, scope
 
 
 def evaluate_quality(
@@ -185,6 +248,13 @@ async def quality_gate_node(state: PaperAgentState, config: RunnableConfig) -> S
     services = get_services(config)
     methodology_audit = _current_methodology_audit(state)
     decision = evaluate_quality(state, methodology_audit=methodology_audit)
+    pilot_recommended, pilot_scope = _production_pilot_recommendation(state, decision)
+    decision = decision.model_copy(
+        update={
+            "pilot_recommended": pilot_recommended,
+            "pilot_scope": pilot_scope,
+        }
+    )
     increment = 1 if decision.verdict == "repair_method" else 0
     execution = execution_with(
         state,

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import importlib.util
 import inspect
 import re
@@ -22,33 +23,35 @@ _FORBIDDEN_EXECUTOR_PARAMETERS = {
     "stop_conditions",
     "special_assertions",
 }
-_SOURCE_RULES: dict[str, tuple[str, ...]] = {
-    "claw_benchmark_adapter.py": (
-        "_has_actionable_recovery_path",
-        "pilot_recommended is not None",
-    ),
-    "claw_benchmark_runtime.py": ("GoldCase", "reconcile_ledger_relevance"),
-    "retrieval/prepare_search.py": ("override_task_query", "task_query_overrides"),
-    "literature/query_refinement.py": (
-        "MultiFusionNet",
-        "few-shot intent classification prototypical network",
-        "Chinese long document classification hierarchical transformer",
-    ),
-    "literature/query_concepts.py": (
-        "_AERIAL_QUERY_HINTS",
-        "_SKIN_QUERY_HINTS",
-        "_MULTI_BEHAVIOR_RECOMMENDATION_QUERY_HINTS",
-    ),
-    "literature/specialized_guards.py": (
-        "_PLANT_DISEASE_QUERY_TERMS",
-        "_TIME_SERIES_ANOMALY_QUERY_TERMS",
-        "_RECOMMENDATION_QUERY_TERMS",
-    ),
-    "prompts/v0_1/planning.md": (
-        "exactly two consolidated required gaps",
-        "role-explicit gap descriptions",
-    ),
-}
+_CONDITIONED_DOMAIN_PHRASES = (
+    "few-shot intent",
+    "few shot intent",
+    "multi-behavior recommendation",
+    "multi behavior recommendation",
+    "small object",
+    "tiny object",
+    "low-light pedestrian",
+    "missing modality",
+    "temporal order",
+    "similar poses",
+    "crowded scene",
+    "visdrone",
+)
+_EVALUATION_CONTEXT_PHRASES = (
+    "evaluator-facing labels",
+    "grading keywords",
+    "downstream scoring",
+    "hidden benchmark answers",
+    "grader notes",
+    "hidden fixtures",
+)
+_SUSPICIOUS_CONSTANT = re.compile(
+    r"^_(?:FEW_SHOT|MULTI_BEHAVIOR|SMALL_OBJECT|AERIAL|PLANT_DISEASE|"
+    r"TIME_SERIES_ANOMALY|RECOMMENDATION)_.*\s*=",
+    re.MULTILINE,
+)
+_SCAN_SUFFIXES = {".py", ".md"}
+_SCAN_EXCLUSIONS = {"benchmark_leakage_audit.py"}
 
 
 class LeakageAuditResult(FrozenModel):
@@ -60,14 +63,24 @@ def _package_root() -> Path:
     return Path(__file__).resolve().parent
 
 
-def audit_benchmark_execution_boundary() -> LeakageAuditResult:
-    """Detect known test-conditioning paths before benchmark normalization.
+def _python_constant_findings(path: Path, relative_path: str) -> list[str]:
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+    except SyntaxError as exc:
+        return [f"source_syntax_error:{relative_path}:{exc.lineno}"]
+    findings: list[str] = []
+    for node in tree.body:
+        if not isinstance(node, ast.Assign | ast.AnnAssign):
+            continue
+        targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+        for target in targets:
+            if isinstance(target, ast.Name) and _SUSPICIOUS_CONSTANT.match(f"{target.id} ="):
+                findings.append(f"conditioned_constant:{relative_path}:{target.id}")
+    return findings
 
-    The audit checks executable structure rather than relying on trace defaults. It is
-    intentionally narrow and deterministic: forbidden benchmark-only modules, gold-bearing
-    executor parameters, case IDs in production retrieval sources, and previously observed
-    case-conditioned rules all produce a hard-failure signal.
-    """
+
+def audit_benchmark_execution_boundary() -> LeakageAuditResult:
+    """Scan the complete production package for benchmark-conditioned execution logic."""
 
     findings: list[str] = []
     for module_name in _FORBIDDEN_MODULES:
@@ -81,17 +94,23 @@ def audit_benchmark_execution_boundary() -> LeakageAuditResult:
         findings.append(f"gold_executor_parameter:{parameter}")
 
     root = _package_root()
-    for relative_path, forbidden_terms in _SOURCE_RULES.items():
-        path = root / relative_path
-        if not path.is_file():
-            findings.append(f"source_missing:{relative_path}")
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or path.suffix not in _SCAN_SUFFIXES or path.name in _SCAN_EXCLUSIONS:
             continue
+        relative_path = path.relative_to(root).as_posix()
         text = path.read_text(encoding="utf-8")
+        normalized = text.casefold()
         if _CASE_ID.search(text):
             findings.append(f"case_id_in_production_source:{relative_path}")
-        for term in forbidden_terms:
-            if term in text:
-                findings.append(f"conditioned_rule:{relative_path}:{term}")
+        for phrase in _CONDITIONED_DOMAIN_PHRASES:
+            if phrase in normalized:
+                findings.append(f"conditioned_domain_phrase:{relative_path}:{phrase}")
+        if relative_path.startswith("prompts/"):
+            for phrase in _EVALUATION_CONTEXT_PHRASES:
+                if phrase in normalized:
+                    findings.append(f"evaluation_context_in_prompt:{relative_path}:{phrase}")
+        if path.suffix == ".py":
+            findings.extend(_python_constant_findings(path, relative_path))
 
     unique = tuple(dict.fromkeys(findings))
     return LeakageAuditResult(passed=not unique, findings=unique)

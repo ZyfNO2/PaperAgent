@@ -63,6 +63,8 @@ def _outcome(
                 hash_payload(ledger.model_dump(mode="json")) if ledger is not None else None
             ),
             "recommended_next_actions": recommended_next_actions,
+            "pilot_recommended": (quality.pilot_recommended if quality is not None else False),
+            "pilot_scope": (quality.pilot_scope if quality is not None else None),
         }
     )
 

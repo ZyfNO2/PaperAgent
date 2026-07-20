@@ -28,7 +28,6 @@ class BenchmarkNormalizationContext(FrozenModel):
 
     case_id: str = Field(min_length=1)
     resolved_unknowns: tuple[str, ...] = ()
-    pilot_recommended: bool = False
     asked_user_to_design_method: bool = False
     full_text_evidence_ids: tuple[str, ...] = ()
     stronger_baselines_considered: bool | None = None
@@ -315,10 +314,16 @@ def _baseline_trace(state: PaperAgentState) -> BaselineTrace | None:
         item for item in plan.experiments if item.arm_type is ExperimentArmType.BASELINE
     )
     metrics = _dedupe(metric for item in baseline_experiments for metric in item.metrics)
+    ledger = state.get("evidence_ledger")
+    accepted = set(ledger.accepted_ids) if ledger is not None else set()
     strong_comparisons = tuple(
-        item.name
+        item.comparator
         for item in plan.experiments
         if item.arm_type is ExperimentArmType.STRONG_COMPARISON
+        and item.source_evidence_id in accepted
+        and item.comparator is not None
+        and item.comparator.strip()
+        and "unresolved" not in item.comparator.casefold()
     )
     disabled_switches = _dedupe(item.implementation_switch for item in plan.modules)
     parity_path = ", ".join(disabled_switches) if disabled_switches else None
@@ -454,7 +459,6 @@ def normalize_paperagent_state(
     method = state.get("method")
     outcome = state.get("final_outcome")
     report = state.get("report")
-    audit = state.get("methodology_audit")
     gap_roles = _gap_roles(state)
     modules = _modules(state)
     experiments = _experiments(state)
@@ -469,13 +473,30 @@ def normalize_paperagent_state(
     )
     if not next_actions:
         next_actions = ("capture missing evidence and rerun the bounded workflow",)
-    pilot_recommended = context.pilot_recommended
-    strong_comparison_derived = any(item.arm_type == "strong_comparison" for item in experiments)
-    synthesis = state.get("synthesis")
+    pilot_recommended = bool(outcome is not None and outcome.pilot_recommended)
+    ledger = state.get("evidence_ledger")
+    accepted_ids = set(ledger.accepted_ids) if ledger is not None else set()
+    strong_comparison_derived = any(
+        item.arm_type == "strong_comparison"
+        and item.experiment_id
+        and method is not None
+        and any(
+            experiment.name == item.experiment_id
+            and experiment.source_evidence_id in accepted_ids
+            and experiment.comparator is not None
+            and experiment.comparator.strip()
+            and "unresolved" not in experiment.comparator.casefold()
+            for experiment in method.methodology_plan.experiments
+        )
+        for item in experiments
+    )
     negative_results_derived = bool(
-        (report is not None and report.limitations)
-        or (audit is not None and audit.risks)
-        or (synthesis is not None and synthesis.conflicts)
+        method is not None
+        and any(
+            experiment.arm_type is ExperimentArmType.NEGATIVE_CONTROL
+            and experiment.source_evidence_id in accepted_ids
+            for experiment in method.methodology_plan.experiments
+        )
     )
     trace_audit = state.get("trace_audit")
     trace_audit_passed = trace_audit.passed if trace_audit is not None else evaluated

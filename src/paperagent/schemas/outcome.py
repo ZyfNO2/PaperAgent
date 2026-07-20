@@ -11,13 +11,7 @@ class FinalOutcome(FrozenModel):
     schema_version: Literal["0.1"] = "0.1"
     execution_status: Literal["running", "succeeded", "blocked", "failed", "cancelled"]
     scientific_verdict: Literal["GO", "REVISE", "NO_GO", "NOT_EVALUATED"]
-    quality_route: Literal[
-        "pass",
-        "repair_retrieval",
-        "repair_method",
-        "human_review",
-        "blocked",
-    ]
+    quality_route: Literal["pass", "repair_retrieval", "repair_method", "human_review", "blocked"]
     report_status: Literal["completed", "partial", "blocked"]
     reason_codes: list[str] = Field(default_factory=list)
     blocker_code: str | None = None
@@ -26,6 +20,8 @@ class FinalOutcome(FrozenModel):
     methodology_audit_fingerprint: str | None = None
     evidence_ledger_fingerprint: str | None = None
     recommended_next_actions: list[str] = Field(default_factory=list)
+    pilot_recommended: bool = False
+    pilot_scope: str | None = None
 
     @model_validator(mode="after")
     def validate_outcome(self) -> FinalOutcome:
@@ -42,6 +38,12 @@ class FinalOutcome(FrozenModel):
             raise ValueError("REVISE requires recommended_next_actions")
         if self.execution_status == "failed" and self.scientific_verdict != "NOT_EVALUATED":
             raise ValueError("failed execution cannot produce a scientific verdict")
+        if self.pilot_recommended and self.scientific_verdict != "REVISE":
+            raise ValueError("pilot recommendation is only valid for REVISE")
+        if self.pilot_recommended and not self.pilot_scope:
+            raise ValueError("pilot_recommended requires pilot_scope")
+        if not self.pilot_recommended and self.pilot_scope is not None:
+            raise ValueError("pilot_scope requires pilot_recommended")
         return self
 
 

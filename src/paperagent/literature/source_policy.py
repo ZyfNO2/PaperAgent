@@ -4,6 +4,9 @@ import re
 from dataclasses import dataclass
 from typing import Literal
 
+from paperagent.literature.query_concepts import (
+    required_candidate_term_groups as query_required_candidate_term_groups,
+)
 from paperagent.schemas import SearchQuery
 
 PrecisionRisk = Literal["low", "medium", "high"]
@@ -72,61 +75,6 @@ _GENERIC_TERMS = frozenset(
         "application",
     }
 )
-_SMALL_OBJECT_QUERY_HINTS = (
-    "small object",
-    "small-object",
-    "tiny object",
-    "tiny-object",
-    "small target",
-    "tiny target",
-    "ap_small",
-)
-_SMALL_OBJECT_CANDIDATE_TERMS = (
-    "small object",
-    "small-object",
-    "tiny object",
-    "tiny-object",
-    "small target",
-    "tiny target",
-    "small oriented object",
-    "small-scale object",
-    "small-scale target",
-    "tiny pixel-area",
-)
-_OBJECT_DETECTION_QUERY_HINTS = (
-    "object detection",
-    "object detector",
-    "small object",
-    "tiny object",
-    "ap_small",
-)
-_OBJECT_DETECTION_CANDIDATE_TERMS = (
-    "object detection",
-    "object detector",
-    "detect objects",
-    "detecting objects",
-    "target detection",
-    "target detector",
-    "oriented object detection",
-    "computer vision",
-    "visual detection",
-)
-_AERIAL_QUERY_HINTS = (
-    "uav",
-    "unmanned aerial",
-    "aerial",
-    "drone",
-    "visdrone",
-    "remote sensing",
-)
-_AERIAL_CANDIDATE_TERMS = (
-    "uav",
-    "unmanned aerial",
-    "aerial",
-    "drone",
-    "visdrone",
-    "remote sensing",
-)
 
 
 @dataclass(frozen=True)
@@ -166,20 +114,10 @@ def _informative_terms(query: str) -> tuple[str, ...]:
     return ()
 
 
-def _contains_any(value: str, terms: tuple[str, ...]) -> bool:
-    return any(term in value for term in terms)
-
-
 def required_candidate_term_groups(query: str) -> tuple[tuple[str, ...], ...]:
-    normalized = query.casefold()
-    groups: list[tuple[str, ...]] = []
-    if _contains_any(normalized, _AERIAL_QUERY_HINTS):
-        groups.append(_AERIAL_CANDIDATE_TERMS)
-    if _contains_any(normalized, _SMALL_OBJECT_QUERY_HINTS):
-        groups.append(_SMALL_OBJECT_CANDIDATE_TERMS)
-    if _contains_any(normalized, _OBJECT_DETECTION_QUERY_HINTS):
-        groups.append(_OBJECT_DETECTION_CANDIDATE_TERMS)
-    return tuple(groups)
+    """Derive candidate constraints only from the current query's task anchors."""
+
+    return query_required_candidate_term_groups(query)
 
 
 def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
@@ -245,8 +183,4 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
     )
 
 
-__all__ = [
-    "SearchSourcePolicy",
-    "required_candidate_term_groups",
-    "review_search_query",
-]
+__all__ = ["SearchSourcePolicy", "required_candidate_term_groups", "review_search_query"]

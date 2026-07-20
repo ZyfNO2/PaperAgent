@@ -61,9 +61,7 @@ def _state(
         PaperAgentState,
         {
             "method": SimpleNamespace(methodology_plan=plan),
-            "evidence_ledger": SimpleNamespace(
-                accepted_ids=("ev-base", "ev-module", "ev-strong")
-            ),
+            "evidence_ledger": SimpleNamespace(accepted_ids=("ev-base", "ev-module", "ev-strong")),
         },
     )
 
