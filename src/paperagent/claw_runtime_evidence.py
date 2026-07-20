@@ -28,9 +28,7 @@ def provider_config_for_case(
     maximum = config.max_estimated_cost_usd
     if maximum is None:
         return config
-    return config.model_copy(
-        update={"max_estimated_cost_usd": maximum / selected_case_count}
-    )
+    return config.model_copy(update={"max_estimated_cost_usd": maximum / selected_case_count})
 
 
 def _telemetry_records(provider: object) -> tuple[InvocationTelemetry, ...]:
@@ -57,9 +55,7 @@ def summarize_llm_providers(
     selected_case_count: int,
 ) -> dict[str, Any]:
     provider_list = tuple(providers)
-    records = tuple(
-        record for provider in provider_list for record in _telemetry_records(provider)
-    )
+    records = tuple(record for provider in provider_list for record in _telemetry_records(provider))
     logical_calls = sum(_logical_call_count(provider) for provider in provider_list)
     input_tokens = sum(record.usage.input_tokens or 0 for record in records)
     output_tokens = sum(record.usage.output_tokens or 0 for record in records)
@@ -80,11 +76,7 @@ def summarize_llm_providers(
     estimated_cost_usd = round(sum(estimated_costs), 8) if estimated_costs else None
     maximum = config.max_estimated_cost_usd
     within_configured_cost: bool | None = None
-    if (
-        maximum is not None
-        and estimated_cost_usd is not None
-        and cost_estimate_complete
-    ):
+    if maximum is not None and estimated_cost_usd is not None and cost_estimate_complete:
         within_configured_cost = estimated_cost_usd <= maximum
     per_case_maximum = maximum / selected_case_count if maximum is not None else None
 
