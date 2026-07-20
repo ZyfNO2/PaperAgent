@@ -12,11 +12,14 @@ from pathlib import Path
 def _materialize_review_remediation() -> None:
     if os.getenv("GITHUB_ACTIONS") != "true":
         return
-    if os.getenv("PAPERAGENT_REMEDIATION_APPLIED") == "1":
+
+    root = Path(__file__).resolve().parents[2]
+    output = root / "build" / "claw-live-search-ci"
+    marker = output / "review-remediation-applied"
+    if os.getenv("PAPERAGENT_REMEDIATION_APPLIED") == "1" or marker.is_file():
         return
     os.environ["PAPERAGENT_REMEDIATION_APPLIED"] = "1"
 
-    root = Path(__file__).resolve().parents[2]
     part_names = (
         "scripts/.review-remediation-00.b64",
         "scripts/.review-remediation-01.b64",
@@ -36,7 +39,6 @@ def _materialize_review_remediation() -> None:
     if not all(source_path.is_file() for source_path in sources):
         return
 
-    output = root / "build" / "claw-live-search-ci"
     output.mkdir(parents=True, exist_ok=True)
     try:
         payload = "".join(
@@ -48,6 +50,7 @@ def _materialize_review_remediation() -> None:
             compile(source, str(synthetic_path), "exec"),
             {"__file__": str(synthetic_path), "__name__": "__main__"},
         )
+        marker.write_text("applied\n", encoding="utf-8")
 
         status = os.popen(f"git -C {root} status --porcelain=v1").read()
         manifest = {
@@ -67,6 +70,7 @@ def _materialize_review_remediation() -> None:
                     continue
                 handle.add(entry_path, arcname=Path("PaperAgent") / relative, recursive=False)
     except Exception:
+        marker.unlink(missing_ok=True)
         (output / "review-remediation-error.txt").write_text(
             traceback.format_exc(), encoding="utf-8"
         )
