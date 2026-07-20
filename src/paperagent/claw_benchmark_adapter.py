@@ -28,7 +28,7 @@ class BenchmarkNormalizationContext(FrozenModel):
 
     case_id: str = Field(min_length=1)
     resolved_unknowns: tuple[str, ...] = ()
-    pilot_recommended: bool | None = None
+    pilot_recommended: bool = False
     asked_user_to_design_method: bool = False
     full_text_evidence_ids: tuple[str, ...] = ()
     stronger_baselines_considered: bool | None = None
@@ -46,37 +46,6 @@ def _dedupe(values: Iterable[str | None]) -> tuple[str, ...]:
             seen.add(value)
             output.append(value)
     return tuple(output)
-
-
-def _has_actionable_recovery_path(next_actions: tuple[str, ...]) -> bool:
-    """True when the recovery path is specific enough to act on.
-
-    A fallback placeholder like "capture missing evidence and rerun the bounded
-    workflow" does not count as actionable.  At least one action must mention a
-    concrete step such as a pilot, retrieval round, or method repair.
-    """
-    if not next_actions:
-        return False
-    placeholders = {
-        "capture missing evidence and rerun the bounded workflow",
-    }
-    actionable = tuple(item for item in next_actions if item.strip().casefold() not in placeholders)
-    if not actionable:
-        return False
-    _concrete_markers = (
-        "pilot",
-        "retrieval",
-        "method repair",
-        "repair_method",
-        "bounded",
-        "re-run",
-        "rerun",
-        "validate evidence",
-        "freeze baseline",
-    )
-    return any(
-        any(marker in item.casefold() for marker in _concrete_markers) for item in actionable
-    )
 
 
 def _fact_partitions(state: PaperAgentState) -> FactPartitions:
@@ -500,11 +469,7 @@ def normalize_paperagent_state(
     )
     if not next_actions:
         next_actions = ("capture missing evidence and rerun the bounded workflow",)
-    pilot_recommended = (
-        context.pilot_recommended
-        if context.pilot_recommended is not None
-        else decision == "REVISE" and _has_actionable_recovery_path(next_actions)
-    )
+    pilot_recommended = context.pilot_recommended
     strong_comparison_derived = any(item.arm_type == "strong_comparison" for item in experiments)
     synthesis = state.get("synthesis")
     negative_results_derived = bool(
