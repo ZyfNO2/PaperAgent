@@ -7,14 +7,14 @@ import pytest
 from paperagent.evidence_gap_binding import build_evidence_ledger
 from paperagent.literature.specialized_guards import matches_specialized_candidate_terms
 from paperagent.literature.task_query_overrides import override_task_query
-from paperagent.retrieval.verify_evidence import _plan_with_prepared_queries
+from paperagent.retrieval.verify_evidence import _plan_with_runtime_queries
 from paperagent.schemas import (
     EvidenceBundle,
     EvidenceGap,
     EvidenceItem,
-    PreparedQuery,
     ResearchPlan,
     ResearchRequest,
+    SearchCandidate,
 )
 from paperagent.schemas.plan import SearchQuery
 
@@ -78,7 +78,7 @@ def test_professional_qa_queries_are_role_specific(
     assert result.query == expected
 
 
-def test_semantic_entropy_probes_supports_mechanism_gap() -> None:
+def test_semantic_entropy_probes_uses_candidate_query_after_prepared_batch_is_consumed() -> None:
     gap = EvidenceGap(
         gap_id="failure_mechanism_limitation_evidence",
         description="hallucination failure mechanism, uncertainty, and detection limitations",
@@ -101,39 +101,43 @@ def test_semantic_entropy_probes_supports_mechanism_gap() -> None:
         success_criteria=["identify direct failure-mechanism evidence"],
         risks=["domain corpus and acceptable abstention rate are unresolved"],
     )
-    effective_plan = _plan_with_prepared_queries(
-        plan,
-        [
-            PreparedQuery(
-                query_id="q-semantic-entropy",
-                gap_id=gap.gap_id,
-                query=refined_query,
-                original_query=original_query,
-                refinement_reason="canonicalized professional-QA hallucination mechanism query",
-                source_types=["paper"],
-                round=1,
-            )
-        ],
+    candidate = SearchCandidate(
+        candidate_id="paper-semantic-entropy-probes",
+        query_id="q-semantic-entropy",
+        gap_id=gap.gap_id,
+        source_type="paper",
+        title="Semantic Entropy Probes: Robust and Cheap Hallucination Detection in LLMs",
+        locator="https://arxiv.org/abs/2406.15927",
+        snippet=(
+            "Hallucinations are a major challenge to the practical adoption of large language "
+            "models. We propose semantic entropy probes, a reliable uncertainty quantification "
+            "method that detects hallucinations while reducing sampling overhead."
+        ),
+        provider="literature_retrieval",
+        metadata={
+            "query_text": refined_query,
+            "verification_status": "verified",
+        },
     )
+    effective_plan = _plan_with_runtime_queries(plan, [], [candidate])
     assert effective_plan is not None
     assert effective_plan.search_queries[0].query == refined_query
 
     item = EvidenceItem(
         evidence_id="ev-semantic-entropy-probes",
         source_type="paper",
-        title="Semantic Entropy Probes: Robust and Cheap Hallucination Detection in LLMs",
-        locator="arxiv:2406.15927",
+        title=candidate.title,
+        locator=candidate.locator,
         retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
         verification_status="accepted",
         supports_gap_ids=[gap.gap_id],
-        summary=(
-            "Hallucinations are a major challenge to the practical adoption of large language "
-            "models. We propose semantic entropy probes, a reliable uncertainty quantification "
-            "method that detects hallucinations while reducing sampling overhead."
-        ),
+        summary=candidate.snippet,
         content_hash="sha256:semantic-entropy-probes",
-        provider="literature_retrieval",
-        metadata={"candidate_gap_ids": gap.gap_id},
+        provider=candidate.provider,
+        metadata={
+            "candidate_gap_ids": gap.gap_id,
+            "query_text": refined_query,
+        },
     )
     _, lexical, _, supports, ledger = build_evidence_ledger(
         request=ResearchRequest(question="专业问答系统中的大模型幻觉问题"),
