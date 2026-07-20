@@ -16,7 +16,6 @@ from paperagent.claw_benchmark_runtime import (
 from paperagent.claw_gold_adapter import benchmark_input_from_gold
 from paperagent.providers import FakeSearchProvider
 from paperagent.schemas import (
-    EvidenceBundle,
     EvidenceGap,
     FinalOutcome,
     ResearchPlan,
@@ -106,7 +105,7 @@ def _pilot_state(*, references: list[str] | None = None, covered: bool = True) -
                 evidence_gaps=gaps,
                 search_queries=queries,
             ),
-            "evidence": EvidenceBundle(coverage_by_gap=coverage),
+            "evidence": SimpleNamespace(coverage_by_gap=coverage),
             "final_outcome": _revise_outcome(),
             "method": _method(),
         },
