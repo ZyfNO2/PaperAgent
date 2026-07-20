@@ -37,14 +37,19 @@ def _write_json(path: Path, value: object) -> None:
 def _write_jsonl(path: Path, values: list[object]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        "".join(json.dumps(value, ensure_ascii=False, sort_keys=True) + "\n" for value in values),
+        "".join(
+            json.dumps(value, ensure_ascii=False, sort_keys=True) + "\n"
+            for value in values
+        ),
         encoding="utf-8",
     )
 
 
 def _load_fake_search(path: Path) -> FakeSearchProvider:
     fixtures: dict[tuple[str, str, int, str], list[SearchCandidate]] = {}
-    for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+    for line_number, line in enumerate(
+        path.read_text(encoding="utf-8").splitlines(), start=1
+    ):
         if not line.strip():
             continue
         try:
@@ -60,7 +65,9 @@ def _load_fake_search(path: Path) -> FakeSearchProvider:
             candidates = raw.get("candidates")
             if not isinstance(candidates, list):
                 raise ValueError("candidates must be a list")
-            fixtures[key] = [SearchCandidate.model_validate(item) for item in candidates]
+            fixtures[key] = [
+                SearchCandidate.model_validate(item) for item in candidates
+            ]
         except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
             raise ValueError(f"{path}:{line_number}: {exc}") from exc
     if not fixtures:
@@ -80,7 +87,9 @@ def _parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path("evals/claw_academic_tailoring_v1"),
     )
-    parser.add_argument("--output-dir", type=Path, default=Path("build/claw-live-runtime"))
+    parser.add_argument(
+        "--output-dir", type=Path, default=Path("build/claw-live-runtime")
+    )
     parser.add_argument("--search-mode", choices=("fake", "literature"), default="fake")
     parser.add_argument("--search-fixtures", type=Path)
     parser.add_argument("--case-id", action="append", default=[])
@@ -158,7 +167,11 @@ def _report_cases(report: object) -> list[dict[str, object]]:
 async def _run(args: argparse.Namespace) -> int:
     dataset = load_gold_dataset(args.dataset_root)
     selected_ids = set(args.case_id)
-    cases = [case for case in dataset.cases if not selected_ids or case.case_id in selected_ids]
+    cases = [
+        case
+        for case in dataset.cases
+        if not selected_ids or case.case_id in selected_ids
+    ]
     if selected_ids - {case.case_id for case in cases}:
         missing = sorted(selected_ids - {case.case_id for case in cases})
         raise ValueError(f"unknown case IDs: {missing}")
@@ -172,7 +185,9 @@ async def _run(args: argparse.Namespace) -> int:
 
     leakage_audit = audit_benchmark_execution_boundary()
     if not leakage_audit.passed:
-        raise RuntimeError(f"static benchmark leakage audit failed: {leakage_audit.findings}")
+        raise RuntimeError(
+            f"static benchmark leakage audit failed: {leakage_audit.findings}"
+        )
 
     fake_provider = None
     if args.search_mode == "fake":
@@ -197,7 +212,9 @@ async def _run(args: argparse.Namespace) -> int:
         model=args.llm_model,
         base_url=args.llm_base_url,
     )
-    price_table = load_price_table(args.llm_price_table) if args.llm_price_table else None
+    price_table = (
+        load_price_table(args.llm_price_table) if args.llm_price_table else None
+    )
     case_provider_config = provider_config_for_case(
         provider_config,
         selected_case_count=len(cases),
@@ -245,9 +262,13 @@ async def _run(args: argparse.Namespace) -> int:
     )
     if provider_config.max_estimated_cost_usd is not None:
         if llm_summary["cost_estimate_complete"] is not True:
-            runtime_failures.append("LLM cost estimate is incomplete under a configured hard cap")
+            runtime_failures.append(
+                "LLM cost estimate is incomplete under a configured hard cap"
+            )
         elif llm_summary["within_configured_cost"] is not True:
-            runtime_failures.append("estimated LLM cost exceeded the configured full-run hard cap")
+            runtime_failures.append(
+                "estimated LLM cost exceeded the configured full-run hard cap"
+            )
 
     output_dir: Path = args.output_dir
     _write_jsonl(output_dir / "states.jsonl", states)
@@ -283,8 +304,12 @@ async def _run(args: argparse.Namespace) -> int:
     }
     exit_code = 1 if errors or runtime_failures else 0
     if len(cases) == 20 and len(traces) == 20:
-        report = evaluate_dataset(dataset, tuple(traces), minimum_score=args.minimum_score)
-        _write_json(output_dir / "report.json", report.model_dump(mode="json", by_alias=True))
+        report = evaluate_dataset(
+            dataset, tuple(traces), minimum_score=args.minimum_score
+        )
+        _write_json(
+            output_dir / "report.json", report.model_dump(mode="json", by_alias=True)
+        )
         report_passed = report.failed == 0 and report.hard_failure_count == 0
         summary.update(
             {
