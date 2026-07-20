@@ -101,6 +101,26 @@ def _metadata_text(metadata: dict[str, str], key: str) -> str | None:
     return normalized or None
 
 
+def _is_review_evidence(title: str, summary: str) -> bool:
+    text = f"{title} {summary}".casefold()
+    return any(cue in text for cue in ("review", "survey", "taxonomy"))
+
+
+def _is_small_object_task(state: PaperAgentState) -> bool:
+    request = state.get("request")
+    plan = state.get("plan")
+    text = " ".join(
+        value
+        for value in (
+            request.question if request is not None else "",
+            plan.problem_statement if plan is not None else "",
+            plan.scope if plan is not None else "",
+        )
+        if value
+    ).casefold()
+    return any(term in text for term in ("small object", "tiny object", "小目标"))
+
+
 def _hypothesis_sentence(draft: MethodDesignDraft) -> str:
     return (
         f"Under {draft.condition}, {draft.intervention} should "
@@ -153,11 +173,12 @@ def _experiment(
         dataset=dataset,
         split="freeze the official or documented train/validation/test split before the pilot",
         preprocessing=(
-            "match image resolution, augmentation, normalization, tiling, post-processing, "
+            "match input construction, preprocessing, normalization, post-processing, "
             "and inference precision across arms"
         ),
         tuning_budget=(
-            "match epochs, optimizer search space, image size, early stopping, and total compute"
+            "match epochs or steps, optimizer search space, input budget, early stopping, "
+            "and total compute"
         ),
         metrics=metrics,
         seeds=(1, 2, 3),
@@ -188,10 +209,15 @@ def build_method_proposal(
     grounded_comparator = _grounded_optional(draft.reported_comparator, evidence_text)
 
     dataset = grounded_dataset or (
-        "unresolved task-matched dataset; select and freeze a public UAV small-object "
-        "benchmark before the pilot"
+        "unresolved task-matched public dataset; select and freeze the dataset, split, "
+        "and data fingerprint before the pilot"
     )
-    baseline_name = primary.title
+    review_primary = _is_review_evidence(primary.title, primary.summary)
+    baseline_name = (
+        "unresolved task-matched baseline selected from accepted review evidence"
+        if review_primary
+        else primary.title
+    )
     comparator = grounded_comparator or (
         "strong comparison selected from the accepted evidence set before the pilot"
     )
@@ -211,7 +237,9 @@ def build_method_proposal(
     baseline = BaselineCard(
         name=baseline_name,
         version_or_commit=(
-            f"published source {primary.stable_identifier}; implementation commit unresolved"
+            f"review source {primary.stable_identifier}; implementation baseline unresolved"
+            if review_primary
+            else f"published source {primary.stable_identifier}; implementation commit unresolved"
         ),
         source_evidence_id=primary.evidence_id,
         license=_metadata_text(primary.metadata, "license"),
@@ -246,21 +274,19 @@ def build_method_proposal(
         input_semantics=draft.input_semantics,
         output_semantics=draft.output_semantics,
         input_shape=(
-            "shape-preserving detector feature map at the selected insertion point; "
-            "exact channels are resolved after the baseline is frozen"
+            "task-specific representation at the selected insertion point; exact dimensions "
+            "are resolved after the baseline is frozen"
         ),
-        output_shape=(
-            "same spatial and channel contract required by the downstream baseline stage"
-        ),
+        output_shape="representation contract required by the downstream baseline stage",
         normalization="inherit and freeze the baseline normalization contract",
         masks=(
             "inherit baseline target and padding masks; introduce no new mask semantics initially"
         ),
-        ordering="insert one independently switchable module at the selected feature stage",
+        ordering="insert one independently switchable module at the selected representation stage",
         trainable=True,
-        loss_terms=("inherit baseline detection losses and weights for the first pilot",),
+        loss_terms=("inherit baseline task losses and weights for the first pilot",),
         gradient_expectation=(
-            "verify non-zero finite gradients in the module and connected detector path"
+            "verify non-zero finite gradients in the module and connected baseline path"
         ),
         parameter_update_scope=(
             "train the candidate module and matched baseline parameters under the same budget"
@@ -270,7 +296,7 @@ def build_method_proposal(
         ),
         compute_cost=draft.compute_cost,
         assumptions=_dedupe(
-            (*plan_risks, "the selected insertion point preserves tensor semantics")
+            (*plan_risks, "the selected insertion point preserves representation semantics")
         ),
         predicted_effect=draft.predicted_effect,
         failure_mode=draft.failure_mode,
@@ -280,7 +306,8 @@ def build_method_proposal(
             "preprocessing, or loss terms"
         ),
     )
-    metrics = _dedupe((draft.primary_metric, "AP_small", "latency"))
+    task_metrics = ("AP_small",) if _is_small_object_task(state) else ()
+    metrics = _dedupe((draft.primary_metric, *task_metrics, "latency"))
     resources = _dedupe((*draft.resource_measures, "parameters", "memory", "latency"))
     experiments = (
         _experiment(
@@ -368,8 +395,8 @@ def build_method_proposal(
         baseline=BaselineProposal(
             name=baseline_name,
             description=(
-                "Accepted-evidence baseline candidate; implementation version, reproduction, "
-                "and deployment fit remain pilot gates."
+                "Accepted evidence constrains baseline selection; implementation version, "
+                "reproduction, and deployment fit remain pilot gates."
             ),
         ),
         modules=[
@@ -381,7 +408,7 @@ def build_method_proposal(
         ],
         integration_contracts=[
             IntegrationContract(
-                from_module="frozen_baseline_feature_stage",
+                from_module="frozen_baseline_representation_stage",
                 to_module=module_name,
                 input=draft.input_semantics,
                 output=draft.output_semantics,
