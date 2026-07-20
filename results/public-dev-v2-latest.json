@@ -3,14 +3,14 @@
   "freeze_manifest": null,
   "outcomes": {
     "freeze": "skipped",
-    "install": "cancelled",
+    "install": "success",
     "literature_smoke": "skipped",
-    "mistral_secret": "skipped",
+    "mistral_secret": "success",
     "mistral_smoke": "skipped",
-    "offline_gates": "skipped",
+    "offline_gates": "failure",
     "production_scan": "skipped",
     "public_dev_run": "skipped",
-    "validation": "skipped"
+    "validation": "success"
   },
   "passed": false,
   "production_scan": null,
@@ -20,6 +20,6 @@
   "schema": "paperagent.academic-holdout.public-dev-handoff.v6",
   "split": "development",
   "summary": null,
-  "validation_log_tail": null,
-  "workflow_run_id": "29787434788"
+  "validation_log_tail": "validated 12 cases from data/public-dev-v2.jsonl\ntest_invalid_sha_and_missing_input_fail_closed (test_freeze_evaluation.FreezeEvaluationTests.test_invalid_sha_and_missing_input_fail_closed) ... ok\ntest_manifest_digest_changes_when_private_runner_changes (test_freeze_evaluation.FreezeEvaluationTests.test_manifest_digest_changes_when_private_runner_changes) ... ok\ntest_manifest_digest_changes_when_scorer_changes (test_freeze_evaluation.FreezeEvaluationTests.test_manifest_digest_changes_when_scorer_changes) ... ok\ntest_manifest_is_json_serializable (test_freeze_evaluation.FreezeEvaluationTests.test_manifest_is_json_serializable) ... ok\ntest_manifest_pins_all_evaluation_inputs (test_freeze_evaluation.FreezeEvaluationTests.test_manifest_pins_all_evaluation_inputs) ... ok\ntest_consistent_pair_passes (test_public_metrics.PublicProtocolMetricTests.test_consistent_pair_passes) ... ok\ntest_inconsistent_pair_fails (test_public_metrics.PublicProtocolMetricTests.test_inconsistent_pair_fails) ... ok\ntest_report_digest_ignores_prior_digest_field (test_public_metrics.PublicProtocolMetricTests.test_report_digest_ignores_prior_digest_field) ... ok\ntest_singletons_do_not_create_a_comparable_group (test_public_metrics.PublicProtocolMetricTests.test_singletons_do_not_create_a_comparable_group) ... ok\ntest_projection_contains_only_runtime_visible_fields (test_runtime_projection.RuntimeProjectionTests.test_projection_contains_only_runtime_visible_fields) ... ok\ntest_scorer_only_mutations_do_not_change_projection (test_runtime_projection.RuntimeProjectionTests.test_scorer_only_mutations_do_not_change_projection) ... ok\ntest_user_visible_mutation_changes_projection (test_runtime_projection.RuntimeProjectionTests.test_user_visible_mutation_changes_projection) ... ok\ntest_decision_is_scored_against_external_oracle (test_runtime_projection.StructuredScorerTests.test_decision_is_scored_against_external_oracle) ... ok\ntest_disallowed_pilot_is_a_hard_failure (test_runtime_projection.StructuredScorerTests.test_disallowed_pilot_is_a_hard_failure) ... ok\ntest_fabrication_forces_zero_score (test_runtime_projection.StructuredScorerTests.test_fabrication_forces_zero_score) ... ok\ntest_unresolved_comparator_cannot_be_counted_as_verified (test_runtime_projection.StructuredScorerTests.test_unresolved_comparator_cannot_be_counted_as_verified) ... ok\ntest_clean_input_only_signature_passes (test_scan_production.ProductionScanTests.test_clean_input_only_signature_passes) ... ok\ntest_missing_executor_fails_closed (test_scan_production.ProductionScanTests.test_missing_executor_fails_closed) ... ok\ntest_private_ngram_is_reported_by_digest_not_plaintext (test_scan_production.ProductionScanTests.test_private_ngram_is_reported_by_digest_not_plaintext) ... ok\ntest_scorer_field_in_runtime_signature_fails (test_scan_production.ProductionScanTests.test_scorer_field_in_runtime_signature_fails) ... ok\ntest_jsonl_is_canonical_one_object_per_line (test_validate_cases.PublicDatasetTests.test_jsonl_is_canonical_one_object_per_line) ... ok\ntest_legacy_domain_term_is_rejected (test_validate_cases.PublicDatasetTests.test_legacy_domain_term_is_rejected) ... ok\ntest_oracle_cannot_be_added_to_runtime_input (test_validate_cases.PublicDatasetTests.test_oracle_cannot_be_added_to_runtime_input) ... ok\ntest_placeholder_comparator_case_forbids_verified_claim (test_validate_cases.PublicDatasetTests.test_placeholder_comparator_case_forbids_verified_claim) ... ok\ntest_public_dataset_passes (test_validate_cases.PublicDatasetTests.test_public_dataset_passes) ... ok\n\n----------------------------------------------------------------------\nRan 25 tests in 0.016s\n\nOK",
+  "workflow_run_id": "29787476028"
 }
