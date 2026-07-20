@@ -171,11 +171,11 @@ def _medical_query_for_role(*, gap_id: str, gap_description: str) -> str:
     role = f"{gap_id} {gap_description}".casefold()
     core = "multimodal medical image classification"
     if _contains_any(role, _MEDICAL_BASELINE_ROLE_HINTS):
-        return f"{core} information fusion"
-    if _contains_any(role, _MEDICAL_FAILURE_ROLE_HINTS):
-        return f"{core} incomplete data limitations"
+        return f"{core} MultiFusionNet"
     if _contains_any(role, _MEDICAL_PARALLEL_ROLE_HINTS):
         return f"{core} fusion techniques"
+    if _contains_any(role, _MEDICAL_FAILURE_ROLE_HINTS):
+        return f"{core} incomplete data limitations"
     return f"{core} feature fusion"
 
 
