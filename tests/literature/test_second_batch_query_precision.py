@@ -77,7 +77,8 @@ def test_second_batch_guards_reject_cross_task_false_positives(
             "multimodal medical imaging classification diagnosis feature fusion baseline",
         ),
         (
-            "multimodal medical image fusion classification mechanism limitation failure mode survey",
+            "multimodal medical image fusion classification mechanism limitation "
+            "failure mode survey",
             "mechanism_limitation_parallel",
             "multimodal medical imaging classification diagnosis feature fusion mechanism "
             "limitation failure mode",
