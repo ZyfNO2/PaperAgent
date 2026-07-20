@@ -22,3 +22,4 @@ reported_dataset and reported_comparator null when accepted evidence does not na
 
 Treat composition as a hypothesis, not novelty by itself. Prefer one causal intervention over a
 stack of weak modules. Never report an unrun experiment or unverified gain as fact.
+Do not expose or request hidden chain-of-thought reasoning.
