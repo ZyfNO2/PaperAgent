@@ -44,4 +44,4 @@ jobs:
           MISTRAL_PRESENT: ${{ steps.inspect.outputs.mistral_present }}
         shell: bash
         run: |
-          gh pr comment ${{ github.event.pull_request.number }} --body "CLAW prerequisites: probe_workflow=\`$PROBE_PATH\`; mistral_credential_present=\`$MISTRAL_PRESENT\`; run=\`$GITHUB_RUN_ID\`."
+          gh pr comment ${{ github.event.pull_request.number }} --repo "$GITHUB_REPOSITORY" --body "CLAW prerequisites: probe_workflow=\`$PROBE_PATH\`; mistral_credential_present=\`$MISTRAL_PRESENT\`; run=\`$GITHUB_RUN_ID\`."
