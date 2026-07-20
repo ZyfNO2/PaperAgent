@@ -11,6 +11,22 @@ from paperagent.state import PaperAgentState, StatePatch
 NODE = "planning_node"
 
 
+def _normalize_nonblocking_clarification(plan: ResearchPlan) -> ResearchPlan:
+    """Continue bounded retrieval when the planner already supplied a complete query contract.
+
+    A clarification can remain useful without blocking public-evidence retrieval. We only
+    promote ``need_human`` when concrete evidence gaps and valid search queries are already
+    present; plans without that contract still route to human review or block as before.
+    """
+
+    if plan.status != "need_human" or not plan.evidence_gaps or not plan.search_queries:
+        return plan
+    known_gaps = {gap.gap_id for gap in plan.evidence_gaps}
+    if any(query.gap_id not in known_gaps for query in plan.search_queries):
+        return plan
+    return plan.model_copy(update={"status": "ready"})
+
+
 async def planning_node(state: PaperAgentState, config: RunnableConfig) -> StatePatch:
     request = state.get("request")
     run = state.get("run")
@@ -39,7 +55,7 @@ async def planning_node(state: PaperAgentState, config: RunnableConfig) -> State
         semantic_validate=validate,
     )
     if result is not None:
-        patch["plan"] = result
+        patch["plan"] = _normalize_nonblocking_clarification(result)
     return patch
 
 
