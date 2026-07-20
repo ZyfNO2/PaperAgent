@@ -38,12 +38,12 @@ jobs:
           status_file="evals/claw_academic_tailoring_v1/live-probes/case015-multibehavior-patch-latest.json"
           mkdir -p "$out" "$(dirname "$status_file")"
 
-          git show HEAD^^:.github/workflows/second-batch-retrieval-offline-gate.yml \
+          git show 4e6a9b7c16c66ce5d79be31912675385e7e12866:.github/workflows/second-batch-retrieval-offline-gate.yml \
             > .github/workflows/second-batch-retrieval-offline-gate.yml
           restore_status=$?
 
           if (( restore_status == 0 )); then
-            python scripts/clouddev_patch_case_015_multibehavior.py \
+            python scripts/clouddev_patch_case_015_multibehavior_v2.py \
               > "$out/patch.log" 2>&1
             patch_status=$?
           else
@@ -152,6 +152,7 @@ jobs:
               .github/workflows/patch-case-015-multibehavior-once.yml \
               .github/workflows/patch-case-015-multibehavior-v2.yml \
               scripts/clouddev_patch_case_015_multibehavior.py \
+              scripts/clouddev_patch_case_015_multibehavior_v2.py \
               .case015-multibehavior-patch-trigger.json
             git commit -m "fix(search): canonicalize and bind multi-behavior recommendation evidence"
           else
