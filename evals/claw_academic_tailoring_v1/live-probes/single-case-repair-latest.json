@@ -1,35 +1,58 @@
 {
   "accepted_evidence": [
     {
+      "evidence_id": "ev-paper-410b2ebbd766de3473b9",
+      "locator": "doi:10.1007/s10462-022-10152-1",
+      "provider": "literature_retrieval",
+      "supports_gap_ids": [
+        "baseline_organ_dataset_mapping",
+        "strong_comparison_methods"
+      ],
+      "title": "Modality specific U-Net variants for biomedical image segmentation: a survey",
+      "verification_status": "accepted"
+    },
+    {
+      "evidence_id": "ev-paper-9dab9d8be226da273ef4",
+      "locator": "doi:10.1109/tpami.2021.3100536",
+      "provider": "literature_retrieval",
+      "supports_gap_ids": [
+        "baseline_organ_dataset_mapping",
+        "strong_comparison_methods"
+      ],
+      "title": "AbdomenCT-1K: Is Abdominal Organ Segmentation a Solved Problem?",
+      "verification_status": "accepted"
+    },
+    {
       "evidence_id": "ev-paper-e0988bf5d6aafb186677",
       "locator": "https://arxiv.org/abs/2501.09185",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_organ_coverage",
-        "dataset_availability"
+        "baseline_organ_dataset_mapping",
+        "strong_comparison_methods"
       ],
       "title": "Cancer-Net PCa-Seg: Benchmarking Deep Learning Models for Prostate Cancer Segmentation Using Synthetic Correlated Diffusion Imaging",
       "verification_status": "accepted"
     },
     {
-      "evidence_id": "ev-paper-6393bb155e93e88179fc",
-      "locator": "https://arxiv.org/abs/1910.07521",
+      "evidence_id": "ev-paper-c416e6a89331a5eb943e",
+      "locator": "https://arxiv.org/abs/2411.01896",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_organ_coverage",
-        "dataset_availability"
+        "baseline_organ_dataset_mapping",
+        "strong_comparison_methods"
       ],
-      "title": "End-to-End Cascaded U-Nets with a Localization Network for Kidney Tumor Segmentation",
+      "title": "MBDRes-U-Net: Multi-Scale Lightweight Brain Tumor Segmentation Network",
       "verification_status": "accepted"
     },
     {
-      "evidence_id": "ev-paper-5c236915717c246ca2ea",
-      "locator": "doi:10.1038/s41467-022-30695-9",
+      "evidence_id": "ev-paper-47aeac22c4a6e663c807",
+      "locator": "https://arxiv.org/abs/2011.11052",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "dataset_availability"
+        "baseline_organ_dataset_mapping",
+        "strong_comparison_methods"
       ],
-      "title": "The Medical Segmentation Decathlon",
+      "title": "Efficient embedding network for 3D brain tumor segmentation",
       "verification_status": "accepted"
     },
     {
@@ -37,8 +60,8 @@
       "locator": "doi:10.1109/access.2021.3086020",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_organ_coverage",
-        "dataset_availability"
+        "baseline_organ_dataset_mapping",
+        "strong_comparison_methods"
       ],
       "title": "U-Net and Its Variants for Medical Image Segmentation: A Review of Theory and Applications",
       "verification_status": "accepted"
@@ -49,6 +72,94 @@
   "evidence_review": [
     {
       "accepted": true,
+      "evidence_id": "ev-paper-410b2ebbd766de3473b9",
+      "gap_supports": [
+        {
+          "checklist_results": {
+            "fixture_explicit_support": false,
+            "gap_overlap": true,
+            "query_provenance_match": true,
+            "relevance_passed": true
+          },
+          "confidence": 0.9,
+          "decision": "accept",
+          "gap_id": "baseline_organ_dataset_mapping",
+          "limitations": [],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "fixture_explicit_support": false,
+            "gap_overlap": true,
+            "query_provenance_match": true,
+            "relevance_passed": true
+          },
+          "confidence": 0.9,
+          "decision": "accept",
+          "gap_id": "strong_comparison_methods",
+          "limitations": [],
+          "support_type": "direct_support"
+        }
+      ],
+      "rejection_reasons": [],
+      "title": "Modality specific U-Net variants for biomedical image segmentation: a survey"
+    },
+    {
+      "accepted": true,
+      "evidence_id": "ev-paper-9dab9d8be226da273ef4",
+      "gap_supports": [
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "baseline_organ_dataset_mapping",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "strong_comparison_methods",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        }
+      ],
+      "rejection_reasons": [],
+      "title": "AbdomenCT-1K: Is Abdominal Organ Segmentation a Solved Problem?"
+    },
+    {
+      "accepted": true,
       "evidence_id": "ev-paper-e0988bf5d6aafb186677",
       "gap_supports": [
         {
@@ -60,31 +171,21 @@
           },
           "confidence": 0.9,
           "decision": "accept",
-          "gap_id": "baseline_organ_coverage",
+          "gap_id": "baseline_organ_dataset_mapping",
           "limitations": [],
           "support_type": "direct_support"
         },
         {
           "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
             "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
+            "gap_overlap": true,
             "query_provenance_match": true,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": true,
-            "semantic_gap_binding": true,
-            "supporting_span_present": true
+            "relevance_passed": true
           },
-          "confidence": 0.82,
+          "confidence": 0.9,
           "decision": "accept",
-          "gap_id": "dataset_availability",
-          "limitations": [
-            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-          ],
+          "gap_id": "strong_comparison_methods",
+          "limitations": [],
           "support_type": "direct_support"
         }
       ],
@@ -93,7 +194,7 @@
     },
     {
       "accepted": true,
-      "evidence_id": "ev-paper-6393bb155e93e88179fc",
+      "evidence_id": "ev-paper-c416e6a89331a5eb943e",
       "gap_supports": [
         {
           "checklist_results": {
@@ -104,64 +205,43 @@
           },
           "confidence": 0.9,
           "decision": "accept",
-          "gap_id": "baseline_organ_coverage",
+          "gap_id": "baseline_organ_dataset_mapping",
           "limitations": [],
           "support_type": "direct_support"
         },
         {
           "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
             "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
+            "gap_overlap": true,
             "query_provenance_match": true,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": true,
-            "semantic_gap_binding": true,
-            "supporting_span_present": true
+            "relevance_passed": true
           },
-          "confidence": 0.82,
+          "confidence": 0.9,
           "decision": "accept",
-          "gap_id": "dataset_availability",
-          "limitations": [
-            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-          ],
+          "gap_id": "strong_comparison_methods",
+          "limitations": [],
           "support_type": "direct_support"
         }
       ],
       "rejection_reasons": [],
-      "title": "End-to-End Cascaded U-Nets with a Localization Network for Kidney Tumor Segmentation"
+      "title": "MBDRes-U-Net: Multi-Scale Lightweight Brain Tumor Segmentation Network"
     },
     {
       "accepted": true,
-      "evidence_id": "ev-paper-5c236915717c246ca2ea",
+      "evidence_id": "ev-paper-47aeac22c4a6e663c807",
       "gap_supports": [
         {
           "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
             "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
+            "gap_overlap": true,
             "query_provenance_match": true,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
+            "relevance_passed": true
           },
-          "confidence": 0.2,
-          "decision": "reject",
-          "gap_id": "baseline_organ_coverage",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
+          "confidence": 0.9,
+          "decision": "accept",
+          "gap_id": "baseline_organ_dataset_mapping",
+          "limitations": [],
+          "support_type": "direct_support"
         },
         {
           "checklist_results": {
@@ -172,71 +252,13 @@
           },
           "confidence": 0.9,
           "decision": "accept",
-          "gap_id": "dataset_availability",
+          "gap_id": "strong_comparison_methods",
           "limitations": [],
           "support_type": "direct_support"
         }
       ],
       "rejection_reasons": [],
-      "title": "The Medical Segmentation Decathlon"
-    },
-    {
-      "accepted": false,
-      "evidence_id": "ev-paper-5ee4cf54aed18be339c5",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": true,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.2,
-          "decision": "reject",
-          "gap_id": "baseline_organ_coverage",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": false,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": true,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "dataset_availability",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: query provenance or qualified cross-gap reuse"
-          ],
-          "support_type": "insufficient"
-        }
-      ],
-      "rejection_reasons": [
-        "NO_VALID_GAP_BINDING"
-      ],
-      "title": "3D Kidneys and Kidney Tumor Semantic Segmentation using Boundary-Aware Networks"
+      "title": "Efficient embedding network for 3D brain tumor segmentation"
     },
     {
       "accepted": true,
@@ -251,31 +273,21 @@
           },
           "confidence": 0.9,
           "decision": "accept",
-          "gap_id": "baseline_organ_coverage",
+          "gap_id": "baseline_organ_dataset_mapping",
           "limitations": [],
           "support_type": "direct_support"
         },
         {
           "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
             "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
+            "gap_overlap": true,
             "query_provenance_match": true,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": true,
-            "semantic_gap_binding": true,
-            "supporting_span_present": true
+            "relevance_passed": true
           },
-          "confidence": 0.82,
+          "confidence": 0.9,
           "decision": "accept",
-          "gap_id": "dataset_availability",
-          "limitations": [
-            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-          ],
+          "gap_id": "strong_comparison_methods",
+          "limitations": [],
           "support_type": "direct_support"
         }
       ],
@@ -288,10 +300,9 @@
   "failed_stages": [
     {
       "available": 7,
-      "earned": 2,
+      "earned": 4,
       "findings": [
         "one or more candidates skipped relevance review",
-        "accepted evidence lacks identity, relevance, or role binding",
         "core accepted evidence lacks full-text review"
       ],
       "passed": false,
@@ -307,17 +318,12 @@
       "stage": "clarification_gate"
     }
   ],
-  "hard_failures": [
-    {
-      "code": "IDENTITY_ONLY_ACCEPTANCE",
-      "details": "accepted without identity, relevance, and role binding: ev-paper-5c236915717c246ca2ea"
-    }
-  ],
+  "hard_failures": [],
   "llm_call_budget": 12,
   "minimum_score": 80,
   "model": "mistral-small-latest",
   "observed_decision": "REVISE",
-  "passed": false,
+  "passed": true,
   "provider": "mistral",
   "provider_call_budget": {
     "maximum": 8,
@@ -325,8 +331,50 @@
     "used": 4
   },
   "report_status": "completed",
-  "score": 92,
+  "score": 94,
   "search_diagnostics": [
+    {
+      "attempted_providers": [
+        "openalex"
+      ],
+      "budget_exhausted_call_count": 0,
+      "cache_hit_count": 0,
+      "coalesced_provider_call_count": 0,
+      "executed_query": "U-Net medical image segmentation organ baseline nnU-Net Attention",
+      "fallback_used": false,
+      "informative_terms": [
+        "u-net",
+        "medical",
+        "image",
+        "segmentation",
+        "organ",
+        "baseline",
+        "nnu-net",
+        "attention"
+      ],
+      "maximum_provider_calls": 4,
+      "minimum_rank_score": 0.62,
+      "minimum_relevance": 0.34,
+      "policy_reasons": [],
+      "precision_risk": "low",
+      "provider_call_count": 1,
+      "provider_results": [
+        {
+          "cache_status": "miss",
+          "error_code": null,
+          "provider": "openalex",
+          "retry_count": 0,
+          "status": "success"
+        }
+      ],
+      "query_approved": true,
+      "query_id": "q1_baseline_organ_dataset",
+      "relevant_verified_papers": 2,
+      "returned_candidate_count": 2,
+      "returned_papers": 2,
+      "stop_reason": "sufficient_academic_evidence",
+      "uncached_provider_call_count": 1
+    },
     {
       "attempted_providers": [
         "openalex",
@@ -336,24 +384,18 @@
       "budget_exhausted_call_count": 0,
       "cache_hit_count": 0,
       "coalesced_provider_call_count": 0,
-      "executed_query": "U-Net medical image segmentation baseline organ liver lung heart prostate pancreas kidney brain cardiac retinal",
+      "executed_query": "U-Net organ-specific segmentation liver lung prostate pancreas cardiac brain",
       "fallback_used": false,
       "informative_terms": [
         "u-net",
-        "medical",
-        "image",
+        "organ-specific",
         "segmentation",
-        "baseline",
-        "organ",
         "liver",
         "lung",
-        "heart",
         "prostate",
         "pancreas",
-        "kidney",
-        "brain",
         "cardiac",
-        "retinal"
+        "brain"
       ],
       "maximum_provider_calls": 4,
       "minimum_rank_score": 0.62,
@@ -385,62 +427,15 @@
         }
       ],
       "query_approved": true,
-      "query_id": "q1_baseline_organ_coverage",
+      "query_id": "q2_specific_organ_dataset",
       "relevant_verified_papers": 4,
       "returned_candidate_count": 4,
       "returned_papers": 4,
       "stop_reason": "sufficient_academic_evidence",
       "uncached_provider_call_count": 3
-    },
-    {
-      "attempted_providers": [
-        "openalex"
-      ],
-      "budget_exhausted_call_count": 0,
-      "cache_hit_count": 0,
-      "coalesced_provider_call_count": 0,
-      "executed_query": "medical image segmentation liver lung heart prostate pancreas kidney brain cardiac retinal public",
-      "fallback_used": false,
-      "informative_terms": [
-        "medical",
-        "image",
-        "segmentation",
-        "liver",
-        "lung",
-        "heart",
-        "prostate",
-        "pancreas",
-        "kidney",
-        "brain",
-        "cardiac",
-        "retinal",
-        "public"
-      ],
-      "maximum_provider_calls": 4,
-      "minimum_rank_score": 0.62,
-      "minimum_relevance": 0.34,
-      "policy_reasons": [],
-      "precision_risk": "low",
-      "provider_call_count": 1,
-      "provider_results": [
-        {
-          "cache_status": "miss",
-          "error_code": null,
-          "provider": "openalex",
-          "retry_count": 0,
-          "status": "success"
-        }
-      ],
-      "query_approved": true,
-      "query_id": "q2_dataset_availability",
-      "relevant_verified_papers": 2,
-      "returned_candidate_count": 2,
-      "returned_papers": 2,
-      "stop_reason": "sufficient_academic_evidence",
-      "uncached_provider_call_count": 1
     }
   ],
-  "status": "failed",
+  "status": "passed",
   "verification_call_budget": {
     "maximum": 16,
     "remaining": 10,
