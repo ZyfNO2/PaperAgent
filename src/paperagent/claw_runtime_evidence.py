@@ -57,12 +57,20 @@ def summarize_search_budgets(
     for case_id, budget in zip(case_ids, budgets, strict=True):
         if budget is None:
             complete = False
-            case_rows.append({"case_id": case_id, "maximum": None, "used": None, "remaining": None})
+            case_rows.append(
+                {
+                    "case_id": case_id,
+                    "maximum": None,
+                    "used": None,
+                    "remaining": None,
+                }
+            )
             continue
         maximum = budget.get("maximum")
         used = budget.get("used")
         remaining = budget.get("remaining")
-        if not isinstance(maximum, int) or not isinstance(used, int) or not isinstance(remaining, int):
+        valid_counts = all(isinstance(value, int) for value in (maximum, used, remaining))
+        if not valid_counts:
             complete = False
         else:
             total_used += used
