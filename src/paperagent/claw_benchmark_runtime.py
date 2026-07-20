@@ -63,20 +63,21 @@ def build_benchmark_search_runtime(
 
 
 def _structured_pilot_recommendation(state: PaperAgentState) -> bool:
-    """Derive pilot routing only from production structured state.
+    """Recommend a bounded pilot only when a concrete method artifact exists.
 
-    Free-text next actions, clarification wording, supplied-paper titles, and benchmark
-    annotations are deliberately excluded. A bounded pilot is recommended only when the
-    completed outcome explicitly routes a REVISE verdict through method repair and a
-    concrete method artifact exists to test.
+    The decision uses production structured state only. A REVISE outcome may arrive through
+    a blocked route after the bounded repair allowance is exhausted; that does not invalidate
+    the already-produced method artifact as a candidate for a limited falsification run.
+    Free-text actions, case text, supplied-paper titles, and benchmark annotations are excluded.
     """
 
     outcome = state.get("final_outcome")
     method = state.get("method")
     return bool(
         outcome is not None
+        and outcome.execution_status == "succeeded"
         and outcome.scientific_verdict == "REVISE"
-        and outcome.quality_route == "repair_method"
+        and not outcome.invalid_evidence_ids
         and method is not None
     )
 
