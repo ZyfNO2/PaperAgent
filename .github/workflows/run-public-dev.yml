@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: academic-holdout-v2-public-dev
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   run-public-development-set:
@@ -69,6 +69,18 @@ jobs:
           python scripts/scan_production.py production \
             --output build/public-dev-v2/production-scan.json
 
+      - name: Freeze production scorer protocol and thresholds
+        id: freeze
+        if: steps.production_scan.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python scripts/freeze_evaluation.py \
+            --repository-root . \
+            --production-source-sha "$PAPERAGENT_PRODUCTION_SHA" \
+            --benchmark-source-sha "$GITHUB_SHA" \
+            --production-scan build/public-dev-v2/production-scan.json \
+            --output build/public-dev-v2/freeze-manifest.json
+
       - name: Install frozen production package
         id: install
         continue-on-error: true
@@ -83,6 +95,7 @@ jobs:
         id: public_dev
         if: >-
           steps.production_scan.outcome == 'success' &&
+          steps.freeze.outcome == 'success' &&
           steps.install.outcome == 'success' &&
           steps.secret.outcome == 'success'
         continue-on-error: true
@@ -103,6 +116,7 @@ jobs:
         if: always()
         env:
           PRODUCTION_SCAN_OUTCOME: ${{ steps.production_scan.outcome }}
+          FREEZE_OUTCOME: ${{ steps.freeze.outcome }}
           INSTALL_OUTCOME: ${{ steps.install.outcome }}
           SECRET_OUTCOME: ${{ steps.secret.outcome }}
           PUBLIC_DEV_OUTCOME: ${{ steps.public_dev.outcome }}
@@ -114,8 +128,10 @@ jobs:
 
           summary_path = Path('build/public-dev-v2/execution-summary.json')
           scan_path = Path('build/public-dev-v2/production-scan.json')
+          freeze_path = Path('build/public-dev-v2/freeze-manifest.json')
           summary = json.loads(summary_path.read_text()) if summary_path.exists() else None
           scan = json.loads(scan_path.read_text()) if scan_path.exists() else None
+          freeze = json.loads(freeze_path.read_text()) if freeze_path.exists() else None
           payload = {
               'schema': 'paperagent.academic-holdout.public-dev-handoff.v2',
               'benchmark_source_sha': os.environ['GITHUB_SHA'],
@@ -124,11 +140,13 @@ jobs:
               'result_interpretation': 'public development set; not independent generalization evidence',
               'outcomes': {
                   'production_scan': os.environ.get('PRODUCTION_SCAN_OUTCOME'),
+                  'freeze': os.environ.get('FREEZE_OUTCOME'),
                   'install': os.environ.get('INSTALL_OUTCOME'),
                   'mistral_secret': os.environ.get('SECRET_OUTCOME'),
                   'public_dev_run': os.environ.get('PUBLIC_DEV_OUTCOME'),
               },
               'production_scan': scan,
+              'freeze_manifest': freeze,
               'summary': summary,
           }
           Path('build/public-dev-v2').mkdir(parents=True, exist_ok=True)
@@ -166,6 +184,7 @@ jobs:
         if: always()
         env:
           PRODUCTION_SCAN_OUTCOME: ${{ steps.production_scan.outcome }}
+          FREEZE_OUTCOME: ${{ steps.freeze.outcome }}
           INSTALL_OUTCOME: ${{ steps.install.outcome }}
           SECRET_OUTCOME: ${{ steps.secret.outcome }}
           PUBLIC_DEV_OUTCOME: ${{ steps.public_dev.outcome }}
@@ -173,6 +192,7 @@ jobs:
         run: |
           for value in \
             "$PRODUCTION_SCAN_OUTCOME" \
+            "$FREEZE_OUTCOME" \
             "$INSTALL_OUTCOME" \
             "$SECRET_OUTCOME" \
             "$PUBLIC_DEV_OUTCOME" \
