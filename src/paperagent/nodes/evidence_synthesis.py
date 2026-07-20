@@ -17,7 +17,7 @@ NODE = "evidence_synthesis_node"
 def _literal_type(values: tuple[str, ...]) -> Any:
     if not values:
         raise ValueError("at least one allowed value is required")
-    return Literal.__getitem__(values)  # type: ignore[attr-defined]
+    return Literal.__getitem__(values)
 
 
 def _list_type(item_type: Any) -> Any:
