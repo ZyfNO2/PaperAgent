@@ -57,8 +57,8 @@ class ResearchPlan(FrozenModel):
             unknown = {query.gap_id for query in self.search_queries} - known_gaps
             if unknown:
                 raise ValueError(f"search queries reference unknown gaps: {sorted(unknown)}")
-            if self.clarification_question is not None or self.block_reason is not None:
-                raise ValueError("ready plan cannot include clarification_question or block_reason")
+            if self.block_reason is not None:
+                raise ValueError("ready plan cannot include block_reason")
         elif self.status == "need_human":
             if not self.clarification_question:
                 raise ValueError("need_human plan requires clarification_question")
