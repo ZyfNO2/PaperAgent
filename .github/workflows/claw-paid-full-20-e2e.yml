@@ -111,10 +111,16 @@ jobs:
           print("static leakage audit passed")
           PY
           files=(
+            src/paperagent/claw_benchmark_normalizer.py
+            src/paperagent/claw_benchmark_runtime.py
             src/paperagent/claw_runtime_evidence.py
+            src/paperagent/graph.py
             src/paperagent/retrieval/prepare_search.py
             scripts/run_claw_academic_runtime.py
+            tests/evals/test_claw_benchmark_adapter.py
             tests/evals/test_claw_runtime_evidence.py
+            tests/graph/test_retrieval_exhaustion_policy.py
+            tests/literature/test_claw_benchmark_runtime.py
             tests/literature/test_prepare_search_normalization.py
             tests/real_provider/test_mistral_smoke.py
           )
@@ -124,6 +130,7 @@ jobs:
           pytest -q \
             tests/evals/test_claw_runtime_evidence.py \
             tests/evals/test_claw_benchmark_adapter.py \
+            tests/graph/test_retrieval_exhaustion_policy.py \
             tests/literature/test_claw_benchmark_runtime.py \
             tests/literature/test_prepare_search_normalization.py \
             tests/literature/test_provider_call_budget.py \
