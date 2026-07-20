@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: case011-isolated-repair
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   patch-and-verify:
@@ -29,10 +29,95 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
+      - name: Harden transaction script
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/clouddev_fix_few_shot_intent_roles.py")
+          text = path.read_text(encoding="utf-8")
+          text = text.replace(
+              "updated, count = pattern.subn(replacement, text, count=1)",
+              "updated, count = pattern.subn(lambda _: replacement, text, count=1)",
+          )
+          start = text.index("def commit_result() -> None:\n")
+          end = text.index("\n\ndef main() -> None:\n", start)
+          replacement = '''def commit_result() -> None:
+              subprocess.run(
+                  ["git", "config", "user.name", "github-actions[bot]"],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  [
+                      "git",
+                      "config",
+                      "user.email",
+                      "41898282+github-actions[bot]@users.noreply.github.com",
+                  ],
+                  cwd=ROOT,
+                  check=True,
+              )
+              temporary_paths = (
+                  ".github/workflows/fix-few-shot-intent-binding-once.yml",
+                  ".github/workflows/add-few-shot-intent-binding-once.yml",
+              )
+              for value in temporary_paths:
+                  temporary = ROOT / value
+                  if temporary.exists():
+                      temporary.unlink()
+              subprocess.run(
+                  [
+                      "git",
+                      "add",
+                      str(SOURCE.relative_to(ROOT)),
+                      str(TEST.relative_to(ROOT)),
+                      str(GATE.relative_to(ROOT)),
+                      str(STATUS.relative_to(ROOT)),
+                  ],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  [
+                      "git",
+                      "rm",
+                      "--ignore-unmatch",
+                      "scripts/clouddev_fix_few_shot_intent_roles.py",
+                      *temporary_paths,
+                  ],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  [
+                      "git",
+                      "commit",
+                      "-m",
+                      "fix(evidence): bind Case 011 intent evidence and restore gate",
+                  ],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  ["git", "pull", "--rebase", "origin", "feat/claw-live-search-runtime"],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  ["git", "push", "origin", "HEAD:feat/claw-live-search-runtime"],
+                  cwd=ROOT,
+                  check=True,
+              )
+          '''
+          path.write_text(text[:start] + replacement + text[end:], encoding="utf-8")
+          PY
       - name: Patch and verify Case 011 role evidence
         run: python scripts/clouddev_fix_few_shot_intent_roles.py
-      - name: Add regression to live preflights and remove trigger
+      - name: Restore live workflows, add regression coverage, and remove trigger
         run: |
+          git show "8a627ff77522af766265bdbbe2dbd11c0afe79f7:.github/workflows/claw-single-case-live-repair.yml" \
+            > .github/workflows/claw-single-case-live-repair.yml
           python - <<'PY'
           from pathlib import Path
 
@@ -71,7 +156,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git rm .case011-patch-trigger.json
-          git add .github/workflows/claw-single-case-live-repair.yml .github/workflows/claw-four-case-live-batch.yml
+          git add \
+            .github/workflows/claw-single-case-live-repair.yml \
+            .github/workflows/claw-four-case-live-batch.yml
           git commit -m "chore(ci): finalize Case 011 live preflight coverage"
           git pull --rebase origin feat/claw-live-search-runtime
           git push origin HEAD:feat/claw-live-search-runtime
