@@ -112,8 +112,10 @@ jobs:
           PY
           files=(
             src/paperagent/claw_runtime_evidence.py
+            src/paperagent/retrieval/prepare_search.py
             scripts/run_claw_academic_runtime.py
             tests/evals/test_claw_runtime_evidence.py
+            tests/literature/test_prepare_search_normalization.py
             tests/real_provider/test_mistral_smoke.py
           )
           ruff check "${files[@]}" | tee "$out/ruff.log"
@@ -123,6 +125,7 @@ jobs:
             tests/evals/test_claw_runtime_evidence.py \
             tests/evals/test_claw_benchmark_adapter.py \
             tests/literature/test_claw_benchmark_runtime.py \
+            tests/literature/test_prepare_search_normalization.py \
             tests/literature/test_provider_call_budget.py \
             | tee "$out/offline-pytest.log"
 
@@ -161,7 +164,7 @@ jobs:
             --search-mode literature \
             --max-cases 20 \
             --max-llm-calls 12 \
-            --provider-call-budget 160 \
+            --provider-call-budget 200 \
             --minimum-score 80 \
             --llm-provider mistral \
             --llm-model mistral-small-latest \
