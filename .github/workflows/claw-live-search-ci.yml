@@ -1,15 +1,16 @@
 name: CLAW Live Search Maintenance
 
 on:
-  push:
+  pull_request:
     branches:
-      - feat/claw-live-search-runtime
+      - feat/claw-academic-tailoring-benchmark-v1
+    types: [opened, reopened, synchronize]
 
 permissions:
   contents: write
 
 concurrency:
-  group: claw-live-search-maintenance-${{ github.ref }}
+  group: claw-live-search-maintenance-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
@@ -19,6 +20,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -71,4 +74,4 @@ jobs:
             exit 0
           fi
           git commit -m "fix(search): format regressions and gate live probe manually"
-          git push
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
