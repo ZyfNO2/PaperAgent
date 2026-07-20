@@ -1,0 +1,93 @@
+name: Patch Low-Light Mechanism Retry
+
+on:
+  push:
+    branches:
+      - feat/claw-live-search-runtime
+    paths:
+      - ".github/workflows/patch-low-light-mechanism-retry.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - run: python -m pip install -q -e '.[dev]'
+      - name: Patch and verify
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/paperagent/evidence_gap_binding.py')
+          text = path.read_text(encoding='utf-8')
+          anchor = '            "redundant computation",\n'
+          additions = anchor + ''.join(
+              f'            "{cue}",\n'
+              for cue in (
+                  'low-light',
+                  'low light',
+                  'nighttime',
+                  'less effective',
+                  'drawback',
+                  'low-resolution',
+                  'low resolution',
+                  'noise',
+                  'degradation',
+                  'background interference',
+                  'illumination',
+                  'domain shift',
+                  'distribution shift',
+                  'missing modality',
+                  'modality absence',
+                  'misregistration',
+              )
+          )
+          if '"background interference",' not in text:
+              if anchor not in text:
+                  raise RuntimeError('mechanism vocabulary anchor not found')
+              text = text.replace(anchor, additions, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+          ruff check --fix \
+            src/paperagent/evidence_gap_binding.py \
+            src/paperagent/literature/query_concepts.py \
+            src/paperagent/literature/query_refinement.py \
+            tests/literature/test_second_batch_query_precision.py \
+            tests/review/test_low_light_mechanism_binding.py
+          ruff format \
+            src/paperagent/evidence_gap_binding.py \
+            src/paperagent/literature/query_concepts.py \
+            src/paperagent/literature/query_refinement.py \
+            tests/literature/test_second_batch_query_precision.py \
+            tests/review/test_low_light_mechanism_binding.py
+          mypy --config-file pyproject.toml
+          pytest -q \
+            tests/literature/test_second_batch_query_precision.py \
+            tests/literature/test_query_concepts.py \
+            tests/literature/test_query_refinement.py \
+            tests/review/test_low_light_mechanism_binding.py \
+            tests/review/test_semantic_gap_binding.py \
+            tests/review/test_consolidated_regressions.py \
+            tests/nodes/test_retrieval.py
+      - name: Commit verified patch
+        run: |
+          git rm \
+            .github/workflows/patch-low-light-mechanism-once.yml \
+            .github/workflows/patch-low-light-mechanism-retry.yml
+          rm -f \
+            evals/claw_academic_tailoring_v1/live-probes/low-light-mechanism-patch-diagnostics.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(evidence): bind domain-specific low-light mechanisms"
+          git pull --rebase origin feat/claw-live-search-runtime
+          git push origin HEAD:feat/claw-live-search-runtime
