@@ -1,6 +1,18 @@
 {
   "accepted_evidence": [
     {
+      "evidence_id": "ev-paper-3c97fcd9fab0e114e1aa",
+      "locator": "doi:10.1007/s00500-024-09901-x",
+      "provider": "literature_retrieval",
+      "supports_gap_ids": [
+        "baseline_comparison",
+        "failure_mechanism_limitation",
+        "parallel_methods_evidence"
+      ],
+      "title": "MultiFusionNet: multilayer multimodal fusion of deep neural networks for chest X-ray image classification",
+      "verification_status": "accepted"
+    },
+    {
       "evidence_id": "ev-paper-7aa842c3471996be25ce",
       "locator": "doi:10.1016/j.compbiomed.2024.108635",
       "provider": "literature_retrieval",
@@ -17,7 +29,7 @@
   "evidence_review": [
     {
       "accepted": true,
-      "evidence_id": "ev-paper-7aa842c3471996be25ce",
+      "evidence_id": "ev-paper-3c97fcd9fab0e114e1aa",
       "gap_supports": [
         {
           "checklist_results": {
@@ -30,11 +42,112 @@
             "query_term_overlap": true,
             "relevance_passed": true,
             "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "baseline_comparison",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "failure_mechanism_limitation",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "parallel_methods_evidence",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": true,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": false,
+            "query_term_overlap": false,
+            "relevance_passed": true,
+            "required_concepts_match": false,
+            "role_evidence_present": true,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
+          },
+          "confidence": 0.0,
+          "decision": "reject",
+          "gap_id": "risk_negative_evidence",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: query-term overlap, required query concepts"
+          ],
+          "support_type": "insufficient"
+        }
+      ],
+      "rejection_reasons": [],
+      "title": "MultiFusionNet: multilayer multimodal fusion of deep neural networks for chest X-ray image classification"
+    },
+    {
+      "accepted": true,
+      "evidence_id": "ev-paper-7aa842c3471996be25ce",
+      "gap_supports": [
+        {
+          "checklist_results": {
+            "cross_gap_reuse": true,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
             "role_evidence_present": false,
             "semantic_gap_binding": false,
             "supporting_span_present": true
           },
-          "confidence": 0.2,
+          "confidence": 0.0,
           "decision": "reject",
           "gap_id": "baseline_comparison",
           "limitations": [
@@ -123,83 +236,28 @@
   "failed_stages": [
     {
       "available": 10,
-      "earned": 8,
-      "findings": [
-        "explicit facts, inferences, or proposals were not recorded"
-      ],
-      "passed": false,
-      "stage": "parse_user_input"
-    },
-    {
-      "available": 8,
-      "earned": 6,
-      "findings": [
-        "retrieval role strong_comparison is missing"
-      ],
-      "passed": false,
-      "stage": "exploratory_retrieval"
-    },
-    {
-      "available": 10,
       "earned": 7,
       "findings": [
         "clarification did not target a declared high-impact unknown"
       ],
       "passed": false,
       "stage": "clarification_gate"
-    },
-    {
-      "available": 15,
-      "earned": 4,
-      "findings": [
-        "baseline card is missing",
-        "baseline source is not accepted evidence",
-        "baseline freeze contract is incomplete"
-      ],
-      "passed": false,
-      "stage": "freeze_baseline"
-    },
-    {
-      "available": 15,
-      "earned": 0,
-      "findings": [
-        "falsifiable hypothesis is missing condition, limitation, mechanism, intervention, metric, or guardrail"
-      ],
-      "passed": false,
-      "stage": "gap_hypothesis"
-    },
-    {
-      "available": 5,
-      "earned": 1,
-      "findings": [
-        "experiment matrix fields are incomplete",
-        "baseline experiment arm is missing",
-        "strong-comparison experiment arm is missing",
-        "stop conditions are missing"
-      ],
-      "passed": false,
-      "stage": "experiment_matrix"
     }
   ],
-  "hard_failures": [
-    {
-      "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-      "details": "stronger baselines or negative results were not preserved"
-    }
-  ],
+  "hard_failures": [],
   "llm_call_budget": 12,
   "minimum_score": 80,
   "model": "mistral-small-latest",
   "observed_decision": "REVISE_TO_PILOT",
-  "passed": false,
+  "passed": true,
   "provider": "mistral",
   "provider_call_budget": {
     "maximum": 8,
-    "remaining": 1,
-    "used": 7
+    "remaining": 0,
+    "used": 8
   },
   "report_status": "completed",
-  "score": 63,
+  "score": 97,
   "search_diagnostics": [
     {
       "attempted_providers": [
@@ -213,8 +271,7 @@
         "medical",
         "image",
         "classification",
-        "information",
-        "fusion"
+        "multifusionnet"
       ],
       "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
@@ -268,9 +325,8 @@
         "medical",
         "image",
         "classification",
-        "incomplete",
-        "data",
-        "limitations"
+        "fusion",
+        "techniques"
       ],
       "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
@@ -285,11 +341,11 @@
       "stop_reason": "academic_budget_exhausted"
     }
   ],
-  "status": "failed",
+  "status": "passed",
   "verification_call_budget": {
     "maximum": 16,
-    "remaining": 7,
-    "used": 9
+    "remaining": 8,
+    "used": 8
   },
   "web_search_enabled": false
 }
