@@ -180,6 +180,31 @@ jobs:
           git commit -m "chore(ci): cover Case 011 role binding in live preflights"
           git pull --rebase origin feat/claw-live-search-runtime
           git push origin HEAD:feat/claw-live-search-runtime
+      - name: Persist failure diagnostics
+        if: failure()
+        run: |
+          target="/tmp/case011-role-failure.txt"
+          {
+            echo "workflow_run_id=${GITHUB_RUN_ID}"
+            echo "workflow_head_sha=${GITHUB_SHA}"
+            for file in build/few-shot-intent-roles/*.log; do
+              if [[ -f "$file" ]]; then
+                echo
+                echo "===== $file ====="
+                tail -n 120 "$file"
+              fi
+            done
+          } > "$target"
+          git reset --hard HEAD
+          output="evals/claw_academic_tailoring_v1/live-probes/case011-role-failure-latest.txt"
+          mkdir -p "$(dirname "$output")"
+          cp "$target" "$output"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$output"
+          git commit -m "chore(eval): persist Case 011 role failure [skip ci]" || true
+          git pull --rebase origin feat/claw-live-search-runtime
+          git push origin HEAD:feat/claw-live-search-runtime
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4
