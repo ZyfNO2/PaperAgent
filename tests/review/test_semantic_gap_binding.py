@@ -3,7 +3,13 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 from paperagent.evidence_gap_binding import build_evidence_ledger
-from paperagent.schemas import EvidenceBundle, EvidenceGap, EvidenceItem, ResearchPlan, ResearchRequest
+from paperagent.schemas import (
+    EvidenceBundle,
+    EvidenceGap,
+    EvidenceItem,
+    ResearchPlan,
+    ResearchRequest,
+)
 from paperagent.schemas.plan import SearchQuery
 
 _BASELINE_GAP = EvidenceGap(
@@ -13,6 +19,9 @@ _BASELINE_GAP = EvidenceGap(
 _BASELINE_QUERY = (
     "lightweight drone small object detection baseline reproducible method dataset "
     "metrics efficiency real-time"
+)
+_DRONE_DETR_TITLE = (
+    "Drone-DETR: Efficient Small Object Detection for Remote Sensing Image"
 )
 _DRONE_DETR_SUMMARY = (
     "Performing low-latency, high-precision object detection on unmanned aerial vehicles "
@@ -42,11 +51,16 @@ def _plan() -> ResearchPlan:
     )
 
 
-def _bundle(*, summary: str, candidate_gap_id: str) -> EvidenceBundle:
+def _bundle(
+    *,
+    title: str = _DRONE_DETR_TITLE,
+    summary: str,
+    candidate_gap_id: str,
+) -> EvidenceBundle:
     item = EvidenceItem(
         evidence_id="ev-paper",
         source_type="paper",
-        title="Drone-DETR: Efficient Small Object Detection for Remote Sensing Image",
+        title=title,
         locator="doi:10.3390/s24175496",
         retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
         verification_status="accepted",
@@ -83,6 +97,7 @@ def test_verified_drone_detr_binds_to_chinese_baseline_gap() -> None:
 
 
 def test_query_provenance_alone_does_not_accept_rf_uav_paper() -> None:
+    rf_title = "Detection and Classification of UAVs Using RF Fingerprints"
     rf_summary = (
         "A radio-frequency fingerprint dataset is used for detection and classification of "
         "UAV controller signals. The classifier reports accuracy under channel interference."
@@ -91,7 +106,11 @@ def test_query_provenance_alone_does_not_accept_rf_uav_paper() -> None:
     _, _, _, support, ledger = build_evidence_ledger(
         request=ResearchRequest(question="轻量化无人机小目标检测"),
         plan=_plan(),
-        evidence=_bundle(summary=rf_summary, candidate_gap_id="baseline_comparison"),
+        evidence=_bundle(
+            title=rf_title,
+            summary=rf_summary,
+            candidate_gap_id="baseline_comparison",
+        ),
     )
 
     assert ledger.accepted_ids == []
