@@ -18,7 +18,7 @@ concurrency:
 jobs:
   smoke:
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 150
     env:
       MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
       PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL || 'Z1015558261@outlook.com' }}
@@ -50,19 +50,51 @@ jobs:
         continue-on-error: true
         run: python -m pip install -q -e '.[dev]'
 
-      - name: Apply pending generic decision remediation
+      - name: Apply and diagnose pending generic decision remediation
         id: remediation
         if: steps.install.outcome == 'success'
         continue-on-error: true
+        shell: bash
         run: |
+          set +e
+          mkdir -p /tmp/decision-remediation
+          PATCH_MAIN=0
+          PATCH_FOLLOWUP=0
+          FORMAT=0
+          RUFF_FIX=0
+          RUFF=0
+          FORMAT_CHECK=0
+          LEAKAGE=0
+          TARGETED=0
+          MYPY=0
+          COVERAGE=0
+          COMMIT=0
+
           if [ -f scripts/apply_public_dev_decision_fix.py ]; then
-            python scripts/apply_public_dev_decision_fix.py
-            python scripts/apply_public_dev_decision_fix_followup.py
-            ruff format src tests scripts
-            ruff check --fix src tests scripts
-            ruff check src tests scripts
-            ruff format --check src tests scripts
-            python - <<'PY'
+            python scripts/apply_public_dev_decision_fix.py \
+              > /tmp/decision-remediation/patch-main.log 2>&1
+            PATCH_MAIN=$?
+
+            if [ "$PATCH_MAIN" -eq 0 ]; then
+              python scripts/apply_public_dev_decision_fix_followup.py \
+                > /tmp/decision-remediation/patch-followup.log 2>&1
+              PATCH_FOLLOWUP=$?
+            else
+              echo "skipped because main patch failed" > /tmp/decision-remediation/patch-followup.log
+              PATCH_FOLLOWUP=99
+            fi
+
+            if [ "$PATCH_MAIN" -eq 0 ] && [ "$PATCH_FOLLOWUP" -eq 0 ]; then
+              ruff format src tests scripts > /tmp/decision-remediation/format.log 2>&1
+              FORMAT=$?
+              ruff check --fix src tests scripts > /tmp/decision-remediation/ruff-fix.log 2>&1
+              RUFF_FIX=$?
+              ruff check src tests scripts > /tmp/decision-remediation/ruff.log 2>&1
+              RUFF=$?
+              ruff format --check src tests scripts > /tmp/decision-remediation/format-check.log 2>&1
+              FORMAT_CHECK=$?
+
+              python - <<'PY' > /tmp/decision-remediation/leakage.log 2>&1
           from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
 
           result = audit_benchmark_execution_boundary()
@@ -70,24 +102,112 @@ jobs:
           if not result.passed:
               raise SystemExit(result.findings)
           PY
-            pytest --no-cov -q \
-              tests/methodology/test_method_design_draft.py \
-              tests/methodology/test_scientific_decision_policy.py \
-              tests/evals/test_00_production_pilot.py \
-              tests/evals/test_benchmark_input_boundary_v2.py \
-              tests/evals/test_claw_benchmark_adapter.py
-            mypy --config-file pyproject.toml
-            pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
+              LEAKAGE=$?
+
+              pytest --no-cov -q \
+                tests/methodology/test_method_design_draft.py \
+                tests/methodology/test_scientific_decision_policy.py \
+                tests/evals/test_00_production_pilot.py \
+                tests/evals/test_benchmark_input_boundary_v2.py \
+                tests/evals/test_claw_benchmark_adapter.py \
+                > /tmp/decision-remediation/targeted.log 2>&1
+              TARGETED=$?
+
+              mypy --config-file pyproject.toml \
+                > /tmp/decision-remediation/mypy.log 2>&1
+              MYPY=$?
+
+              pytest --cov=paperagent --cov-branch --cov-report=term-missing -q \
+                > /tmp/decision-remediation/coverage.log 2>&1
+              COVERAGE=$?
+            else
+              for name in format ruff-fix ruff format-check leakage targeted mypy coverage; do
+                echo "skipped because patch application failed" > "/tmp/decision-remediation/$name.log"
+              done
+              FORMAT=99; RUFF_FIX=99; RUFF=99; FORMAT_CHECK=99; LEAKAGE=99; TARGETED=99; MYPY=99; COVERAGE=99
+            fi
+          else
+            echo "no pending decision remediation" > /tmp/decision-remediation/patch-main.log
+            echo "no pending decision remediation" > /tmp/decision-remediation/patch-followup.log
+            for name in format ruff-fix ruff format-check leakage targeted mypy coverage; do
+              echo "not required; clean source already committed" > "/tmp/decision-remediation/$name.log"
+            done
+          fi
+
+          export PATCH_MAIN PATCH_FOLLOWUP FORMAT RUFF_FIX RUFF FORMAT_CHECK LEAKAGE TARGETED MYPY COVERAGE
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path('/tmp/decision-remediation')
+          keys = {
+              'patch_main': 'PATCH_MAIN',
+              'patch_followup': 'PATCH_FOLLOWUP',
+              'format': 'FORMAT',
+              'ruff_fix': 'RUFF_FIX',
+              'ruff': 'RUFF',
+              'format_check': 'FORMAT_CHECK',
+              'leakage': 'LEAKAGE',
+              'targeted': 'TARGETED',
+              'mypy': 'MYPY',
+              'coverage': 'COVERAGE',
+          }
+          exit_codes = {name: int(os.environ[env]) for name, env in keys.items()}
+          log_tails = {}
+          for name in keys:
+              path = root / f'{name.replace("_", "-")}.log'
+              text = path.read_text(errors='replace') if path.exists() else 'log missing'
+              log_tails[name] = '\n'.join(text.splitlines()[-100:])
+          payload = {
+              'schema': 'paperagent.decision-remediation-diagnostics.v1',
+              'workflow_trigger_sha': os.environ['GITHUB_SHA'],
+              'exit_codes': exit_codes,
+              'log_tails': log_tails,
+              'passed': all(value == 0 for value in exit_codes.values()),
+          }
+          serialized = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + '\n'
+          Path('/tmp/decision-remediation-diagnostics.json').write_text(serialized)
+          print(serialized)
+          PY
+
+          ALL_PASSED=1
+          for value in \
+            "$PATCH_MAIN" "$PATCH_FOLLOWUP" "$FORMAT" "$RUFF_FIX" "$RUFF" \
+            "$FORMAT_CHECK" "$LEAKAGE" "$TARGETED" "$MYPY" "$COVERAGE"; do
+            if [ "$value" -ne 0 ]; then
+              ALL_PASSED=0
+            fi
+          done
+
+          if [ "$ALL_PASSED" -eq 1 ] && [ -f scripts/apply_public_dev_decision_fix.py ]; then
             rm -f scripts/apply_public_dev_decision_fix.py
             rm -f scripts/apply_public_dev_decision_fix_followup.py
             rm -f .github/workflows/public-dev-decision-fix-once.yml
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add -A
-            git commit -m "fix(method): stabilize evidence-readiness decisions"
-            git push origin HEAD:feat/claw-live-search-runtime
+            git commit -m "fix(method): stabilize evidence-readiness decisions" \
+              > /tmp/decision-remediation/commit.log 2>&1
+            COMMIT=$?
+            if [ "$COMMIT" -eq 0 ]; then
+              git push origin HEAD:feat/claw-live-search-runtime \
+                >> /tmp/decision-remediation/commit.log 2>&1
+              COMMIT=$?
+            fi
+          else
+            if [ "$ALL_PASSED" -eq 1 ]; then
+              echo "clean source already committed" > /tmp/decision-remediation/commit.log
+            else
+              echo "source commit skipped because an offline gate failed" > /tmp/decision-remediation/commit.log
+            fi
           fi
+
           echo "source_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "commit_exit_code=$COMMIT" >> "$GITHUB_OUTPUT"
+          if [ "$ALL_PASSED" -ne 1 ] || [ "$COMMIT" -ne 0 ]; then
+            exit 1
+          fi
 
       - name: Static leakage audit
         id: audit
@@ -127,7 +247,7 @@ jobs:
           PAPERAGENT_RUN_REAL_PROVIDER: "1"
         run: pytest --no-cov -q tests/real_provider/test_literature_smoke.py
 
-      - name: Write smoke result
+      - name: Write smoke result and diagnostics
         id: result
         if: always()
         env:
@@ -152,12 +272,17 @@ jobs:
               'mistral_smoke': os.environ.get('MISTRAL_OUTCOME'),
               'literature_smoke': os.environ.get('LITERATURE_OUTCOME'),
           }
+          diagnostics_path = Path('/tmp/decision-remediation-diagnostics.json')
+          diagnostics = (
+              json.loads(diagnostics_path.read_text()) if diagnostics_path.exists() else None
+          )
           payload = {
-              'schema': 'paperagent.real-provider-smoke.v2',
+              'schema': 'paperagent.real-provider-smoke.v3',
               'source_sha': os.environ.get('SOURCE_SHA') or os.environ['GITHUB_SHA'],
               'workflow_trigger_sha': os.environ['GITHUB_SHA'],
               'workflow_run_id': os.environ['GITHUB_RUN_ID'],
               'outcomes': outcomes,
+              'decision_remediation_diagnostics': diagnostics,
               'passed': all(value == 'success' for value in outcomes.values()),
           }
           serialized = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + '\n'
@@ -165,7 +290,7 @@ jobs:
           print(serialized)
           PY
 
-      - name: Commit smoke result
+      - name: Commit smoke result and diagnostics
         if: always() && steps.result.outcome == 'success'
         run: |
           git config user.name "github-actions[bot]"
@@ -175,9 +300,13 @@ jobs:
           mkdir -p evals/claw_academic_tailoring_v1/live-probes
           cp /tmp/real-provider-smoke-latest.json \
             evals/claw_academic_tailoring_v1/live-probes/real-provider-smoke-latest.json
-          git add evals/claw_academic_tailoring_v1/live-probes/real-provider-smoke-latest.json
+          if [ -f /tmp/decision-remediation-diagnostics.json ]; then
+            cp /tmp/decision-remediation-diagnostics.json \
+              evals/claw_academic_tailoring_v1/live-probes/decision-remediation-diagnostics.json
+          fi
+          git add evals/claw_academic_tailoring_v1/live-probes
           if ! git diff --cached --quiet; then
-            git commit -m "test(eval): record real-provider smoke"
+            git commit -m "test(eval): record decision remediation and real-provider verification"
             git push origin HEAD:feat/claw-live-search-runtime
           fi
 
