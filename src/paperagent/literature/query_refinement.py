@@ -77,6 +77,33 @@ _MEDICAL_IMAGING_HINTS = (
     "医学图像",
 )
 _CLASSIFICATION_HINTS = ("classification", "classifier", "分类")
+_MEDICAL_BASELINE_ROLE_HINTS = (
+    "baseline",
+    "reproducible",
+    "strong_comparison",
+    "基线",
+    "复现",
+)
+_MEDICAL_FAILURE_ROLE_HINTS = (
+    "failure",
+    "mechanism",
+    "limitation",
+    "risk",
+    "negative",
+    "失败",
+    "机制",
+    "局限",
+    "风险",
+)
+_MEDICAL_PARALLEL_ROLE_HINTS = (
+    "parallel",
+    "alternative",
+    "ensemble",
+    "strong comparison",
+    "并行",
+    "替代",
+    "对比",
+)
 _ACTION_RECOGNITION_HINTS = (
     "action recognition",
     "activity recognition",
@@ -140,9 +167,23 @@ def _remove_family_phrases(query: str, families: tuple[str, ...]) -> str:
     return refined
 
 
+def _medical_query_for_role(*, gap_id: str, gap_description: str) -> str:
+    role = f"{gap_id} {gap_description}".casefold()
+    core = "multimodal medical imaging classification"
+    if _contains_any(role, _MEDICAL_BASELINE_ROLE_HINTS):
+        return f"{core} late fusion baseline"
+    if _contains_any(role, _MEDICAL_FAILURE_ROLE_HINTS):
+        return f"{core} missing modality robustness"
+    if _contains_any(role, _MEDICAL_PARALLEL_ROLE_HINTS):
+        return f"{core} ensemble alternatives"
+    return f"{core} feature fusion"
+
+
 def _normalize_scientific_phrasing(
     query: str,
     *,
+    gap_id: str,
+    gap_description: str,
     research_context: str,
 ) -> tuple[str, list[str]]:
     """Resolve task wording that academic indexes commonly interpret too broadly."""
@@ -155,10 +196,15 @@ def _normalize_scientific_phrasing(
         and _contains_any(combined, _MEDICAL_IMAGING_HINTS)
         and _contains_any(combined, _CLASSIFICATION_HINTS)
     ):
-        canonical = "multimodal medical imaging disease classification feature fusion"
+        canonical = _medical_query_for_role(
+            gap_id=gap_id,
+            gap_description=gap_description,
+        )
         if refined.casefold() != canonical:
             refined = canonical
-            reasons.append("canonicalized multimodal medical classification to a stable task query")
+            reasons.append(
+                "canonicalized multimodal medical classification to a role-specific task query"
+            )
 
     combined = f"{refined} {research_context}".casefold()
     if (
@@ -214,6 +260,8 @@ def refine_search_query(
 
     refined, reasons = _normalize_scientific_phrasing(
         normalized,
+        gap_id=gap_id,
+        gap_description=gap_description,
         research_context=research_context,
     )
     removed_families: tuple[str, ...] = ()
