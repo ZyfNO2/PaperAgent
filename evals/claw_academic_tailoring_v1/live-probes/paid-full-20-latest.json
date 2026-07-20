@@ -1,28 +1,123 @@
 {
-  "artifact_name": "claw-paid-full-20-29766999618",
-  "execution_summary": null,
+  "artifact_name": "claw-paid-full-20-29767346924",
+  "execution_summary": {
+    "actions_artifact_name": "claw-paid-full-20-29767346924",
+    "completed": 19,
+    "completed_case_ids": [
+      "at-001-uav-small-object-lightweight",
+      "at-002-edge-road-crack-detection",
+      "at-003-skin-lesion-explainability",
+      "at-004-steel-surface-defect",
+      "at-005-remote-sensing-dense-small-objects",
+      "at-006-low-light-pedestrian",
+      "at-007-camera-action-quality",
+      "at-008-mobile-hand-gesture",
+      "at-009-multimodal-medical-fusion",
+      "at-010-chinese-long-document-classification",
+      "at-011-few-shot-intent-detection",
+      "at-012-enterprise-rag",
+      "at-014-gnn-fraud-detection",
+      "at-015-multibehavior-recommendation",
+      "at-016-anomaly-transformer-supplied",
+      "at-017-mobilenetv3-plant-disease-supplied",
+      "at-018-yolox-tinydet-supplied",
+      "at-019-unet-unspecified-medical-segmentation",
+      "at-020-lightgcn-contrastive-supplied"
+    ],
+    "errors": [
+      {
+        "case_id": "at-013-professional-qa-hallucination",
+        "error_type": "ValidationError",
+        "message": "1 validation error for PreparedQuery\n  Value error, refined query requires refinement_reason [type=value_error, input_value={'query_id': 'Q5', 'gap_i...er', 'web'], 'round': 1}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error"
+      }
+    ],
+    "llm": {
+      "configured_full_run_max_cost_usd": 1.0,
+      "configured_per_case_max_cost_usd": 0.05,
+      "cost_estimate_complete": true,
+      "estimated_cost_usd": 0.05506875,
+      "failed_attempts": 2,
+      "input_tokens": 137205,
+      "logical_calls": 57,
+      "model": "mistral-small-latest",
+      "output_tokens": 57480,
+      "price_table_loaded": true,
+      "price_table_version": "mistral-public-api-2026-07-21",
+      "provider": "mistral",
+      "provider_attempts": 57,
+      "provider_instances": 20,
+      "successful_attempts": 55,
+      "usage_complete": true,
+      "within_configured_cost": true
+    },
+    "output_files": {
+      "execution_summary": "execution-summary.json",
+      "report": null,
+      "run_traces": "run-traces.jsonl",
+      "states": "states.jsonl"
+    },
+    "passed": false,
+    "provider_call_budget": {
+      "maximum": 160,
+      "remaining": 0,
+      "used": 160
+    },
+    "report_status": "not_generated",
+    "runtime_failures": [
+      "formal report requires exactly 20 completed cases"
+    ],
+    "schema": "paperagent.claw-paid-full-runtime-summary.v1",
+    "search_mode": "literature",
+    "selected_case_count": 20,
+    "selected_cases": [
+      "at-001-uav-small-object-lightweight",
+      "at-002-edge-road-crack-detection",
+      "at-003-skin-lesion-explainability",
+      "at-004-steel-surface-defect",
+      "at-005-remote-sensing-dense-small-objects",
+      "at-006-low-light-pedestrian",
+      "at-007-camera-action-quality",
+      "at-008-mobile-hand-gesture",
+      "at-009-multimodal-medical-fusion",
+      "at-010-chinese-long-document-classification",
+      "at-011-few-shot-intent-detection",
+      "at-012-enterprise-rag",
+      "at-013-professional-qa-hallucination",
+      "at-014-gnn-fraud-detection",
+      "at-015-multibehavior-recommendation",
+      "at-016-anomaly-transformer-supplied",
+      "at-017-mobilenetv3-plant-disease-supplied",
+      "at-018-yolox-tinydet-supplied",
+      "at-019-unet-unspecified-medical-segmentation",
+      "at-020-lightgcn-contrastive-supplied"
+    ],
+    "source_sha": "d94c8ebc87b03c0b0dbab343c2f0c5da500cf08b",
+    "static_leakage_audit": {
+      "findings": [],
+      "passed": true
+    },
+    "web_search_enabled": false,
+    "workflow_name": "CLAW Paid Full 20 E2E",
+    "workflow_run_id": "29767346924"
+  },
   "outcomes": {
-    "full_runtime": "skipped",
-    "literature_smoke": "skipped",
-    "mistral_smoke": "failure",
-    "offline_gate": "success"
+    "full_runtime": "failure",
+    "literature_smoke": "success",
+    "mistral_smoke": "success",
+    "offline_gate": "success",
+    "preflight": "success"
   },
   "passed": false,
   "schema": "paperagent.claw-paid-full-20-workflow.v1",
   "secret_preflight": {
-    "contact_email_present": false,
-    "missing": [
-      "PAPERAGENT_CONTACT_EMAIL"
-    ],
+    "contact_email_present": true,
+    "contact_email_source": "github_public_profile",
     "mistral_api_key_present": true,
-    "passed": false,
-    "required": [
-      "MISTRAL_API_KEY",
-      "PAPERAGENT_CONTACT_EMAIL"
-    ],
-    "semantic_scholar_api_key_present": false
+    "passed": true,
+    "semantic_scholar_api_key_present": false,
+    "web_search_enabled": false
   },
-  "source_sha": "e32847018cdfe8e0740718359c96f88036689b5d",
-  "status": "blocked_missing_required_secret",
-  "workflow_run_id": 29766999618
+  "source_sha": "d94c8ebc87b03c0b0dbab343c2f0c5da500cf08b",
+  "status": "failed",
+  "workflow_run_id": 29767346924
 }
