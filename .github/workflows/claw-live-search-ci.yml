@@ -34,17 +34,18 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Apply and verify explicit readiness integration
+      - name: Apply explicit readiness integration
         id: apply
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p build/readiness-remediation
           if [ ! -f scripts/apply_scientific_readiness.py ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-
-          python scripts/apply_scientific_readiness.py
+          python scripts/apply_scientific_readiness.py \
+            2>&1 | tee build/readiness-remediation/apply.log
           rm scripts/apply_scientific_readiness.py
           python - <<'PY'
           from pathlib import Path
@@ -54,12 +55,26 @@ jobs:
           text = text.replace("；", ";").replace("，", ",")
           path.write_text(text, encoding="utf-8")
           PY
-
-          ruff format src tests scripts
-          ruff check --fix src tests scripts
-          ruff check src tests scripts
-          ruff format --check src tests scripts
-          python - <<'PY'
+          ruff format src tests scripts \
+            2>&1 | tee build/readiness-remediation/format-fix.log
+          ruff check --fix src tests scripts \
+            2>&1 | tee build/readiness-remediation/lint-fix.log
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      - name: Ruff gate
+        if: steps.apply.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          ruff check src tests scripts \
+            2>&1 | tee build/readiness-remediation/ruff.log
+          ruff format --check src tests scripts \
+            2>&1 | tee build/readiness-remediation/format.log
+      - name: Leakage boundary audit
+        if: steps.apply.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          python - <<'PY' 2>&1 | tee build/readiness-remediation/leakage-audit.log
           from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
 
           result = audit_benchmark_execution_boundary()
@@ -67,21 +82,50 @@ jobs:
           if not result.passed:
               raise SystemExit(result.findings)
           PY
+      - name: Targeted readiness tests
+        if: steps.apply.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -o pipefail
           pytest --no-cov -q \
             tests/methodology/test_scientific_readiness.py \
             tests/methodology/test_scientific_decision_policy.py \
             tests/methodology/test_method_design_draft.py \
             tests/methodology/test_evidence_binding.py \
-            tests/evals/test_benchmark_input_boundary_v2.py
-          mypy --config-file pyproject.toml
-          pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
-
+            tests/evals/test_benchmark_input_boundary_v2.py \
+            2>&1 | tee build/readiness-remediation/targeted-tests.log
+      - name: Strict Mypy
+        if: steps.apply.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          mypy --config-file pyproject.toml \
+            2>&1 | tee build/readiness-remediation/mypy.log
+      - name: Full tests and branch coverage
+        if: steps.apply.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          pytest --cov=paperagent --cov-branch --cov-report=term-missing -q \
+            2>&1 | tee build/readiness-remediation/full-tests.log
+      - name: Commit clean source
+        if: steps.apply.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "fix(method): enforce explicit readiness and invalid split signals"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
-          echo "changed=true" >> "$GITHUB_OUTPUT"
+      - name: Upload readiness diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: readiness-remediation-${{ github.run_id }}
+          path: build/readiness-remediation/
+          if-no-files-found: warn
+          retention-days: 30
 
   verify:
     needs: remediate-readiness
