@@ -62,10 +62,17 @@ jobs:
           python scripts/validate_cases.py data/public-dev-v2.jsonl
           python -m unittest discover -s tests -v
 
+      - name: External production leakage scan
+        id: production_scan
+        continue-on-error: true
+        run: |
+          python scripts/scan_production.py production \
+            --output build/public-dev-v2/production-scan.json
+
       - name: Install frozen production package
         id: install
         continue-on-error: true
-        run: python -m pip install -q -e 'production[dev]'
+        run: python -m pip install -q -e './production[dev]'
 
       - name: Require Mistral secret
         id: secret
@@ -74,7 +81,10 @@ jobs:
 
       - name: Run public development set
         id: public_dev
-        if: steps.install.outcome == 'success' && steps.secret.outcome == 'success'
+        if: >-
+          steps.production_scan.outcome == 'success' &&
+          steps.install.outcome == 'success' &&
+          steps.secret.outcome == 'success'
         continue-on-error: true
         run: |
           python scripts/run_public_dev.py \
@@ -92,6 +102,7 @@ jobs:
         id: handoff
         if: always()
         env:
+          PRODUCTION_SCAN_OUTCOME: ${{ steps.production_scan.outcome }}
           INSTALL_OUTCOME: ${{ steps.install.outcome }}
           SECRET_OUTCOME: ${{ steps.secret.outcome }}
           PUBLIC_DEV_OUTCOME: ${{ steps.public_dev.outcome }}
@@ -102,7 +113,9 @@ jobs:
           from pathlib import Path
 
           summary_path = Path('build/public-dev-v2/execution-summary.json')
+          scan_path = Path('build/public-dev-v2/production-scan.json')
           summary = json.loads(summary_path.read_text()) if summary_path.exists() else None
+          scan = json.loads(scan_path.read_text()) if scan_path.exists() else None
           payload = {
               'schema': 'paperagent.academic-holdout.public-dev-handoff.v2',
               'benchmark_source_sha': os.environ['GITHUB_SHA'],
@@ -110,10 +123,12 @@ jobs:
               'split': 'development',
               'result_interpretation': 'public development set; not independent generalization evidence',
               'outcomes': {
+                  'production_scan': os.environ.get('PRODUCTION_SCAN_OUTCOME'),
                   'install': os.environ.get('INSTALL_OUTCOME'),
                   'mistral_secret': os.environ.get('SECRET_OUTCOME'),
                   'public_dev_run': os.environ.get('PUBLIC_DEV_OUTCOME'),
               },
+              'production_scan': scan,
               'summary': summary,
           }
           Path('build/public-dev-v2').mkdir(parents=True, exist_ok=True)
@@ -150,12 +165,14 @@ jobs:
       - name: Enforce public development thresholds
         if: always()
         env:
+          PRODUCTION_SCAN_OUTCOME: ${{ steps.production_scan.outcome }}
           INSTALL_OUTCOME: ${{ steps.install.outcome }}
           SECRET_OUTCOME: ${{ steps.secret.outcome }}
           PUBLIC_DEV_OUTCOME: ${{ steps.public_dev.outcome }}
           HANDOFF_OUTCOME: ${{ steps.handoff.outcome }}
         run: |
           for value in \
+            "$PRODUCTION_SCAN_OUTCOME" \
             "$INSTALL_OUTCOME" \
             "$SECRET_OUTCOME" \
             "$PUBLIC_DEV_OUTCOME" \
