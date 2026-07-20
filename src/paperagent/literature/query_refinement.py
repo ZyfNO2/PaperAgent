@@ -118,7 +118,7 @@ def _normalize_scientific_phrasing(query: str) -> str:
     """Resolve wording that academic indexes commonly interpret as the wrong task."""
 
     return _MULTIMODAL_MEDICAL_CLASSIFICATION_PATTERN.sub(
-        "multimodal medical imaging classification diagnosis feature fusion",
+        "multimodal medical imaging disease classification feature fusion",
         query,
     )
 
@@ -167,7 +167,7 @@ def refine_search_query(
     reasons: list[str] = []
     if refined != normalized:
         reasons.append(
-            "normalized ambiguous image-fusion wording to multimodal medical classification terms"
+            "normalized ambiguous image-fusion wording to explicit disease-classification terms"
         )
 
     if _contains_mechanism_role(gap_id, gap_description):
