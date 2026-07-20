@@ -80,18 +80,23 @@ def test_allocate_case_budgets_requires_one_call_per_case() -> None:
         allocate_case_budgets(3, 4)
 
 
-def test_provider_config_for_case_splits_full_run_cost_cap() -> None:
+def test_provider_config_for_case_splits_cost_and_reserves_repairs() -> None:
     per_case = provider_config_for_case(_config(), selected_case_count=20)
 
     assert per_case.max_estimated_cost_usd == 0.05
-    assert per_case.max_llm_calls_per_task == 12
+    assert per_case.max_llm_calls_per_task == 24
     assert per_case.max_input_tokens_per_task == 32_000
 
 
-def test_provider_config_for_case_preserves_unpriced_configuration() -> None:
-    config = _config(maximum=None)
+def test_provider_config_for_case_accepts_explicit_logical_limit() -> None:
+    per_case = provider_config_for_case(
+        _config(maximum=None),
+        selected_case_count=20,
+        max_logical_calls=5,
+    )
 
-    assert provider_config_for_case(config, selected_case_count=20) is config
+    assert per_case.max_estimated_cost_usd is None
+    assert per_case.max_llm_calls_per_task == 10
 
 
 def test_summarize_search_budgets_accumulates_case_usage() -> None:
