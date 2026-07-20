@@ -1,17 +1,14 @@
 {
-  "case_id": "at-010-chinese-long-document-classification",
-  "reason": "verify long-document classification retrieval after rejecting Chinese corpus and OCR false positives",
-  "attempt": 3,
+  "case_id": "at-011-few-shot-intent-detection",
+  "reason": "verify task-specific few-shot intent retrieval",
+  "attempt": 2,
   "retrieval_gate_run_id": 29739721796,
   "retrieval_gate_head_sha": "eb857c941dd25604aac800ead381f1909c4d2a41",
   "previous_result": {
     "score": 95,
     "hard_failures": 0,
     "quality_rejected": true,
-    "false_positives": [
-      "OpenCSG Chinese Corpus",
-      "Benchmarking Chinese Text Recognition"
-    ]
+    "issue": "cross-domain few-shot evidence"
   },
   "requested_scope": "single_case_only",
   "web_search_enabled": false
