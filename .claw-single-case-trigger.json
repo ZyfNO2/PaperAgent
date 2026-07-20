@@ -1,13 +1,12 @@
 {
-  "case_id": "at-019-unet-unspecified-medical-segmentation",
-  "reason": "verify REVISE decision and reconcile accepted Evidence Ledger relevance checks without weakening identity or role requirements",
-  "attempt": 3,
+  "case_id": "at-020-lightgcn-contrastive-supplied",
+  "reason": "verify that an unidentified supplied contrastive recommendation paper keeps the result at REVISE instead of promoting it to a premature pilot",
+  "attempt": 2,
   "offline_gate_run_id": 29760078105,
   "previous_result": {
-    "score": 92,
-    "hard_failures": 1,
-    "accepted_evidence": 4,
-    "issue": "decision matched REVISE, but an accepted dataset source had an auditable ledger relevance check that was not propagated into the normalized trace"
+    "score": 91,
+    "hard_failures": 0,
+    "issue": "expected REVISE but benchmark normalization inferred REVISE_TO_PILOT before the supplied contrastive method identity was resolved"
   },
   "requested_scope": "single_case_only",
   "web_search_enabled": false
