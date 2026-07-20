@@ -129,11 +129,7 @@ def _singularize(value: str) -> str:
         return value
     if len(value) > 5 and value.endswith("ies"):
         return f"{value[:-3]}y"
-    if (
-        len(value) > 4
-        and value.endswith("s")
-        and not value.endswith(("ss", "us", "is"))
-    ):
+    if len(value) > 4 and value.endswith("s") and not value.endswith(("ss", "us", "is")):
         return value[:-1]
     return value
 
