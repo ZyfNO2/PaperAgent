@@ -89,8 +89,9 @@ def refine_search_query(
     """Reduce technique-family conjunctions before rate-limited retrieval.
 
     A mechanism query may name one or two plausible families. Three or more families usually
-    encode an unverified method stack and sharply reduce recall, so the families are removed while
-    the task, scene, and failure-mode terms are preserved. Exact DOI/arXiv lookups are never changed.
+    encode an unverified method stack and sharply reduce recall, so the families are removed
+    while task, scene, and failure-mode terms are preserved. Exact DOI/arXiv lookups are never
+    changed.
     """
 
     normalized = " ".join(query.split())
