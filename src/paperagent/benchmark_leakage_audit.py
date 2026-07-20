@@ -11,6 +11,7 @@ _CASE_ID = re.compile(r"\bat-\d{3}(?:-[a-z0-9-]+)?\b", re.IGNORECASE)
 _FORBIDDEN_MODULES = (
     "paperagent.literature.task_query_overrides",
     "paperagent.claw_pilot_policy",
+    "paperagent.claw_trace_reconciliation",
 )
 _FORBIDDEN_EXECUTOR_PARAMETERS = {
     "case",
@@ -22,6 +23,11 @@ _FORBIDDEN_EXECUTOR_PARAMETERS = {
     "special_assertions",
 }
 _SOURCE_RULES: dict[str, tuple[str, ...]] = {
+    "claw_benchmark_adapter.py": (
+        "_has_actionable_recovery_path",
+        "pilot_recommended is not None",
+    ),
+    "claw_benchmark_runtime.py": ("GoldCase", "reconcile_ledger_relevance"),
     "retrieval/prepare_search.py": ("override_task_query", "task_query_overrides"),
     "literature/query_refinement.py": (
         "MultiFusionNet",
