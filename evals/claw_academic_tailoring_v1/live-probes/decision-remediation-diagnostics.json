@@ -1,0 +1,29 @@
+{
+  "exit_codes": {
+    "coverage": 99,
+    "format": 99,
+    "format_check": 99,
+    "leakage": 99,
+    "mypy": 99,
+    "patch_followup": 99,
+    "patch_main": 1,
+    "ruff": 99,
+    "ruff_fix": 99,
+    "targeted": 99
+  },
+  "log_tails": {
+    "coverage": "skipped because patch application failed",
+    "format": "skipped because patch application failed",
+    "format_check": "skipped because patch application failed",
+    "leakage": "skipped because patch application failed",
+    "mypy": "skipped because patch application failed",
+    "patch_followup": "skipped because main patch failed",
+    "patch_main": "Traceback (most recent call last):\n  File \"/home/runner/work/PaperAgent/PaperAgent/scripts/apply_public_dev_decision_fix.py\", line 33, in <module>\n    replace_once(\n  File \"/home/runner/work/PaperAgent/PaperAgent/scripts/apply_public_dev_decision_fix.py\", line 13, in replace_once\n    raise RuntimeError(f\"expected one replacement in {relative}, found {count}: {old[:100]!r}\")\nRuntimeError: expected one replacement in src/paperagent/method_design_draft.py, found 0: '        supported_claims=(),\\n        limitations=(),\\n'",
+    "ruff": "skipped because patch application failed",
+    "ruff_fix": "skipped because patch application failed",
+    "targeted": "skipped because patch application failed"
+  },
+  "passed": false,
+  "schema": "paperagent.decision-remediation-diagnostics.v1",
+  "workflow_trigger_sha": "39b26c0bad5e1b42cae1089067f561b945757a52"
+}
