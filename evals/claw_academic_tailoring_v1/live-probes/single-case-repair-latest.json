@@ -6,6 +6,7 @@
       "provider": "literature_retrieval",
       "supports_gap_ids": [
         "baseline_repro",
+        "failure_mechanism",
         "parallel_methods"
       ],
       "title": "Action Transformer: A Self-Attention Model for Short-Time Pose-Based Human Action Recognition",
@@ -53,18 +54,17 @@
             "query_term_overlap": true,
             "relevance_passed": true,
             "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
             "supporting_span_present": true
           },
-          "confidence": 0.2,
-          "decision": "reject",
+          "confidence": 0.82,
+          "decision": "accept",
           "gap_id": "failure_mechanism",
           "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: role-specific evidence structure"
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
           ],
-          "support_type": "insufficient"
+          "support_type": "direct_support"
         },
         {
           "checklist_results": {
@@ -345,84 +345,20 @@
   "failed_stages": [
     {
       "available": 10,
-      "earned": 8,
-      "findings": [
-        "explicit facts, inferences, or proposals were not recorded"
-      ],
-      "passed": false,
-      "stage": "parse_user_input"
-    },
-    {
-      "available": 8,
-      "earned": 6,
-      "findings": [
-        "retrieval role parallel_method is missing"
-      ],
-      "passed": false,
-      "stage": "exploratory_retrieval"
-    },
-    {
-      "available": 7,
-      "earned": 5,
-      "findings": [
-        "core accepted evidence lacks full-text review"
-      ],
-      "passed": false,
-      "stage": "relevance_review"
-    },
-    {
-      "available": 10,
       "earned": 7,
       "findings": [
         "clarification did not target a declared high-impact unknown"
       ],
       "passed": false,
       "stage": "clarification_gate"
-    },
-    {
-      "available": 15,
-      "earned": 4,
-      "findings": [
-        "baseline card is missing",
-        "baseline source is not accepted evidence",
-        "baseline freeze contract is incomplete"
-      ],
-      "passed": false,
-      "stage": "freeze_baseline"
-    },
-    {
-      "available": 15,
-      "earned": 0,
-      "findings": [
-        "falsifiable hypothesis is missing condition, limitation, mechanism, intervention, metric, or guardrail"
-      ],
-      "passed": false,
-      "stage": "gap_hypothesis"
-    },
-    {
-      "available": 5,
-      "earned": 1,
-      "findings": [
-        "experiment matrix fields are incomplete",
-        "baseline experiment arm is missing",
-        "strong-comparison experiment arm is missing",
-        "stop conditions are missing"
-      ],
-      "passed": false,
-      "stage": "experiment_matrix"
     }
   ],
-  "hard_failures": [
-    {
-      "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-      "details": "stronger baselines or negative results were not preserved"
-    }
-  ],
+  "hard_failures": [],
   "llm_call_budget": 12,
   "minimum_score": 80,
   "model": "mistral-small-latest",
   "observed_decision": "REVISE_TO_PILOT",
-  "passed": false,
+  "passed": true,
   "provider": "mistral",
   "provider_call_budget": {
     "maximum": 8,
@@ -430,7 +366,7 @@
     "used": 8
   },
   "report_status": "completed",
-  "score": 61,
+  "score": 97,
   "search_diagnostics": [
     {
       "attempted_providers": [
@@ -527,7 +463,7 @@
       "stop_reason": "academic_budget_exhausted"
     }
   ],
-  "status": "failed",
+  "status": "passed",
   "verification_call_budget": {
     "maximum": 16,
     "remaining": 6,
