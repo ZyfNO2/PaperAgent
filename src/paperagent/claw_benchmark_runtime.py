@@ -11,6 +11,7 @@ from paperagent.claw_benchmark_adapter import (
     normalize_paperagent_state,
 )
 from paperagent.claw_pilot_policy import infer_benchmark_pilot_override
+from paperagent.claw_trace_reconciliation import reconcile_ledger_relevance
 from paperagent.graph import build_graph
 from paperagent.literature.factory import (
     LiteratureProviderSettings,
@@ -116,7 +117,7 @@ async def execute_benchmark_case(
             pilot_recommended=infer_benchmark_pilot_override(latest),
         ),
     )
-    return primitive, trace
+    return primitive, reconcile_ledger_relevance(latest, trace)
 
 
 __all__ = [
