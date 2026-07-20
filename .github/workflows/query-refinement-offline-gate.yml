@@ -11,6 +11,7 @@ on:
       - "src/paperagent/literature/ranking.py"
       - "src/paperagent/retrieval/prepare_search.py"
       - "src/paperagent/schemas/plan.py"
+      - "tests/literature/test_prepared_query_contract.py"
       - "tests/literature/test_query_concepts.py"
       - "tests/literature/test_query_refinement.py"
       - "tests/nodes/test_retrieval.py"
@@ -49,6 +50,7 @@ jobs:
             src/paperagent/literature/ranking.py
             src/paperagent/retrieval/prepare_search.py
             src/paperagent/schemas/plan.py
+            tests/literature/test_prepared_query_contract.py
             tests/literature/test_query_concepts.py
             tests/literature/test_query_refinement.py
             tests/nodes/test_retrieval.py
@@ -61,6 +63,7 @@ jobs:
           mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
           mypy_status=$?
           pytest -q \
+            tests/literature/test_prepared_query_contract.py \
             tests/literature/test_query_concepts.py \
             tests/literature/test_query_refinement.py \
             tests/nodes/test_retrieval.py \
