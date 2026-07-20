@@ -63,9 +63,7 @@ def test_third_batch_guards_accept_task_matched_candidates(query: str, candidate
         ),
     ],
 )
-def test_third_batch_guards_reject_cross_task_false_positives(
-    query: str, candidate: str
-) -> None:
+def test_third_batch_guards_reject_cross_task_false_positives(query: str, candidate: str) -> None:
     assert matches_required_candidate_terms(query, candidate) is False
 
 
