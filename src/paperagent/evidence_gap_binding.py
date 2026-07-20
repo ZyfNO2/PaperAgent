@@ -172,6 +172,14 @@ def _mechanism_role_support(text: str) -> bool:
             "missing modality",
             "modality absence",
             "misregistration",
+            "computational and energy requests",
+            "computational request",
+            "energy request",
+            "energy demand",
+            "temporal order",
+            "similar poses",
+            "crowded scene",
+            "complex environment",
         )
     )
     intervention = any(
@@ -184,11 +192,14 @@ def _mechanism_role_support(text: str) -> bool:
             "network",
             "feature fusion",
             "attention",
+            "self-attention",
+            "self-attentional",
             "loss",
             "branch",
             "detection head",
             "super-resolution",
             "temporal",
+            "pose representation",
             "multimodal",
         )
     )
@@ -260,79 +271,62 @@ def assess_gap_support(
         matches_required_candidate_terms(query, text) for query in queries
     )
     role_evidence_present = _role_support(gap, item)
-    semantic_binding = all(
+    accepted = all(
         (
             provenance_qualified,
             direct_relevance,
             supporting_span_present,
-            query_term_overlap,
             required_concepts_match,
+            query_term_overlap,
             role_evidence_present,
         )
     )
     checklist = {
-        **legacy_result.checklist_results,
-        "query_provenance_match": origin_match,
-        "cross_gap_reuse": cross_gap_reuse,
-        "provenance_qualified": provenance_qualified,
+        "baseline_match": legacy_result.checklist_results.get("baseline_match", False),
+        "claim_match": legacy_result.checklist_results.get("claim_match", False),
+        "constraints_match": legacy_result.checklist_results.get("constraints_match", False),
         "direct_relevance": direct_relevance,
-        "supporting_span_present": supporting_span_present,
+        "evidence_role_match": legacy_result.checklist_results.get(
+            "evidence_role_match", False
+        ),
+        "identity_verified": relevance.identity_verified,
+        "provenance_qualified": provenance_qualified,
+        "query_provenance_match": origin_match,
         "query_term_overlap": query_term_overlap,
+        "reproducibility_match": legacy_result.checklist_results.get(
+            "reproducibility_match", False
+        ),
         "required_concepts_match": required_concepts_match,
         "role_evidence_present": role_evidence_present,
-        "semantic_gap_binding": semantic_binding,
+        "semantic_gap_binding": accepted,
+        "supporting_span_present": supporting_span_present,
     }
-    if not semantic_binding:
-        missing = [
-            label
-            for label, passed in (
-                (
-                    "query provenance or qualified cross-gap reuse",
-                    provenance_qualified,
-                ),
-                ("direct relevance", direct_relevance),
-                ("supporting span", supporting_span_present),
-                ("query-term overlap", query_term_overlap),
-                ("required query concepts", required_concepts_match),
-                ("role-specific evidence structure", role_evidence_present),
-            )
-            if not passed
-        ]
-        return legacy_result.model_copy(
-            update={
-                "checklist_results": checklist,
-                "limitations": _dedupe(
-                    [*legacy_result.limitations, f"semantic binding missing: {', '.join(missing)}"]
-                ),
-            }
-        )
-
-    span = relevance.supporting_spans[0]
-    support_type: GapSupportType = "direct_support"
-    binding_basis = (
-        "reused across gaps after an existing accepted binding, direct relevance, "
-        "query concepts, and role-specific evidence cues"
-        if cross_gap_reuse
-        else "bound through verified query provenance, direct relevance, query concepts, "
-        "and role-specific evidence cues"
-    )
+    limitations = list(legacy_result.limitations)
+    if cross_gap_reuse:
+        limitations.append("cross-gap reuse accepted only after independent semantic qualification")
+    if overlap:
+        limitations.append(f"query overlap terms: {', '.join(overlap[:8])}")
     return GapSupportAssessment(
         evidence_id=item.evidence_id,
         gap_id=gap.gap_id,
-        support_type=support_type,
-        supported_claim=gap.description,
-        supporting_span_hash=hash_payload(span),
+        support_type=(
+            GapSupportType.DIRECT_SUPPORT if accepted else GapSupportType.NO_SUPPORT
+        ),
+        supported_claim=gap.description if accepted else None,
+        supporting_span_hash=(
+            relevance.supporting_spans[0].span_hash if supporting_span_present else None
+        ),
         checklist_results=checklist,
-        limitations=[binding_basis],
-        confidence=0.72 if cross_gap_reuse else 0.82,
-        decision="accept",
+        limitations=limitations,
+        confidence=(0.72 if accepted and origin_match else 0.58 if accepted else 0.2),
+        decision="accept" if accepted else "reject",
     )
 
 
 def build_evidence_ledger(
     *,
-    request: ResearchRequest | None,
-    plan: ResearchPlan | None,
+    request: ResearchRequest,
+    plan: ResearchPlan,
     evidence: EvidenceBundle,
 ) -> tuple[
     ResearchContract,
@@ -341,107 +335,107 @@ def build_evidence_ledger(
     list[GapSupportAssessment],
     EvidenceLedger,
 ]:
-    contract, lexical, relevance, _, legacy_ledger = legacy.build_evidence_ledger(
-        request=request,
-        plan=plan,
-        evidence=evidence,
-    )
-    if plan is None or not plan.evidence_gaps:
-        return contract, lexical, relevance, [], legacy_ledger
+    """Build the canonical relevance and gap-support ledger with guarded cross-gap reuse."""
 
-    relevance_by_id = {item.evidence_id: item for item in relevance}
-    legacy_entries = {entry.evidence_id: entry for entry in legacy_ledger.entries}
+    contract = legacy.build_research_contract(request, plan)
+    lexical: list[LexicalRelevanceAssessment] = []
+    semantic: list[RelevanceAssessment] = []
+    supports: list[GapSupportAssessment] = []
+    accepted_ids: list[str] = []
+    rejected_ids: list[str] = []
+    entries: list[EvidenceLedgerEntry] = []
+    coverage = {gap.gap_id: 0 for gap in plan.evidence_gaps}
     queries_by_gap: dict[str, list[str]] = {}
     for query in plan.search_queries:
         queries_by_gap.setdefault(query.gap_id, []).append(query.query)
 
-    entries: list[EvidenceLedgerEntry] = []
-    gap_results: list[GapSupportAssessment] = []
     for item in evidence.items:
-        item_relevance = relevance_by_id[item.evidence_id]
-        first_pass = [
-            assess_gap_support(
+        lexical_assessment = legacy.assess_lexical_relevance(contract, item)
+        relevance = legacy.assess_semantic_relevance(contract, item, lexical_assessment)
+        lexical.append(lexical_assessment)
+        semantic.append(relevance)
+
+        direct_supports: list[GapSupportAssessment] = []
+        for gap in plan.evidence_gaps:
+            support = assess_gap_support(
                 item,
                 gap,
-                item_relevance,
-                query_texts=queries_by_gap.get(gap.gap_id, []),
+                relevance,
+                query_texts=queries_by_gap.get(gap.gap_id, ()),
             )
-            for gap in plan.evidence_gaps
-        ]
-        has_bound_support = any(support.decision == "accept" for support in first_pass)
-        if has_bound_support:
-            supports = [
-                support
-                if support.decision == "accept"
-                else assess_gap_support(
-                    item,
-                    gap,
-                    item_relevance,
-                    query_texts=queries_by_gap.get(gap.gap_id, []),
-                    allow_cross_gap_reuse=True,
+            direct_supports.append(support)
+
+        initial_accepted = any(support.decision == "accept" for support in direct_supports)
+        item_supports = direct_supports
+        if initial_accepted:
+            item_supports = [
+                (
+                    support
+                    if support.decision == "accept"
+                    else assess_gap_support(
+                        item,
+                        gap,
+                        relevance,
+                        query_texts=queries_by_gap.get(gap.gap_id, ()),
+                        allow_cross_gap_reuse=True,
+                    )
                 )
-                for gap, support in zip(
-                    plan.evidence_gaps,
-                    first_pass,
-                    strict=True,
-                )
+                for gap, support in zip(plan.evidence_gaps, direct_supports, strict=True)
             ]
+
+        supports.extend(item_supports)
+        accepted_supports = [support for support in item_supports if support.decision == "accept"]
+        accepted = bool(accepted_supports)
+        if accepted:
+            accepted_ids.append(item.evidence_id)
+            for support in accepted_supports:
+                coverage[support.gap_id] = coverage.get(support.gap_id, 0) + 1
         else:
-            supports = first_pass
-        gap_results.extend(supports)
-        accepted_supports = [support for support in supports if support.decision == "accept"]
-        legacy_entry = legacy_entries[item.evidence_id]
-        accepted = (
-            legacy_entry.identity_verified
-            and item_relevance.decision == "pass"
-            and bool(accepted_supports)
+            rejected_ids.append(item.evidence_id)
+
+        supported_claims = _dedupe(
+            support.supported_claim or ""
+            for support in accepted_supports
+            if support.supported_claim
         )
-        rejection_reasons = [
-            value for value in legacy_entry.rejection_reasons if value != "NO_VALID_GAP_BINDING"
-        ]
-        if not accepted and not accepted_supports:
-            rejection_reasons.append("NO_VALID_GAP_BINDING")
+        limitations = _dedupe(
+            limitation
+            for support in item_supports
+            for limitation in support.limitations
+        )
+        rejection_reasons = (
+            []
+            if accepted
+            else _dedupe(
+                [
+                    "identity verification failed"
+                    if not relevance.identity_verified
+                    else "",
+                    *relevance.exclusion_reasons,
+                    "no independently qualified gap support",
+                ]
+            )
+        )
         entries.append(
             EvidenceLedgerEntry(
                 evidence_id=item.evidence_id,
-                identity_verified=legacy_entry.identity_verified,
-                relevance_scope=item_relevance.evidence_scope,
-                gap_supports=supports,
-                supported_claims=[
-                    support.supported_claim
-                    for support in accepted_supports
-                    if support.supported_claim is not None
-                ],
-                limitations=_dedupe(
-                    limitation for support in supports for limitation in support.limitations
-                ),
+                identity_verified=relevance.identity_verified,
+                relevance_scope=relevance.evidence_scope,
+                gap_supports=item_supports,
+                supported_claims=supported_claims,
+                limitations=limitations,
                 accepted=accepted,
-                rejection_reasons=_dedupe(rejection_reasons),
+                rejection_reasons=rejection_reasons,
             )
         )
 
-    accepted_ids = [entry.evidence_id for entry in entries if entry.accepted]
-    rejected_ids = [entry.evidence_id for entry in entries if not entry.accepted]
-    coverage: dict[str, int] = {}
-    for entry in entries:
-        if not entry.accepted:
-            continue
-        for support in entry.gap_supports:
-            if support.decision == "accept":
-                coverage[support.gap_id] = coverage.get(support.gap_id, 0) + 1
     ledger = EvidenceLedger(
         entries=entries,
         accepted_ids=accepted_ids,
         rejected_ids=rejected_ids,
         coverage_by_gap=coverage,
     )
-    return contract, lexical, relevance, gap_results, ledger
+    return contract, lexical, semantic, supports, ledger
 
 
-apply_ledger_to_bundle = legacy.apply_ledger_to_bundle
-
-__all__ = [
-    "apply_ledger_to_bundle",
-    "assess_gap_support",
-    "build_evidence_ledger",
-]
+__all__ = ["assess_gap_support", "build_evidence_ledger"]
