@@ -1,7 +1,7 @@
 {
-  "benchmark_source_sha": "9c63e9606bef784237728ee3c21553270d5ab0a2",
+  "benchmark_source_sha": "879806c89014724f6116ea7f11edfc0b5b5626ec",
   "freeze_manifest": {
-    "benchmark_source_sha": "9c63e9606bef784237728ee3c21553270d5ab0a2",
+    "benchmark_source_sha": "879806c89014724f6116ea7f11edfc0b5b5626ec",
     "file_sha256": {
       "case_schema": "8f0b26401e77082fec49271a917745da22c2a167140550739f39990ca2a1afa1",
       "private_runner": "e496cf28bee467de7810d00049a84e752e373f704e1a62abd0f4421f12377dfd",
@@ -11,10 +11,10 @@
       "public_runner": "d4c760ab374e9cc7ab0e71f326bb5c45f53bbc481481210e4942667f1eac1224",
       "scorer": "01a126291b9d2dddaa8b5d27ae94ba529d1bb9a15a3558b440c307b586dadad1"
     },
-    "freeze_digest": "b71ef2201b313d722cb7e106aedd780e2a1be06b3d1beb33f0496e3ee7b33bea",
+    "freeze_digest": "d2d8ce8be000c2dc4e498402f18cf2ac17e9accc3ab7cbdf88829364b341223d",
     "private_holdout_status": "not generated; author only after this manifest is frozen",
-    "production_digest": "2f59b55ce9dd6de2e7d4664fc837b97c07432925cd73a2edf09e727b35d11cdf",
-    "production_source_sha": "c10c5dc14ca004fa0e3c567eba273dd5bd7e078c",
+    "production_digest": "80eb05dfb53b9e1c946a08c29ac5fd637ae30dab62e13f507b1e30d1cc720f09",
+    "production_source_sha": "af1dd779983ae3b9f0a1a74075ec309ac5f1ee77",
     "public_development_status": "debuggable; not independent generalization evidence",
     "runtime_boundary": [
       "input.user_request",
@@ -44,12 +44,12 @@
   "outcomes": {
     "freeze": "success",
     "install": "success",
-    "literature_smoke": "success",
+    "literature_smoke": "failure",
     "mistral_secret": "success",
-    "mistral_smoke": "failure",
+    "mistral_smoke": "success",
+    "offline_gates": "success",
     "production_scan": "success",
     "public_dev_run": "success",
-    "static_leakage_audit": "success",
     "validation": "success"
   },
   "passed": false,
@@ -57,16 +57,17 @@
     "file_sha256": {
       ".claw-four-case-trigger.json": "d242cbe4f89fefa975993b436199a8870bdd819450591b6c2bbf112bf12aa654",
       ".claw-paid-full-20-trigger.json": "4f884765682841d087f9335078e3c253441a09aea2fa05a2f7eb91bc6e9eb6d9",
-      ".claw-real-provider-smoke-trigger.json": "007e055dd71ab79730332853924fee44af0f9ec5bbb499b4ab6ea2c1c8b99420",
+      ".claw-real-provider-smoke-trigger.json": "1e809587162b7a678e6480607bf7677ee45a079058c3903eb3775a6c725c2ec0",
       ".claw-single-case-trigger.json": "0c67196033ed6fb6881cf78cf501b0aa14d0882d587a7d83bd676986de98ede4",
       ".github/workflows/academic-tailoring-eval.yml": "53e13f1e3e213bd38d0cb8ebd0ccfc3dee29dacacd1e320de12b847f5bfb2688",
       ".github/workflows/claw-academic-tailoring-benchmark.yml": "de263ef9d8c8b6ff52210e7a0030b5fb7277433863e0e489b97c21a012e9fe32",
       ".github/workflows/claw-case-001-end-to-end.yml": "906db890c9b07692b3197daaec9e75eb05f1c786868d01c1815c2717736fd081",
+      ".github/workflows/claw-clean-v2-acceptance-pr.yml": "bc1b380db72dbb87feccdbfeec57c29bfb075a3386f6c47bc60d24263f82044f",
       ".github/workflows/claw-four-case-live-batch.yml": "5e6b5affad812df5da0b2e4a30ed5cbbddc0eb19210ee3decb8f762181ee585b",
       ".github/workflows/claw-live-search-ci.yml": "58b7ec3081e62ec0ac8050dbe593664aaae94f67a8b7f82667baf7bc868db0b9",
       ".github/workflows/claw-mistral-acceptance.yml": "1a5b6cb71d1093301e6c6b91b9885ed1c25555297428fa1c271f6194c5eabe14",
       ".github/workflows/claw-paid-full-20-e2e.yml": "d8930ffce63b2ec59cd795db7fd94297b7cf2832cad8b322d06dd455ea834eb0",
-      ".github/workflows/claw-real-provider-smoke.yml": "111f9ba60ec07d6b957369b8673d7cb8c8fe8fda1ec39e192bc4205f2f8c509b",
+      ".github/workflows/claw-real-provider-smoke.yml": "f2d40c354f038302d1b3cb64ff53047d2f0060d376dd6d50c51060901766e64d",
       ".github/workflows/claw-single-case-live-repair.yml": "5a9d45431cb329b9ca8162668a9cdff1d1caaa3bc2cfdd6153dc11eaf597abfd",
       ".github/workflows/claw-single-case-live-retrieval.yml": "051ca5c9c8e370c7d6cb26e98ef60449e1cb6af7f4804e19ea1a6cceb05eb5d8",
       ".github/workflows/evidence-contract-cloud.yml": "624a09e1d024d0be4ec21131e5462add143aed31b3dd776d78a5897e0788e10f",
@@ -207,11 +208,12 @@
       "evals/claw_academic_tailoring_v1/live-probes/case015-multibehavior-patch-latest.json": "308d96a6fce54a844fc1134fef101cd97f2e39ebee6f656da91a70419bedfea7",
       "evals/claw_academic_tailoring_v1/live-probes/case017-precision-gate-latest.json": "af2cd4d4dcac0713ea63af9f4d13fede38e42f1c851bba71d12e023480124dd9",
       "evals/claw_academic_tailoring_v1/live-probes/cases-015-017-offline-gate-latest.json": "70b91cc1a7ed6ef602a824d2186f34d4d23d4771c0ca5d91bfba873d07c52edd",
-      "evals/claw_academic_tailoring_v1/live-probes/decision-remediation-diagnostics.json": "20e0613cf9bd3d4baf973195aace32418af364ea1e6fba8b195a69b4e0848d4d",
+      "evals/claw_academic_tailoring_v1/live-probes/decision-remediation-diagnostics.json": "0d5bd97f1400d5be84772d81002ec8ace777ba375ca950c5ebbb70e93c3f036b",
       "evals/claw_academic_tailoring_v1/live-probes/evidence-gap-binding-gate-latest.json": "364d5ccde307c76fb448232d721f20d6dd0e96309271a7e62c56477d9234d264",
       "evals/claw_academic_tailoring_v1/live-probes/evidence-gap-binding-rerun-latest.json": "486ea6374c4e2e42ceb3c5525e28a8a445a2647af5e46d0a7eb5abc59f4bc9d2",
       "evals/claw_academic_tailoring_v1/live-probes/final-leakage-verification-latest.json": "80d6f3e0e3c0bccc8b5086fe419276ad49e5845e6fd6d1b0701d5204dcd62a28",
       "evals/claw_academic_tailoring_v1/live-probes/four-case-batch-latest.json": "887258063b13ec9f973ef904cebc2de1bb5c8357c944dc70336820ffbcd23837",
+      "evals/claw_academic_tailoring_v1/live-probes/merge-readiness-source.json": "192712b67e8601119703cea14c7d11aaf36ebbca6c31090c7f0274c1abe266c9",
       "evals/claw_academic_tailoring_v1/live-probes/method-design-draft-diagnostics-latest.json": "b0b25929ee022dcd886544039e685b27ff74e50f1469d47c7087be518eb8b412",
       "evals/claw_academic_tailoring_v1/live-probes/method-design-draft-gate-latest.json": "bd36ee8d999fe3e102498001ca46b2736ab6003af415c480909f753eb72359e4",
       "evals/claw_academic_tailoring_v1/live-probes/method-design-draft-run-latest.json": "8477a8154b49f01216e698bf0132f4a062f587c5d872a676c24ff9ac1fd17084",
@@ -221,7 +223,7 @@
       "evals/claw_academic_tailoring_v1/live-probes/query-refinement-gate-latest.json": "0664fb9eb480eb3e7b7b0fc46fdeada4bcfa8bd1b08cf54993a27aff29da402f",
       "evals/claw_academic_tailoring_v1/live-probes/query-refinement-rerun-latest.json": "bbc63ce048d1eda457d5941b291ea4f21f63f7d8e0f700f894f721f2c81393ff",
       "evals/claw_academic_tailoring_v1/live-probes/query-refinement-run-latest.json": "852a3732f3c80193ce8a6eec3c7d5ba48f7adffbd496808a398014abf5a3ace4",
-      "evals/claw_academic_tailoring_v1/live-probes/real-provider-smoke-latest.json": "f958f688fd20dd845de85a3921995bf6296230b1c779ae44d8239e09330bc810",
+      "evals/claw_academic_tailoring_v1/live-probes/real-provider-smoke-latest.json": "c02f374b9ff68272d6033566513b371f5e4e7bb40498fb3e84b848b43f912cc1",
       "evals/claw_academic_tailoring_v1/live-probes/review-remediation-latest.json": "c51e7fa1c8740395c5c97676174d6c4ac94fc039017efcd2335e4866bb53668d",
       "evals/claw_academic_tailoring_v1/live-probes/second-batch-retrieval-gate-latest.json": "d33aeeb3c9c766c776fea23a65f4b311206ddc4e0f0d3f9edc9669534e2ae603",
       "evals/claw_academic_tailoring_v1/live-probes/single-case-repair-latest.json": "5b93cc93616f18a1bcafed15fd79b7f00848c3c976bb687d5f087cd87162910f",
@@ -273,7 +275,7 @@
       "scripts/run_gate_l_final.py": "413c190d20e6252e43310311cc98750596511e588ba3341290fbf0694205476c",
       "scripts/run_gate_l_v2.py": "8662cf4b7129522ff7e42e888fa2f087d9c3230b443e38467e44d1c4ebd9a559",
       "scripts/run_gate_l_variant.py": "5f57d8cc0e0fced565bee6a473407a21e4f78ce6e2860ceb32048a256ee18ef6",
-      "src/paperagent.egg-info/SOURCES.txt": "c809153e7f60b5c8943eeedb69957218f8055d074f0e5261da3bce4139235cbd",
+      "src/paperagent.egg-info/SOURCES.txt": "c2e8e9d8c5a30cff30a242a0af73133738c8e85687f308ff1718002e280a6e89",
       "src/paperagent.egg-info/dependency_links.txt": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
       "src/paperagent.egg-info/entry_points.txt": "62368111d39ed3c20a63655ccd538200e0fcb7074050491b0aed6bbead56a6aa",
       "src/paperagent.egg-info/requires.txt": "db26748cd8b948e7c44bc719528aad64af3eef424acdd1c6eb4955c4d810202a",
@@ -340,7 +342,7 @@
       "src/paperagent/literature/specialized_guards.py": "20aa587b5d23d4147febee6fc0fb7bf16456f2521c38fda200dedd8b593df350",
       "src/paperagent/literature/verification.py": "719680042a33d7e19cdc00d0705a750ec12373aafd84d757395897c290f55a07",
       "src/paperagent/llm_smoke.py": "9e5a5f874fc737e550cd0c4d3b05d1bea8498a744de8262bd66d67990b9c1042",
-      "src/paperagent/method_design_draft.py": "ed3b82d66ab38d64fba2d0c38d4e73549341fbd02fc5d2da16c3c1ce9d2b8114",
+      "src/paperagent/method_design_draft.py": "11b3f3a29c30014220d72489a3be92ef09457c251549878e5ce975f6deea7af9",
       "src/paperagent/method_evidence.py": "647ae7dbf2efbb8cbbe0c3cc1b0ef160e3646db6be991dc05d6d0ba7562d2f1d",
       "src/paperagent/nodes/__init__.py": "463048a3345a4a2c9cc1df571847b7252f40b2ae3cb5846cf472af67cda50348",
       "src/paperagent/nodes/_shared.py": "7adf93da782aee9875e63bf56b48d891c35c1ae73c2cc0baab6f12cfba8a3a10",
@@ -405,6 +407,7 @@
       "src/paperagent/schemas/request.py": "15a0a451588b588a0355ed43b7ecf72e0de0da56c78328cdedf6fbb320ae3c19",
       "src/paperagent/schemas/synthesis.py": "7774727e3fb949d3ca4a0e8a6f5d9276768ba76838dfa8c5e32c03b6c6ec2ab3",
       "src/paperagent/schemas/trace.py": "16467bcb9cc96e5bc5a2768a0221607d059a8727e2ec5dd4b975604c577f9549",
+      "src/paperagent/scientific_readiness.py": "a01050f0a3e4f38794740e7b68d4b9260fee70218651d49f907825ca444b007c",
       "src/paperagent/state.py": "6a3bc380c0837c739d5aeae4c908be1fb8450153316d1be347d20400b6d28882",
       "src/paperagent/telemetry/__init__.py": "6cebacc2c9e70a114d90c063268408a703a271154d9c4fa498826b547487568e",
       "src/paperagent/telemetry/events.py": "31a5856939a79af8b755ce14fc58febfa160748a3c0fd7be6e3105f2840e2883",
@@ -539,6 +542,7 @@
       "tests/methodology/test_evidence_binding.py": "2ab4e17e1cbd05b3109c467c8924678b16b6f84d86b4c8c24413f819da844dd3",
       "tests/methodology/test_method_design_draft.py": "4935724d3cca57aa09fb6c4a202e2c113bb7067e60051917773fc462b3753e83",
       "tests/methodology/test_scientific_decision_policy.py": "bcc7144f6d44402bab90aec1ff4efe97303bd30d30937e0916481c73a2a3e8c0",
+      "tests/methodology/test_scientific_readiness.py": "47b3af0da6ea9658261d19a2f61c29a19c93d6e1dce6337ace4514c75b1f96b3",
       "tests/nodes/test_evidence_ledger_outcome_trace.py": "bb52e8ef95fd63e944ec4bb56aa51de967f48e8095f85c1ab7aac02bc7ec5a07",
       "tests/nodes/test_evidence_synthesis_contract.py": "b58091776a5a382f864f56bcde182cf21edf8012026ee2d311f8a10f54fd0805",
       "tests/nodes/test_intake_planning.py": "952a8147a43a16aac63c3f38411f7c999bb6defeab9b0b0cd6f42bb2a93a3606",
@@ -589,23 +593,23 @@
     "passed": true,
     "private_manifest_sha256": null,
     "private_ngram_count": 0,
-    "production_digest": "2f59b55ce9dd6de2e7d4664fc837b97c07432925cd73a2edf09e727b35d11cdf",
+    "production_digest": "80eb05dfb53b9e1c946a08c29ac5fd637ae30dab62e13f507b1e30d1cc720f09",
     "production_root": "/home/runner/work/PaperAgent/PaperAgent/production",
-    "scanned_file_count": 529,
+    "scanned_file_count": 533,
     "schema": "paperagent.academic-holdout.production-scan.v2"
   },
-  "production_source_sha": "c10c5dc14ca004fa0e3c567eba273dd5bd7e078c",
-  "public_run_log_tail": "          \"fair_experiment_design\": 10,\n          \"falsifiable_hypothesis\": 15,\n          \"risk_and_stop_conditions\": 5,\n          \"scientific_decision\": 25\n        },\n        \"hard_failures\": [],\n        \"passed\": false,\n        \"pilot_allowed\": false,\n        \"pilot_recommended\": false,\n        \"raw_score\": 65,\n        \"role_findings\": [\n          \"supplied_material:missing\",\n          \"strong_comparator:missing\"\n        ],\n        \"score\": 65\n      },\n      {\n        \"accepted_decisions\": [\n          \"REVISE\"\n        ],\n        \"case_id\": \"dev-009-supply-chain-pilot-gate\",\n        \"decision\": \"REVISE\",\n        \"decision_matches\": true,\n        \"dimensions\": {\n          \"baseline_and_comparator_specificity\": 8,\n          \"compatibility_analysis\": 10,\n          \"evidence_role_binding\": 15,\n          \"fair_experiment_design\": 10,\n          \"falsifiable_hypothesis\": 15,\n          \"risk_and_stop_conditions\": 5,\n          \"scientific_decision\": 25\n        },\n        \"hard_failures\": [],\n        \"passed\": true,\n        \"pilot_allowed\": true,\n        \"pilot_recommended\": false,\n        \"raw_score\": 88,\n        \"role_findings\": [\n          \"baseline:pass\",\n          \"strong_comparator:missing\",\n          \"mechanism:pass\",\n          \"risk:pass\"\n        ],\n        \"score\": 88\n      },\n      {\n        \"accepted_decisions\": [\n          \"NO_GO\"\n        ],\n        \"case_id\": \"dev-010-protein-homology-leakage\",\n        \"decision\": \"REVISE\",\n        \"decision_matches\": false,\n        \"dimensions\": {\n          \"baseline_and_comparator_specificity\": 0,\n          \"compatibility_analysis\": 10,\n          \"evidence_role_binding\": 0,\n          \"fair_experiment_design\": 0,\n          \"falsifiable_hypothesis\": 0,\n          \"risk_and_stop_conditions\": 0,\n          \"scientific_decision\": 0\n        },\n        \"hard_failures\": [],\n        \"passed\": false,\n        \"pilot_allowed\": false,\n        \"pilot_recommended\": false,\n        \"raw_score\": 10,\n        \"role_findings\": [\n          \"baseline:missing\",\n          \"risk:missing\"\n        ],\n        \"score\": 10\n      },\n      {\n        \"accepted_decisions\": [\n          \"GO\"\n        ],\n        \"case_id\": \"dev-011-river-sediment-go\",\n        \"decision\": \"REVISE\",\n        \"decision_matches\": false,\n        \"dimensions\": {\n          \"baseline_and_comparator_specificity\": 0,\n          \"compatibility_analysis\": 10,\n          \"evidence_role_binding\": 0,\n          \"fair_experiment_design\": 0,\n          \"falsifiable_hypothesis\": 0,\n          \"risk_and_stop_conditions\": 0,\n          \"scientific_decision\": 0\n        },\n        \"hard_failures\": [],\n        \"passed\": false,\n        \"pilot_allowed\": true,\n        \"pilot_recommended\": false,\n        \"raw_score\": 10,\n        \"role_findings\": [\n          \"baseline:missing\",\n          \"strong_comparator:missing\",\n          \"mechanism:missing\",\n          \"risk:missing\"\n        ],\n        \"score\": 10\n      },\n      {\n        \"accepted_decisions\": [\n          \"REVISE\"\n        ],\n        \"case_id\": \"dev-012-soil-comparator-missing-ja\",\n        \"decision\": \"REVISE\",\n        \"decision_matches\": true,\n        \"dimensions\": {\n          \"baseline_and_comparator_specificity\": 0,\n          \"compatibility_analysis\": 10,\n          \"evidence_role_binding\": 0,\n          \"fair_experiment_design\": 0,\n          \"falsifiable_hypothesis\": 0,\n          \"risk_and_stop_conditions\": 0,\n          \"scientific_decision\": 25\n        },\n        \"hard_failures\": [],\n        \"passed\": false,\n        \"pilot_allowed\": false,\n        \"pilot_recommended\": false,\n        \"raw_score\": 35,\n        \"role_findings\": [\n          \"baseline:missing\",\n          \"strong_comparator:missing\"\n        ],\n        \"score\": 35\n      }\n    ],\n    \"decision_accuracy\": 0.8333333333333334,\n    \"fabricated_evidence_count\": 0,\n    \"failed\": 10,\n    \"hard_failure_count\": 0,\n    \"metamorphic_decision_consistency\": 1.0,\n    \"metamorphic_group_count\": 1,\n    \"passed\": 2,\n    \"report_digest\": \"97dfaaeb2726bf1b15516bd8b574d4ab7f4409612777e758332f6ac7afc48cde\",\n    \"schema\": \"paperagent.academic-holdout.report.v2\",\n    \"split\": \"development\",\n    \"total\": 12,\n    \"unsupported_comparator_count\": 0\n  },\n  \"result_interpretation\": \"public development set; not independent generalization evidence\",\n  \"schema\": \"paperagent.academic-holdout.public-dev-run.v2\",\n  \"selected_case_count\": 12,\n  \"split\": \"development\",\n  \"static_leakage_audit\": {\n    \"findings\": [],\n    \"passed\": true\n  },\n  \"thresholds\": {\n    \"decision_accuracy_minimum\": 0.8,\n    \"fabricated_evidence_maximum\": 0,\n    \"hard_failures_maximum\": 0,\n    \"metamorphic_decision_consistency_minimum\": 0.85,\n    \"public_private_score_gap_maximum_percentage_points\": 10,\n    \"unsupported_comparator_maximum\": 0\n  },\n  \"thresholds_passed\": true\n}",
+  "production_source_sha": "af1dd779983ae3b9f0a1a74075ec309ac5f1ee77",
+  "public_run_log_tail": "      },\n      {\n        \"accepted_decisions\": [\n          \"NO_GO\",\n          \"REVISE\"\n        ],\n        \"case_id\": \"dev-007-urban-heat-negative-results\",\n        \"decision\": \"REVISE\",\n        \"decision_matches\": true,\n        \"dimensions\": {\n          \"baseline_and_comparator_specificity\": 15,\n          \"compatibility_analysis\": 10,\n          \"evidence_role_binding\": 0,\n          \"fair_experiment_design\": 0,\n          \"falsifiable_hypothesis\": 0,\n          \"risk_and_stop_conditions\": 0,\n          \"scientific_decision\": 25\n        },\n        \"hard_failures\": [],\n        \"passed\": false,\n        \"pilot_allowed\": false,\n        \"pilot_recommended\": false,\n        \"raw_score\": 50,\n        \"role_findings\": [\n          \"risk:missing\",\n          \"mechanism:missing\"\n        ],\n        \"score\": 50\n      },\n      {\n        \"accepted_decisions\": [\n          \"REVISE\"\n        ],\n        \"case_id\": \"dev-008-semiconductor-material-identity\",\n        \"decision\": \"REVISE\",\n        \"decision_matches\": true,\n        \"dimensions\": {\n          \"baseline_and_comparator_specificity\": 0,\n          \"compatibility_analysis\": 10,\n          \"evidence_role_binding\": 0,\n          \"fair_experiment_design\": 10,\n          \"falsifiable_hypothesis\": 15,\n          \"risk_and_stop_conditions\": 5,\n          \"scientific_decision\": 25\n        },\n        \"hard_failures\": [],\n        \"passed\": false,\n        \"pilot_allowed\": false,\n        \"pilot_recommended\": false,\n        \"raw_score\": 65,\n        \"role_findings\": [\n          \"supplied_material:missing\",\n          \"strong_comparator:missing\"\n        ],\n        \"score\": 65\n      },\n      {\n        \"accepted_decisions\": [\n          \"REVISE\"\n        ],\n        \"case_id\": \"dev-009-supply-chain-pilot-gate\",\n        \"decision\": \"REVISE\",\n        \"decision_matches\": true,\n        \"dimensions\": {\n          \"baseline_and_comparator_specificity\": 0,\n          \"compatibility_analysis\": 10,\n          \"evidence_role_binding\": 0,\n          \"fair_experiment_design\": 0,\n          \"falsifiable_hypothesis\": 0,\n          \"risk_and_stop_conditions\": 0,\n          \"scientific_decision\": 25\n        },\n        \"hard_failures\": [],\n        \"passed\": false,\n        \"pilot_allowed\": true,\n        \"pilot_recommended\": false,\n        \"raw_score\": 35,\n        \"role_findings\": [\n          \"baseline:missing\",\n          \"strong_comparator:missing\",\n          \"mechanism:missing\",\n          \"risk:missing\"\n        ],\n        \"score\": 35\n      },\n      {\n        \"accepted_decisions\": [\n          \"NO_GO\"\n        ],\n        \"case_id\": \"dev-010-protein-homology-leakage\",\n        \"decision\": \"REVISE\",\n        \"decision_matches\": false,\n        \"dimensions\": {\n          \"baseline_and_comparator_specificity\": 0,\n          \"compatibility_analysis\": 10,\n          \"evidence_role_binding\": 0,\n          \"fair_experiment_design\": 0,\n          \"falsifiable_hypothesis\": 0,\n          \"risk_and_stop_conditions\": 0,\n          \"scientific_decision\": 0\n        },\n        \"hard_failures\": [],\n        \"passed\": false,\n        \"pilot_allowed\": false,\n        \"pilot_recommended\": false,\n        \"raw_score\": 10,\n        \"role_findings\": [\n          \"baseline:missing\",\n          \"risk:missing\"\n        ],\n        \"score\": 10\n      },\n      {\n        \"accepted_decisions\": [\n          \"GO\"\n        ],\n        \"case_id\": \"dev-011-river-sediment-go\",\n        \"decision\": \"REVISE\",\n        \"decision_matches\": false,\n        \"dimensions\": {\n          \"baseline_and_comparator_specificity\": 0,\n          \"compatibility_analysis\": 10,\n          \"evidence_role_binding\": 0,\n          \"fair_experiment_design\": 0,\n          \"falsifiable_hypothesis\": 0,\n          \"risk_and_stop_conditions\": 0,\n          \"scientific_decision\": 0\n        },\n        \"hard_failures\": [],\n        \"passed\": false,\n        \"pilot_allowed\": true,\n        \"pilot_recommended\": false,\n        \"raw_score\": 10,\n        \"role_findings\": [\n          \"baseline:missing\",\n          \"strong_comparator:missing\",\n          \"mechanism:missing\",\n          \"risk:missing\"\n        ],\n        \"score\": 10\n      },\n      {\n        \"accepted_decisions\": [\n          \"REVISE\"\n        ],\n        \"case_id\": \"dev-012-soil-comparator-missing-ja\",\n        \"decision\": \"REVISE\",\n        \"decision_matches\": true,\n        \"dimensions\": {\n          \"baseline_and_comparator_specificity\": 0,\n          \"compatibility_analysis\": 10,\n          \"evidence_role_binding\": 0,\n          \"fair_experiment_design\": 10,\n          \"falsifiable_hypothesis\": 15,\n          \"risk_and_stop_conditions\": 5,\n          \"scientific_decision\": 25\n        },\n        \"hard_failures\": [],\n        \"passed\": false,\n        \"pilot_allowed\": false,\n        \"pilot_recommended\": false,\n        \"raw_score\": 65,\n        \"role_findings\": [\n          \"baseline:missing\",\n          \"strong_comparator:missing\"\n        ],\n        \"score\": 65\n      }\n    ],\n    \"decision_accuracy\": 0.8333333333333334,\n    \"fabricated_evidence_count\": 0,\n    \"failed\": 12,\n    \"hard_failure_count\": 0,\n    \"metamorphic_decision_consistency\": 1.0,\n    \"metamorphic_group_count\": 1,\n    \"passed\": 0,\n    \"report_digest\": \"f2482997561039216abe54385da40031634c0e5747a1eedfadc0660b582bac21\",\n    \"schema\": \"paperagent.academic-holdout.report.v2\",\n    \"split\": \"development\",\n    \"total\": 12,\n    \"unsupported_comparator_count\": 0\n  },\n  \"result_interpretation\": \"public development set; not independent generalization evidence\",\n  \"schema\": \"paperagent.academic-holdout.public-dev-run.v2\",\n  \"selected_case_count\": 12,\n  \"split\": \"development\",\n  \"static_leakage_audit\": {\n    \"findings\": [],\n    \"passed\": true\n  },\n  \"thresholds\": {\n    \"decision_accuracy_minimum\": 0.8,\n    \"fabricated_evidence_maximum\": 0,\n    \"hard_failures_maximum\": 0,\n    \"metamorphic_decision_consistency_minimum\": 0.85,\n    \"public_private_score_gap_maximum_percentage_points\": 10,\n    \"unsupported_comparator_maximum\": 0\n  },\n  \"thresholds_passed\": true\n}",
   "result_interpretation": "public development set; not independent generalization evidence",
-  "schema": "paperagent.academic-holdout.public-dev-handoff.v4",
+  "schema": "paperagent.academic-holdout.public-dev-handoff.v6",
   "split": "development",
   "summary": {
-    "benchmark_source_sha": "9708c3e3e71da9d41f714629ba1c57c598a466ee",
+    "benchmark_source_sha": "2bd533b112ae469a5543feaeaf1d882ea210ef4b",
     "completed_case_count": 12,
     "errors": [],
-    "production_source_sha": "c10c5dc14ca004fa0e3c567eba273dd5bd7e078c",
+    "production_source_sha": "af1dd779983ae3b9f0a1a74075ec309ac5f1ee77",
     "report": {
-      "average_score": 52.333333333333336,
+      "average_score": 42.916666666666664,
       "cases": [
         {
           "accepted_decisions": [
@@ -645,21 +649,21 @@
             "baseline_and_comparator_specificity": 0,
             "compatibility_analysis": 10,
             "evidence_role_binding": 0,
-            "fair_experiment_design": 10,
-            "falsifiable_hypothesis": 15,
-            "risk_and_stop_conditions": 5,
+            "fair_experiment_design": 0,
+            "falsifiable_hypothesis": 0,
+            "risk_and_stop_conditions": 0,
             "scientific_decision": 25
           },
           "hard_failures": [],
           "passed": false,
           "pilot_allowed": false,
           "pilot_recommended": false,
-          "raw_score": 65,
+          "raw_score": 35,
           "role_findings": [
             "baseline:missing",
             "strong_comparator:missing"
           ],
-          "score": 65
+          "score": 35
         },
         {
           "accepted_decisions": [
@@ -698,23 +702,23 @@
           "decision_matches": true,
           "dimensions": {
             "baseline_and_comparator_specificity": 15,
-            "compatibility_analysis": 10,
-            "evidence_role_binding": 20,
-            "fair_experiment_design": 10,
-            "falsifiable_hypothesis": 15,
-            "risk_and_stop_conditions": 5,
+            "compatibility_analysis": 0,
+            "evidence_role_binding": 0,
+            "fair_experiment_design": 0,
+            "falsifiable_hypothesis": 0,
+            "risk_and_stop_conditions": 0,
             "scientific_decision": 25
           },
           "hard_failures": [],
-          "passed": true,
+          "passed": false,
           "pilot_allowed": false,
           "pilot_recommended": false,
-          "raw_score": 100,
+          "raw_score": 40,
           "role_findings": [
-            "mechanism:pass",
-            "risk:pass"
+            "mechanism:missing",
+            "risk:missing"
           ],
-          "score": 100
+          "score": 40
         },
         {
           "accepted_decisions": [
@@ -834,26 +838,26 @@
           "decision": "REVISE",
           "decision_matches": true,
           "dimensions": {
-            "baseline_and_comparator_specificity": 8,
+            "baseline_and_comparator_specificity": 0,
             "compatibility_analysis": 10,
-            "evidence_role_binding": 15,
-            "fair_experiment_design": 10,
-            "falsifiable_hypothesis": 15,
-            "risk_and_stop_conditions": 5,
+            "evidence_role_binding": 0,
+            "fair_experiment_design": 0,
+            "falsifiable_hypothesis": 0,
+            "risk_and_stop_conditions": 0,
             "scientific_decision": 25
           },
           "hard_failures": [],
-          "passed": true,
+          "passed": false,
           "pilot_allowed": true,
           "pilot_recommended": false,
-          "raw_score": 88,
+          "raw_score": 35,
           "role_findings": [
-            "baseline:pass",
+            "baseline:missing",
             "strong_comparator:missing",
-            "mechanism:pass",
-            "risk:pass"
+            "mechanism:missing",
+            "risk:missing"
           ],
-          "score": 88
+          "score": 35
         },
         {
           "accepted_decisions": [
@@ -922,31 +926,31 @@
             "baseline_and_comparator_specificity": 0,
             "compatibility_analysis": 10,
             "evidence_role_binding": 0,
-            "fair_experiment_design": 0,
-            "falsifiable_hypothesis": 0,
-            "risk_and_stop_conditions": 0,
+            "fair_experiment_design": 10,
+            "falsifiable_hypothesis": 15,
+            "risk_and_stop_conditions": 5,
             "scientific_decision": 25
           },
           "hard_failures": [],
           "passed": false,
           "pilot_allowed": false,
           "pilot_recommended": false,
-          "raw_score": 35,
+          "raw_score": 65,
           "role_findings": [
             "baseline:missing",
             "strong_comparator:missing"
           ],
-          "score": 35
+          "score": 65
         }
       ],
       "decision_accuracy": 0.8333333333333334,
       "fabricated_evidence_count": 0,
-      "failed": 10,
+      "failed": 12,
       "hard_failure_count": 0,
       "metamorphic_decision_consistency": 1.0,
       "metamorphic_group_count": 1,
-      "passed": 2,
-      "report_digest": "97dfaaeb2726bf1b15516bd8b574d4ab7f4409612777e758332f6ac7afc48cde",
+      "passed": 0,
+      "report_digest": "f2482997561039216abe54385da40031634c0e5747a1eedfadc0660b582bac21",
       "schema": "paperagent.academic-holdout.report.v2",
       "split": "development",
       "total": 12,
@@ -970,6 +974,6 @@
     },
     "thresholds_passed": true
   },
-  "validation_log_tail": "validated 12 cases from data/public-dev-v2.jsonl\ntest_invalid_sha_and_missing_input_fail_closed (test_freeze_evaluation.FreezeEvaluationTests.test_invalid_sha_and_missing_input_fail_closed) ... ok\ntest_manifest_digest_changes_when_private_runner_changes (test_freeze_evaluation.FreezeEvaluationTests.test_manifest_digest_changes_when_private_runner_changes) ... ok\ntest_manifest_digest_changes_when_scorer_changes (test_freeze_evaluation.FreezeEvaluationTests.test_manifest_digest_changes_when_scorer_changes) ... ok\ntest_manifest_is_json_serializable (test_freeze_evaluation.FreezeEvaluationTests.test_manifest_is_json_serializable) ... ok\ntest_manifest_pins_all_evaluation_inputs (test_freeze_evaluation.FreezeEvaluationTests.test_manifest_pins_all_evaluation_inputs) ... ok\ntest_consistent_pair_passes (test_public_metrics.PublicProtocolMetricTests.test_consistent_pair_passes) ... ok\ntest_inconsistent_pair_fails (test_public_metrics.PublicProtocolMetricTests.test_inconsistent_pair_fails) ... ok\ntest_report_digest_ignores_prior_digest_field (test_public_metrics.PublicProtocolMetricTests.test_report_digest_ignores_prior_digest_field) ... ok\ntest_singletons_do_not_create_a_comparable_group (test_public_metrics.PublicProtocolMetricTests.test_singletons_do_not_create_a_comparable_group) ... ok\ntest_projection_contains_only_runtime_visible_fields (test_runtime_projection.RuntimeProjectionTests.test_projection_contains_only_runtime_visible_fields) ... ok\ntest_scorer_only_mutations_do_not_change_projection (test_runtime_projection.RuntimeProjectionTests.test_scorer_only_mutations_do_not_change_projection) ... ok\ntest_user_visible_mutation_changes_projection (test_runtime_projection.RuntimeProjectionTests.test_user_visible_mutation_changes_projection) ... ok\ntest_decision_is_scored_against_external_oracle (test_runtime_projection.StructuredScorerTests.test_decision_is_scored_against_external_oracle) ... ok\ntest_disallowed_pilot_is_a_hard_failure (test_runtime_projection.StructuredScorerTests.test_disallowed_pilot_is_a_hard_failure) ... ok\ntest_fabrication_forces_zero_score (test_runtime_projection.StructuredScorerTests.test_fabrication_forces_zero_score) ... ok\ntest_unresolved_comparator_cannot_be_counted_as_verified (test_runtime_projection.StructuredScorerTests.test_unresolved_comparator_cannot_be_counted_as_verified) ... ok\ntest_clean_input_only_signature_passes (test_scan_production.ProductionScanTests.test_clean_input_only_signature_passes) ... ok\ntest_missing_executor_fails_closed (test_scan_production.ProductionScanTests.test_missing_executor_fails_closed) ... ok\ntest_private_ngram_is_reported_by_digest_not_plaintext (test_scan_production.ProductionScanTests.test_private_ngram_is_reported_by_digest_not_plaintext) ... ok\ntest_scorer_field_in_runtime_signature_fails (test_scan_production.ProductionScanTests.test_scorer_field_in_runtime_signature_fails) ... ok\ntest_jsonl_is_canonical_one_object_per_line (test_validate_cases.PublicDatasetTests.test_jsonl_is_canonical_one_object_per_line) ... ok\ntest_legacy_domain_term_is_rejected (test_validate_cases.PublicDatasetTests.test_legacy_domain_term_is_rejected) ... ok\ntest_oracle_cannot_be_added_to_runtime_input (test_validate_cases.PublicDatasetTests.test_oracle_cannot_be_added_to_runtime_input) ... ok\ntest_placeholder_comparator_case_forbids_verified_claim (test_validate_cases.PublicDatasetTests.test_placeholder_comparator_case_forbids_verified_claim) ... ok\ntest_public_dataset_passes (test_validate_cases.PublicDatasetTests.test_public_dataset_passes) ... ok\n\n----------------------------------------------------------------------\nRan 25 tests in 0.012s\n\nOK",
-  "workflow_run_id": "29785156285"
+  "validation_log_tail": "validated 12 cases from data/public-dev-v2.jsonl\ntest_invalid_sha_and_missing_input_fail_closed (test_freeze_evaluation.FreezeEvaluationTests.test_invalid_sha_and_missing_input_fail_closed) ... ok\ntest_manifest_digest_changes_when_private_runner_changes (test_freeze_evaluation.FreezeEvaluationTests.test_manifest_digest_changes_when_private_runner_changes) ... ok\ntest_manifest_digest_changes_when_scorer_changes (test_freeze_evaluation.FreezeEvaluationTests.test_manifest_digest_changes_when_scorer_changes) ... ok\ntest_manifest_is_json_serializable (test_freeze_evaluation.FreezeEvaluationTests.test_manifest_is_json_serializable) ... ok\ntest_manifest_pins_all_evaluation_inputs (test_freeze_evaluation.FreezeEvaluationTests.test_manifest_pins_all_evaluation_inputs) ... ok\ntest_consistent_pair_passes (test_public_metrics.PublicProtocolMetricTests.test_consistent_pair_passes) ... ok\ntest_inconsistent_pair_fails (test_public_metrics.PublicProtocolMetricTests.test_inconsistent_pair_fails) ... ok\ntest_report_digest_ignores_prior_digest_field (test_public_metrics.PublicProtocolMetricTests.test_report_digest_ignores_prior_digest_field) ... ok\ntest_singletons_do_not_create_a_comparable_group (test_public_metrics.PublicProtocolMetricTests.test_singletons_do_not_create_a_comparable_group) ... ok\ntest_projection_contains_only_runtime_visible_fields (test_runtime_projection.RuntimeProjectionTests.test_projection_contains_only_runtime_visible_fields) ... ok\ntest_scorer_only_mutations_do_not_change_projection (test_runtime_projection.RuntimeProjectionTests.test_scorer_only_mutations_do_not_change_projection) ... ok\ntest_user_visible_mutation_changes_projection (test_runtime_projection.RuntimeProjectionTests.test_user_visible_mutation_changes_projection) ... ok\ntest_decision_is_scored_against_external_oracle (test_runtime_projection.StructuredScorerTests.test_decision_is_scored_against_external_oracle) ... ok\ntest_disallowed_pilot_is_a_hard_failure (test_runtime_projection.StructuredScorerTests.test_disallowed_pilot_is_a_hard_failure) ... ok\ntest_fabrication_forces_zero_score (test_runtime_projection.StructuredScorerTests.test_fabrication_forces_zero_score) ... ok\ntest_unresolved_comparator_cannot_be_counted_as_verified (test_runtime_projection.StructuredScorerTests.test_unresolved_comparator_cannot_be_counted_as_verified) ... ok\ntest_clean_input_only_signature_passes (test_scan_production.ProductionScanTests.test_clean_input_only_signature_passes) ... ok\ntest_missing_executor_fails_closed (test_scan_production.ProductionScanTests.test_missing_executor_fails_closed) ... ok\ntest_private_ngram_is_reported_by_digest_not_plaintext (test_scan_production.ProductionScanTests.test_private_ngram_is_reported_by_digest_not_plaintext) ... ok\ntest_scorer_field_in_runtime_signature_fails (test_scan_production.ProductionScanTests.test_scorer_field_in_runtime_signature_fails) ... ok\ntest_jsonl_is_canonical_one_object_per_line (test_validate_cases.PublicDatasetTests.test_jsonl_is_canonical_one_object_per_line) ... ok\ntest_legacy_domain_term_is_rejected (test_validate_cases.PublicDatasetTests.test_legacy_domain_term_is_rejected) ... ok\ntest_oracle_cannot_be_added_to_runtime_input (test_validate_cases.PublicDatasetTests.test_oracle_cannot_be_added_to_runtime_input) ... ok\ntest_placeholder_comparator_case_forbids_verified_claim (test_validate_cases.PublicDatasetTests.test_placeholder_comparator_case_forbids_verified_claim) ... ok\ntest_public_dataset_passes (test_validate_cases.PublicDatasetTests.test_public_dataset_passes) ... ok\n\n----------------------------------------------------------------------\nRan 25 tests in 0.016s\n\nOK",
+  "workflow_run_id": "29786658865"
 }
