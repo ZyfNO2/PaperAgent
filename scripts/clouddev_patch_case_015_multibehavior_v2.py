@@ -6,6 +6,7 @@ from types import ModuleType
 
 
 SOURCE = Path(__file__).with_name("clouddev_patch_case_015_multibehavior.py")
+_INDENTATION_LEVELS = (12, 8, 4, 0)
 
 
 def _load_patch_module() -> ModuleType:
@@ -25,12 +26,12 @@ def _indent(value: str, spaces: int) -> str:
 
 
 def _resolve(text: str, value: str, *, label: str, path: Path) -> tuple[str, int]:
-    for spaces in (0, 4, 8, 12):
+    for spaces in _INDENTATION_LEVELS:
         candidate = _indent(value, spaces)
         count = text.count(candidate)
         if count == 1:
             return candidate, spaces
-    raise RuntimeError(f"{path}: expected one {label} at indentation 0/4/8/12")
+    raise RuntimeError(f"{path}: expected one {label} at indentation 12/8/4/0")
 
 
 def main() -> None:
@@ -40,7 +41,7 @@ def main() -> None:
         old_value = patch._clean(old)
         new_value = patch._clean(new)
         text = path.read_text(encoding="utf-8")
-        for spaces in (0, 4, 8, 12):
+        for spaces in _INDENTATION_LEVELS:
             if _indent(new_value, spaces) in text:
                 return
         resolved_old, spaces = _resolve(text, old_value, label="anchor", path=path)
@@ -51,7 +52,7 @@ def main() -> None:
         anchor_value = patch._clean(anchor)
         addition_value = patch._clean(addition)
         text = path.read_text(encoding="utf-8")
-        for spaces in (0, 4, 8, 12):
+        for spaces in _INDENTATION_LEVELS:
             if _indent(addition_value, spaces).strip() in text:
                 return
         resolved_anchor, spaces = _resolve(text, anchor_value, label="insertion anchor", path=path)
