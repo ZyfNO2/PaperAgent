@@ -1,0 +1,169 @@
+name: CLAW Case 001 End-to-End
+
+on:
+  push:
+    branches:
+      - feat/claw-live-search-runtime
+    paths:
+      - ".github/workflows/claw-case-001-end-to-end.yml"
+      - "scripts/probe_claw_case_end_to_end.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: claw-case-001-end-to-end
+  cancel-in-progress: false
+
+jobs:
+  case-001:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+      PAPERAGENT_LLM_PROVIDER: mistral
+      PAPERAGENT_LLM_MODEL: mistral-small-latest
+      PAPERAGENT_LLM_BASE_URL: https://api.mistral.ai/v1
+      PAPERAGENT_LLM_MAX_ATTEMPTS: "2"
+      PAPERAGENT_LLM_MAX_CALLS: "12"
+      PAPERAGENT_LLM_TASK_TIMEOUT: "900"
+      PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL }}
+      SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Execute Case 001
+        id: execute
+        shell: bash
+        run: |
+          set +e
+          out="build/claw-case-001-e2e"
+          mkdir -p "$out"
+          if [[ -z "${MISTRAL_API_KEY:-}" ]]; then
+            python - "$out/summary.json" <<'PY'
+          import json
+          import sys
+
+          payload = {
+              "case_id": "at-001-uav-small-object-lightweight",
+              "status": "blocked_missing_mistral_secret",
+              "passed": False,
+              "message": "Repository secret MISTRAL_API_KEY is not configured.",
+              "web_search_enabled": False,
+          }
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, ensure_ascii=False, indent=2, sort_keys=True)
+              handle.write("\n")
+          print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+          PY
+            exit 78
+          fi
+          python scripts/probe_claw_case_end_to_end.py \
+            --case-id at-001-uav-small-object-lightweight \
+            --max-llm-calls 12 \
+            --provider-call-budget 8 \
+            --verification-call-budget 16 \
+            --minimum-score 80 \
+            --output-dir "$out" \
+            > "$out/stdout.log" 2> "$out/stderr.log"
+          status=$?
+          printf '%s\n' "$status" > "$out/exit-code.txt"
+          cat "$out/stdout.log"
+          if [[ -s "$out/stderr.log" ]]; then
+            cat "$out/stderr.log" >&2
+          fi
+          exit "$status"
+      - name: Upload Case 001 end-to-end evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: claw-case-001-e2e-${{ github.run_id }}
+          path: build/claw-case-001-e2e/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Persist compact Case 001 result temporarily
+        if: always()
+        shell: bash
+        run: |
+          source_file="build/claw-case-001-e2e/summary.json"
+          target_file="evals/claw_academic_tailoring_v1/live-probes/case-001-end-to-end-latest.json"
+          prepared_file="/tmp/case-001-end-to-end-latest.json"
+          if [[ ! -f "$source_file" ]]; then
+            exit 0
+          fi
+          python - "$source_file" "$prepared_file" <<'PY'
+          import json
+          import os
+          import sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          payload["workflow_run_id"] = int(os.environ["GITHUB_RUN_ID"])
+          payload["workflow_head_sha"] = os.environ["GITHUB_SHA"]
+          with open(sys.argv[2], "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, ensure_ascii=False, indent=2, sort_keys=True)
+              handle.write("\n")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin "$GITHUB_REF_NAME"
+          git checkout -B "$GITHUB_REF_NAME" "origin/$GITHUB_REF_NAME"
+          mkdir -p "$(dirname "$target_file")"
+          cp "$prepared_file" "$target_file"
+          git add "$target_file"
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore(eval): persist Case 001 end-to-end result [skip ci]"
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:$GITHUB_REF_NAME"; then
+              exit 0
+            fi
+            git fetch origin "$GITHUB_REF_NAME"
+            git rebase "origin/$GITHUB_REF_NAME"
+          done
+          exit 1
+      - name: Publish Case 001 end-to-end status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          pr_number=$(gh pr list \
+            --head "$GITHUB_REF_NAME" \
+            --state open \
+            --json number \
+            --jq '.[0].number // empty')
+          if [[ -z "$pr_number" ]]; then
+            exit 0
+          fi
+          summary_file="build/claw-case-001-e2e/summary.json"
+          if [[ -f "$summary_file" ]]; then
+            summary=$(python - "$summary_file" <<'PY'
+          import json
+          import sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          print(
+              "status={status}; passed={passed}; score={score}; decision_match={match}; "
+              "hard_failures={hard}".format(
+                  status=payload.get("status"),
+                  passed=payload.get("passed"),
+                  score=payload.get("score"),
+                  match=payload.get("decision_matches"),
+                  hard=len(payload.get("hard_failures", [])),
+              )
+          )
+          PY
+          )
+          else
+            summary="result file was not produced"
+          fi
+          gh pr comment "$pr_number" --body "Case 001 end-to-end probe\n\n- Run: $GITHUB_RUN_ID\n- Head: \`$GITHUB_SHA\`\n- $summary\n- Artifact: \`claw-case-001-e2e-$GITHUB_RUN_ID\`"
