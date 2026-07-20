@@ -1,0 +1,89 @@
+name: Patch Benchmark Adapter Once
+
+on:
+  push:
+    branches:
+      - feat/claw-live-search-runtime
+    paths:
+      - ".patch-benchmark-adapter-trigger"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: patch-benchmark-adapter-once
+  cancel-in-progress: true
+
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/claw-live-search-runtime
+          fetch-depth: 0
+
+      - name: Remove text-derived pilot inference
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("src/paperagent/claw_benchmark_adapter.py")
+          text = path.read_text(encoding="utf-8")
+          text = text.replace(
+              "pilot_recommended: bool | None = None",
+              "pilot_recommended: bool = False",
+          )
+
+          helper_start = text.find("def _has_actionable_recovery_path(")
+          helper_end = text.find("def _fact_partitions(")
+          if helper_start >= 0:
+              if helper_end <= helper_start:
+                  raise SystemExit("could not locate helper boundary")
+              text = text[:helper_start] + text[helper_end:]
+
+          assignment_start = text.find("    pilot_recommended = (")
+          assignment_end = text.find("    strong_comparison_derived =", assignment_start)
+          if assignment_start >= 0:
+              if assignment_end <= assignment_start:
+                  raise SystemExit("could not locate pilot assignment boundary")
+              text = (
+                  text[:assignment_start]
+                  + "    pilot_recommended = context.pilot_recommended\n"
+                  + text[assignment_end:]
+              )
+
+          forbidden = (
+              "_has_actionable_recovery_path",
+              "pilot_recommended is not None",
+          )
+          remaining = [value for value in forbidden if value in text]
+          if remaining:
+              raise SystemExit(f"adapter cleanup incomplete: {remaining}")
+          path.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Format and verify patch
+        run: |
+          python -m pip install -q -e '.[dev]'
+          ruff format src/paperagent/claw_benchmark_adapter.py
+          ruff check src/paperagent/claw_benchmark_adapter.py
+          python - <<'PY'
+          from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
+
+          result = audit_benchmark_execution_boundary()
+          adapter_findings = tuple(
+              item for item in result.findings if "claw_benchmark_adapter.py" in item
+          )
+          if adapter_findings:
+              raise SystemExit(adapter_findings)
+          PY
+
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/paperagent/claw_benchmark_adapter.py
+          git commit -m "fix(eval): remove text-derived pilot inference"
+          git pull --rebase origin feat/claw-live-search-runtime
+          git push origin HEAD:feat/claw-live-search-runtime
