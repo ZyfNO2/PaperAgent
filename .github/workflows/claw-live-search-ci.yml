@@ -16,7 +16,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -64,11 +64,14 @@ jobs:
             tests/literature/test_web_search_providers.py \
             > "$out/pytest.log" 2>&1
           pytest_status=$?
-          printf '{"head":"%s","run_id":%s,"ruff":%s,"format":%s,"mypy":%s,"pytest":%s}\n' \
+          pytest --cov=paperagent --cov-branch --cov-report=term-missing -q \
+            > "$out/full-pytest-coverage.log" 2>&1
+          full_pytest_status=$?
+          printf '{"head":"%s","run_id":%s,"ruff":%s,"format":%s,"mypy":%s,"pytest":%s,"full_pytest_coverage":%s}\n' \
             "$GITHUB_SHA" "$GITHUB_RUN_ID" "$ruff_status" "$format_status" \
-            "$mypy_status" "$pytest_status" > "$out/status.json"
+            "$mypy_status" "$pytest_status" "$full_pytest_status" > "$out/status.json"
           cat "$out/status.json"
-          if (( ruff_status || format_status || mypy_status || pytest_status )); then
+          if (( ruff_status || format_status || mypy_status || pytest_status || full_pytest_status )); then
             exit 1
           fi
       - name: Upload verification evidence
