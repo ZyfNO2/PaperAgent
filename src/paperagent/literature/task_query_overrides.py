@@ -72,9 +72,7 @@ def override_task_query(
     elif _contains_any(role, _MECHANISM_ROLE_HINTS):
         canonical = "semantic entropy probes hallucination detection uncertainty"
     elif _contains_any(role, _PARALLEL_ROLE_HINTS):
-        canonical = (
-            "question answering hallucination reduction retrieval verification uncertainty"
-        )
+        canonical = "question answering hallucination reduction retrieval verification uncertainty"
     else:
         canonical = "professional question answering hallucination factuality"
 
