@@ -1,0 +1,45 @@
+name: Apply Structured Readiness Scoring Once
+
+on:
+  push:
+    branches:
+      - eval/academic-holdout-v2-clean
+    paths:
+      - "scripts/apply_readiness_scoring.py"
+      - ".github/workflows/apply-readiness-scoring-once.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-readiness-scoring-clean-v2
+  cancel-in-progress: true
+
+jobs:
+  apply-and-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: eval/academic-holdout-v2-clean
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Apply scoring integration
+        run: |
+          python scripts/apply_readiness_scoring.py
+          rm scripts/apply_readiness_scoring.py
+          rm .github/workflows/apply-readiness-scoring-once.yml
+      - name: Run clean benchmark tests
+        run: python -m unittest discover -s tests -v
+      - name: Validate public development cases
+        run: python scripts/validate_cases.py data/public-dev-v2.jsonl
+      - name: Commit clean scorer
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(eval): score structured readiness declarations"
+          git push origin HEAD:eval/academic-holdout-v2-clean
