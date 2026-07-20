@@ -1,4 +1,5 @@
 name: Fix Few-Shot Intent Binding Once
+# Trigger the registered one-off workflow.
 
 on:
   push:
@@ -298,10 +299,11 @@ def test_few_shot_intent_role_evidence_accepts_domain_specific_wording() -> None
 
 
 def test_few_shot_image_baseline_does_not_gain_intent_role_support() -> None:
-    plan = _few_shot_intent_plan().model_copy(
+    full_plan = _few_shot_intent_plan()
+    plan = full_plan.model_copy(
         update={
-            "evidence_gaps": [_few_shot_intent_plan().evidence_gaps[0]],
-            "search_queries": [_few_shot_intent_plan().search_queries[0]],
+            "evidence_gaps": [full_plan.evidence_gaps[0]],
+            "search_queries": [full_plan.search_queries[0]],
         }
     )
     item = _few_shot_item(
