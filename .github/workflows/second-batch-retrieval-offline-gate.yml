@@ -1,5 +1,5 @@
 name: Retrieval Precision Offline Gate
-# Execute the verified few-shot intent role patch against the current branch head.
+# Execute the strict Case 011 role patch, then restore this permanent gate.
 
 on:
   push:
@@ -30,7 +30,90 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Patch and verify few-shot intent roles
+      - name: Harden transaction script
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/clouddev_fix_few_shot_intent_roles.py")
+          text = path.read_text(encoding="utf-8")
+          text = text.replace(
+              "updated, count = pattern.subn(replacement, text, count=1)",
+              "updated, count = pattern.subn(lambda _: replacement, text, count=1)",
+          )
+          start = text.index("def commit_result() -> None:\n")
+          end = text.index("\n\ndef main() -> None:\n", start)
+          replacement = '''def commit_result() -> None:
+              subprocess.run(
+                  ["git", "config", "user.name", "github-actions[bot]"],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  [
+                      "git",
+                      "config",
+                      "user.email",
+                      "41898282+github-actions[bot]@users.noreply.github.com",
+                  ],
+                  cwd=ROOT,
+                  check=True,
+              )
+              temporary_paths = (
+                  ".github/workflows/fix-few-shot-intent-binding-once.yml",
+                  ".github/workflows/add-few-shot-intent-binding-once.yml",
+              )
+              for value in temporary_paths:
+                  temporary = ROOT / value
+                  if temporary.exists():
+                      temporary.unlink()
+              subprocess.run(
+                  [
+                      "git",
+                      "add",
+                      str(SOURCE.relative_to(ROOT)),
+                      str(TEST.relative_to(ROOT)),
+                      str(GATE.relative_to(ROOT)),
+                      str(STATUS.relative_to(ROOT)),
+                  ],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  [
+                      "git",
+                      "rm",
+                      "--ignore-unmatch",
+                      "scripts/clouddev_fix_few_shot_intent_roles.py",
+                      *temporary_paths,
+                  ],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  [
+                      "git",
+                      "commit",
+                      "-m",
+                      "fix(evidence): bind Case 011 intent evidence and restore gate",
+                  ],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  ["git", "pull", "--rebase", "origin", "feat/claw-live-search-runtime"],
+                  cwd=ROOT,
+                  check=True,
+              )
+              subprocess.run(
+                  ["git", "push", "origin", "HEAD:feat/claw-live-search-runtime"],
+                  cwd=ROOT,
+                  check=True,
+              )
+          '''
+          path.write_text(text[:start] + replacement + text[end:], encoding="utf-8")
+          PY
+      - name: Patch and verify Case 011 role evidence
         run: python scripts/clouddev_fix_few_shot_intent_roles.py
       - name: Upload diagnostics
         if: always()
