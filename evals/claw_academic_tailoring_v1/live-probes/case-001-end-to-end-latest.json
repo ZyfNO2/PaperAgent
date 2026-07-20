@@ -6,28 +6,30 @@
       "provider": "literature_retrieval",
       "supports_gap_ids": [
         "baseline_comparison",
-        "failure_mechanism_limitations",
+        "failure_mechanism",
         "risk_negative_evidence"
       ],
       "title": "Drone-DETR: Efficient Small Object Detection for Remote Sensing Image Using Enhanced RT-DETR Model",
       "verification_status": "accepted"
+    },
+    {
+      "evidence_id": "ev-paper-a119bf7afc1ffbfd19ef",
+      "locator": "doi:10.1109/jstars.2023.3339235",
+      "provider": "literature_retrieval",
+      "supports_gap_ids": [
+        "baseline_comparison",
+        "failure_mechanism",
+        "risk_negative_evidence"
+      ],
+      "title": "Small Object Detection Algorithm Based on Improved YOLOv8 for Remote Sensing",
+      "verification_status": "accepted"
     }
   ],
   "case_id": "at-001-uav-small-object-lightweight",
-  "decision_matches": true,
-  "execution_status": "blocked",
+  "decision_matches": false,
+  "execution_status": "completed",
   "expected_decision": "REVISE_TO_PILOT",
   "failed_stages": [
-    {
-      "available": 8,
-      "earned": 5,
-      "findings": [
-        "retrieval role parallel_method is missing",
-        "retrieval role strong_comparison is missing"
-      ],
-      "passed": false,
-      "stage": "exploratory_retrieval"
-    },
     {
       "available": 7,
       "earned": 5,
@@ -47,48 +49,20 @@
       "stage": "clarification_gate"
     },
     {
-      "available": 15,
-      "earned": 4,
-      "findings": [
-        "baseline card is missing",
-        "baseline source is not accepted evidence",
-        "baseline freeze contract is incomplete"
-      ],
-      "passed": false,
-      "stage": "freeze_baseline"
-    },
-    {
-      "available": 15,
-      "earned": 0,
-      "findings": [
-        "falsifiable hypothesis is missing condition, limitation, mechanism, intervention, metric, or guardrail"
-      ],
-      "passed": false,
-      "stage": "gap_hypothesis"
-    },
-    {
       "available": 5,
-      "earned": 1,
+      "earned": 2,
       "findings": [
-        "experiment matrix fields are incomplete",
-        "baseline experiment arm is missing",
-        "strong-comparison experiment arm is missing",
-        "stop conditions are missing"
+        "expected REVISE_TO_PILOT, observed NO_GO"
       ],
       "passed": false,
-      "stage": "experiment_matrix"
+      "stage": "decision"
     }
   ],
-  "hard_failures": [
-    {
-      "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-      "details": "stronger baselines or negative results were not preserved"
-    }
-  ],
+  "hard_failures": [],
   "llm_call_budget": 12,
   "minimum_score": 80,
   "model": "mistral-small-latest",
-  "observed_decision": "REVISE_TO_PILOT",
+  "observed_decision": "NO_GO",
   "passed": false,
   "provider": "mistral",
   "provider_call_budget": {
@@ -96,8 +70,8 @@
     "remaining": 0,
     "used": 8
   },
-  "report_status": "blocked",
-  "score": 62,
+  "report_status": "completed",
+  "score": 92,
   "search_diagnostics": [
     {
       "attempted_providers": [
@@ -112,13 +86,12 @@
         "small",
         "object",
         "detection",
+        "real-time",
         "baseline",
         "reproducible",
-        "method",
         "dataset",
         "metrics",
-        "efficiency",
-        "real-time"
+        "efficiency"
       ],
       "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
@@ -127,7 +100,7 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q_baseline",
+      "query_id": "q1_baseline",
       "relevant_verified_papers": 1,
       "returned_papers": 1,
       "stop_reason": "academic_budget_exhausted"
@@ -145,7 +118,7 @@
         "object",
         "detection",
         "failure",
-        "mode",
+        "mechanism",
         "limitation",
         "methods"
       ],
@@ -156,9 +129,9 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q_failure_mechanism",
-      "relevant_verified_papers": 0,
-      "returned_papers": 0,
+      "query_id": "q2_failure_mechanism",
+      "relevant_verified_papers": 1,
+      "returned_papers": 1,
       "stop_reason": "academic_budget_exhausted"
     },
     {
@@ -177,11 +150,11 @@
         "limitation",
         "negative",
         "evidence",
-        "failure",
-        "scenario",
-        "power",
-        "consumption",
-        "latency"
+        "safety",
+        "generalization",
+        "bias",
+        "computational",
+        "bottleneck"
       ],
       "maximum_provider_calls": 4,
       "minimum_rank_score": 0.62,
@@ -190,7 +163,7 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q_risk_negative",
+      "query_id": "q3_risk_negative",
       "relevant_verified_papers": 0,
       "returned_papers": 0,
       "stop_reason": "academic_budget_exhausted"
@@ -203,6 +176,6 @@
     "used": 9
   },
   "web_search_enabled": false,
-  "workflow_head_sha": "b244f9732470fb298ee26904e43c33001970fab3",
-  "workflow_run_id": 29711443148
+  "workflow_head_sha": "46064b0c1e8d94a757bc4d81cea800bdfa2157c2",
+  "workflow_run_id": 29712595721
 }
