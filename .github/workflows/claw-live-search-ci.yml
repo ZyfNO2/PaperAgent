@@ -49,6 +49,7 @@ jobs:
           set +e
           out="build/case015-commit-transaction"
           status_file="evals/claw_academic_tailoring_v1/live-probes/case015-multibehavior-patch-latest.json"
+          source_head="$(git rev-parse HEAD)"
           mkdir -p "$out" "$(dirname "$status_file")"
           files=(
             src/paperagent/evidence_gap_binding.py
@@ -76,20 +77,20 @@ jobs:
             tests/nodes/test_retrieval.py \
             > "$out/pytest.log" 2>&1
           pytest_status=$?
-          python - "$status_file" \
+          python - "$status_file" "$source_head" \
             "$ruff_status" "$format_status" "$mypy_status" "$pytest_status" <<'PY'
           import json
           import os
           import sys
 
           payload = {
-              "source_head_sha": os.environ["GITHUB_HEAD_REF"],
+              "source_head_sha": sys.argv[2],
               "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
               "workflow_head_sha": os.environ["GITHUB_SHA"],
-              "ruff": int(sys.argv[2]),
-              "format": int(sys.argv[3]),
-              "mypy": int(sys.argv[4]),
-              "pytest": int(sys.argv[5]),
+              "ruff": int(sys.argv[3]),
+              "format": int(sys.argv[4]),
+              "mypy": int(sys.argv[5]),
+              "pytest": int(sys.argv[6]),
               "pytest_summary": "72 passed",
           }
           payload["passed"] = all(
@@ -124,9 +125,19 @@ jobs:
             scripts/clouddev_patch_case_015_multibehavior.py \
             scripts/clouddev_patch_case_015_multibehavior_v2.py \
             .case015-multibehavior-patch-trigger.json
-          git commit -m "fix(search): canonicalize and bind multi-behavior recommendation evidence"
-          git pull --rebase origin feat/claw-live-search-runtime
-          git push origin HEAD:feat/claw-live-search-runtime
+          git status --short > "$out/git-status-before-commit.log"
+          git commit -m "fix(search): canonicalize and bind multi-behavior recommendation evidence" \
+            > "$out/git-commit.log" 2>&1
+          commit_status=$?
+          if (( commit_status != 0 )); then
+            cat "$out/git-commit.log"
+            exit "$commit_status"
+          fi
+          git push origin HEAD:refs/heads/feat/claw-live-search-runtime \
+            > "$out/git-push.log" 2>&1
+          push_status=$?
+          cat "$out/git-push.log"
+          exit "$push_status"
       - name: Upload Case 015 transaction evidence
         if: always()
         uses: actions/upload-artifact@v4
