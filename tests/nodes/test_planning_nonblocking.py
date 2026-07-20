@@ -57,8 +57,8 @@ def test_missing_query_contract_remains_need_human() -> None:
     assert normalized is original
 
 
-def test_public_supplied_title_adds_identity_query_and_unblocks_retrieval() -> None:
-    original = _need_human_plan(include_queries=False)
+def test_public_supplied_title_adds_prioritized_identity_query() -> None:
+    original = _need_human_plan()
     request = ResearchRequest(
         question="Assess how to use my supplied baseline.",
         user_material_refs=[
@@ -75,19 +75,41 @@ def test_public_supplied_title_adds_identity_query_and_unblocks_retrieval() -> N
 
     assert normalized.status == "ready"
     assert len(normalized.evidence_gaps) == 2
-    assert len(normalized.search_queries) == 1
+    assert len(normalized.search_queries) == 2
+    assert normalized.evidence_gaps[0].gap_id == "user-material-01-identity"
+    assert normalized.evidence_gaps[0].minimum_accepted_items == 1
     assert normalized.search_queries[0].query == (
         "LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation"
     )
-    assert normalized.search_queries[0].gap_id == normalized.evidence_gaps[-1].gap_id
-    assert normalized.evidence_gaps[-1].minimum_accepted_items == 1
+    assert normalized.search_queries[0].gap_id == normalized.evidence_gaps[0].gap_id
+
+
+def test_opaque_upload_placeholder_does_not_create_identity_query() -> None:
+    original = _need_human_plan()
+    request = ResearchRequest(
+        question="Assess my supplied method.",
+        user_material_refs=[
+            "user-supplied contrastive recommendation paper [declared role: module_candidate]"
+        ],
+    )
+
+    normalized = _ensure_user_material_identity_queries(
+        original,
+        request,
+        query_budget=10,
+    )
+
+    assert normalized is original
 
 
 def test_supplied_title_does_not_exceed_query_budget() -> None:
     original = _need_human_plan()
     request = ResearchRequest(
         question="Assess my supplied baseline.",
-        user_material_refs=["A Public Baseline Paper [declared role: baseline_candidate]"],
+        user_material_refs=[
+            "LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation "
+            "[declared role: baseline_candidate]"
+        ],
     )
 
     normalized = _ensure_user_material_identity_queries(
