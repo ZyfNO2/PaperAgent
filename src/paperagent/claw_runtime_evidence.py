@@ -69,8 +69,11 @@ def summarize_search_budgets(
         maximum = budget.get("maximum")
         used = budget.get("used")
         remaining = budget.get("remaining")
-        valid_counts = all(isinstance(value, int) for value in (maximum, used, remaining))
-        if not valid_counts:
+        if not (
+            isinstance(maximum, int)
+            and isinstance(used, int)
+            and isinstance(remaining, int)
+        ):
             complete = False
         else:
             total_used += used
