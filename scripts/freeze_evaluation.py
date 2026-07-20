@@ -44,7 +44,8 @@ def build_freeze_manifest(
 
     root = repository_root.resolve()
     pinned_files = {
-        "runner": root / "scripts/run_public_dev.py",
+        "public_runner": root / "scripts/run_public_dev.py",
+        "private_runner": root / "scripts/run_private_holdout.py",
         "scorer": root / "scripts/score_runs.py",
         "production_scanner": root / "scripts/scan_production.py",
         "protocol": root / "docs/BENCHMARK_PROTOCOL.md",
@@ -63,6 +64,10 @@ def build_freeze_manifest(
         "production_digest": production_digest,
         "file_sha256": {name: _sha256(path) for name, path in pinned_files.items()},
         "thresholds": effective_thresholds,
+        "score_gap_definition": (
+            "absolute difference between public and private average structured scores, "
+            "measured in percentage points"
+        ),
         "runtime_boundary": [
             "input.user_request",
             "input.supplied_materials[].title",
