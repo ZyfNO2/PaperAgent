@@ -5,6 +5,8 @@ import asyncio
 import hashlib
 import json
 import os
+import re
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -31,6 +33,27 @@ def _report_digest(report: dict[str, Any]) -> str:
     value = {key: item for key, item in report.items() if key != "report_digest"}
     canonical = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def resolve_benchmark_source_sha(repository_root: Path | None = None) -> str:
+    """Return the exact clean-benchmark checkout SHA, never the PR merge SHA."""
+
+    explicit = os.getenv("PAPERAGENT_BENCHMARK_SHA")
+    if explicit is not None:
+        value = explicit.strip().lower()
+    else:
+        root = repository_root or Path(__file__).resolve().parents[1]
+        completed = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        value = completed.stdout.strip().lower()
+    if re.fullmatch(r"[0-9a-f]{40}", value) is None:
+        raise RuntimeError("benchmark source SHA must be an exact 40-character Git commit")
+    return value
 
 
 def _metamorphic_consistency(
@@ -187,7 +210,7 @@ async def _run(args: argparse.Namespace) -> int:
         "split": "development",
         "result_interpretation": "public development set; not independent generalization evidence",
         "production_source_sha": os.getenv("PAPERAGENT_PRODUCTION_SHA"),
-        "benchmark_source_sha": os.getenv("GITHUB_SHA"),
+        "benchmark_source_sha": resolve_benchmark_source_sha(),
         "selected_case_count": len(selected),
         "completed_case_count": len(traces),
         "errors": errors,
