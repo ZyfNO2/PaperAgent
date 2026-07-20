@@ -1,5 +1,5 @@
 name: Retrieval Precision Offline Gate
-# Validates second- and third-batch task precision contracts.
+# Validates task-specific precision contracts across controlled benchmark batches.
 
 on:
   push:
@@ -10,10 +10,14 @@ on:
       - "src/paperagent/evidence_gap_binding.py"
       - "src/paperagent/literature/query_concepts.py"
       - "src/paperagent/literature/query_refinement.py"
+      - "src/paperagent/literature/ranking.py"
+      - "src/paperagent/literature/specialized_guards.py"
+      - "src/paperagent/literature/task_query_overrides.py"
       - "src/paperagent/retrieval/prepare_search.py"
       - "tests/literature/test_prepared_query_contract.py"
       - "tests/literature/test_second_batch_query_precision.py"
       - "tests/literature/test_third_batch_query_precision.py"
+      - "tests/literature/test_qa_hallucination_precision.py"
       - "tests/review/test_action_mechanism_binding.py"
       - "tests/review/test_low_light_mechanism_binding.py"
   workflow_dispatch:
@@ -48,10 +52,14 @@ jobs:
             src/paperagent/evidence_gap_binding.py
             src/paperagent/literature/query_concepts.py
             src/paperagent/literature/query_refinement.py
+            src/paperagent/literature/ranking.py
+            src/paperagent/literature/specialized_guards.py
+            src/paperagent/literature/task_query_overrides.py
             src/paperagent/retrieval/prepare_search.py
             tests/literature/test_prepared_query_contract.py
             tests/literature/test_second_batch_query_precision.py
             tests/literature/test_third_batch_query_precision.py
+            tests/literature/test_qa_hallucination_precision.py
             tests/review/test_action_mechanism_binding.py
             tests/review/test_low_light_mechanism_binding.py
           )
@@ -65,6 +73,7 @@ jobs:
             tests/literature/test_prepared_query_contract.py \
             tests/literature/test_second_batch_query_precision.py \
             tests/literature/test_third_batch_query_precision.py \
+            tests/literature/test_qa_hallucination_precision.py \
             tests/literature/test_query_concepts.py \
             tests/literature/test_query_refinement.py \
             tests/review/test_action_mechanism_binding.py \
