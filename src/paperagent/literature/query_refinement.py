@@ -69,6 +69,10 @@ _FAILURE_DETAIL_PATTERNS = (
     r"\bfalse positives?\b",
     r"\bboundary ambiguity\b",
 )
+_MULTIMODAL_MEDICAL_CLASSIFICATION_PATTERN = re.compile(
+    r"\bmultimodal\s+medical\s+image\s+fusion\s+classification\b",
+    re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True)
@@ -110,6 +114,15 @@ def _remove_family_phrases(query: str, families: tuple[str, ...]) -> str:
     return refined
 
 
+def _normalize_scientific_phrasing(query: str) -> str:
+    """Resolve wording that academic indexes commonly interpret as the wrong task."""
+
+    return _MULTIMODAL_MEDICAL_CLASSIFICATION_PATTERN.sub(
+        "multimodal medical imaging classification diagnosis feature fusion",
+        query,
+    )
+
+
 def _compact_long_query(query: str) -> str:
     """Remove provider-hostile role clutter while preserving the scientific task phrase."""
 
@@ -139,19 +152,24 @@ def refine_search_query(
 ) -> QueryRefinement:
     """Reduce overconstrained queries before rate-limited academic retrieval.
 
-    Exact DOI/arXiv lookups are never changed. Mechanism queries that name three or more
-    unverified method families drop those families. Queries longer than eight words also drop
-    generic role words and redundant failure examples while retaining task, domain, scale,
-    and constraint terms.
+    Exact DOI/arXiv lookups are never changed. Ambiguous scientific phrases are normalized to
+    the requested task. Mechanism queries that name three or more unverified method families
+    drop those families. Queries longer than eight words also drop generic role words and
+    redundant failure examples while retaining task, domain, scale, and constraint terms.
     """
 
     normalized = " ".join(query.split())
     if _IDENTIFIER.search(normalized):
         return QueryRefinement(query=normalized, changed=False)
 
-    refined = normalized
+    refined = _normalize_scientific_phrasing(normalized)
     removed_families: tuple[str, ...] = ()
     reasons: list[str] = []
+    if refined != normalized:
+        reasons.append(
+            "normalized ambiguous image-fusion wording to multimodal medical classification terms"
+        )
+
     if _contains_mechanism_role(gap_id, gap_description):
         families = _family_hits(refined)
         if len(families) >= 3:
