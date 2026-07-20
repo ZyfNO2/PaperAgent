@@ -45,8 +45,7 @@ def _retrieval_exhaustion_quality(
     missing_gap_ids = [
         gap.gap_id
         for gap in plan.evidence_gaps
-        if gap.required
-        and evidence.coverage_by_gap.get(gap.gap_id, 0) < gap.minimum_accepted_items
+        if gap.required and evidence.coverage_by_gap.get(gap.gap_id, 0) < gap.minimum_accepted_items
     ]
     exhausted = retrieval.budget_exhausted or retrieval.round >= retrieval.max_rounds
     if not missing_gap_ids or not exhausted:
