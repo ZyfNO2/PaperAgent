@@ -48,6 +48,17 @@ def material_title(reference: str) -> str:
     return _ROLE_SUFFIX.sub("", reference).strip()
 
 
+def _has_identifier_form(token: str) -> bool:
+    return (
+        any(character.isdigit() for character in token)
+        or (
+            any(character.isupper() for character in token)
+            and any(character.islower() for character in token)
+        )
+        or (len(token) >= 3 and token.isupper())
+    )
+
+
 def is_identifiable_public_title(title: str) -> bool:
     """Return whether a material reference resembles a searchable public title.
 
@@ -63,19 +74,16 @@ def is_identifiable_public_title(title: str) -> bool:
         return False
     tokens = _TOKEN.findall(normalized)
     discriminative = [token for token in tokens if token.casefold() not in _GENERIC_TOKENS]
-    has_identifier = any(
-        any(character.isdigit() for character in token)
-        or (any(character.isupper() for character in token) and any(character.islower() for character in token))
-        or (len(token) >= 3 and token.isupper())
-        for token in discriminative
-    )
+    has_identifier = any(_has_identifier_form(token) for token in discriminative)
     has_cjk_title = any("\u3400" <= character <= "\u9fff" for character in normalized) and len(
         normalized.replace(" ", "")
     ) >= 8
     return len(discriminative) >= 3 or (len(tokens) >= 3 and has_identifier) or has_cjk_title
 
 
-def user_material_identities(references: list[str] | tuple[str, ...]) -> tuple[UserMaterialIdentity, ...]:
+def user_material_identities(
+    references: list[str] | tuple[str, ...],
+) -> tuple[UserMaterialIdentity, ...]:
     return tuple(
         UserMaterialIdentity(
             index=index,
