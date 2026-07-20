@@ -75,7 +75,7 @@ def test_time_series_anomaly_candidate_guard(
         ),
         (
             "parallel_methods_and_improvements",
-            "parallel few-shot methods and improvements",
+            "parallel few-shot methods compared with the Anomaly Transformer baseline",
             "few-shot time series anomaly detection meta-learning transfer learning",
         ),
     ],
