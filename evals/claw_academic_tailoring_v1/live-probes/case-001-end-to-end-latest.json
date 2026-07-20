@@ -6,39 +6,18 @@
       "provider": "literature_retrieval",
       "supports_gap_ids": [
         "baseline_comparison",
-        "failure_mechanism",
+        "failure_mechanism_limitations",
         "risk_negative_evidence"
       ],
       "title": "Drone-DETR: Efficient Small Object Detection for Remote Sensing Image Using Enhanced RT-DETR Model",
       "verification_status": "accepted"
-    },
-    {
-      "evidence_id": "ev-paper-a119bf7afc1ffbfd19ef",
-      "locator": "doi:10.1109/jstars.2023.3339235",
-      "provider": "literature_retrieval",
-      "supports_gap_ids": [
-        "baseline_comparison",
-        "failure_mechanism",
-        "risk_negative_evidence"
-      ],
-      "title": "Small Object Detection Algorithm Based on Improved YOLOv8 for Remote Sensing",
-      "verification_status": "accepted"
     }
   ],
   "case_id": "at-001-uav-small-object-lightweight",
-  "decision_matches": false,
+  "decision_matches": true,
   "execution_status": "completed",
   "expected_decision": "REVISE_TO_PILOT",
   "failed_stages": [
-    {
-      "available": 7,
-      "earned": 5,
-      "findings": [
-        "core accepted evidence lacks full-text review"
-      ],
-      "passed": false,
-      "stage": "relevance_review"
-    },
     {
       "available": 10,
       "earned": 7,
@@ -47,23 +26,14 @@
       ],
       "passed": false,
       "stage": "clarification_gate"
-    },
-    {
-      "available": 5,
-      "earned": 2,
-      "findings": [
-        "expected REVISE_TO_PILOT, observed NO_GO"
-      ],
-      "passed": false,
-      "stage": "decision"
     }
   ],
   "hard_failures": [],
   "llm_call_budget": 12,
   "minimum_score": 80,
   "model": "mistral-small-latest",
-  "observed_decision": "NO_GO",
-  "passed": false,
+  "observed_decision": "REVISE_TO_PILOT",
+  "passed": true,
   "provider": "mistral",
   "provider_call_budget": {
     "maximum": 8,
@@ -71,7 +41,7 @@
     "used": 8
   },
   "report_status": "completed",
-  "score": 92,
+  "score": 97,
   "search_diagnostics": [
     {
       "attempted_providers": [
@@ -86,12 +56,13 @@
         "small",
         "object",
         "detection",
-        "real-time",
         "baseline",
         "reproducible",
+        "method",
         "dataset",
         "metrics",
-        "efficiency"
+        "efficiency",
+        "real-time"
       ],
       "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
@@ -100,7 +71,7 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q1_baseline",
+      "query_id": "q_baseline",
       "relevant_verified_papers": 1,
       "returned_papers": 1,
       "stop_reason": "academic_budget_exhausted"
@@ -118,7 +89,7 @@
         "object",
         "detection",
         "failure",
-        "mechanism",
+        "mode",
         "limitation",
         "methods"
       ],
@@ -129,9 +100,9 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q2_failure_mechanism",
-      "relevant_verified_papers": 1,
-      "returned_papers": 1,
+      "query_id": "q_failure_mechanism",
+      "relevant_verified_papers": 0,
+      "returned_papers": 0,
       "stop_reason": "academic_budget_exhausted"
     },
     {
@@ -150,11 +121,11 @@
         "limitation",
         "negative",
         "evidence",
-        "safety",
-        "generalization",
-        "bias",
-        "computational",
-        "bottleneck"
+        "failure",
+        "scenario",
+        "power",
+        "consumption",
+        "latency"
       ],
       "maximum_provider_calls": 4,
       "minimum_rank_score": 0.62,
@@ -163,19 +134,19 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q3_risk_negative",
+      "query_id": "q_risk_negative",
       "relevant_verified_papers": 0,
       "returned_papers": 0,
       "stop_reason": "academic_budget_exhausted"
     }
   ],
-  "status": "failed",
+  "status": "passed",
   "verification_call_budget": {
     "maximum": 16,
     "remaining": 7,
     "used": 9
   },
   "web_search_enabled": false,
-  "workflow_head_sha": "46064b0c1e8d94a757bc4d81cea800bdfa2157c2",
-  "workflow_run_id": 29712595721
+  "workflow_head_sha": "e661c7ee226ffbfb0bdb50f460fc6b3dcacba1c8",
+  "workflow_run_id": 29712913561
 }
