@@ -52,7 +52,7 @@ jobs:
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
 
-      - name: Validate required live secrets
+      - name: Inspect required live secrets
         id: secrets
         shell: bash
         run: |
@@ -61,6 +61,12 @@ jobs:
           missing=()
           [[ -z "${MISTRAL_API_KEY:-}" ]] && missing+=(MISTRAL_API_KEY)
           [[ -z "${PAPERAGENT_CONTACT_EMAIL:-}" ]] && missing+=(PAPERAGENT_CONTACT_EMAIL)
+          if [[ -n "${MISTRAL_API_KEY:-}" ]]; then mistral_present=true; else mistral_present=false; fi
+          if [[ -n "${PAPERAGENT_CONTACT_EMAIL:-}" ]]; then contact_present=true; else contact_present=false; fi
+          if (( ${#missing[@]} )); then required_present=false; else required_present=true; fi
+          echo "mistral_present=$mistral_present" >> "$GITHUB_OUTPUT"
+          echo "contact_present=$contact_present" >> "$GITHUB_OUTPUT"
+          echo "required_present=$required_present" >> "$GITHUB_OUTPUT"
           python - "$out/secret-preflight.json" "${missing[@]}" <<'PY'
           import json
           import os
@@ -71,6 +77,8 @@ jobs:
           payload = {
               "required": ["MISTRAL_API_KEY", "PAPERAGENT_CONTACT_EMAIL"],
               "missing": missing,
+              "mistral_api_key_present": "MISTRAL_API_KEY" not in missing,
+              "contact_email_present": "PAPERAGENT_CONTACT_EMAIL" not in missing,
               "semantic_scholar_api_key_present": bool(
                   os.environ.get("SEMANTIC_SCHOLAR_API_KEY")
               ),
@@ -80,11 +88,8 @@ jobs:
               json.dumps(payload, indent=2, sort_keys=True) + "\n",
               encoding="utf-8",
           )
+          print(json.dumps(payload, sort_keys=True))
           PY
-          if (( ${#missing[@]} )); then
-            printf 'Missing required secrets: %s\n' "${missing[*]}"
-            exit 1
-          fi
 
       - name: Run offline safety and wiring gate
         id: offline
@@ -118,21 +123,35 @@ jobs:
             tests/literature/test_provider_call_budget.py \
             | tee "$out/offline-pytest.log"
 
-      - name: Execute real Mistral and literature provider smoke
-        id: smoke
+      - name: Execute real Mistral smoke
+        id: mistral_smoke
+        if: steps.secrets.outputs.mistral_present == 'true' && steps.offline.outcome == 'success'
         env:
           PAPERAGENT_RUN_REAL_LLM: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          pytest -q tests/real_provider/test_mistral_smoke.py \
+            | tee build/claw-paid-full-20/mistral-smoke.log
+
+      - name: Execute real literature provider smoke
+        id: literature_smoke
+        if: steps.secrets.outputs.contact_present == 'true' && steps.offline.outcome == 'success'
+        env:
           PAPERAGENT_RUN_REAL_PROVIDER: "1"
         shell: bash
         run: |
           set -o pipefail
-          pytest -q \
-            tests/real_provider/test_mistral_smoke.py \
-            tests/real_provider/test_literature_smoke.py \
-            | tee build/claw-paid-full-20/live-smoke.log
+          pytest -q tests/real_provider/test_literature_smoke.py \
+            | tee build/claw-paid-full-20/literature-smoke.log
 
       - name: Execute paid 20-case runtime
         id: full
+        if: >-
+          steps.secrets.outputs.required_present == 'true' &&
+          steps.offline.outcome == 'success' &&
+          steps.mistral_smoke.outcome == 'success' &&
+          steps.literature_smoke.outcome == 'success'
         shell: bash
         run: |
           set -o pipefail
@@ -153,9 +172,10 @@ jobs:
         if: always()
         id: finalize
         env:
-          SECRET_OUTCOME: ${{ steps.secrets.outcome }}
+          REQUIRED_PRESENT: ${{ steps.secrets.outputs.required_present }}
           OFFLINE_OUTCOME: ${{ steps.offline.outcome }}
-          SMOKE_OUTCOME: ${{ steps.smoke.outcome }}
+          MISTRAL_SMOKE_OUTCOME: ${{ steps.mistral_smoke.outcome }}
+          LITERATURE_SMOKE_OUTCOME: ${{ steps.literature_smoke.outcome }}
           FULL_OUTCOME: ${{ steps.full.outcome }}
         shell: bash
         run: |
@@ -172,26 +192,40 @@ jobs:
               if execution_path.exists()
               else None
           )
+          preflight_path = root / "secret-preflight.json"
+          preflight = (
+              json.loads(preflight_path.read_text(encoding="utf-8"))
+              if preflight_path.exists()
+              else None
+          )
           outcomes = {
-              "secret_preflight": os.environ.get("SECRET_OUTCOME"),
               "offline_gate": os.environ.get("OFFLINE_OUTCOME"),
-              "live_smoke": os.environ.get("SMOKE_OUTCOME"),
+              "mistral_smoke": os.environ.get("MISTRAL_SMOKE_OUTCOME"),
+              "literature_smoke": os.environ.get("LITERATURE_SMOKE_OUTCOME"),
               "full_runtime": os.environ.get("FULL_OUTCOME"),
           }
           passed = (
-              all(value == "success" for value in outcomes.values())
+              os.environ.get("REQUIRED_PRESENT") == "true"
+              and all(value == "success" for value in outcomes.values())
               and execution is not None
               and execution.get("passed") is True
           )
+          if passed:
+              status = "passed"
+          elif os.environ.get("REQUIRED_PRESENT") != "true":
+              status = "blocked_missing_required_secret"
+          else:
+              status = "failed"
           payload = {
               "schema": "paperagent.claw-paid-full-20-workflow.v1",
               "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
               "source_sha": os.environ["GITHUB_SHA"],
               "artifact_name": os.environ["PAPERAGENT_ARTIFACT_NAME"],
+              "secret_preflight": preflight,
               "outcomes": outcomes,
               "execution_summary": execution,
               "passed": passed,
-              "status": "passed" if passed else "failed",
+              "status": status,
           }
           (root / "workflow-result.json").write_text(
               json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
