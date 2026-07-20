@@ -21,6 +21,20 @@ PARTS = (
     "scripts/.review-remediation-05d.b64",
 )
 
+
+def _ensure_legacy_adapter_test_precondition() -> None:
+    path = ROOT / "tests/evals/test_claw_benchmark_adapter.py"
+    text = path.read_text(encoding="utf-8")
+    if "def test_explicit_structured_pilot_signal_is_preserved" in text:
+        return
+    marker = "\n\ndef test_canonical_ledger_controls_evidence_review_semantics() -> None:\n"
+    if text.count(marker) != 1:
+        raise RuntimeError("cannot establish legacy adapter-test precondition")
+    legacy_test = '''\n\ndef test_explicit_structured_pilot_signal_is_preserved() -> None:\n    state = _revise_state(\n        next_action="Collect one more observation.", quality_route="repair_method"\n    )\n    trace = normalize_paperagent_state(\n        state,\n        BenchmarkNormalizationContext(\n            case_id="held-out-002",\n            pilot_recommended=True,\n        ),\n    )\n    assert trace.decision == "REVISE"\n    assert trace.pilot_recommended is True\n'''
+    path.write_text(text.replace(marker, legacy_test + marker), encoding="utf-8")
+
+
+_ensure_legacy_adapter_test_precondition()
 payload = "".join((ROOT / part).read_text(encoding="utf-8").strip() for part in PARTS)
 source = gzip.decompress(base64.b64decode(payload))
 namespace = {"__file__": __file__, "__name__": "__main__"}
