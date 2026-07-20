@@ -14,13 +14,9 @@ from paperagent.schemas.plan import SearchQuery
 
 _GAP = EvidenceGap(
     gap_id="failure_mechanism_limitations_low_light_pedestrian",
-    description=(
-        "低光照行人检测的失败机制、固有局限性及可独立验证的并行改进方法证据。"
-    ),
+    description=("低光照行人检测的失败机制、固有局限性及可独立验证的并行改进方法证据。"),
 )
-_QUERY = (
-    "low-light pedestrian detection failure limitations mechanism nighttime detection"
-)
+_QUERY = "low-light pedestrian detection failure limitations mechanism nighttime detection"
 _RELEVANT_SUMMARY = (
     "Visible cameras are much less effective at nighttime. Infrared images have drawbacks "
     "including low-resolution, noise, and weather-dependent thermal characteristics. To "
