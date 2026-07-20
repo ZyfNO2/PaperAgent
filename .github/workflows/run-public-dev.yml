@@ -58,12 +58,20 @@ jobs:
           cache-dependency-path: production/pyproject.toml
 
       - name: Validate benchmark authoring set
+        id: validation
+        continue-on-error: true
+        shell: bash
         run: |
-          python scripts/validate_cases.py data/public-dev-v2.jsonl
-          python -m unittest discover -s tests -v
+          mkdir -p build/public-dev-v2
+          set -o pipefail
+          {
+            python scripts/validate_cases.py data/public-dev-v2.jsonl
+            python -m unittest discover -s tests -v
+          } 2>&1 | tee build/public-dev-v2/validation.log
 
       - name: External production leakage scan
         id: production_scan
+        if: steps.validation.outcome == 'success'
         continue-on-error: true
         run: |
           python scripts/scan_production.py production \
@@ -83,17 +91,20 @@ jobs:
 
       - name: Install frozen production package
         id: install
+        if: steps.validation.outcome == 'success'
         continue-on-error: true
         run: python -m pip install -q -e './production[dev]'
 
       - name: Require Mistral secret
         id: secret
+        if: steps.validation.outcome == 'success'
         continue-on-error: true
         run: test -n "$MISTRAL_API_KEY"
 
       - name: Run public development set
         id: public_dev
         if: >-
+          steps.validation.outcome == 'success' &&
           steps.production_scan.outcome == 'success' &&
           steps.freeze.outcome == 'success' &&
           steps.install.outcome == 'success' &&
@@ -115,6 +126,7 @@ jobs:
         id: handoff
         if: always()
         env:
+          VALIDATION_OUTCOME: ${{ steps.validation.outcome }}
           PRODUCTION_SCAN_OUTCOME: ${{ steps.production_scan.outcome }}
           FREEZE_OUTCOME: ${{ steps.freeze.outcome }}
           INSTALL_OUTCOME: ${{ steps.install.outcome }}
@@ -126,12 +138,19 @@ jobs:
           import os
           from pathlib import Path
 
-          summary_path = Path('build/public-dev-v2/execution-summary.json')
-          scan_path = Path('build/public-dev-v2/production-scan.json')
-          freeze_path = Path('build/public-dev-v2/freeze-manifest.json')
+          output = Path('build/public-dev-v2')
+          summary_path = output / 'execution-summary.json'
+          scan_path = output / 'production-scan.json'
+          freeze_path = output / 'freeze-manifest.json'
+          validation_path = output / 'validation.log'
           summary = json.loads(summary_path.read_text()) if summary_path.exists() else None
           scan = json.loads(scan_path.read_text()) if scan_path.exists() else None
           freeze = json.loads(freeze_path.read_text()) if freeze_path.exists() else None
+          validation_tail = (
+              '\n'.join(validation_path.read_text(errors='replace').splitlines()[-120:])
+              if validation_path.exists()
+              else None
+          )
           payload = {
               'schema': 'paperagent.academic-holdout.public-dev-handoff.v2',
               'benchmark_source_sha': os.environ['GITHUB_SHA'],
@@ -139,19 +158,21 @@ jobs:
               'split': 'development',
               'result_interpretation': 'public development set; not independent generalization evidence',
               'outcomes': {
+                  'validation': os.environ.get('VALIDATION_OUTCOME'),
                   'production_scan': os.environ.get('PRODUCTION_SCAN_OUTCOME'),
                   'freeze': os.environ.get('FREEZE_OUTCOME'),
                   'install': os.environ.get('INSTALL_OUTCOME'),
                   'mistral_secret': os.environ.get('SECRET_OUTCOME'),
                   'public_dev_run': os.environ.get('PUBLIC_DEV_OUTCOME'),
               },
+              'validation_log_tail': validation_tail,
               'production_scan': scan,
               'freeze_manifest': freeze,
               'summary': summary,
           }
-          Path('build/public-dev-v2').mkdir(parents=True, exist_ok=True)
+          output.mkdir(parents=True, exist_ok=True)
           serialized = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + '\n'
-          Path('build/public-dev-v2/handoff.json').write_text(serialized)
+          (output / 'handoff.json').write_text(serialized)
           Path('/tmp/public-dev-v2-latest.json').write_text(serialized)
           print(serialized)
           PY
@@ -183,6 +204,7 @@ jobs:
       - name: Enforce public development thresholds
         if: always()
         env:
+          VALIDATION_OUTCOME: ${{ steps.validation.outcome }}
           PRODUCTION_SCAN_OUTCOME: ${{ steps.production_scan.outcome }}
           FREEZE_OUTCOME: ${{ steps.freeze.outcome }}
           INSTALL_OUTCOME: ${{ steps.install.outcome }}
@@ -191,6 +213,7 @@ jobs:
           HANDOFF_OUTCOME: ${{ steps.handoff.outcome }}
         run: |
           for value in \
+            "$VALIDATION_OUTCOME" \
             "$PRODUCTION_SCAN_OUTCOME" \
             "$FREEZE_OUTCOME" \
             "$INSTALL_OUTCOME" \
