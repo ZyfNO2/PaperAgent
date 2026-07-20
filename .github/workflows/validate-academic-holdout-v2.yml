@@ -1,0 +1,31 @@
+name: Validate Academic Holdout v2
+
+on:
+  push:
+    branches:
+      - eval/academic-holdout-v2-clean
+    paths:
+      - "scripts/**"
+      - "tests/**"
+      - "data/public-dev-v2.jsonl"
+      - "schema/**"
+      - "protocol/**"
+      - ".github/workflows/validate-academic-holdout-v2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate public development cases
+        run: python scripts/validate_cases.py data/public-dev-v2.jsonl
+      - name: Run evaluator and runner unit tests
+        run: python -m unittest discover -s tests -v
