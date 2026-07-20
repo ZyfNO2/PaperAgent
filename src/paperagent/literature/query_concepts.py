@@ -174,6 +174,24 @@ _ACTION_CANDIDATE_TERMS = (
     "pose-based human action",
     "video action",
 )
+_VISUAL_ACTION_QUERY_HINTS = (
+    "camera",
+    "video",
+    "rgb",
+    "pose",
+    "skeleton",
+)
+_VISUAL_ACTION_CANDIDATE_TERMS = (
+    "camera",
+    "video",
+    "rgb",
+    "image sequence",
+    "visual stream",
+    "pose",
+    "skeleton",
+    "keypoint",
+    "optical flow",
+)
 _GESTURE_QUERY_HINTS = (
     "gesture recognition",
     "hand gesture",
@@ -186,6 +204,29 @@ _GESTURE_CANDIDATE_TERMS = (
     "sign language classification",
     "gesture classification",
     "recognize gestures",
+)
+_MOBILE_GESTURE_QUERY_HINTS = (
+    "mobile",
+    "smartphone",
+    "on-device",
+    "edge",
+    "lightweight",
+)
+_MOBILE_DEPLOYMENT_CANDIDATE_TERMS = (
+    "mobile",
+    "smartphone",
+    "on-device",
+    "edge device",
+    "embedded",
+    "lightweight",
+    "real-time",
+    "real time",
+    "low-latency",
+    "low latency",
+    "efficient",
+    "resource-constrained",
+    "small model",
+    "model size",
 )
 _MEDICAL_IMAGING_QUERY_HINTS = (
     "medical image",
@@ -205,6 +246,9 @@ _MEDICAL_IMAGING_CANDIDATE_TERMS = (
     "pet-ct",
     "pet/ct",
     "ultrasound",
+    "fundus",
+    "retinal",
+    "ophthalmic",
 )
 _MULTIMODAL_FUSION_QUERY_HINTS = (
     "multimodal",
@@ -239,7 +283,10 @@ _STRICT_CLASSIFICATION_CANDIDATE_TERMS = (
     "categorization",
     "multi-class",
     "multiclass",
+    "multi-label",
+    "multilabel",
     "class label",
+    "grading",
 )
 _DIAGNOSIS_QUERY_HINTS = (
     "diagnosis",
@@ -293,9 +340,13 @@ def required_candidate_term_groups(query: str) -> tuple[tuple[str, ...], ...]:
 
     if _contains_any(normalized, _ACTION_QUERY_HINTS):
         groups.append(_ACTION_CANDIDATE_TERMS)
+        if _contains_any(normalized, _VISUAL_ACTION_QUERY_HINTS):
+            groups.append(_VISUAL_ACTION_CANDIDATE_TERMS)
 
     if _contains_any(normalized, _GESTURE_QUERY_HINTS):
         groups.append(_GESTURE_CANDIDATE_TERMS)
+        if _contains_any(normalized, _MOBILE_GESTURE_QUERY_HINTS):
+            groups.append(_MOBILE_DEPLOYMENT_CANDIDATE_TERMS)
 
     if _contains_any(normalized, _MEDICAL_IMAGING_QUERY_HINTS) and _contains_any(
         normalized, _MULTIMODAL_FUSION_QUERY_HINTS
