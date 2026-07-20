@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     env:
-      PAPERAGENT_PRODUCTION_SHA: c1ddd5b91d8edc575c860f2ecbc7aace4822c676
+      PAPERAGENT_PRODUCTION_SHA: c10c5dc14ca004fa0e3c567eba273dd5bd7e078c
       MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
       PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL || 'Z1015558261@outlook.com' }}
       SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
@@ -47,7 +47,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ZyfNO2/PaperAgent
-          ref: c1ddd5b91d8edc575c860f2ecbc7aace4822c676
+          ref: c10c5dc14ca004fa0e3c567eba273dd5bd7e078c
           path: production
           fetch-depth: 1
 
