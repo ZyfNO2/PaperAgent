@@ -73,7 +73,7 @@ async def test_evidence_synthesis_node__accepted_only__returns_semantically_vali
 
 
 @pytest.mark.asyncio
-async def test_evidence_synthesis_node__unknown_evidence_id__returns_typed_failure(
+async def test_evidence_synthesis_node__unknown_evidence_id__fails_at_schema_boundary(
     fixed_time, accepted_evidence_payload
 ) -> None:
     from paperagent.nodes.evidence_synthesis import evidence_synthesis_node
@@ -84,7 +84,8 @@ async def test_evidence_synthesis_node__unknown_evidence_id__returns_typed_failu
     patch = await evidence_synthesis_node(
         state, {"configurable": {"services": services, "scenario": "unknown_evidence"}}
     )
-    assert patch["execution"].last_error.code == "SEMANTIC_UNKNOWN_EVIDENCE_ID"
+    assert patch["execution"].last_error.code == "LLM_RESPONSE_SCHEMA_INVALID"
+    assert "synthesis" not in patch
 
 
 @pytest.mark.asyncio
