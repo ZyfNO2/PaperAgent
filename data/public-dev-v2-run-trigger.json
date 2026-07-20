@@ -1,7 +1,7 @@
 {
   "schema": "paperagent.academic-holdout.public-dev-trigger.v2",
-  "requested_at": "2026-07-21T05:31:00+07:00",
-  "benchmark_source_parent": "f21f0e4eaa73e77e28ce0b01eaf3774a0ec1bca6",
+  "requested_at": "2026-07-21T05:46:00+07:00",
+  "benchmark_source_parent": "fd2f5553b2c6fec95f2c931d0573a47314fde6d4",
   "production_source_sha": "c1ddd5b91d8edc575c860f2ecbc7aace4822c676",
   "case_count": 12,
   "llm_provider": "mistral",
@@ -15,9 +15,10 @@
     "unsupported_comparator_maximum": 0,
     "adapter_created_pilot_maximum": 0,
     "metamorphic_decision_consistency_minimum": 0.85,
-    "public_private_score_gap_maximum_percentage_points": 10
+    "public_private_average_score_gap_maximum_percentage_points": 10
   },
   "external_production_scan": true,
   "freeze_manifest_required": true,
+  "aggregate_only_private_runner_frozen": true,
   "result_interpretation": "public development set; not independent generalization evidence"
 }
