@@ -70,11 +70,13 @@ from paperagent.schemas import (
 )
 replace_once(
     "src/paperagent/state.py",
-    """    run: RunContext
+    """class PaperAgentState(TypedDict, total=False):
+    run: RunContext
     request: ResearchRequest
     plan: ResearchPlan | None
 """,
-    """    run: RunContext
+    """class PaperAgentState(TypedDict, total=False):
+    run: RunContext
     request: ResearchRequest
     scientific_readiness: ScientificReadinessSignals | None
     plan: ResearchPlan | None
@@ -82,16 +84,16 @@ replace_once(
 )
 replace_once(
     "src/paperagent/state.py",
-    """    run: RunContext
+    """class StatePatch(TypedDict, total=False):
+    run: RunContext
     request: ResearchRequest
     plan: ResearchPlan | None
-    research_contract: ResearchContract | None
 """,
-    """    run: RunContext
+    """class StatePatch(TypedDict, total=False):
+    run: RunContext
     request: ResearchRequest
     scientific_readiness: ScientificReadinessSignals | None
     plan: ResearchPlan | None
-    research_contract: ResearchContract | None
 """,
 )
 
