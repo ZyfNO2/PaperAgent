@@ -69,6 +69,43 @@ _FAILURE_DETAIL_PATTERNS = (
     r"\bfalse positives?\b",
     r"\bboundary ambiguity\b",
 )
+_BASELINE_ROLE_HINTS = (
+    "baseline",
+    "comparison",
+    "reproducible",
+    "基线",
+    "比较",
+    "复现",
+)
+_FAILURE_ROLE_HINTS = (
+    "failure",
+    "mechanism",
+    "limitation",
+    "bottleneck",
+    "失败",
+    "机制",
+    "局限",
+    "瓶颈",
+)
+_ALTERNATIVE_ROLE_HINTS = (
+    "parallel",
+    "alternative",
+    "data_optimization",
+    "augmentation",
+    "并行",
+    "替代",
+    "数据优化",
+)
+_RISK_ROLE_HINTS = (
+    "risk",
+    "negative",
+    "unknown",
+    "open_set",
+    "out-of-scope",
+    "风险",
+    "负面",
+    "未知",
+)
 _MULTIMODAL_HINTS = ("multimodal", "multi-modal", "multi modal", "多模态")
 _MEDICAL_IMAGING_HINTS = (
     "medical image",
@@ -121,6 +158,35 @@ _CAMERA_CONTEXT_HINTS = (
     "视频",
     "姿态",
     "骨骼",
+)
+_LONG_DOCUMENT_CONTEXT_HINTS = (
+    "long document",
+    "long text",
+    "long-context",
+    "long context",
+    "长文本",
+    "长文档",
+)
+_TEXT_CLASSIFICATION_CONTEXT_HINTS = (
+    "text classification",
+    "document classification",
+    "classification",
+    "文本分类",
+    "文档分类",
+    "分类",
+)
+_FEW_SHOT_CONTEXT_HINTS = (
+    "few-shot",
+    "few shot",
+    "low-resource",
+    "low resource",
+    "小样本",
+    "少样本",
+)
+_INTENT_CONTEXT_HINTS = (
+    "intent",
+    "intention",
+    "意图",
 )
 
 
@@ -179,6 +245,28 @@ def _medical_query_for_role(*, gap_id: str, gap_description: str) -> str:
     return f"{core} feature fusion"
 
 
+def _long_document_query_for_role(*, gap_id: str, gap_description: str) -> str:
+    role = f"{gap_id} {gap_description}".casefold()
+    if _contains_any(role, _BASELINE_ROLE_HINTS):
+        return "Chinese long document classification hierarchical transformer"
+    if _contains_any(role, _FAILURE_ROLE_HINTS):
+        return "long document classification truncation long context"
+    if _contains_any(role, _ALTERNATIVE_ROLE_HINTS):
+        return "long document classification hierarchical attention sparse transformer"
+    return "long document text classification hierarchical transformer"
+
+
+def _few_shot_intent_query_for_role(*, gap_id: str, gap_description: str) -> str:
+    role = f"{gap_id} {gap_description}".casefold()
+    if _contains_any(role, _BASELINE_ROLE_HINTS):
+        return "few-shot intent classification prototypical network"
+    if _contains_any(role, _RISK_ROLE_HINTS):
+        return "few-shot intent detection open set out-of-scope"
+    if _contains_any(role, _FAILURE_ROLE_HINTS):
+        return "few-shot intent classification contrastive learning label semantics"
+    return "few-shot intent classification sentence encoder"
+
+
 def _normalize_scientific_phrasing(
     query: str,
     *,
@@ -200,11 +288,39 @@ def _normalize_scientific_phrasing(
             gap_id=gap_id,
             gap_description=gap_description,
         )
-        if refined.casefold() != canonical:
+        if refined.casefold() != canonical.casefold():
             refined = canonical
             reasons.append(
                 "canonicalized multimodal medical classification to a role-specific task query"
             )
+
+    combined = f"{refined} {research_context}".casefold()
+    if (
+        _contains_any(combined, _LONG_DOCUMENT_CONTEXT_HINTS)
+        and _contains_any(combined, _TEXT_CLASSIFICATION_CONTEXT_HINTS)
+    ):
+        canonical = _long_document_query_for_role(
+            gap_id=gap_id,
+            gap_description=gap_description,
+        )
+        if refined.casefold() != canonical.casefold():
+            refined = canonical
+            reasons.append(
+                "canonicalized long-document classification to a role-specific task query"
+            )
+
+    combined = f"{refined} {research_context}".casefold()
+    if (
+        _contains_any(combined, _FEW_SHOT_CONTEXT_HINTS)
+        and _contains_any(combined, _INTENT_CONTEXT_HINTS)
+    ):
+        canonical = _few_shot_intent_query_for_role(
+            gap_id=gap_id,
+            gap_description=gap_description,
+        )
+        if refined.casefold() != canonical.casefold():
+            refined = canonical
+            reasons.append("canonicalized few-shot intent to a role-specific task query")
 
     combined = f"{refined} {research_context}".casefold()
     if (
