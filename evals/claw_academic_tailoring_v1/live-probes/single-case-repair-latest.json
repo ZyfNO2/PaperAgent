@@ -1,29 +1,41 @@
 {
   "accepted_evidence": [
     {
-      "evidence_id": "ev-paper-2b42bfc6db942730123a",
-      "locator": "doi:10.1109/tgrs.2025.3564634",
+      "evidence_id": "ev-paper-05f78c47d6bcc217dce5",
+      "locator": "https://arxiv.org/abs/2408.03030",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_comparison",
-        "failure_mechanism_and_parallel_methods"
+        "baseline_comparison_low_light_pedestrian",
+        "failure_mechanism_limitations_low_light_pedestrian",
+        "risk_contradictory_evidence_low_light_pedestrian"
       ],
-      "title": "From Weak Textures to Dense Arrangements: Leveraging Prior Knowledge for Small-Object Detection in Remote Sensing Images",
+      "title": "Nighttime Pedestrian Detection Based on Fore-Background Contrast Learning",
       "verification_status": "accepted"
     },
     {
-      "evidence_id": "ev-paper-1a55a2262d04a51ed270",
-      "locator": "doi:10.1109/tgrs.2024.3482358",
+      "evidence_id": "ev-paper-4dade96f646bd5453786",
+      "locator": "doi:10.3390/s22031082",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_comparison",
-        "failure_mechanism_and_parallel_methods"
+        "baseline_comparison_low_light_pedestrian",
+        "failure_mechanism_limitations_low_light_pedestrian"
       ],
-      "title": "RSDS: A Specialized Loss Calculation Method for Dense Small Object Detection in Remote Sensing Images",
+      "title": "Adopting the YOLOv4 Architecture for Low-Latency Multispectral Pedestrian Detection in Autonomous Driving",
+      "verification_status": "accepted"
+    },
+    {
+      "evidence_id": "ev-paper-805721c2a96afb4f93b6",
+      "locator": "doi:10.3390/app10030809",
+      "provider": "literature_retrieval",
+      "supports_gap_ids": [
+        "baseline_comparison_low_light_pedestrian",
+        "failure_mechanism_limitations_low_light_pedestrian"
+      ],
+      "title": "Pedestrian Detection at Night in Infrared Images Using an Attention-Guided Encoder-Decoder Convolutional Neural Network",
       "verification_status": "accepted"
     }
   ],
-  "case_id": "at-005-remote-sensing-dense-small-objects",
+  "case_id": "at-006-low-light-pedestrian",
   "decision_matches": true,
   "execution_status": "completed",
   "expected_decision": "REVISE_TO_PILOT",
@@ -39,9 +51,8 @@
     },
     {
       "available": 10,
-      "earned": 3,
+      "earned": 7,
       "findings": [
-        "clarification count must remain between one and two",
         "clarification did not target a declared high-impact unknown"
       ],
       "passed": false,
@@ -61,32 +72,34 @@
     "used": 8
   },
   "report_status": "completed",
-  "score": 91,
+  "score": 95,
   "search_diagnostics": [
     {
       "attempted_providers": [
         "openalex",
-        "semantic_scholar"
+        "semantic_scholar",
+        "arxiv"
       ],
       "fallback_used": false,
       "informative_terms": [
-        "remote",
-        "sensing",
-        "dense",
-        "small",
-        "object",
-        "detection"
+        "low-light",
+        "pedestrian",
+        "detection",
+        "accuracy",
+        "speed",
+        "efficiency",
+        "nighttime"
       ],
       "maximum_provider_calls": 4,
       "minimum_rank_score": 0.62,
       "minimum_relevance": 0.34,
       "policy_reasons": [],
       "precision_risk": "low",
-      "provider_call_count": 2,
+      "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q1_baseline_methods",
-      "relevant_verified_papers": 4,
-      "returned_papers": 4,
+      "query_id": "q1_baseline_low_light_pedestrian",
+      "relevant_verified_papers": 2,
+      "returned_papers": 2,
       "stop_reason": "sufficient_academic_evidence"
     },
     {
@@ -97,13 +110,13 @@
       ],
       "fallback_used": false,
       "informative_terms": [
-        "remote",
-        "sensing",
-        "small",
-        "object",
+        "low-light",
+        "pedestrian",
         "detection",
         "failure",
-        "modes"
+        "limitations",
+        "mechanism",
+        "nighttime"
       ],
       "maximum_provider_calls": 4,
       "minimum_rank_score": 0.62,
@@ -112,10 +125,10 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q2_failure_mechanisms",
-      "relevant_verified_papers": 0,
-      "returned_papers": 0,
-      "stop_reason": "academic_budget_exhausted"
+      "query_id": "q2_failure_mechanism_low_light_pedestrian",
+      "relevant_verified_papers": 2,
+      "returned_papers": 2,
+      "stop_reason": "sufficient_academic_evidence"
     },
     {
       "attempted_providers": [
@@ -125,12 +138,14 @@
       ],
       "fallback_used": false,
       "informative_terms": [
-        "remote",
-        "sensing",
-        "small",
-        "object",
+        "low-light",
+        "pedestrian",
         "detection",
-        "mechanism"
+        "contradictory",
+        "evidence",
+        "limitations",
+        "bias",
+        "inconsistency"
       ],
       "maximum_provider_calls": 4,
       "minimum_rank_score": 0.62,
@@ -139,7 +154,7 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q3_parallel_methods",
+      "query_id": "q3_risk_contradictory_low_light_pedestrian",
       "relevant_verified_papers": 0,
       "returned_papers": 0,
       "stop_reason": "academic_budget_exhausted"
@@ -148,8 +163,8 @@
   "status": "passed",
   "verification_call_budget": {
     "maximum": 16,
-    "remaining": 4,
-    "used": 12
+    "remaining": 7,
+    "used": 9
   },
   "web_search_enabled": false
 }
