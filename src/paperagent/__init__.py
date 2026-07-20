@@ -78,8 +78,8 @@ def _materialize_review_remediation() -> None:
         adapter_test_path = root / "tests/evals/test_claw_benchmark_adapter.py"
         _replace_exact(
             adapter_test_path,
-            '''    outcome = state["final_outcome"]\n    assert outcome is not None\n    state["final_outcome"] = outcome.model_copy(\n        update={\n            "pilot_recommended": True,\n            "pilot_scope": "dataset=HeldOutSet; metrics=F1; comparator=Method-B; stop=F1 gain < 1%",\n        }\n    )''',
-            '''    state["final_outcome"] = FinalOutcome(\n        execution_status="succeeded",\n        scientific_verdict="REVISE",\n        quality_route="repair_method",\n        report_status="completed",\n        reason_codes=["Q_INSUFFICIENT_COVERAGE"],\n        recommended_next_actions=["Collect one more observation."],\n        pilot_recommended=True,\n        pilot_scope=(\n            "dataset=HeldOutSet; metrics=F1; comparator=Method-B; stop=F1 gain < 1%"\n        ),\n    )''',
+            '''\n\ndef test_production_final_outcome_pilot_signal_is_preserved() -> None:\n    state = _revise_state(\n        next_action="Collect one more observation.", quality_route="repair_method"\n    )\n    outcome = state["final_outcome"]\n    assert outcome is not None\n    state["final_outcome"] = outcome.model_copy(\n        update={\n            "pilot_recommended": True,\n            "pilot_scope": "dataset=HeldOutSet; metrics=F1; comparator=Method-B; stop=F1 gain < 1%",\n        }\n    )\n    trace = normalize_paperagent_state(\n        state,\n        BenchmarkNormalizationContext(case_id="held-out-002"),\n    )\n    assert trace.decision == "REVISE"\n    assert trace.pilot_recommended is True\n''',
+            "",
         )
 
         marker.write_text("applied\n", encoding="utf-8")
