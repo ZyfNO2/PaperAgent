@@ -22,6 +22,7 @@ from paperagent.providers import LLMProvider, SearchProvider
 from paperagent.runtime import RuntimeServices
 from paperagent.schemas import RunBudgets
 from paperagent.state import PaperAgentState, state_to_primitive
+from paperagent.user_materials import user_material_identities
 
 SearchMode = Literal["fake", "literature"]
 
@@ -62,23 +63,45 @@ def build_benchmark_search_runtime(
     raise ValueError(f"unsupported benchmark search mode: {mode}")
 
 
-def _structured_pilot_recommendation(state: PaperAgentState) -> bool:
-    """Recommend a bounded pilot only when a concrete method artifact exists.
+def _supplied_materials_verified(state: PaperAgentState) -> bool:
+    request = state.get("request")
+    if request is None or not request.user_material_refs:
+        return True
+    plan = state.get("plan")
+    evidence = state.get("evidence")
+    if plan is None or evidence is None:
+        return False
+    identities = user_material_identities(request.user_material_refs)
+    if not identities or any(not identity.identifiable for identity in identities):
+        return False
+    declared_gap_ids = {gap.gap_id for gap in plan.evidence_gaps}
+    return all(
+        identity.gap_id in declared_gap_ids
+        and evidence.coverage_by_gap.get(identity.gap_id, 0) >= 1
+        for identity in identities
+    )
 
-    The decision uses production structured state only. A REVISE outcome may arrive through
-    a blocked route after the bounded repair allowance is exhausted; that does not invalidate
-    the already-produced method artifact as a candidate for a limited falsification run.
-    Free-text actions, case text, supplied-paper titles, and benchmark annotations are excluded.
+
+def _structured_pilot_recommendation(state: PaperAgentState) -> bool:
+    """Recommend a bounded pilot only for a concrete, evidence-bound method artifact.
+
+    The decision uses production structured state only. A REVISE outcome may arrive through a
+    blocked route after the bounded repair allowance is exhausted; that does not invalidate an
+    already-produced method artifact. Supplied materials must have searchable public identities and
+    accepted identity-gap evidence. Free-text actions, case text, and benchmark labels are excluded.
     """
 
     outcome = state.get("final_outcome")
     method = state.get("method")
+    modules = method.methodology_plan.modules if method is not None else ()
     return bool(
         outcome is not None
         and outcome.execution_status == "succeeded"
         and outcome.scientific_verdict == "REVISE"
         and not outcome.invalid_evidence_ids
         and method is not None
+        and modules
+        and _supplied_materials_verified(state)
     )
 
 
