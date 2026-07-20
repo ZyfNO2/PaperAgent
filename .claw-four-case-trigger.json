@@ -1,22 +1,24 @@
 {
-  "batch_id": "batch-03-cases-010-013-durable-provenance-stability",
+  "batch_id": "batch-03-cases-010-013-case011-role-stability",
   "case_ids": [
     "at-010-chinese-long-document-classification",
     "at-011-few-shot-intent-detection",
     "at-012-enterprise-rag",
     "at-013-professional-qa-hallucination"
   ],
-  "reason": "confirm third-batch stability after Case 013 runtime-query provenance and lexical-contract repair",
-  "attempt": 3,
+  "reason": "confirm third-batch stability after strict few-shot intent role binding and durable runtime-query provenance repairs",
+  "attempt": 4,
   "prerequisite_repairs": {
     "case_010_score": 95,
     "case_011_score": 95,
     "case_012_previous_score": 97,
     "case_013_score": 95,
+    "case_011_hard_failures": 0,
     "case_013_hard_failures": 0,
-    "retrieval_gate_run_id": 29744358644,
-    "retrieval_gate_head_sha": "460e2c633afd29d1f7a3a0fdb4c6373ddf311e8c",
+    "retrieval_gate_run_id": 29749022189,
+    "retrieval_gate_head_sha": "b98d2afc8e7cfa5ffb827b0acea86cc743a76277",
     "durable_query_provenance_verified": true,
+    "few_shot_intent_role_binding_verified": true,
     "web_search_enabled": false
   },
   "requested_scope": "exactly_four_cases",
