@@ -86,6 +86,13 @@ def derive_research_contract(
 ) -> ResearchContract:
     required_gaps = [gap.gap_id for gap in plan.evidence_gaps if gap.required] if plan else []
     positive_sources: list[str] = []
+
+    # Runtime-approved search queries are the most precise cross-language description of
+    # the evidence being requested. Keep them ahead of verbose planner prose so the
+    # bounded contract vocabulary cannot discard them.
+    if plan is not None:
+        for query in plan.search_queries:
+            positive_sources.extend(_terms(query.query))
     if request is not None:
         positive_sources.extend(_terms(request.question))
         positive_sources.extend(_terms(request.domain_hint))
@@ -98,8 +105,6 @@ def derive_research_contract(
             positive_sources.extend(_terms(question))
         for gap in plan.evidence_gaps:
             positive_sources.extend(_terms(gap.description))
-        for query in plan.search_queries:
-            positive_sources.extend(_terms(query.query))
         for criterion in plan.success_criteria:
             positive_sources.extend(_terms(criterion))
     problem_terms = _terms(plan.problem_statement) if plan is not None else []
