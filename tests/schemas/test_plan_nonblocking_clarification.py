@@ -39,6 +39,7 @@ def test_ready_plan_allows_one_nonblocking_clarification_question() -> None:
 
     assert plan.status == "ready"
     assert plan.clarification_question is not None
+    assert plan.block_reason is None
 
 
 def test_ready_plan_still_rejects_block_reason() -> None:
