@@ -17,6 +17,12 @@ _HALLUCINATION_HINTS = (
     "幻觉",
     "事实性",
 )
+_TIME_SERIES_ANOMALY_HINTS = (
+    "time series anomaly",
+    "time-series anomaly",
+    "anomaly transformer",
+    "时间序列异常",
+)
 _BASELINE_ROLE_HINTS = ("baseline", "comparison", "reproducible", "基线", "比较", "复现")
 _PARALLEL_ROLE_HINTS = (
     "parallel",
@@ -24,10 +30,12 @@ _PARALLEL_ROLE_HINTS = (
     "reduction",
     "verification",
     "uncertainty",
+    "improvement",
     "并行",
     "替代",
     "缓解",
     "验证",
+    "改进",
 )
 _MECHANISM_ROLE_HINTS = (
     "failure",
@@ -52,6 +60,12 @@ def _contains_any(value: str, terms: tuple[str, ...]) -> bool:
     return any(term in value for term in terms)
 
 
+def _result(query: str, canonical: str, reason: str) -> TaskQueryOverride:
+    if query.casefold() == canonical.casefold():
+        return TaskQueryOverride(query=query, changed=False)
+    return TaskQueryOverride(query=canonical, changed=True, reason=reason)
+
+
 def override_task_query(
     query: str,
     *,
@@ -60,13 +74,33 @@ def override_task_query(
     research_context: str,
 ) -> TaskQueryOverride:
     combined = f"{query} {research_context}".casefold()
+    role = f"{gap_id} {gap_description}".casefold()
+
+    if _contains_any(combined, _TIME_SERIES_ANOMALY_HINTS):
+        if _contains_any(role, _BASELINE_ROLE_HINTS):
+            canonical = (
+                "Anomaly Transformer time series anomaly detection association discrepancy baseline"
+            )
+        elif _contains_any(role, _MECHANISM_ROLE_HINTS):
+            canonical = (
+                "time series anomaly detection association discrepancy limitation failure mechanism"
+            )
+        elif _contains_any(role, _PARALLEL_ROLE_HINTS):
+            canonical = "few-shot time series anomaly detection meta-learning transfer learning"
+        else:
+            canonical = "time series anomaly detection transformer few-shot"
+        return _result(
+            query,
+            canonical,
+            "canonicalized time-series anomaly retrieval by evidence role",
+        )
+
     if not (
         _contains_any(combined, _PROFESSIONAL_QA_HINTS)
         and _contains_any(combined, _HALLUCINATION_HINTS)
     ):
         return TaskQueryOverride(query=query, changed=False)
 
-    role = f"{gap_id} {gap_description}".casefold()
     if _contains_any(role, _BASELINE_ROLE_HINTS):
         canonical = "retrieval augmented question answering hallucination baseline"
     elif _contains_any(role, _MECHANISM_ROLE_HINTS):
@@ -75,13 +109,10 @@ def override_task_query(
         canonical = "question answering hallucination reduction retrieval verification uncertainty"
     else:
         canonical = "professional question answering hallucination factuality"
-
-    if query.casefold() == canonical.casefold():
-        return TaskQueryOverride(query=query, changed=False)
-    return TaskQueryOverride(
-        query=canonical,
-        changed=True,
-        reason="canonicalized professional-QA hallucination retrieval by evidence role",
+    return _result(
+        query,
+        canonical,
+        "canonicalized professional-QA hallucination retrieval by evidence role",
     )
 
 
