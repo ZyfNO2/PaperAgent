@@ -1,0 +1,250 @@
+name: CLAW Paid Full 20 E2E
+
+on:
+  push:
+    branches:
+      - feat/claw-live-search-runtime
+    paths:
+      - ".claw-paid-full-20-trigger.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: claw-paid-full-20-e2e
+  cancel-in-progress: false
+
+jobs:
+  paid-full-20:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+      PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL }}
+      SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+      PAPERAGENT_LLM_PROVIDER: mistral
+      PAPERAGENT_LLM_MODEL: mistral-small-latest
+      PAPERAGENT_MISTRAL_MODEL: mistral-small-latest
+      PAPERAGENT_LLM_BASE_URL: https://api.mistral.ai/v1
+      PAPERAGENT_LLM_PRICE_TABLE: config/llm-prices/mistral-small-latest.json
+      PAPERAGENT_LLM_MAX_COST_USD: "1.00"
+      PAPERAGENT_LLM_MAX_ATTEMPTS: "2"
+      PAPERAGENT_LLM_MAX_CALLS: "12"
+      PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "32000"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "4096"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "16384"
+      PAPERAGENT_LLM_TASK_TIMEOUT: "900"
+      PAPERAGENT_ENABLE_WEB_SEARCH: "0"
+      PAPERAGENT_SOURCE_SHA: ${{ github.sha }}
+      PAPERAGENT_ARTIFACT_NAME: claw-paid-full-20-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+
+      - name: Validate required live secrets
+        id: secrets
+        shell: bash
+        run: |
+          out="build/claw-paid-full-20"
+          mkdir -p "$out"
+          missing=()
+          [[ -z "${MISTRAL_API_KEY:-}" ]] && missing+=(MISTRAL_API_KEY)
+          [[ -z "${PAPERAGENT_CONTACT_EMAIL:-}" ]] && missing+=(PAPERAGENT_CONTACT_EMAIL)
+          python - "$out/secret-preflight.json" "${missing[@]}" <<'PY'
+          import json
+          import os
+          import sys
+          from pathlib import Path
+
+          missing = sys.argv[2:]
+          payload = {
+              "required": ["MISTRAL_API_KEY", "PAPERAGENT_CONTACT_EMAIL"],
+              "missing": missing,
+              "semantic_scholar_api_key_present": bool(
+                  os.environ.get("SEMANTIC_SCHOLAR_API_KEY")
+              ),
+              "passed": not missing,
+          }
+          Path(sys.argv[1]).write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          if (( ${#missing[@]} )); then
+            printf 'Missing required secrets: %s\n' "${missing[*]}"
+            exit 1
+          fi
+
+      - name: Run offline safety and wiring gate
+        id: offline
+        shell: bash
+        run: |
+          set -o pipefail
+          out="build/claw-paid-full-20"
+          python - <<'PY' | tee "$out/static-leakage-audit.log"
+          from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
+
+          result = audit_benchmark_execution_boundary()
+          if not result.passed:
+              raise SystemExit(result.findings)
+          print("static leakage audit passed")
+          PY
+          ruff check \
+            src/paperagent/claw_runtime_evidence.py \
+            scripts/run_claw_academic_runtime.py \
+            tests/evals/test_claw_runtime_evidence.py \
+            | tee "$out/ruff.log"
+          ruff format --check \
+            src/paperagent/claw_runtime_evidence.py \
+            scripts/run_claw_academic_runtime.py \
+            tests/evals/test_claw_runtime_evidence.py \
+            | tee "$out/format.log"
+          mypy --config-file pyproject.toml | tee "$out/mypy.log"
+          pytest -q \
+            tests/evals/test_claw_runtime_evidence.py \
+            tests/evals/test_claw_benchmark_adapter.py \
+            tests/literature/test_claw_benchmark_runtime.py \
+            tests/literature/test_provider_call_budget.py \
+            | tee "$out/offline-pytest.log"
+
+      - name: Execute real Mistral and literature provider smoke
+        id: smoke
+        env:
+          PAPERAGENT_RUN_REAL_LLM: "1"
+          PAPERAGENT_RUN_REAL_PROVIDER: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          pytest -q \
+            tests/real_provider/test_mistral_smoke.py \
+            tests/real_provider/test_literature_smoke.py \
+            | tee build/claw-paid-full-20/live-smoke.log
+
+      - name: Execute paid 20-case runtime
+        id: full
+        shell: bash
+        run: |
+          set -o pipefail
+          python scripts/run_claw_academic_runtime.py \
+            --search-mode literature \
+            --max-cases 20 \
+            --max-llm-calls 12 \
+            --provider-call-budget 160 \
+            --minimum-score 80 \
+            --llm-provider mistral \
+            --llm-model mistral-small-latest \
+            --llm-price-table "$PAPERAGENT_LLM_PRICE_TABLE" \
+            --output-dir build/claw-paid-full-20 \
+            --require-pass \
+            2>&1 | tee build/claw-paid-full-20/runtime.log
+
+      - name: Assemble workflow evidence
+        if: always()
+        id: finalize
+        env:
+          SECRET_OUTCOME: ${{ steps.secrets.outcome }}
+          OFFLINE_OUTCOME: ${{ steps.offline.outcome }}
+          SMOKE_OUTCOME: ${{ steps.smoke.outcome }}
+          FULL_OUTCOME: ${{ steps.full.outcome }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path("build/claw-paid-full-20")
+          root.mkdir(parents=True, exist_ok=True)
+          execution_path = root / "execution-summary.json"
+          execution = (
+              json.loads(execution_path.read_text(encoding="utf-8"))
+              if execution_path.exists()
+              else None
+          )
+          outcomes = {
+              "secret_preflight": os.environ.get("SECRET_OUTCOME"),
+              "offline_gate": os.environ.get("OFFLINE_OUTCOME"),
+              "live_smoke": os.environ.get("SMOKE_OUTCOME"),
+              "full_runtime": os.environ.get("FULL_OUTCOME"),
+          }
+          passed = (
+              all(value == "success" for value in outcomes.values())
+              and execution is not None
+              and execution.get("passed") is True
+          )
+          payload = {
+              "schema": "paperagent.claw-paid-full-20-workflow.v1",
+              "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "source_sha": os.environ["GITHUB_SHA"],
+              "artifact_name": os.environ["PAPERAGENT_ARTIFACT_NAME"],
+              "outcomes": outcomes,
+              "execution_summary": execution,
+              "passed": passed,
+              "status": "passed" if passed else "failed",
+          }
+          (root / "workflow-result.json").write_text(
+              json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload full execution evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PAPERAGENT_ARTIFACT_NAME }}
+          path: build/claw-paid-full-20/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Persist compact full-run result
+        if: always()
+        shell: bash
+        run: |
+          source_file="build/claw-paid-full-20/workflow-result.json"
+          target_file="evals/claw_academic_tailoring_v1/live-probes/paid-full-20-latest.json"
+          [[ -f "$source_file" ]] || exit 1
+          cp "$source_file" /tmp/paid-full-20-latest.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git checkout -B "$GITHUB_REF_NAME" "origin/$GITHUB_REF_NAME"
+            mkdir -p "$(dirname "$target_file")"
+            cp /tmp/paid-full-20-latest.json "$target_file"
+            git add "$target_file"
+            if git diff --cached --quiet; then
+              exit 0
+            fi
+            git commit -m "test(eval): record paid full-20 result [skip ci]"
+            if git push origin "HEAD:$GITHUB_REF_NAME"; then
+              exit 0
+            fi
+          done
+          exit 1
+
+      - name: Enforce paid full-run outcome
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          payload = json.loads(
+              Path("build/claw-paid-full-20/workflow-result.json").read_text(encoding="utf-8")
+          )
+          raise SystemExit(0 if payload.get("passed") is True else 1)
+          PY
