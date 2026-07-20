@@ -31,8 +31,9 @@ The evaluated capabilities are:
 - at least 10 research domains not represented in the contaminated v1 benchmark;
 - balanced across the eight capabilities above;
 - prompts and gold stored outside the evaluated repository;
-- selected only after the production commit, scorer, and thresholds are frozen;
-- one formal run before unsealing per-case results.
+- selected only after the production commit, scorer, runners, and thresholds are frozen;
+- one formal run before unsealing per-case results;
+- the formal workflow publishes aggregate metrics first and does not persist plaintext prompts, states, raw traces, or per-case scores in the public repository or public artifacts.
 
 After developers inspect per-case prompts, gold, or failure traces and modify production behavior, that holdout is permanently downgraded to a development set.
 
@@ -126,7 +127,7 @@ Before the private run, record these thresholds with the evaluated commit SHA an
 - unsupported comparator counted as verified: 0;
 - adapter-created pilot decisions: 0;
 - metamorphic decision consistency: at least 85%;
-- public/private score gap: no more than 10 percentage points.
+- public/private score gap: no more than 10 percentage points, defined as the absolute difference between the public and private **average structured scores**.
 
 Thresholds may not be changed after seeing private results.
 
@@ -134,11 +135,11 @@ Thresholds may not be changed after seeing private results.
 
 Before execution:
 
-1. freeze the production commit and scorer commit;
+1. freeze the production commit, scorer, public runner, private runner, protocol, schema, and thresholds;
 2. scan all production source and prompts, not a file allowlist;
 3. compare private prompt n-grams and domain terms against production source and tests;
 4. verify runtime projection excludes case ID, oracle, metadata, and scoring fields;
-5. keep private files outside the evaluated repository;
+5. keep private plaintext files outside the evaluated repository;
 6. disable benchmark-only decision post-processing;
 7. write a manifest containing hashes, timestamps, and commit SHAs;
 8. expose aggregate metrics first; unseal per-case details only after the formal decision is recorded.
