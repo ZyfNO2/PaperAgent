@@ -135,9 +135,7 @@ def matches_required_candidate_terms(query: str, candidate_text: str) -> bool:
         return True
     matched = len(query_terms & concept_tokens(candidate_text))
     required = (
-        len(query_terms)
-        if len(query_terms) <= 2
-        else max(2, math.ceil(len(query_terms) * 0.4))
+        len(query_terms) if len(query_terms) <= 2 else max(2, math.ceil(len(query_terms) * 0.4))
     )
     return matched >= required
 
