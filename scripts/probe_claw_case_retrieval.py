@@ -9,6 +9,7 @@ from typing import Any, TypedDict
 
 from paperagent.claw_academic_benchmark import GoldCase, load_gold_dataset
 from paperagent.literature.factory import LiteratureProviderSettings, build_literature_runtime
+from paperagent.literature.query_concepts import matches_required_candidate_terms
 from paperagent.schemas import SearchQuery
 
 _QUERY_OVERRIDES = {
@@ -19,8 +20,22 @@ _QUERY_OVERRIDES = {
 
 _TOPIC_GROUPS = {
     "scene": ("uav", "aerial", "drone", "visdrone", "remote sensing"),
-    "scale": ("small object", "tiny object", "small target", "tiny target"),
-    "task": ("detection", "detector", "detecting"),
+    "scale": (
+        "small object",
+        "tiny object",
+        "small target",
+        "tiny target",
+        "tiny pixel-area",
+    ),
+    "visual_object_detection": (
+        "object detection",
+        "object detector",
+        "detect objects",
+        "detecting objects",
+        "target detection",
+        "oriented object detection",
+        "computer vision",
+    ),
     "efficiency": (
         "lightweight",
         "efficient",
@@ -29,6 +44,7 @@ _TOPIC_GROUPS = {
         "latency",
         "tensorrt",
         "edge",
+        "computational demands",
     ),
 }
 
@@ -40,6 +56,7 @@ class ProbeResult(TypedDict):
     verification_status: str
     relevance_score: float
     rank_score: float
+    required_concepts_match: bool
     topic_matches: list[str]
     snippet: str
 
@@ -83,7 +100,11 @@ def _query_for(case: GoldCase) -> str:
 
 def _topic_matches(title: str, snippet: str) -> list[str]:
     text = f"{title} {snippet}".casefold()
-    return [group for group, terms in _TOPIC_GROUPS.items() if any(term in text for term in terms)]
+    return [
+        group
+        for group, terms in _TOPIC_GROUPS.items()
+        if any(term in text for term in terms)
+    ]
 
 
 def _verification_budget(service: object) -> dict[str, int | None] | None:
@@ -107,6 +128,7 @@ async def _run(args: argparse.Namespace) -> int:
 
     case = _select_case(args.dataset_root, args.case_id)
     reviewed_query = _query_for(case)
+    query_id = f"probe-{case.case_id}"
     runtime = build_literature_runtime(
         LiteratureProviderSettings(
             contact_email=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
@@ -120,7 +142,7 @@ async def _run(args: argparse.Namespace) -> int:
     try:
         candidates = await runtime.adapter.search(
             query=SearchQuery(
-                query_id=f"probe-{case.case_id}",
+                query_id=query_id,
                 gap_id=f"{case.case_id}-baseline-and-gap",
                 query=reviewed_query,
                 source_types=["paper"],
@@ -130,30 +152,44 @@ async def _run(args: argparse.Namespace) -> int:
             fixture_version="live-v1",
             limit=5,
         )
-        diagnostics = runtime.adapter.last_query_diagnostics(f"probe-{case.case_id}")
+        diagnostics = runtime.adapter.last_query_diagnostics(query_id)
+        provider_results = [
+            {
+                "provider": result.provider,
+                "status": result.status,
+                "raw_paper_count": len(result.papers),
+                "error_code": result.error_code,
+                "cache_status": result.cache_status,
+            }
+            for result in runtime.adapter.last_provider_results(query_id)
+        ]
         results: list[ProbeResult] = []
         for candidate in candidates:
+            text = f"{candidate.title} {candidate.snippet}"
             matches = _topic_matches(candidate.title, candidate.snippet)
             results.append(
                 {
                     "title": candidate.title,
                     "locator": candidate.locator,
                     "providers": candidate.metadata.get("providers", ""),
-                    "verification_status": candidate.metadata.get("verification_status", ""),
-                    "relevance_score": float(candidate.metadata.get("relevance_score", "0")),
+                    "verification_status": candidate.metadata.get(
+                        "verification_status", ""
+                    ),
+                    "relevance_score": float(
+                        candidate.metadata.get("relevance_score", "0")
+                    ),
                     "rank_score": float(candidate.metadata.get("rank_score", "0")),
+                    "required_concepts_match": matches_required_candidate_terms(
+                        reviewed_query, text
+                    ),
                     "topic_matches": matches,
                     "snippet": candidate.snippet,
                 }
             )
         provider_budget = runtime.service.provider_call_budget()
         verification_budget = _verification_budget(runtime.service)
-        verified = [item for item in results if item["verification_status"] == "verified"]
-        high_topic_match = [
-            item
-            for item in results
-            if {"scale", "task"}.issubset(set(item["topic_matches"]))
-            and len(item["topic_matches"]) >= 3
+        verified = [
+            item for item in results if item["verification_status"] == "verified"
         ]
         checks = {
             "query_approved": diagnostics.get("query_approved") is True,
@@ -174,7 +210,8 @@ async def _run(args: argparse.Namespace) -> int:
                 and item["rank_score"] >= float(diagnostics["minimum_rank_score"]) * 0.85
                 for item in results
             ),
-            "topic_precision": len(high_topic_match) >= max(1, len(results) // 2),
+            "zero_semantic_false_positives": bool(results)
+            and all(item["required_concepts_match"] for item in results),
             "web_not_used": diagnostics.get("fallback_used") is False,
         }
         payload = {
@@ -182,6 +219,7 @@ async def _run(args: argparse.Namespace) -> int:
             "original_question": case.user_input,
             "reviewed_query": reviewed_query,
             "diagnostics": diagnostics,
+            "provider_results": provider_results,
             "provider_call_budget": provider_budget,
             "verification_call_budget": verification_budget,
             "checks": checks,
