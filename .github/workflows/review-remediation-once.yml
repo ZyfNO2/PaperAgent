@@ -1,4 +1,4 @@
-name: Review Remediation Once
+name: Review Remediation Diagnostics
 
 on:
   push:
@@ -11,30 +11,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: review-remediation-once
+  group: review-remediation-diagnostics
   cancel-in-progress: false
 
 jobs:
-  remediate-and-verify:
+  diagnose:
     runs-on: ubuntu-24.04
-    timeout-minutes: 360
-    env:
-      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
-      PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL || 'Z1015558261@outlook.com' }}
-      SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
-      PAPERAGENT_LLM_PROVIDER: mistral
-      PAPERAGENT_LLM_MODEL: mistral-small-latest
-      PAPERAGENT_MISTRAL_MODEL: mistral-small-latest
-      PAPERAGENT_LLM_BASE_URL: https://api.mistral.ai/v1
-      PAPERAGENT_LLM_PRICE_TABLE: config/llm-prices/mistral-small-latest.json
-      PAPERAGENT_LLM_MAX_COST_USD: "1.00"
-      PAPERAGENT_LLM_MAX_ATTEMPTS: "2"
-      PAPERAGENT_LLM_MAX_CALLS: "12"
-      PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "32000"
-      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "4096"
-      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "16384"
-      PAPERAGENT_LLM_TASK_TIMEOUT: "900"
-      PAPERAGENT_ENABLE_WEB_SEARCH: "0"
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,141 +32,110 @@ jobs:
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
 
-      - name: Apply review remediation
-        run: |
-          python scripts/run_review_remediation.py
-          rm -f scripts/.review-remediation-*.b64 scripts/run_review_remediation.py
-          rm -f .review-remediation-trigger.json
-
-      - name: Format changed Python files
+      - name: Execute all offline gates and capture results
         shell: bash
         run: |
-          mapfile -t files < <(git diff --name-only --diff-filter=ACM | grep -E '\.py$' || true)
-          if ((${#files[@]})); then
-            ruff format "${files[@]}"
-            ruff check --fix "${files[@]}"
-          fi
+          set +e
+          mkdir -p /tmp/remediation-diagnostics
 
-      - name: Static leakage audit
-        run: |
-          python - <<'PY'
+          python scripts/run_review_remediation.py > /tmp/remediation-diagnostics/apply.log 2>&1
+          APPLY=$?
+          if [ "$APPLY" -eq 0 ]; then
+            rm -f scripts/.review-remediation-*.b64 scripts/run_review_remediation.py
+            rm -f .review-remediation-trigger.json
+
+            mapfile -t files < <(git diff --name-only --diff-filter=ACM | grep -E '\.py$' || true)
+            if ((${#files[@]})); then
+              ruff format "${files[@]}" > /tmp/remediation-diagnostics/format.log 2>&1
+              FORMAT=$?
+              ruff check --fix "${files[@]}" > /tmp/remediation-diagnostics/ruff-fix.log 2>&1
+              RUFF_FIX=$?
+            else
+              FORMAT=0
+              RUFF_FIX=0
+              : > /tmp/remediation-diagnostics/format.log
+              : > /tmp/remediation-diagnostics/ruff-fix.log
+            fi
+
+            python - <<'PY' > /tmp/remediation-diagnostics/audit.log 2>&1
           from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
           result = audit_benchmark_execution_boundary()
           print(result.model_dump_json(indent=2))
           if not result.passed:
               raise SystemExit(result.findings)
           PY
+            AUDIT=$?
 
-      - name: Targeted regression
-        run: |
-          pytest --no-cov -q \
-            tests/evals/test_00_production_pilot.py \
-            tests/evals/test_benchmark_leakage_audit.py \
-            tests/evals/test_claw_benchmark_adapter.py \
-            tests/methodology/test_method_design_draft.py \
-            tests/review/test_semantic_gap_binding.py \
-            tests/review/test_action_mechanism_binding.py \
-            tests/review/test_research_contract_priority.py \
-            tests/literature/test_source_selection_policy.py \
-            tests/nodes/test_synthesis_method_quality_report.py
+            pytest --no-cov -q \
+              tests/evals/test_00_production_pilot.py \
+              tests/evals/test_benchmark_leakage_audit.py \
+              tests/evals/test_claw_benchmark_adapter.py \
+              tests/methodology/test_method_design_draft.py \
+              tests/review/test_semantic_gap_binding.py \
+              tests/review/test_action_mechanism_binding.py \
+              tests/review/test_research_contract_priority.py \
+              tests/literature/test_source_selection_policy.py \
+              tests/nodes/test_synthesis_method_quality_report.py \
+              > /tmp/remediation-diagnostics/targeted.log 2>&1
+            TARGETED=$?
 
-      - name: Full functional regression
-        run: pytest --no-cov -q
+            pytest --no-cov -q > /tmp/remediation-diagnostics/full.log 2>&1
+            FULL=$?
+            mypy --config-file pyproject.toml > /tmp/remediation-diagnostics/mypy.log 2>&1
+            MYPY=$?
+            ruff check src tests scripts > /tmp/remediation-diagnostics/ruff.log 2>&1
+            RUFF=$?
+            ruff format --check src tests scripts > /tmp/remediation-diagnostics/format-check.log 2>&1
+            FORMAT_CHECK=$?
+          else
+            FORMAT=99; RUFF_FIX=99; AUDIT=99; TARGETED=99; FULL=99; MYPY=99; RUFF=99; FORMAT_CHECK=99
+            for name in format ruff-fix audit targeted full mypy ruff format-check; do
+              echo "skipped because remediation apply failed" > "/tmp/remediation-diagnostics/$name.log"
+            done
+          fi
 
-      - name: Type check and final lint
-        run: |
-          mypy --config-file pyproject.toml
-          ruff check src tests scripts
-          ruff format --check src tests scripts
-
-      - name: Commit clean remediation
-        run: |
-          rm -f .github/workflows/review-remediation-once.yml
-          rm -f .review-remediation-trigger.json
-          rm -f scripts/.review-remediation-*.b64 scripts/run_review_remediation.py
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "fix(eval): remove benchmark-conditioned production logic"
-          git push origin HEAD:feat/claw-live-search-runtime
-
-      - name: Require Mistral secret
-        if: env.MISTRAL_API_KEY == ''
-        run: |
-          echo "MISTRAL_API_KEY is required for merge-readiness verification" >&2
-          exit 1
-
-      - name: Real Mistral smoke
-        id: mistral
-        if: env.MISTRAL_API_KEY != ''
-        env:
-          PAPERAGENT_RUN_REAL_LLM: "1"
-        run: pytest --no-cov -q tests/real_provider/test_mistral_smoke.py
-
-      - name: Real literature smoke
-        id: literature
-        if: steps.mistral.outcome == 'success'
-        env:
-          PAPERAGENT_RUN_REAL_PROVIDER: "1"
-        run: pytest --no-cov -q tests/real_provider/test_literature_smoke.py
-
-      - name: Contaminated development benchmark regression
-        id: development_benchmark
-        if: steps.mistral.outcome == 'success' && steps.literature.outcome == 'success'
-        continue-on-error: true
-        run: |
-          python scripts/run_claw_academic_runtime.py \
-            --search-mode literature \
-            --max-cases 20 \
-            --max-llm-calls 12 \
-            --provider-call-budget 200 \
-            --minimum-score 80 \
-            --llm-provider mistral \
-            --llm-model mistral-small-latest \
-            --llm-price-table "$PAPERAGENT_LLM_PRICE_TABLE" \
-            --output-dir build/review-remediation-development-20
-
-      - name: Record verification handoff
-        if: always()
-        env:
-          MISTRAL_OUTCOME: ${{ steps.mistral.outcome }}
-          LITERATURE_OUTCOME: ${{ steps.literature.outcome }}
-          DEVELOPMENT_OUTCOME: ${{ steps.development_benchmark.outcome }}
-        run: |
+          export APPLY FORMAT RUFF_FIX AUDIT TARGETED FULL MYPY RUFF FORMAT_CHECK
           python - <<'PY'
           import json
           import os
-          import subprocess
           from pathlib import Path
 
-          summary_path = Path('build/review-remediation-development-20/execution-summary.json')
-          summary = json.loads(summary_path.read_text()) if summary_path.exists() else None
-          source_sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
-          payload = {
-              'schema': 'paperagent.review-remediation-handoff.v2',
-              'source_sha': source_sha,
-              'original_20_status': 'development benchmark / contaminated evaluation set',
-              'functional_regression': 'success',
-              'coverage_gate': 'pending separate hardening; threshold remains 90 percent',
-              'mistral_smoke': os.environ.get('MISTRAL_OUTCOME'),
-              'literature_smoke': os.environ.get('LITERATURE_OUTCOME'),
-              'development_benchmark_step': os.environ.get('DEVELOPMENT_OUTCOME'),
-              'development_benchmark_summary': summary,
-              'private_holdout': 'pending: freeze production and scorer before creation',
+          root = Path('/tmp/remediation-diagnostics')
+          names = ['apply', 'format', 'ruff-fix', 'audit', 'targeted', 'full', 'mypy', 'ruff', 'format-check']
+          codes = {
+              'apply': int(os.environ['APPLY']),
+              'format': int(os.environ['FORMAT']),
+              'ruff_fix': int(os.environ['RUFF_FIX']),
+              'audit': int(os.environ['AUDIT']),
+              'targeted': int(os.environ['TARGETED']),
+              'full': int(os.environ['FULL']),
+              'mypy': int(os.environ['MYPY']),
+              'ruff': int(os.environ['RUFF']),
+              'format_check': int(os.environ['FORMAT_CHECK']),
           }
-          target = Path('evals/claw_academic_tailoring_v1/live-probes/review-remediation-latest.json')
-          target.parent.mkdir(parents=True, exist_ok=True)
-          target.write_text(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + '\n')
+          tails = {}
+          for name in names:
+              text = (root / f'{name}.log').read_text(errors='replace')
+              tails[name] = '\n'.join(text.splitlines()[-80:])
+          payload = {
+              'schema': 'paperagent.review-remediation-diagnostics.v1',
+              'source_sha': os.environ['GITHUB_SHA'],
+              'exit_codes': codes,
+              'log_tails': tails,
+          }
+          Path('/tmp/remediation-diagnostics.json').write_text(
+              json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + '\n'
+          )
           print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
           PY
 
-      - name: Commit verification handoff
+      - name: Commit diagnostics only
         if: always()
         run: |
+          git reset --hard HEAD
+          cp /tmp/remediation-diagnostics.json evals/claw_academic_tailoring_v1/live-probes/review-remediation-diagnostics.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add evals/claw_academic_tailoring_v1/live-probes/review-remediation-latest.json
-          if ! git diff --cached --quiet; then
-            git commit -m "test(eval): record real-provider remediation verification"
-            git push origin HEAD:feat/claw-live-search-runtime
-          fi
+          git add evals/claw_academic_tailoring_v1/live-probes/review-remediation-diagnostics.json
+          git commit -m "ci(eval): record remediation gate diagnostics"
+          git push origin HEAD:feat/claw-live-search-runtime
