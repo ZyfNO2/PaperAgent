@@ -69,6 +69,7 @@ def test_partial_verified_evidence_continues_to_provisional_method() -> None:
 
     assert quality is not None
     assert quality.verdict == "repair_retrieval"
+    assert quality.repair_target == "retrieval"
     assert quality.missing_gap_ids == ["risk"]
     assert "Q_PARTIAL_EVIDENCE_COVERAGE" in quality.reason_codes
 
