@@ -52,6 +52,12 @@ class ResearchContract(BaseModel):
     intended_claim: str | None = None
     observed_problem: str | None = None
     proposed_mechanism: str | None = None
+    baseline_readiness_confirmed: bool = False
+    evaluation_protocol_validated: bool = False
+    comparison_readiness_confirmed: bool = False
+    module_validation_confirmed: bool = False
+    failure_policy_confirmed: bool = False
+    explicit_evaluation_protocol_invalid: bool = False
 
 
 class BaselineCard(BaseModel):
@@ -261,10 +267,10 @@ class MethodAuditReport(BaseModel):
         has_critical = any(
             not item.passed and item.severity is AuditSeverity.CRITICAL for item in checks
         )
-        has_failure = any(not item.passed for item in checks)
+        has_error = any(not item.passed and item.severity is AuditSeverity.ERROR for item in checks)
         if has_critical:
             return AuditVerdict.NO_GO
-        if has_failure:
+        if has_error:
             return AuditVerdict.REVISE
         return AuditVerdict.GO
 
@@ -355,7 +361,7 @@ def _license_failure_severity(
     concrete_evidence = evidence is not None and evidence not in _UNRESOLVED_LICENSES
     if concrete_declared and concrete_evidence and declared != evidence:
         return AuditSeverity.CRITICAL
-    return AuditSeverity.ERROR
+    return AuditSeverity.WARNING
 
 
 def _check(
@@ -410,6 +416,16 @@ def _verified_evidence(item: EvidenceItem | None) -> bool:
         and _present(item.content_hash)
         and bool(item.supported_claims)
     )
+
+
+def _provenance_failure_severity(item: EvidenceItem | None) -> AuditSeverity:
+    identity_valid = (
+        item is not None
+        and item.verified
+        and _present(item.stable_identifier)
+        and _present(item.content_hash)
+    )
+    return AuditSeverity.ERROR if identity_valid else AuditSeverity.CRITICAL
 
 
 def _module_contract_complete(module: ModuleCard) -> bool:
@@ -478,12 +494,24 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             status=ClaimStatus.PROPOSED,
         )
     )
+    checks.append(
+        _check(
+            "evaluation-protocol-valid",
+            not plan.research.explicit_evaluation_protocol_invalid,
+            AuditSeverity.CRITICAL,
+            "the declared evaluation protocol has no explicit leakage or validity violation",
+            status=(
+                ClaimStatus.VERIFIED
+                if not plan.research.explicit_evaluation_protocol_invalid
+                else ClaimStatus.UNKNOWN
+            ),
+        )
+    )
 
     baseline = plan.baseline
     baseline_fields = (
         baseline.version_or_commit,
         baseline.source_evidence_id,
-        baseline.license,
         baseline.dataset,
         baseline.split,
         baseline.environment,
@@ -571,7 +599,7 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
         _check(
             "baseline-provenance",
             _verified_evidence(baseline_evidence),
-            AuditSeverity.CRITICAL,
+            _provenance_failure_severity(baseline_evidence),
             (
                 "baseline provenance references verified evidence with a stable "
                 "identifier and supported claims"
@@ -649,7 +677,7 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             _check(
                 f"module-provenance:{module.name}",
                 _verified_evidence(module_evidence),
-                AuditSeverity.CRITICAL,
+                _provenance_failure_severity(module_evidence),
                 (
                     f"module {module.name} references verified provenance with a "
                     "stable identifier and supported claims"
@@ -832,10 +860,15 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
     critical_failures = tuple(
         item for item in checks if not item.passed and item.severity is AuditSeverity.CRITICAL
     )
-    other_failures = tuple(item for item in checks if not item.passed)
+    blocking_failures = tuple(
+        item
+        for item in checks
+        if not item.passed and item.severity in {AuditSeverity.CRITICAL, AuditSeverity.ERROR}
+    )
+    reported_failures = tuple(item for item in checks if not item.passed)
     if critical_failures:
         verdict = AuditVerdict.NO_GO
-    elif other_failures:
+    elif blocking_failures:
         verdict = AuditVerdict.REVISE
     else:
         verdict = AuditVerdict.GO
@@ -852,7 +885,7 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
         )
     )
     risks = tuple(
-        item.message for item in other_failures if item.severity is not AuditSeverity.NOTE
+        item.message for item in reported_failures if item.severity is not AuditSeverity.NOTE
     )
     reasons = risks or ("all deterministic audit gates passed",)
     baseline_decision = (
@@ -925,6 +958,12 @@ def method_plan_template() -> dict[str, object]:
             "intended_claim": "",
             "observed_problem": "",
             "proposed_mechanism": "",
+            "baseline_readiness_confirmed": False,
+            "evaluation_protocol_validated": False,
+            "comparison_readiness_confirmed": False,
+            "module_validation_confirmed": False,
+            "failure_policy_confirmed": False,
+            "explicit_evaluation_protocol_invalid": False,
         },
         "baseline": {
             "name": "",

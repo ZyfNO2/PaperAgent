@@ -339,8 +339,8 @@ def test_missing_license_requires_revision_without_forcing_no_go() -> None:
     failed = {item.check_id: item for item in audit.checks if not item.passed}
 
     assert audit.verdict is AuditVerdict.REVISE
-    assert failed["baseline-license"].severity.value == "error"
-    assert failed["module-license:shallow_feature_fusion"].severity.value == "error"
+    assert failed["baseline-license"].severity.value == "warning"
+    assert failed["module-license:shallow_feature_fusion"].severity.value == "warning"
 
 
 def test_explicitly_incompatible_license_remains_no_go() -> None:

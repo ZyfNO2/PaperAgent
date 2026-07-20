@@ -55,6 +55,7 @@ async def method_design_node(state: PaperAgentState, config: RunnableConfig) -> 
     request = state.get("request")
     quality = state.get("quality")
     user_payload = {
+        "user_request": request.question if request is not None else None,
         "problem_statement": plan.problem_statement,
         "scope": plan.scope,
         "verified_findings": [

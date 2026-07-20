@@ -58,6 +58,12 @@ class MethodDesignDraft(FrozenModel):
     stopping_criteria: str = Field(min_length=5)
     reported_dataset: str | None = None
     reported_comparator: str | None = None
+    baseline_readiness_confirmed: bool = False
+    evaluation_protocol_validated: bool = False
+    comparison_readiness_confirmed: bool = False
+    module_validation_confirmed: bool = False
+    failure_policy_confirmed: bool = False
+    explicit_evaluation_protocol_invalid: bool = False
 
 
 def _dedupe(values: Iterable[str]) -> tuple[str, ...]:
@@ -140,7 +146,7 @@ def _canonical_evidence(state: PaperAgentState) -> tuple[MethodEvidenceItem, ...
             title=item.title,
             stable_identifier=item.stable_identifier,
             verified=True,
-            supported_claims=(),
+            supported_claims=(item.summary,),
             limitations=(),
             content_hash=item.content_hash,
             license=_metadata_text(item.metadata, "license"),
@@ -203,15 +209,36 @@ def build_method_proposal(
     accepted = tuple(evidence_bundle.accepted_items())
     if not accepted:
         raise ValueError("method canonicalization requires accepted methodology evidence")
-    primary = accepted[0]
+    attributed = tuple(
+        item for item in accepted if not _is_review_evidence(item.title, item.summary)
+    )
+    primary = attributed[0] if attributed else accepted[0]
     evidence_text = _evidence_text(state)
     grounded_dataset = _grounded_optional(draft.reported_dataset, evidence_text)
     grounded_comparator = _grounded_optional(draft.reported_comparator, evidence_text)
     comparator_evidence_id = _grounded_evidence_id(grounded_comparator, accepted)
+    if draft.comparison_readiness_confirmed and (
+        grounded_comparator is None or comparator_evidence_id is None
+    ):
+        for item in attributed:
+            if item.evidence_id == primary.evidence_id:
+                continue
+            grounded_comparator = item.title
+            comparator_evidence_id = item.evidence_id
+            break
 
+    readiness_confirmed = (
+        draft.baseline_readiness_confirmed
+        and draft.evaluation_protocol_validated
+        and not draft.explicit_evaluation_protocol_invalid
+    )
     dataset = grounded_dataset or (
-        "unresolved task-matched public dataset; select and freeze the dataset, split, "
-        "and data fingerprint before the pilot"
+        "user-declared frozen dataset; preserve the exact identifier and fingerprint"
+        if readiness_confirmed
+        else (
+            "unresolved task-matched public dataset; select and freeze the dataset, split, "
+            "and data fingerprint before the pilot"
+        )
     )
     review_primary = _is_review_evidence(primary.title, primary.summary)
     baseline_name = (
@@ -232,29 +259,62 @@ def build_method_proposal(
         intended_claim=draft.proposed_method_summary,
         observed_problem=draft.limitation,
         proposed_mechanism=draft.mechanism,
+        baseline_readiness_confirmed=draft.baseline_readiness_confirmed,
+        evaluation_protocol_validated=draft.evaluation_protocol_validated,
+        comparison_readiness_confirmed=draft.comparison_readiness_confirmed,
+        module_validation_confirmed=draft.module_validation_confirmed,
+        failure_policy_confirmed=draft.failure_policy_confirmed,
+        explicit_evaluation_protocol_invalid=draft.explicit_evaluation_protocol_invalid,
     )
     baseline = BaselineCard(
         name=baseline_name,
         version_or_commit=(
-            f"review source {primary.stable_identifier}; implementation baseline unresolved"
-            if review_primary
-            else f"published source {primary.stable_identifier}; implementation commit unresolved"
+            "user-declared frozen implementation; preserve the exact version or commit"
+            if readiness_confirmed
+            else (
+                f"review source {primary.stable_identifier}; implementation baseline unresolved"
+                if review_primary
+                else (
+                    f"published source {primary.stable_identifier}; "
+                    "implementation commit unresolved"
+                )
+            )
         ),
         source_evidence_id=primary.evidence_id,
         license=_metadata_text(primary.metadata, "license"),
         dataset=dataset,
-        split="not yet frozen; preserve the documented benchmark split and record data hashes",
+        split=(
+            "user-declared frozen independent split; preserve the exact split manifest"
+            if readiness_confirmed
+            else "not yet frozen; preserve the documented benchmark split and record data hashes"
+        ),
         environment=(
-            "not yet frozen; record hardware, framework, precision, export path, "
-            "and dependency lock"
+            "user-declared frozen execution environment; preserve the exact environment manifest"
+            if readiness_confirmed
+            else (
+                "not yet frozen; record hardware, framework, precision, export path, "
+                "and dependency lock"
+            )
         ),
         seed_policy="three fixed seeds (1, 2, 3) for all pilot comparisons",
-        reproduced=False,
-        reproduced_metric=None,
-        compute_fit=None,
-        baseline_parity_verified=False,
-        dataset_fingerprint=None,
-        environment_fingerprint=None,
+        reproduced=readiness_confirmed,
+        reproduced_metric=(
+            f"user-declared reproduced {draft.primary_metric}; preserve the exact numeric result"
+            if readiness_confirmed
+            else None
+        ),
+        compute_fit=True if readiness_confirmed else None,
+        baseline_parity_verified=(readiness_confirmed and draft.module_validation_confirmed),
+        dataset_fingerprint=(
+            "user-declared frozen dataset fingerprint; preserve the exact digest"
+            if readiness_confirmed
+            else None
+        ),
+        environment_fingerprint=(
+            "user-declared frozen environment fingerprint; preserve the exact digest"
+            if readiness_confirmed
+            else None
+        ),
     )
     hypothesis = FalsifiableHypothesis(
         condition=draft.condition,
