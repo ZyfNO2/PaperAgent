@@ -10,126 +10,81 @@ from paperagent.literature.query_refinement import refine_search_query
     ("query", "candidate"),
     [
         (
-            "Chinese long document classification hierarchical transformer",
-            "A hierarchical transformer for long document classification aggregates chunk-level "
-            "representations and is evaluated on Chinese documents.",
+            "peatland methane flux chamber modelling",
+            "Chamber measurements and process modelling estimate methane flux in peatlands.",
         ),
         (
-            "long document classification truncation long context",
-            "Long text classification suffers from truncation; a long-context encoder improves "
-            "document categorization.",
+            "ancient manuscript script identification multispectral",
+            "Multispectral imaging identifies scripts in damaged ancient manuscripts.",
         ),
         (
-            "few-shot intent classification prototypical network",
-            "A prototypical network for few-shot intent classification learns user-intent "
-            "representations from five examples per class.",
-        ),
-        (
-            "few-shot intent detection open set out-of-scope",
-            "Few-shot intent detection with out-of-scope rejection evaluates unknown intents.",
+            "seagrass meadow restoration drone mapping",
+            "Drone mapping evaluates restoration progress in seagrass meadows.",
         ),
     ],
 )
-def test_third_batch_guards_accept_task_matched_candidates(query: str, candidate: str) -> None:
-    assert matches_required_candidate_terms(query, candidate) is True
+def test_held_out_domains_accept_task_matched_candidates(query: str, candidate: str) -> None:
+    assert matches_required_candidate_terms(query, candidate)
 
 
 @pytest.mark.parametrize(
     ("query", "candidate"),
     [
         (
-            "Chinese long document classification hierarchical transformer",
-            "OpenCSG Chinese Corpus provides high-quality Chinese datasets for LLM training.",
+            "peatland methane flux chamber modelling",
+            "Methane combustion modelling in industrial chambers.",
         ),
         (
-            "Chinese long document classification hierarchical transformer",
-            "Benchmarking Chinese text recognition presents OCR datasets and recognition models.",
+            "ancient manuscript script identification multispectral",
+            "Multispectral crop disease identification from field images.",
         ),
         (
-            "long document classification truncation long context",
-            "Long-range transformer architectures are studied for generic document understanding.",
-        ),
-        (
-            "few-shot intent classification prototypical network",
-            "Meta-Baseline explores simple meta-learning for few-shot image classification.",
-        ),
-        (
-            "few-shot intent classification contrastive learning label semantics",
-            "A top-related meta-learning method addresses few-shot object detection.",
-        ),
-        (
-            "few-shot intent detection open set out-of-scope",
-            "Few-shot learning with meta metric learners is evaluated on visual benchmarks.",
+            "seagrass meadow restoration drone mapping",
+            "Drone mapping of urban traffic congestion.",
         ),
     ],
 )
-def test_third_batch_guards_reject_cross_task_false_positives(query: str, candidate: str) -> None:
-    assert matches_required_candidate_terms(query, candidate) is False
+def test_held_out_domains_reject_cross_task_candidates(query: str, candidate: str) -> None:
+    assert not matches_required_candidate_terms(query, candidate)
 
 
 @pytest.mark.parametrize(
-    ("gap_id", "description", "expected"),
+    ("gap_id", "description"),
     [
-        (
-            "baseline_comparison",
-            "baseline comparison and reproducibility",
-            "Chinese long document classification hierarchical transformer",
-        ),
-        (
-            "failure_mechanism",
-            "failure mechanism and computational limitations",
-            "long document classification truncation long context",
-        ),
-        (
-            "data_optimization_methods",
-            "parallel methods and data optimization alternatives",
-            "long document classification hierarchical attention sparse transformer",
-        ),
+        ("baseline", "baseline reproducibility"),
+        ("mechanism", "measurement failure mechanism"),
+        ("alternative", "parallel alternatives"),
+        ("risk", "risk and negative evidence"),
     ],
 )
-def test_long_document_queries_preserve_evidence_roles(
-    gap_id: str, description: str, expected: str
-) -> None:
+def test_gap_role_does_not_generate_a_canonical_query(gap_id: str, description: str) -> None:
+    query = "peatland methane flux chamber modelling benchmark evidence dataset uncertainty"
     result = refine_search_query(
-        "Chinese long document text classification models datasets efficiency",
+        query,
         gap_id=gap_id,
         gap_description=description,
-        research_context="中文长文本分类模型优化",
+        research_context="northern wetland carbon cycle",
     )
-    assert result.query == expected
+    assert result.query == "peatland methane flux chamber modelling uncertainty"
     assert result.reason is not None
-    assert "long-document classification" in result.reason
 
 
-@pytest.mark.parametrize(
-    ("gap_id", "description", "expected"),
-    [
-        (
-            "baseline_comparison",
-            "baseline comparison",
-            "few-shot intent classification prototypical network",
-        ),
-        (
-            "mechanism_limitation",
-            "mechanism, adaptation, and limitations",
-            "few-shot intent classification contrastive learning label semantics",
-        ),
-        (
-            "risk_negative_evidence",
-            "risk and negative evidence for unknown intents",
-            "few-shot intent detection open set out-of-scope",
-        ),
-    ],
-)
-def test_few_shot_intent_queries_preserve_evidence_roles(
-    gap_id: str, description: str, expected: str
-) -> None:
+def test_language_or_domain_context_is_not_silently_added() -> None:
+    query = "manuscript script identification multispectral"
     result = refine_search_query(
-        "few-shot text intention recognition industry-specific baseline",
-        gap_id=gap_id,
-        gap_description=description,
-        research_context="小样本行业文本意图识别",
+        query,
+        gap_id="baseline",
+        gap_description="baseline evidence",
+        research_context="Japanese historical documents",
     )
-    assert result.query == expected
-    assert result.reason is not None
-    assert "few-shot intent" in result.reason
+    assert result.query == query
+    assert "Japanese" not in result.query
+    assert result.changed is False
+
+
+def test_counterfactual_task_swap_is_rejected() -> None:
+    query = "peatland methane flux chamber modelling"
+    same_instrument_wrong_task = "Chamber modelling of aerosol deposition in clean rooms."
+    same_domain_wrong_measurement = "Peatland vegetation mapping from aerial photographs."
+    assert not matches_required_candidate_terms(query, same_instrument_wrong_task)
+    assert not matches_required_candidate_terms(query, same_domain_wrong_measurement)
