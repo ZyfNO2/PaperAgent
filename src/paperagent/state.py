@@ -27,11 +27,13 @@ from paperagent.schemas import (
     TraceAuditResult,
     TraceEvent,
 )
+from paperagent.scientific_readiness import ScientificReadinessSignals
 
 
 class PaperAgentState(TypedDict, total=False):
     run: RunContext
     request: ResearchRequest
+    scientific_readiness: ScientificReadinessSignals | None
     plan: ResearchPlan | None
     research_contract: ResearchContract | None
     retrieval: RetrievalState
@@ -54,6 +56,7 @@ class PaperAgentState(TypedDict, total=False):
 class StatePatch(TypedDict, total=False):
     run: RunContext
     request: ResearchRequest
+    scientific_readiness: ScientificReadinessSignals | None
     plan: ResearchPlan | None
     research_contract: ResearchContract | None
     retrieval: RetrievalState

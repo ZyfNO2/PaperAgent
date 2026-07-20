@@ -1,16 +1,30 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from typing import Literal
+
+from paperagent.schemas.base import FrozenModel
 
 
-@dataclass(frozen=True)
-class ScientificReadinessSignals:
+class ScientificReadinessSignals(FrozenModel):
+    basis: Literal["user_declaration"] = "user_declaration"
+    independently_verified: Literal[False] = False
     baseline_readiness_confirmed: bool = False
     evaluation_protocol_validated: bool = False
     comparison_readiness_confirmed: bool = False
     module_validation_confirmed: bool = False
     failure_policy_confirmed: bool = False
     explicit_evaluation_protocol_invalid: bool = False
+
+    @property
+    def declared_ready(self) -> bool:
+        return bool(
+            self.baseline_readiness_confirmed
+            and self.evaluation_protocol_validated
+            and self.comparison_readiness_confirmed
+            and self.module_validation_confirmed
+            and self.failure_policy_confirmed
+            and not self.explicit_evaluation_protocol_invalid
+        )
 
 
 def _contains_any(text: str, phrases: tuple[str, ...]) -> bool:

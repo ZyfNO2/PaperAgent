@@ -18,6 +18,7 @@ from helpers import FixtureKey, assert_completed_nodes, build_services, load_llm
 
 EXPECTED_METHOD_REPAIR_NODES = [
     "intake_node",
+    "readiness_preflight_node",
     "planning_node",
     "prepare_search_node",
     "search_tool_node",

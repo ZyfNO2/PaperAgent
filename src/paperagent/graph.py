@@ -13,6 +13,10 @@ from paperagent.nodes.methodology_audit import methodology_audit_node
 from paperagent.nodes.persist import persist_node
 from paperagent.nodes.planning import planning_node, planning_route
 from paperagent.nodes.quality_gate import quality_gate_node, quality_route
+from paperagent.nodes.readiness_preflight import (
+    readiness_preflight_node,
+    readiness_preflight_route,
+)
 from paperagent.nodes.report import report_node
 from paperagent.outcome import derive_final_outcome
 from paperagent.retrieval.graph import build_retrieval_graph
@@ -145,6 +149,7 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
 
     builder = StateGraph(PaperAgentState)
     builder.add_node("intake_node", intake_node)
+    builder.add_node("readiness_preflight_node", readiness_preflight_node)
     builder.add_node("planning_node", planning_node)
     builder.add_node("human_review_node", human_review_node)
     builder.add_node("retrieval_subgraph", retrieval_subgraph_node)
@@ -156,7 +161,15 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     builder.add_node("persist_node", persist_node)
 
     builder.add_edge(START, "intake_node")
-    builder.add_edge("intake_node", "planning_node")
+    builder.add_edge("intake_node", "readiness_preflight_node")
+    builder.add_conditional_edges(
+        "readiness_preflight_node",
+        readiness_preflight_route,
+        {
+            "continue": "planning_node",
+            "terminal": "report_node",
+        },
+    )
     builder.add_conditional_edges(
         "planning_node",
         planning_route,

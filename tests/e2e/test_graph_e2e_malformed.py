@@ -15,6 +15,7 @@ from helpers import FixtureKey, assert_completed_nodes, build_services, load_llm
 
 EXPECTED_MALFORMED_NODES = [
     "intake_node",
+    "readiness_preflight_node",
     # planning_node emits node.failed (not node.completed) when the LLM returns
     # invalid JSON, so it must NOT appear in the completed-node sequence.
     "report_node",

@@ -18,6 +18,9 @@ def test_chinese_completed_workflow_is_detected() -> None:
     assert signals.module_validation_confirmed is True
     assert signals.failure_policy_confirmed is True
     assert signals.explicit_evaluation_protocol_invalid is False
+    assert signals.declared_ready is True
+    assert signals.basis == "user_declaration"
+    assert signals.independently_verified is False
 
 
 def test_train_test_overlap_is_invalid_and_overrides_independence() -> None:

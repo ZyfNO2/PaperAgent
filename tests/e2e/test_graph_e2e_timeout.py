@@ -17,6 +17,7 @@ from paperagent.runtime import RuntimeServices
 
 EXPECTED_TIMEOUT_NODES = [
     "intake_node",
+    "readiness_preflight_node",
     # planning_node emits node.failed (not node.completed) when the LLM provider
     # times out, so it must NOT appear in the completed-node sequence.
     "report_node",

@@ -22,6 +22,7 @@ from helpers import (
 
 EXPECTED_BOUNDED_NODES = [
     "intake_node",
+    "readiness_preflight_node",
     "planning_node",
     "prepare_search_node",
     "search_tool_node",

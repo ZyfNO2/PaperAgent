@@ -21,6 +21,7 @@ from helpers import FixtureKey, assert_completed_nodes, build_services, load_llm
 
 EXPECTED_RETRIEVAL_RETRY_NODES = [
     "intake_node",
+    "readiness_preflight_node",
     "planning_node",
     # First retrieval pass (round 0 -> 1): search returns candidates.
     "prepare_search_node",

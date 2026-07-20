@@ -10,6 +10,7 @@ from typing import Any, Literal
 from pydantic import Field, model_validator
 
 from paperagent.schemas.base import FrozenModel
+from paperagent.scientific_readiness import ScientificReadinessSignals
 
 SOURCE_REPOSITORY = "ZyfNO2/PaperClaw"
 SOURCE_BRANCH = "main"
@@ -344,6 +345,7 @@ class AcademicTailoringRunTrace(FrozenModel):
     clarification_questions: tuple[str, ...]
     resolved_unknowns: tuple[str, ...]
     asked_user_to_design_method: bool = False
+    scientific_readiness: ScientificReadinessSignals | None = None
     baseline: BaselineTrace | None = None
     hypothesis: HypothesisTrace | None = None
     modules: tuple[ModuleTrace, ...] = ()

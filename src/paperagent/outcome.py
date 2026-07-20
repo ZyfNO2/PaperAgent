@@ -74,6 +74,7 @@ def derive_final_outcome(state: PaperAgentState) -> FinalOutcome:
     quality = state.get("quality")
     plan = state.get("plan")
     audit = state.get("methodology_audit")
+    readiness = state.get("scientific_readiness")
     reason_codes = list(quality.reason_codes) if quality is not None else []
     if execution is not None and execution.status == "failed":
         error_code = (
@@ -86,6 +87,32 @@ def derive_final_outcome(state: PaperAgentState) -> FinalOutcome:
             report_status="blocked",
             reason_codes=[error_code],
             blocker_code=error_code,
+            recommended_next_actions=[],
+        )
+    if readiness is not None and readiness.explicit_evaluation_protocol_invalid:
+        reason = "Q_EXPLICIT_EVALUATION_PROTOCOL_INVALID"
+        return _outcome(
+            state,
+            execution_status="succeeded",
+            scientific_verdict="NO_GO",
+            report_status="completed",
+            reason_codes=reason_codes or [reason],
+            blocker_code=reason,
+            recommended_next_actions=[],
+        )
+    if (
+        readiness is not None
+        and readiness.declared_ready
+        and quality is not None
+        and quality.verdict == "pass"
+    ):
+        return _outcome(
+            state,
+            execution_status="succeeded",
+            scientific_verdict="GO",
+            report_status="completed",
+            reason_codes=reason_codes,
+            blocker_code=None,
             recommended_next_actions=[],
         )
     if plan is None or plan.status == "blocked":
@@ -172,6 +199,11 @@ def audit_state_consistency(state: PaperAgentState) -> TraceAuditResult:
     outcome = state.get("final_outcome")
     quality = state.get("quality")
     audit = state.get("methodology_audit")
+    readiness = state.get("scientific_readiness")
+    readiness_terminal = bool(
+        readiness is not None
+        and (readiness.explicit_evaluation_protocol_invalid or readiness.declared_ready)
+    )
 
     if evidence is not None and ledger is not None:
         record(
@@ -197,8 +229,14 @@ def audit_state_consistency(state: PaperAgentState) -> TraceAuditResult:
     else:
         record(
             "EVIDENCE_LEDGER_PRESENT",
-            outcome is not None and outcome.scientific_verdict == "NOT_EVALUATED",
-            "Evaluated scientific outcomes require an evidence ledger.",
+            bool(
+                outcome is not None
+                and (outcome.scientific_verdict == "NOT_EVALUATED" or readiness_terminal)
+            ),
+            (
+                "Evaluated scientific outcomes require an evidence ledger unless the "
+                "decision is explicitly limited to a user-declaration readiness preflight."
+            ),
         )
 
     if outcome is not None and report is not None:
@@ -231,13 +269,23 @@ def audit_state_consistency(state: PaperAgentState) -> TraceAuditResult:
     if outcome is not None and outcome.scientific_verdict == "NO_GO":
         record(
             "NO_GO_REQUIRES_METHOD_AUDIT",
-            audit is not None and audit.verdict is AuditVerdict.NO_GO,
-            "Scientific NO_GO must come from the canonical methodology audit.",
+            bool(
+                (audit is not None and audit.verdict is AuditVerdict.NO_GO)
+                or (readiness is not None and readiness.explicit_evaluation_protocol_invalid)
+            ),
+            (
+                "Scientific NO_GO must come from the canonical methodology audit or an "
+                "explicitly declared invalid evaluation protocol."
+            ),
         )
     else:
         record("NO_GO_REQUIRES_METHOD_AUDIT", True)
 
-    quality_route_nodes = {"quality_gate_node", "evidence_quality_gate_node"}
+    quality_route_nodes = {
+        "quality_gate_node",
+        "evidence_quality_gate_node",
+        "readiness_preflight_node",
+    }
     route_events = [
         event.route
         for event in state.get("trace", [])

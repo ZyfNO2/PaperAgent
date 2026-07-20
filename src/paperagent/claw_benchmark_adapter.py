@@ -520,6 +520,7 @@ def normalize_paperagent_state(
         clarification_questions=clarification_questions,
         resolved_unknowns=inferred_unknowns,
         asked_user_to_design_method=context.asked_user_to_design_method,
+        scientific_readiness=state.get("scientific_readiness"),
         baseline=_baseline_trace(state),
         hypothesis=_hypothesis_trace(state),
         modules=modules,
