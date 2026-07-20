@@ -12,6 +12,7 @@ on:
       - "src/paperagent/retrieval/prepare_search.py"
       - "tests/literature/test_prepared_query_contract.py"
       - "tests/literature/test_second_batch_query_precision.py"
+      - "tests/review/test_action_mechanism_binding.py"
       - "tests/review/test_low_light_mechanism_binding.py"
   workflow_dispatch:
 
@@ -48,6 +49,7 @@ jobs:
             src/paperagent/retrieval/prepare_search.py
             tests/literature/test_prepared_query_contract.py
             tests/literature/test_second_batch_query_precision.py
+            tests/review/test_action_mechanism_binding.py
             tests/review/test_low_light_mechanism_binding.py
           )
           ruff check "${files[@]}" --output-format=concise > "$out/ruff.log" 2>&1
@@ -61,6 +63,7 @@ jobs:
             tests/literature/test_second_batch_query_precision.py \
             tests/literature/test_query_concepts.py \
             tests/literature/test_query_refinement.py \
+            tests/review/test_action_mechanism_binding.py \
             tests/review/test_low_light_mechanism_binding.py \
             tests/review/test_semantic_gap_binding.py \
             tests/review/test_consolidated_regressions.py \
