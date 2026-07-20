@@ -172,6 +172,14 @@ def _mechanism_role_support(text: str) -> bool:
             "missing modality",
             "modality absence",
             "misregistration",
+            "computational and energy requests",
+            "computational request",
+            "energy request",
+            "energy demand",
+            "temporal order",
+            "similar poses",
+            "crowded scene",
+            "complex environment",
         )
     )
     intervention = any(
@@ -184,6 +192,9 @@ def _mechanism_role_support(text: str) -> bool:
             "network",
             "feature fusion",
             "attention",
+            "self-attention",
+            "self-attentional",
+            "pose representation",
             "loss",
             "branch",
             "detection head",

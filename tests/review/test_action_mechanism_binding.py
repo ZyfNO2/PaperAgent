@@ -14,13 +14,10 @@ from paperagent.schemas.plan import SearchQuery
 
 _GAP = EvidenceGap(
     gap_id="failure_mechanism_temporal_action",
-    description=(
-        "摄像头动作识别中相似姿态、时间顺序、实时计算约束及可独立验证的时序干预证据。"
-    ),
+    description=("摄像头动作识别中相似姿态、时间顺序、实时计算约束及可独立验证的时序干预证据。"),
 )
 _QUERY = (
-    "camera video pose human action recognition temporal order self-attention "
-    "real-time mechanism"
+    "camera video pose human action recognition temporal order self-attention real-time mechanism"
 )
 
 
