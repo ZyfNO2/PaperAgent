@@ -18,7 +18,7 @@ concurrency:
 jobs:
   cleanup-and-verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,7 +31,7 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
 
-      - name: Remove remaining benchmark-conditioned adapter paths
+      - name: Remove remaining benchmark-conditioned paths
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -52,28 +52,33 @@ jobs:
               else decision == "REVISE" and _has_actionable_recovery_path(next_actions)
           )
           '''
-          if old not in text:
-              raise SystemExit("pilot inference block not found")
-          text = text.replace(old, "    pilot_recommended = context.pilot_recommended\n")
+          if old in text:
+              text = text.replace(old, "    pilot_recommended = context.pilot_recommended\n")
+          if "_has_actionable_recovery_path" in text:
+              raise SystemExit("text-based pilot inference remains")
           adapter.write_text(text, encoding="utf-8")
 
-          stale = (
+          for path in (
               Path("src/paperagent/claw_trace_reconciliation.py"),
               Path("tests/evals/test_claw_trace_reconciliation.py"),
-          )
-          for path in stale:
+              Path("src/paperagent/claw_pilot_policy.py"),
+              Path("tests/evals/test_claw_pilot_policy.py"),
+              Path("src/paperagent/literature/task_query_overrides.py"),
+          ):
               path.unlink(missing_ok=True)
 
           removed_names = (
               "src/paperagent/literature/task_query_overrides.py",
               "tests/evals/test_claw_pilot_policy.py",
+              "src/paperagent/claw_pilot_policy.py",
               "src/paperagent/claw_trace_reconciliation.py",
               "tests/evals/test_claw_trace_reconciliation.py",
           )
           for workflow in Path(".github/workflows").glob("*.yml"):
               lines = workflow.read_text(encoding="utf-8").splitlines()
               cleaned = [
-                  line for line in lines
+                  line
+                  for line in lines
                   if not any(name in line for name in removed_names)
               ]
               workflow.write_text("\n".join(cleaned) + "\n", encoding="utf-8")
@@ -85,30 +90,37 @@ jobs:
       - name: Format
         run: ruff format src tests scripts
 
-      - name: Static leakage scan
+      - name: Run verification matrix
+        id: verify
+        shell: bash
         run: |
-          test ! -e src/paperagent/literature/task_query_overrides.py
-          test ! -e src/paperagent/claw_pilot_policy.py
-          test ! -e src/paperagent/claw_trace_reconciliation.py
-          ! grep -RInE 'override_task_query|_has_actionable_recovery_path|exactly two consolidated required gaps|role-explicit gap descriptions' src/paperagent
-          ! grep -RInE 'at-[0-9]{3}' \
-            src/paperagent/retrieval \
-            src/paperagent/literature/query_concepts.py \
-            src/paperagent/literature/query_refinement.py \
-            src/paperagent/literature/specialized_guards.py
+          set +e
+          out="build/leakage-cleanup-gate"
+          mkdir -p "$out"
 
-      - name: Ruff
-        run: ruff check src tests scripts
+          {
+            test ! -e src/paperagent/literature/task_query_overrides.py
+            test ! -e src/paperagent/claw_pilot_policy.py
+            test ! -e src/paperagent/claw_trace_reconciliation.py
+            ! grep -RInE 'override_task_query|_has_actionable_recovery_path|exactly two consolidated required gaps|role-explicit gap descriptions' src/paperagent
+            ! grep -RInE 'at-[0-9]{3}' \
+              src/paperagent/retrieval \
+              src/paperagent/literature/query_concepts.py \
+              src/paperagent/literature/query_refinement.py \
+              src/paperagent/literature/specialized_guards.py
+          } > "$out/static-scan.log" 2>&1
+          static_status=$?
 
-      - name: Mypy
-        run: mypy --config-file pyproject.toml
+          ruff check src tests scripts > "$out/ruff.log" 2>&1
+          ruff_status=$?
+          ruff format --check src tests scripts > "$out/format.log" 2>&1
+          format_status=$?
+          mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
+          mypy_status=$?
+          pytest -q > "$out/pytest.log" 2>&1
+          pytest_status=$?
 
-      - name: Full test suite
-        run: pytest -q
-
-      - name: Held-out smoke matrix
-        run: |
-          python - <<'PY'
+          python - <<'PY' > "$out/held-out.log" 2>&1
           from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
           from paperagent.literature.query_concepts import matches_required_candidate_terms
           from paperagent.literature.specialized_guards import matches_specialized_candidate_terms
@@ -166,8 +178,50 @@ jobs:
               raise AssertionError(audit.findings)
           print("held-out smoke matrix passed")
           PY
+          heldout_status=$?
+
+          python - \
+            "$out/status.json" \
+            "$static_status" \
+            "$ruff_status" \
+            "$format_status" \
+            "$mypy_status" \
+            "$pytest_status" \
+            "$heldout_status" <<'PY'
+          import json
+          import sys
+
+          keys = ("static", "ruff", "format", "mypy", "pytest", "held_out")
+          values = [int(value) for value in sys.argv[2:]]
+          payload = dict(zip(keys, values, strict=True))
+          payload["passed"] = all(value == 0 for value in values)
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, indent=2, sort_keys=True)
+              handle.write("\n")
+          print(json.dumps(payload, sort_keys=True))
+          PY
+
+          if (( static_status || ruff_status || format_status || mypy_status || pytest_status || heldout_status )); then
+            echo "passed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "passed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: leakage-cleanup-gate-${{ github.run_id }}
+          path: build/leakage-cleanup-gate
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce verification
+        if: steps.verify.outputs.passed != 'true'
+        run: exit 1
 
       - name: Commit verified cleanup
+        if: steps.verify.outputs.passed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -177,4 +231,5 @@ jobs:
             exit 0
           fi
           git commit -m "fix(eval): complete benchmark leakage cleanup"
+          git pull --rebase origin feat/claw-live-search-runtime
           git push origin HEAD:feat/claw-live-search-runtime
