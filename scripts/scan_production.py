@@ -24,10 +24,13 @@ def _sha256_bytes(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def _iter_text_files(root: Path) -> list[Path]:
+def _iter_text_files(root: Path, *, excluded_files: set[Path] | None = None) -> list[Path]:
+    excluded = {path.resolve() for path in (excluded_files or set())}
     files: list[Path] = []
     for path in root.rglob("*"):
         if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
+            continue
+        if path.resolve() in excluded:
             continue
         if any(part in EXCLUDED_PARTS for part in path.parts):
             continue
@@ -94,7 +97,8 @@ def scan_production(
 ) -> dict[str, object]:
     root = production_root.resolve()
     forbidden_ngrams, manifest_sha256 = _load_private_manifest(private_manifest)
-    files = _iter_text_files(root)
+    excluded_files = {private_manifest.resolve()} if private_manifest is not None else set()
+    files = _iter_text_files(root, excluded_files=excluded_files)
     findings = _runtime_signature_findings(root)
     file_hashes: dict[str, str] = {}
 
