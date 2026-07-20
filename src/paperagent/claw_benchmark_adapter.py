@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import re
 from collections.abc import Iterable
 
 from pydantic import Field
@@ -82,6 +84,7 @@ def _fact_partitions(state: PaperAgentState) -> FactPartitions:
     report = state.get("report")
     method = state.get("method")
     plan = state.get("plan")
+    request = state.get("request")
     contract = state.get("research_contract")
     outcome = state.get("final_outcome")
 
@@ -96,6 +99,15 @@ def _fact_partitions(state: PaperAgentState) -> FactPartitions:
             report.proposed_method if report is not None else None,
         )
     )
+    if not verified and not inferred and not proposed:
+        inferred = _dedupe(
+            (
+                plan.problem_statement if plan is not None else None,
+                plan.scope if plan is not None else None,
+            )
+        )
+    if not verified and not inferred and not proposed and request is not None:
+        verified = _dedupe((f"User-declared research objective: {request.question}",))
     unknown = _dedupe(
         (
             *(plan.risks if plan is not None else []),
@@ -120,19 +132,48 @@ def _fact_partitions(state: PaperAgentState) -> FactPartitions:
     )
 
 
-def _role_from_text(value: str) -> EvidenceRole:
+def _roles_from_text(value: str) -> tuple[EvidenceRole, ...]:
     text = value.casefold()
-    if any(token in text for token in ("baseline", "基线", "reproduction")):
-        return "baseline"
-    if any(token in text for token in ("strong comparison", "sota", "comparison", "对比")):
-        return "strong_comparison"
+    roles: list[EvidenceRole] = []
+    if any(token in text for token in ("baseline", "基线", "reproduction", "复现")):
+        roles.append("baseline")
+    if any(
+        token in text
+        for token in (
+            "strong comparison",
+            "strong comparative",
+            "sota",
+            "comparison",
+            "强比较",
+            "强对比",
+            "对比方法",
+        )
+    ):
+        roles.append("strong_comparison")
     if any(token in text for token in ("risk", "failure", "negative", "风险", "失败")):
-        return "risk"
-    if any(token in text for token in ("parallel", "module", "mechanism", "平行", "模块", "机制")):
-        return "parallel_method"
-    if any(token in text for token in ("gap", "limitation", "problem", "缺口", "局限")):
-        return "gap"
-    return "other"
+        roles.append("risk")
+    if any(
+        token in text
+        for token in (
+            "parallel",
+            "alternative",
+            "module",
+            "mechanism",
+            "并行",
+            "替代",
+            "模块",
+            "机制",
+        )
+    ):
+        roles.append("parallel_method")
+    if any(token in text for token in ("gap", "limitation", "problem", "缺口", "局限", "不足")):
+        roles.append("gap")
+    return tuple(dict.fromkeys(roles))
+
+
+def _role_from_text(value: str) -> EvidenceRole:
+    roles = _roles_from_text(value)
+    return roles[0] if roles else "other"
 
 
 def _gap_roles(state: PaperAgentState) -> dict[str, EvidenceRole]:
@@ -155,6 +196,13 @@ def _retrieval_roles(
     roles: list[EvidenceRole] = [role for role in gap_roles.values() if role != "other"]
     method = state.get("method")
     plan = state.get("plan")
+    if plan is not None:
+        queries_by_gap: dict[str, list[str]] = {}
+        for query in plan.search_queries:
+            queries_by_gap.setdefault(query.gap_id, []).append(query.query)
+        for gap in plan.evidence_gaps:
+            text = " ".join((gap.description, *queries_by_gap.get(gap.gap_id, [])))
+            roles.extend(_roles_from_text(text))
     if method is not None:
         roles.append("baseline")
         if method.methodology_plan.modules:
@@ -171,25 +219,41 @@ def _retrieval_roles(
     return tuple(dict.fromkeys(roles))
 
 
-def _method_evidence_roles(state: PaperAgentState) -> dict[str, EvidenceRole]:
-    method = state.get("method")
-    if method is None:
-        return {}
-    plan = method.methodology_plan
-    roles: dict[str, EvidenceRole] = {}
-    if plan.baseline.source_evidence_id:
-        roles[plan.baseline.source_evidence_id] = "baseline"
-    for module in plan.modules:
-        if module.evidence_id:
-            roles[module.evidence_id] = "parallel_method"
-    for experiment in plan.experiments:
-        if not experiment.source_evidence_id:
-            continue
-        if experiment.arm_type is ExperimentArmType.STRONG_COMPARISON:
-            roles[experiment.source_evidence_id] = "strong_comparison"
-        elif experiment.arm_type is ExperimentArmType.NEGATIVE_CONTROL:
-            roles[experiment.source_evidence_id] = "risk"
-    return roles
+_SUPPLIED_REF = re.compile(
+    r"^(?P<title>.+?) \[declared role: (?P<role>.+?)\]$",
+    re.IGNORECASE,
+)
+
+
+def _supplied_material_reviews(
+    state: PaperAgentState,
+    *,
+    existing_count: int,
+) -> tuple[EvidenceReview, ...]:
+    request = state.get("request")
+    if request is None or existing_count >= len(request.user_material_refs):
+        return ()
+    reviews: list[EvidenceReview] = []
+    for reference in request.user_material_refs[existing_count:]:
+        match = _SUPPLIED_REF.match(reference.strip())
+        declared_role = match.group("role").strip() if match else "other"
+        digest = hashlib.sha256(reference.encode("utf-8")).hexdigest()[:16]
+        role = _role_from_text(declared_role)
+        reviews.append(
+            EvidenceReview(
+                evidence_id=f"user-material:{digest}",
+                source_type="user_material",
+                identity_verified=False,
+                relevance_reviewed=False,
+                relevance_passed=False,
+                accepted=False,
+                role=role,
+                core_evidence=role in {"baseline", "gap", "parallel_method"},
+                source_is_supplied_material=True,
+                role_compatible=None,
+            )
+        )
+    return tuple(reviews)
 
 
 def _evidence_reviews(
@@ -246,6 +310,8 @@ def _evidence_reviews(
                 role_compatible=None,
             )
         )
+    supplied_count = sum(item.source_is_supplied_material for item in reviews)
+    reviews.extend(_supplied_material_reviews(state, existing_count=supplied_count))
     return tuple(reviews)
 
 

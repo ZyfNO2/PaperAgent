@@ -312,3 +312,88 @@ def test_not_evaluated_state_fails_closed_in_benchmark_trace() -> None:
     result = evaluate_case(case, trace)
     assert result.status == "failed"
     assert "TRACE_CONTRACT_FAILURE" in {item.code for item in result.hard_failures}
+
+
+def test_blocked_pre_retrieval_state_records_plan_inference_and_supplied_role() -> None:
+    plan = ResearchPlan(
+        status="ready",
+        problem_statement="Apply MobileNetV3 to lightweight plant-disease recognition.",
+        scope="Public dataset, baseline, and efficiency evidence before deployment choices.",
+        evidence_gaps=[
+            EvidenceGap(
+                gap_id="baseline_comparison",
+                description="MobileNetV3 baseline and strong comparison evidence",
+            ),
+            EvidenceGap(
+                gap_id="mechanism_limitation",
+                description="mechanism limitation and parallel alternatives",
+            ),
+        ],
+        search_queries=[
+            SearchQuery(
+                query_id="q1",
+                gap_id="baseline_comparison",
+                query="MobileNetV3 plant disease baseline strong comparison",
+                source_types=["paper"],
+            ),
+            SearchQuery(
+                query_id="q2",
+                gap_id="mechanism_limitation",
+                query="plant disease limitation parallel mechanism risk",
+                source_types=["paper"],
+            ),
+        ],
+        success_criteria=["Find a reproducible baseline."],
+        risks=["dataset and deployment device remain unknown"],
+        clarification_question="Which dataset and device should constrain the pilot?",
+    )
+    state = cast(
+        PaperAgentState,
+        {
+            "request": ResearchRequest(
+                question="我上传了 MobileNetV3 论文，想用于轻量化植物病害识别",
+                user_material_refs=[
+                    "Searching for MobileNetV3 [declared role: baseline_or_backbone_candidate]"
+                ],
+            ),
+            "plan": plan,
+        },
+    )
+
+    trace = normalize_paperagent_state(
+        state,
+        BenchmarkNormalizationContext(case_id="at-017-mobilenetv3-plant-disease-supplied"),
+    )
+
+    assert trace.fact_partitions.inferred == (plan.problem_statement, plan.scope)
+    assert set(trace.retrieval_roles) == {
+        "baseline",
+        "gap",
+        "parallel_method",
+        "strong_comparison",
+        "risk",
+    }
+    supplied = [item for item in trace.evidence_reviews if item.source_is_supplied_material]
+    assert len(supplied) == 1
+    assert supplied[0].source_type == "user_material"
+    assert supplied[0].role == "baseline"
+    assert supplied[0].accepted is False
+    assert supplied[0].identity_verified is False
+
+
+def test_empty_state_uses_user_objective_without_claiming_external_verification() -> None:
+    state = cast(
+        PaperAgentState,
+        {"request": ResearchRequest(question="面向电商场景的多行为推荐系统")},
+    )
+
+    trace = normalize_paperagent_state(
+        state,
+        BenchmarkNormalizationContext(case_id="at-015-multibehavior-recommendation"),
+    )
+
+    assert trace.fact_partitions.verified == (
+        "User-declared research objective: 面向电商场景的多行为推荐系统",
+    )
+    assert trace.fact_partitions.inferred == ()
+    assert trace.fact_partitions.proposed == ()
