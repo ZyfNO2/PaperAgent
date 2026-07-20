@@ -1,13 +1,13 @@
 {
   "case_id": "at-019-unet-unspecified-medical-segmentation",
-  "reason": "verify that unresolved organ and dataset selection remains REVISE instead of being promoted to a premature pilot",
-  "attempt": 2,
-  "offline_gate_run_id": 29759670180,
+  "reason": "verify REVISE decision and reconcile accepted Evidence Ledger relevance checks without weakening identity or role requirements",
+  "attempt": 3,
+  "offline_gate_run_id": 29760078105,
   "previous_result": {
     "score": 92,
-    "hard_failures": 0,
-    "accepted_evidence": 1,
-    "issue": "expected REVISE but benchmark normalization inferred REVISE_TO_PILOT while the experimental target remained undefined"
+    "hard_failures": 1,
+    "accepted_evidence": 4,
+    "issue": "decision matched REVISE, but an accepted dataset source had an auditable ledger relevance check that was not propagated into the normalized trace"
   },
   "requested_scope": "single_case_only",
   "web_search_enabled": false
