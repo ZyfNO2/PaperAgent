@@ -17,6 +17,7 @@ class BenchmarkInput(FrozenModel):
     user_input: str = Field(min_length=1)
     supplied_material_titles: tuple[str, ...] = ()
     user_declared_roles: tuple[str, ...] = ()
+    declared_constraints: tuple[str, ...] = ()
 
     @model_validator(mode="after")
     def validate_material_alignment(self) -> BenchmarkInput:
@@ -36,7 +37,11 @@ def benchmark_input_to_request(value: BenchmarkInput) -> ResearchRequest:
             strict=True,
         )
     ]
-    return ResearchRequest(question=value.user_input, user_material_refs=material_refs)
+    return ResearchRequest(
+        question=value.user_input,
+        required_constraints=list(value.declared_constraints),
+        user_material_refs=material_refs,
+    )
 
 
 __all__ = ["BenchmarkInput", "benchmark_input_to_request"]
