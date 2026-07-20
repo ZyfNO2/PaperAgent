@@ -31,8 +31,25 @@ class PreparedQuery(FrozenModel):
     query_id: str
     gap_id: str
     query: str
+    original_query: str | None = None
+    refinement_reason: str | None = None
+    removed_families: list[str] = Field(default_factory=list)
     source_types: list[SourceType] = Field(default_factory=list)
     round: int = Field(ge=1)
+
+    @model_validator(mode="after")
+    def validate_refinement_audit(self) -> PreparedQuery:
+        changed = self.original_query is not None
+        if changed:
+            if not self.refinement_reason:
+                raise ValueError("refined query requires refinement_reason")
+            if not self.removed_families:
+                raise ValueError("refined query requires removed_families")
+            if self.original_query.strip() == self.query.strip():
+                raise ValueError("refined query must differ from original_query")
+        elif self.refinement_reason is not None or self.removed_families:
+            raise ValueError("unmodified query cannot include refinement audit fields")
+        return self
 
 
 class ResearchPlan(FrozenModel):
