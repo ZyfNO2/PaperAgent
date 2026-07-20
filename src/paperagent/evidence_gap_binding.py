@@ -5,7 +5,13 @@ from collections.abc import Iterable
 
 from paperagent import evidence_relevance as legacy
 from paperagent.literature.query_concepts import matches_required_candidate_terms
-from paperagent.schemas import EvidenceBundle, EvidenceGap, EvidenceItem, ResearchPlan, ResearchRequest
+from paperagent.schemas import (
+    EvidenceBundle,
+    EvidenceGap,
+    EvidenceItem,
+    ResearchPlan,
+    ResearchRequest,
+)
 from paperagent.schemas.relevance import (
     EvidenceLedger,
     EvidenceLedgerEntry,
@@ -343,9 +349,7 @@ def build_evidence_ledger(
             and bool(accepted_supports)
         )
         rejection_reasons = [
-            value
-            for value in legacy_entry.rejection_reasons
-            if value != "NO_VALID_GAP_BINDING"
+            value for value in legacy_entry.rejection_reasons if value != "NO_VALID_GAP_BINDING"
         ]
         if not accepted and not accepted_supports:
             rejection_reasons.append("NO_VALID_GAP_BINDING")

@@ -20,9 +20,7 @@ _BASELINE_QUERY = (
     "lightweight drone small object detection baseline reproducible method dataset "
     "metrics efficiency real-time"
 )
-_DRONE_DETR_TITLE = (
-    "Drone-DETR: Efficient Small Object Detection for Remote Sensing Image"
-)
+_DRONE_DETR_TITLE = "Drone-DETR: Efficient Small Object Detection for Remote Sensing Image"
 _DRONE_DETR_SUMMARY = (
     "Performing low-latency, high-precision object detection on unmanned aerial vehicles "
     "equipped with vision sensors is challenging for numerous small objects. We introduce "
