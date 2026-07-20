@@ -72,6 +72,61 @@ _GENERIC_TERMS = frozenset(
         "application",
     }
 )
+_SMALL_OBJECT_QUERY_HINTS = (
+    "small object",
+    "small-object",
+    "tiny object",
+    "tiny-object",
+    "small target",
+    "tiny target",
+    "ap_small",
+)
+_SMALL_OBJECT_CANDIDATE_TERMS = (
+    "small object",
+    "small-object",
+    "tiny object",
+    "tiny-object",
+    "small target",
+    "tiny target",
+    "small oriented object",
+    "small-scale object",
+    "small-scale target",
+    "tiny pixel-area",
+)
+_OBJECT_DETECTION_QUERY_HINTS = (
+    "object detection",
+    "object detector",
+    "small object",
+    "tiny object",
+    "ap_small",
+)
+_OBJECT_DETECTION_CANDIDATE_TERMS = (
+    "object detection",
+    "object detector",
+    "detect objects",
+    "detecting objects",
+    "target detection",
+    "target detector",
+    "oriented object detection",
+    "computer vision",
+    "visual detection",
+)
+_AERIAL_QUERY_HINTS = (
+    "uav",
+    "unmanned aerial",
+    "aerial",
+    "drone",
+    "visdrone",
+    "remote sensing",
+)
+_AERIAL_CANDIDATE_TERMS = (
+    "uav",
+    "unmanned aerial",
+    "aerial",
+    "drone",
+    "visdrone",
+    "remote sensing",
+)
 
 
 @dataclass(frozen=True)
@@ -81,6 +136,7 @@ class SearchSourcePolicy:
     reasons: tuple[str, ...]
     informative_terms: tuple[str, ...]
     discriminative_terms: tuple[str, ...]
+    required_candidate_term_groups: tuple[tuple[str, ...], ...]
     primary_provider: str
     escalation_providers: tuple[str, ...]
     allow_web_fallback: bool
@@ -108,6 +164,22 @@ def _informative_terms(query: str) -> tuple[str, ...]:
     if len(cjk) >= 4:
         return tuple(cjk[index : index + 2] for index in range(0, len(cjk) - 1, 2))
     return ()
+
+
+def _contains_any(value: str, terms: tuple[str, ...]) -> bool:
+    return any(term in value for term in terms)
+
+
+def _required_candidate_term_groups(query: str) -> tuple[tuple[str, ...], ...]:
+    normalized = query.casefold()
+    groups: list[tuple[str, ...]] = []
+    if _contains_any(normalized, _AERIAL_QUERY_HINTS):
+        groups.append(_AERIAL_CANDIDATE_TERMS)
+    if _contains_any(normalized, _SMALL_OBJECT_QUERY_HINTS):
+        groups.append(_SMALL_OBJECT_CANDIDATE_TERMS)
+    if _contains_any(normalized, _OBJECT_DETECTION_QUERY_HINTS):
+        groups.append(_OBJECT_DETECTION_CANDIDATE_TERMS)
+    return tuple(groups)
 
 
 def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
@@ -161,6 +233,7 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
         reasons=tuple(dict.fromkeys(reasons)),
         informative_terms=unique_informative,
         discriminative_terms=discriminative,
+        required_candidate_term_groups=_required_candidate_term_groups(normalized),
         primary_provider=primary,
         escalation_providers=escalation,
         allow_web_fallback=allow_web,
