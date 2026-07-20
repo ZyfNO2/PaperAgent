@@ -61,6 +61,8 @@ jobs:
             src/paperagent/literature/query_concepts.py
             src/paperagent/literature/query_refinement.py
             src/paperagent/literature/ranking.py
+            src/paperagent/literature/specialized_guards.py
+            src/paperagent/literature/task_query_overrides.py
             src/paperagent/retrieval/prepare_search.py
             src/paperagent/evidence_gap_binding.py
             src/paperagent/academic_methodology.py
@@ -70,6 +72,7 @@ jobs:
             scripts/probe_claw_case_end_to_end.py
             tests/literature/test_query_concepts.py
             tests/literature/test_query_refinement.py
+            tests/literature/test_qa_hallucination_precision.py
             tests/methodology/test_method_design_draft.py
             tests/review/test_semantic_gap_binding.py
           )
@@ -82,6 +85,7 @@ jobs:
           pytest -q \
             tests/literature/test_query_concepts.py \
             tests/literature/test_query_refinement.py \
+            tests/literature/test_qa_hallucination_precision.py \
             tests/literature/test_source_selection_policy.py \
             tests/nodes/test_retrieval.py \
             tests/methodology/test_method_design_draft.py \
