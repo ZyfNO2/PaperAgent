@@ -23,10 +23,13 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Patch policy and regression tests
+      - name: Patch, verify, and persist result
         shell: bash
         run: |
-          python - <<'PY'
+          set +e
+          out="build/license-audit-patch"
+          mkdir -p "$out"
+          python - <<'PY' > "$out/patch.log" 2>&1
           from pathlib import Path
           import re
           from textwrap import dedent
@@ -74,7 +77,7 @@ jobs:
           """)
           if "def _license_failure_severity(" not in source:
               if anchor not in source:
-                  raise SystemExit("license helper anchor not found")
+                  raise RuntimeError("license helper anchor not found")
               source = source.replace(anchor, anchor + helper, 1)
 
           baseline_pattern = re.compile(
@@ -89,8 +92,8 @@ jobs:
               source,
               count=1,
           )
-          if baseline_count != 1 and "_license_failure_severity(\n                baseline.license" not in source:
-              raise SystemExit("baseline license severity not patched")
+          if baseline_count != 1 and "baseline.license,\n                baseline_evidence.license" not in source:
+              raise RuntimeError("baseline license severity not patched")
 
           module_pattern = re.compile(
               r'(\s+f"module-license:\{module\.name\}",\n\s+module_license_bound,\n)'
@@ -104,8 +107,8 @@ jobs:
               source,
               count=1,
           )
-          if module_count != 1 and "_license_failure_severity(\n                    module.license" not in source:
-              raise SystemExit("module license severity not patched")
+          if module_count != 1 and "module.license,\n                    module_evidence.license" not in source:
+              raise RuntimeError("module license severity not patched")
           source_path.write_text(source, encoding="utf-8")
 
           test_path = Path("tests/methodology/test_method_design_draft.py")
@@ -150,71 +153,71 @@ jobs:
               assert failed["module-license:shallow_feature_fusion"].severity.value == "critical"
           """)
               test_path.write_text(tests, encoding="utf-8")
-
-          case_path = Path(".github/workflows/claw-case-001-end-to-end.yml")
-          case = case_path.read_text(encoding="utf-8")
-          if "src/paperagent/method_design_draft.py" not in case:
-              case = case.replace(
-                  "            src/paperagent/evidence_gap_binding.py\n",
-                  "            src/paperagent/evidence_gap_binding.py\n"
-                  "            src/paperagent/academic_methodology.py\n"
-                  "            src/paperagent/method_design_draft.py\n"
-                  "            src/paperagent/nodes/_shared.py\n"
-                  "            src/paperagent/nodes/method_design.py\n",
-                  1,
-              )
-          if "            tests/methodology/test_method_design_draft.py\n" not in case:
-              case = case.replace(
-                  "            tests/nodes/test_retrieval.py\n",
-                  "            tests/nodes/test_retrieval.py\n"
-                  "            tests/methodology/test_method_design_draft.py\n",
-                  1,
-              )
-          if "            tests/methodology/test_method_design_draft.py \\\n" not in case:
-              case = case.replace(
-                  "            tests/nodes/test_retrieval.py \\\n",
-                  "            tests/nodes/test_retrieval.py \\\n"
-                  "            tests/methodology/test_method_design_draft.py \\\n",
-                  1,
-              )
-          case_path.write_text(case, encoding="utf-8")
-
-          gate_path = Path(".github/workflows/method-design-draft-offline-gate.yml")
-          gate = gate_path.read_text(encoding="utf-8")
-          if '      - "src/paperagent/academic_methodology.py"\n' not in gate:
-              gate = gate.replace(
-                  '      - "src/paperagent/method_design_draft.py"\n',
-                  '      - "src/paperagent/academic_methodology.py"\n'
-                  '      - "src/paperagent/method_design_draft.py"\n',
-                  1,
-              )
-          if "            src/paperagent/academic_methodology.py\n" not in gate:
-              gate = gate.replace(
-                  "          files=(\n",
-                  "          files=(\n            src/paperagent/academic_methodology.py\n",
-                  1,
-              )
-          gate_path.write_text(gate, encoding="utf-8")
+          print("patch-complete")
           PY
-          ruff check src/paperagent/academic_methodology.py tests/methodology/test_method_design_draft.py
-          ruff format --check src/paperagent/academic_methodology.py tests/methodology/test_method_design_draft.py
-          mypy --config-file pyproject.toml
-          pytest -q \
-            tests/methodology/test_method_design_draft.py \
-            tests/methodology/test_evidence_binding.py \
-            tests/graph/test_full_graph.py \
-            tests/graph/test_hitl.py \
-            tests/review/test_consolidated_regressions.py
-      - name: Commit verified policy patch
-        run: |
-          git rm .github/workflows/patch-license-audit-policy-once.yml
+          patch_status=$?
+
+          if (( patch_status == 0 )); then
+            ruff check --fix \
+              src/paperagent/academic_methodology.py \
+              tests/methodology/test_method_design_draft.py \
+              > "$out/ruff.log" 2>&1
+            ruff_status=$?
+            ruff format \
+              src/paperagent/academic_methodology.py \
+              tests/methodology/test_method_design_draft.py \
+              > "$out/format.log" 2>&1
+            format_status=$?
+            mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
+            mypy_status=$?
+            pytest -q \
+              tests/methodology/test_method_design_draft.py \
+              tests/methodology/test_evidence_binding.py \
+              tests/graph/test_full_graph.py \
+              tests/graph/test_hitl.py \
+              tests/review/test_consolidated_regressions.py \
+              > "$out/pytest.log" 2>&1
+            pytest_status=$?
+          else
+            ruff_status=99
+            format_status=99
+            mypy_status=99
+            pytest_status=99
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            src/paperagent/academic_methodology.py \
-            tests/methodology/test_method_design_draft.py \
-            .github/workflows/claw-case-001-end-to-end.yml \
-            .github/workflows/method-design-draft-offline-gate.yml
-          git commit -m "fix(audit): distinguish unknown from incompatible licenses"
+          if (( patch_status == 0 && ruff_status == 0 && format_status == 0 && mypy_status == 0 && pytest_status == 0 )); then
+            git rm .github/workflows/patch-license-audit-policy-once.yml
+            git add src/paperagent/academic_methodology.py tests/methodology/test_method_design_draft.py
+            git commit -m "fix(audit): distinguish unknown from incompatible licenses"
+          else
+            target="evals/claw_academic_tailoring_v1/live-probes/license-audit-patch-diagnostics.json"
+            python - "$target" "$patch_status" "$ruff_status" "$format_status" "$mypy_status" "$pytest_status" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          out = Path("build/license-audit-patch")
+          payload = {
+              "patch": int(sys.argv[2]),
+              "ruff": int(sys.argv[3]),
+              "format": int(sys.argv[4]),
+              "mypy": int(sys.argv[5]),
+              "pytest": int(sys.argv[6]),
+              "logs": {},
+          }
+          for name in ("patch", "ruff", "format", "mypy", "pytest"):
+              path = out / f"{name}.log"
+              if path.exists():
+                  payload["logs"][name] = path.read_text(encoding="utf-8", errors="replace").splitlines()[-40:]
+          destination = Path(sys.argv[1])
+          destination.parent.mkdir(parents=True, exist_ok=True)
+          destination.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+            git add "$target"
+            git commit -m "chore(audit): persist license patch diagnostics [skip ci]"
+          fi
           git pull --rebase origin feat/claw-live-search-runtime
           git push origin HEAD:feat/claw-live-search-runtime
+          exit $(( patch_status || ruff_status || format_status || mypy_status || pytest_status ))
