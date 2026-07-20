@@ -1,4 +1,4 @@
-name: CLAW Live Search Prerequisites
+name: CLAW Live Search Verification
 
 on:
   pull_request:
@@ -7,59 +7,90 @@ on:
     types: [opened, reopened, synchronize]
 
 permissions:
-  actions: read
   contents: read
-  issues: write
-  pull-requests: write
 
 concurrency:
-  group: claw-live-search-prerequisites-${{ github.event.pull_request.number }}
+  group: claw-live-search-verification-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
-  inspect:
+  verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    env:
-      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+    timeout-minutes: 35
     steps:
-      - name: Inspect secret-safe prerequisites
-        id: inspect
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Verify adaptive search runtime
         shell: bash
         run: |
-          mkdir -p build/claw-prerequisites
-          probe_path=unknown
-          for attempt in 1 2 3; do
-            candidate=$(gh api repos/${GITHUB_REPOSITORY}/actions/runs/29709781962 --jq '.path' 2>/dev/null) && {
-              probe_path="$candidate"
-              break
-            }
-            sleep $((attempt * 2))
-          done
-          if [[ -n "${MISTRAL_API_KEY:-}" ]]; then
-            mistral_present=true
-          else
-            mistral_present=false
+          set +e
+          out="build/claw-live-search-ci"
+          mkdir -p "$out"
+          files=(
+            scripts/probe_claw_case_retrieval.py
+            scripts/run_claw_academic_runtime.py
+            src/paperagent/claw_benchmark_adapter.py
+            src/paperagent/claw_benchmark_runtime.py
+            src/paperagent/cli.py
+            src/paperagent/literature/adapter.py
+            src/paperagent/literature/factory.py
+            src/paperagent/literature/service.py
+            src/paperagent/literature/source_policy.py
+            src/paperagent/literature/verification.py
+            src/paperagent/literature/providers/__init__.py
+            src/paperagent/literature/providers/_web.py
+            src/paperagent/literature/providers/base.py
+            src/paperagent/literature/providers/duckduckgo.py
+            src/paperagent/literature/providers/tavily.py
+            tests/evals/test_claw_benchmark_adapter.py
+            tests/evals/test_gate_l_remediation.py
+            tests/literature/test_adaptive_search_edges.py
+            tests/literature/test_claw_benchmark_runtime.py
+            tests/literature/test_graph_adapter.py
+            tests/literature/test_merge_adapter_service_edges.py
+            tests/literature/test_provider_call_budget.py
+            tests/literature/test_source_selection_policy.py
+            tests/literature/test_web_search_providers.py
+          )
+          ruff check "${files[@]}" --output-format=concise > "$out/ruff.log" 2>&1
+          ruff_status=$?
+          ruff format --check --diff "${files[@]}" > "$out/format.log" 2>&1
+          format_status=$?
+          mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
+          mypy_status=$?
+          pytest -q \
+            tests/evals/test_claw_benchmark_adapter.py \
+            tests/evals/test_gate_l_remediation.py \
+            tests/literature/test_adaptive_search_edges.py \
+            tests/literature/test_claw_benchmark_runtime.py \
+            tests/literature/test_graph_adapter.py \
+            tests/literature/test_merge_adapter_service_edges.py \
+            tests/literature/test_provider_call_budget.py \
+            tests/literature/test_source_selection_policy.py \
+            tests/literature/test_web_search_providers.py \
+            > "$out/targeted-pytest.log" 2>&1
+          targeted_status=$?
+          pytest --cov=paperagent --cov-branch --cov-report=term-missing -q \
+            > "$out/full-pytest-coverage.log" 2>&1
+          full_status=$?
+          printf '{"head":"%s","run_id":%s,"ruff":%s,"format":%s,"mypy":%s,"targeted":%s,"full":%s}\n' \
+            "$GITHUB_SHA" "$GITHUB_RUN_ID" "$ruff_status" "$format_status" \
+            "$mypy_status" "$targeted_status" "$full_status" > "$out/status.json"
+          cat "$out/status.json"
+          if (( ruff_status || format_status || mypy_status || targeted_status || full_status )); then
+            exit 1
           fi
-          echo "probe_path=$probe_path" >> "$GITHUB_OUTPUT"
-          echo "mistral_present=$mistral_present" >> "$GITHUB_OUTPUT"
-          printf '{"probe_workflow_path":"%s","mistral_api_key_present":%s}\n' \
-            "$probe_path" "$mistral_present" \
-            > build/claw-prerequisites/result.json
-      - name: Upload prerequisite result
+      - name: Upload verification evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: claw-prerequisites-${{ github.run_id }}
-          path: build/claw-prerequisites/result.json
+          name: claw-live-search-${{ github.run_id }}
+          path: build/claw-live-search-ci/
           if-no-files-found: error
-          retention-days: 7
-      - name: Publish prerequisite result
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PROBE_PATH: ${{ steps.inspect.outputs.probe_path }}
-          MISTRAL_PRESENT: ${{ steps.inspect.outputs.mistral_present }}
-        shell: bash
-        run: |
-          gh pr comment ${{ github.event.pull_request.number }} --repo "$GITHUB_REPOSITORY" --body "CLAW prerequisites: probe_workflow=\`$PROBE_PATH\`; mistral_credential_present=\`$MISTRAL_PRESENT\`; run=\`$GITHUB_RUN_ID\`."
+          retention-days: 30
