@@ -5,6 +5,7 @@ import asyncio
 import json
 import os
 from pathlib import Path
+from typing import Any, TypedDict
 
 from paperagent.claw_academic_benchmark import GoldCase, load_gold_dataset
 from paperagent.literature.factory import LiteratureProviderSettings, build_literature_runtime
@@ -33,6 +34,17 @@ _TOPIC_GROUPS = {
 }
 
 
+class ProbeResult(TypedDict):
+    title: str
+    locator: str
+    providers: str
+    verification_status: str
+    relevance_score: float
+    rank_score: float
+    topic_matches: list[str]
+    snippet: str
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Run one real, rate-limited literature retrieval probe for a CLAW case."
@@ -48,6 +60,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--provider-call-budget", type=int, default=3)
+    parser.add_argument("--verification-call-budget", type=int, default=8)
     return parser
 
 
@@ -78,9 +91,24 @@ def _topic_matches(title: str, snippet: str) -> list[str]:
     ]
 
 
+def _verification_budget(service: object) -> dict[str, int | None] | None:
+    verifier = getattr(service, "_verifier", None)
+    reader = getattr(verifier, "verification_budget", None)
+    if not callable(reader):
+        return None
+    value: Any = reader()
+    if not isinstance(value, dict):
+        return None
+    return value
+
+
 async def _run(args: argparse.Namespace) -> int:
     if not 1 <= args.provider_call_budget <= 3:
         raise ValueError("--provider-call-budget must be between 1 and 3 for a single-case probe")
+    if not 1 <= args.verification_call_budget <= 12:
+        raise ValueError(
+            "--verification-call-budget must be between 1 and 12 for a single-case probe"
+        )
 
     case = _select_case(args.dataset_root, args.case_id)
     reviewed_query = _query_for(case)
@@ -89,7 +117,9 @@ async def _run(args: argparse.Namespace) -> int:
             contact_email=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
             semantic_scholar_api_key=os.getenv("SEMANTIC_SCHOLAR_API_KEY"),
             enable_web_search=False,
+            results_per_provider_request=3,
             max_provider_calls_total=args.provider_call_budget,
+            max_verification_calls_total=args.verification_call_budget,
         )
     )
     try:
@@ -106,7 +136,7 @@ async def _run(args: argparse.Namespace) -> int:
             limit=5,
         )
         diagnostics = runtime.adapter.last_query_diagnostics(f"probe-{case.case_id}")
-        results = []
+        results: list[ProbeResult] = []
         for candidate in candidates:
             matches = _topic_matches(candidate.title, candidate.snippet)
             results.append(
@@ -125,22 +155,28 @@ async def _run(args: argparse.Namespace) -> int:
                     "snippet": candidate.snippet,
                 }
             )
-        budget = runtime.service.provider_call_budget()
+        provider_budget = runtime.service.provider_call_budget()
+        verification_budget = _verification_budget(runtime.service)
         verified = [
             item for item in results if item["verification_status"] == "verified"
         ]
         high_topic_match = [
             item
             for item in results
-            if {"scale", "task"}.issubset(item["topic_matches"])
+            if {"scale", "task"}.issubset(set(item["topic_matches"]))
             and len(item["topic_matches"]) >= 3
         ]
         checks = {
             "query_approved": diagnostics.get("query_approved") is True,
             "precision_risk_low": diagnostics.get("precision_risk") == "low",
             "provider_budget_respected": (
-                isinstance(budget.get("used"), int)
-                and budget["used"] <= args.provider_call_budget
+                isinstance(provider_budget.get("used"), int)
+                and provider_budget["used"] <= args.provider_call_budget
+            ),
+            "verification_budget_respected": (
+                verification_budget is not None
+                and isinstance(verification_budget.get("used"), int)
+                and verification_budget["used"] <= args.verification_call_budget
             ),
             "found_results": bool(results),
             "found_verified_result": bool(verified),
@@ -157,7 +193,8 @@ async def _run(args: argparse.Namespace) -> int:
             "original_question": case.user_input,
             "reviewed_query": reviewed_query,
             "diagnostics": diagnostics,
-            "provider_call_budget": budget,
+            "provider_call_budget": provider_budget,
+            "verification_call_budget": verification_budget,
             "checks": checks,
             "passed": all(checks.values()),
             "results": results,
