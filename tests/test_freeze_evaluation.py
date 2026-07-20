@@ -38,6 +38,18 @@ class FreezeEvaluationTests(unittest.TestCase):
 
         self.assertEqual(manifest["thresholds"], DEFAULT_THRESHOLDS)
         self.assertEqual(
+            manifest["thresholds"],
+            {
+                "decision_accuracy_minimum": 0.80,
+                "hard_failure_count_maximum": 0,
+                "fabricated_evidence_count_maximum": 0,
+                "unsupported_comparator_count_maximum": 0,
+                "adapter_created_pilot_count_maximum": 0,
+                "metamorphic_decision_consistency_minimum": 0.85,
+                "public_private_score_gap_maximum_percentage_points": 10,
+            },
+        )
+        self.assertEqual(
             set(manifest["file_sha256"]),
             {
                 "runner",
