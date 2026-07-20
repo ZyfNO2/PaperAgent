@@ -1,4 +1,5 @@
 name: CLAW Case 011 Repair Finalizer
+# Commit verified repair artifacts first; cleanup follows only after success is confirmed.
 
 on:
   push:
@@ -41,21 +42,22 @@ jobs:
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
       - name: Apply verified Case 011 patch functions
+        shell: bash
         run: |
-          python - <<'PY'
-          import importlib.util
-          from pathlib import Path
+          mkdir -p build/few-shot-intent-finalize
+          set +e
+          python - <<'PY' 2>&1 | tee build/few-shot-intent-finalize/apply.log
+          import runpy
 
-          path = Path('scripts/clouddev_fix_few_shot_intent_roles.py')
-          spec = importlib.util.spec_from_file_location('case011_repair', path)
-          if spec is None or spec.loader is None:
-              raise SystemExit('unable to load Case 011 repair module')
-          module = importlib.util.module_from_spec(spec)
-          spec.loader.exec_module(module)
-          module.patch_source()
-          module.write_test()
-          module.restore_gate()
+          namespace = runpy.run_path('scripts/clouddev_fix_few_shot_intent_roles.py')
+          namespace['patch_source']()
+          namespace['write_test']()
+          namespace['restore_gate']()
           PY
+          status=${PIPESTATUS[0]}
+          if (( status )); then
+            exit "$status"
+          fi
           ruff format \
             src/paperagent/evidence_gap_binding.py \
             tests/review/test_few_shot_intent_role_binding.py
@@ -148,17 +150,19 @@ jobs:
           if (( ruff_status || format_status || mypy_status || pytest_status )); then
             exit 1
           fi
-      - name: Commit verified repair and clean temporary infrastructure
+      - name: Commit verified repair
+        shell: bash
         run: |
+          set -euxo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          rm -f \
-            .case011-patch-trigger.json \
-            scripts/clouddev_fix_few_shot_intent_roles.py \
-            .github/workflows/fix-few-shot-intent-binding-once.yml \
-            .github/workflows/add-few-shot-intent-binding-once.yml \
-            evals/claw_academic_tailoring_v1/live-probes/case011-role-failure-latest.txt
-          git add -A
+          git add \
+            src/paperagent/evidence_gap_binding.py \
+            tests/review/test_few_shot_intent_role_binding.py \
+            .github/workflows/second-batch-retrieval-offline-gate.yml \
+            .github/workflows/claw-single-case-live-repair.yml \
+            .github/workflows/claw-four-case-live-batch.yml \
+            evals/claw_academic_tailoring_v1/live-probes/few-shot-intent-role-gate-latest.json
           git commit -m "fix(evidence): bind verified Case 011 intent role evidence"
           for attempt in 1 2 3 4; do
             git fetch origin feat/claw-live-search-runtime
@@ -170,6 +174,32 @@ jobs:
             sleep $((attempt * 2))
           done
           exit 1
+      - name: Persist finalizer failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          output="evals/claw_academic_tailoring_v1/live-probes/case011-finalizer-failure-latest.txt"
+          temp="/tmp/case011-finalizer-failure.txt"
+          {
+            echo "workflow_run_id=${GITHUB_RUN_ID}"
+            echo "workflow_head_sha=${GITHUB_SHA}"
+            for file in build/few-shot-intent-finalize/*.log; do
+              if [[ -f "$file" ]]; then
+                echo
+                echo "===== $file ====="
+                tail -n 180 "$file"
+              fi
+            done
+          } > "$temp"
+          git reset --hard HEAD
+          mkdir -p "$(dirname "$output")"
+          cp "$temp" "$output"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$output"
+          git commit -m "chore(eval): persist Case 011 finalizer failure [skip ci]" || true
+          git pull --rebase origin feat/claw-live-search-runtime
+          git push origin HEAD:feat/claw-live-search-runtime
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4
