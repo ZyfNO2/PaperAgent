@@ -93,6 +93,22 @@ jobs:
           set -o pipefail
           pytest --cov=paperagent --cov-branch --cov-report=term-missing -q \
             2>&1 | tee build/readiness-preflight/full-tests.log
+      - name: Commit and push clean source
+        id: commit
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git status --short | tee build/readiness-preflight/git-status.log
+          git add -A
+          git commit -m "feat(method): route explicit readiness before retrieval" \
+            2>&1 | tee build/readiness-preflight/git-commit.log
+          git pull --rebase origin ${{ github.event.pull_request.head.ref }} \
+            2>&1 | tee build/readiness-preflight/git-rebase.log
+          git push origin HEAD:${{ github.event.pull_request.head.ref }} \
+            2>&1 | tee build/readiness-preflight/git-push.log
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4
@@ -101,12 +117,8 @@ jobs:
           path: build/readiness-preflight/
           if-no-files-found: warn
           retention-days: 30
-      - name: Commit clean source
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "feat(method): route explicit readiness before retrieval"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+      - name: Enforce clean-source push
+        if: always()
+        env:
+          COMMIT_OUTCOME: ${{ steps.commit.outcome }}
+        run: test "$COMMIT_OUTCOME" = success
