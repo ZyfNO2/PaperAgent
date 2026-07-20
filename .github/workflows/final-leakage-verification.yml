@@ -1,0 +1,214 @@
+name: Final Benchmark Leakage Verification
+
+on:
+  push:
+    branches:
+      - feat/claw-live-search-runtime
+    paths:
+      - ".final-leakage-verification-trigger"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: final-benchmark-leakage-verification
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/claw-live-search-runtime
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+
+      - name: Run final verification
+        id: verify
+        shell: bash
+        run: |
+          set +e
+          out="build/final-leakage-verification"
+          mkdir -p "$out"
+
+          python - <<'PY' > "$out/static.log" 2>&1
+          from pathlib import Path
+          from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
+
+          root = Path("src/paperagent")
+          removed = (
+              root / "literature/task_query_overrides.py",
+              root / "claw_pilot_policy.py",
+              root / "claw_trace_reconciliation.py",
+          )
+          existing = [str(path) for path in removed if path.exists()]
+          if existing:
+              raise AssertionError(f"forbidden files remain: {existing}")
+          result = audit_benchmark_execution_boundary()
+          if not result.passed:
+              raise AssertionError(result.findings)
+          print("leakage audit passed")
+          PY
+          static_status=$?
+
+          ruff check src tests scripts > "$out/ruff.log" 2>&1
+          ruff_status=$?
+          ruff format --check src tests scripts > "$out/format.log" 2>&1
+          format_status=$?
+          mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
+          mypy_status=$?
+          pytest -q > "$out/pytest.log" 2>&1
+          pytest_status=$?
+
+          python - <<'PY' > "$out/held-out.log" 2>&1
+          from paperagent.literature.query_concepts import matches_required_candidate_terms
+          from paperagent.literature.specialized_guards import matches_specialized_candidate_terms
+
+          matrix = [
+              (
+                  "physics-informed glacier calving surrogate finite-volume simulation",
+                  "A physics-informed surrogate accelerates finite-volume glacier calving simulation.",
+                  True,
+              ),
+              (
+                  "coral bleaching thermal stress satellite monitoring",
+                  "Satellite monitoring links coral bleaching to thermal stress anomalies.",
+                  True,
+              ),
+              (
+                  "peatland methane flux chamber modelling",
+                  "Methane combustion modelling in industrial chambers.",
+                  False,
+              ),
+              (
+                  "ancient manuscript script identification multispectral",
+                  "Multispectral imaging identifies scripts in damaged ancient manuscripts.",
+                  True,
+              ),
+              (
+                  "ancient manuscript script identification multispectral",
+                  "Multispectral crop disease identification in field images.",
+                  False,
+              ),
+              (
+                  "AeroFormer-X2 marine debris hyperspectral mapping",
+                  "AeroFormer-X2 forecasts lithium battery degradation.",
+                  False,
+              ),
+              (
+                  "日语长文本情感分析 long-context",
+                  "面向日语长文本的情感分析与长上下文建模方法",
+                  True,
+              ),
+          ]
+          for query, candidate, expected in matrix:
+              observed = matches_required_candidate_terms(query, candidate)
+              if observed is not expected:
+                  raise AssertionError((query, candidate, expected, observed))
+
+          identity_query = "original RiverNet-Z4 architecture paper"
+          if not matches_specialized_candidate_terms(
+              identity_query,
+              "RiverNet-Z4: a neural architecture for river discharge forecasting.",
+          ):
+              raise AssertionError("exact unseen identifier was rejected")
+          if matches_specialized_candidate_terms(
+              identity_query,
+              "RiverNet-Z3 is applied to river discharge forecasting.",
+          ):
+              raise AssertionError("different identifier was accepted")
+          print("held-out matrix passed")
+          PY
+          heldout_status=$?
+
+          python - \
+            "$out/result.json" \
+            "$static_status" \
+            "$ruff_status" \
+            "$format_status" \
+            "$mypy_status" \
+            "$pytest_status" \
+            "$heldout_status" <<'PY'
+          import json
+          import os
+          import sys
+          from pathlib import Path
+
+          names = ("static", "ruff", "format", "mypy", "pytest", "held_out")
+          values = [int(value) for value in sys.argv[2:]]
+          status = dict(zip(names, values, strict=True))
+          payload = {
+              "schema": "paperagent.final-leakage-verification.v1",
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "head_sha": os.environ["GITHUB_SHA"],
+              "status": status,
+              "passed": all(value == 0 for value in values),
+              "log_tails": {},
+          }
+          root = Path(sys.argv[1]).parent
+          for name in names:
+              path = root / f"{name.replace('_', '-')}.log"
+              if path.exists():
+                  payload["log_tails"][name] = path.read_text(
+                      encoding="utf-8", errors="replace"
+                  ).splitlines()[-160:]
+          Path(sys.argv[1]).write_text(
+              json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(payload["status"], sort_keys=True))
+          PY
+
+          if (( static_status || ruff_status || format_status || mypy_status || pytest_status || heldout_status )); then
+            echo "passed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "passed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-leakage-verification-${{ github.run_id }}
+          path: build/final-leakage-verification
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish result
+        if: always()
+        env:
+          PASSED: ${{ steps.verify.outputs.passed }}
+        run: |
+          cp build/final-leakage-verification/result.json /tmp/final-leakage-verification.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin feat/claw-live-search-runtime
+          git reset --hard origin/feat/claw-live-search-runtime
+          mkdir -p evals/claw_academic_tailoring_v1/live-probes
+          cp /tmp/final-leakage-verification.json \
+            evals/claw_academic_tailoring_v1/live-probes/final-leakage-verification-latest.json
+          git add evals/claw_academic_tailoring_v1/live-probes/final-leakage-verification-latest.json
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          if [[ "$PASSED" == "true" ]]; then
+            git commit -m "test(eval): record final leakage verification [skip ci]"
+          else
+            git commit -m "test(eval): record final leakage verification failure [skip ci]"
+          fi
+          git push origin HEAD:feat/claw-live-search-runtime
+
+      - name: Enforce result
+        if: steps.verify.outputs.passed != 'true'
+        run: exit 1
