@@ -15,8 +15,10 @@ from paperagent.claw_benchmark_runtime import (
 )
 from paperagent.claw_gold_adapter import benchmark_input_from_gold
 from paperagent.claw_runtime_evidence import (
+    allocate_case_budgets,
     provider_config_for_case,
     summarize_llm_providers,
+    summarize_search_budgets,
 )
 from paperagent.literature.factory import LiteratureProviderSettings
 from paperagent.pricing import load_price_table
@@ -90,7 +92,10 @@ def _parser() -> argparse.ArgumentParser:
         "--provider-call-budget",
         type=int,
         default=60,
-        help="maximum uncached external search-provider calls across the selected benchmark cases",
+        help=(
+            "hard maximum uncached search-provider calls across the selected cases; "
+            "the runner divides this budget fairly and creates one search runtime per case"
+        ),
     )
     parser.add_argument("--minimum-score", type=int, default=80)
     parser.add_argument("--require-pass", action="store_true")
@@ -167,6 +172,7 @@ async def _run(args: argparse.Namespace) -> int:
     if args.provider_call_budget < 1:
         raise ValueError("--provider-call-budget must be positive")
     cases = cases[: args.max_cases]
+    case_search_budgets = allocate_case_budgets(args.provider_call_budget, len(cases))
 
     leakage_audit = audit_benchmark_execution_boundary()
     if not leakage_audit.passed:
@@ -178,18 +184,6 @@ async def _run(args: argparse.Namespace) -> int:
             raise ValueError("--search-fixtures is required in fake mode")
         fake_provider = _load_fake_search(args.search_fixtures)
 
-    literature_settings = LiteratureProviderSettings(
-        contact_email=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
-        semantic_scholar_api_key=os.getenv("SEMANTIC_SCHOLAR_API_KEY"),
-        tavily_api_key=os.getenv("TAVILY_API_KEY"),
-        enable_web_search=bool(args.enable_web_search),
-        max_provider_calls_total=args.provider_call_budget,
-    )
-    search_runtime = build_benchmark_search_runtime(
-        args.search_mode,
-        settings=literature_settings,
-        fake_provider=fake_provider,
-    )
     provider_config = load_provider_config(
         provider=args.llm_provider,
         model=args.llm_model,
@@ -204,13 +198,27 @@ async def _run(args: argparse.Namespace) -> int:
     states: list[object] = []
     traces = []
     providers: list[object] = []
+    search_budget_records: list[dict[str, int | None] | None] = []
     errors: list[dict[str, str]] = []
     runtime_failures: list[str] = []
-    provider_budget: dict[str, int | None] | None = None
-    try:
-        for index, case in enumerate(cases, start=1):
-            llm = build_llm_provider(case_provider_config, price_table)
-            providers.append(llm)
+    for index, (case, search_budget) in enumerate(
+        zip(cases, case_search_budgets, strict=True), start=1
+    ):
+        literature_settings = LiteratureProviderSettings(
+            contact_email=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
+            semantic_scholar_api_key=os.getenv("SEMANTIC_SCHOLAR_API_KEY"),
+            tavily_api_key=os.getenv("TAVILY_API_KEY"),
+            enable_web_search=bool(args.enable_web_search),
+            max_provider_calls_total=search_budget,
+        )
+        search_runtime = build_benchmark_search_runtime(
+            args.search_mode,
+            settings=literature_settings,
+            fake_provider=fake_provider,
+        )
+        llm = build_llm_provider(case_provider_config, price_table)
+        providers.append(llm)
+        try:
             try:
                 state, trace = await execute_benchmark_case(
                     benchmark_input=benchmark_input_from_gold(case),
@@ -231,9 +239,20 @@ async def _run(args: argparse.Namespace) -> int:
                 continue
             states.append({"case_id": case.case_id, "state": state})
             traces.append(trace)
-        provider_budget = _provider_budget(search_runtime)
-    finally:
-        await search_runtime.aclose()
+        finally:
+            search_budget_records.append(_provider_budget(search_runtime))
+            await search_runtime.aclose()
+
+    search_summary = summarize_search_budgets(
+        (case.case_id for case in cases),
+        search_budget_records,
+        configured_total=args.provider_call_budget,
+    )
+    if args.search_mode == "literature":
+        if search_summary["complete"] is not True:
+            runtime_failures.append("search-provider budget telemetry is incomplete")
+        elif search_summary["within_configured_total"] is not True:
+            runtime_failures.append("search-provider calls exceeded the configured full-run cap")
 
     llm_summary = summarize_llm_providers(
         providers,
@@ -268,7 +287,7 @@ async def _run(args: argparse.Namespace) -> int:
         "completed_case_ids": [trace.case_id for trace in traces],
         "errors": errors,
         "runtime_failures": runtime_failures,
-        "provider_call_budget": provider_budget,
+        "provider_call_budget": search_summary,
         "llm": llm_summary,
         "report_status": "not_generated",
         "output_files": {
