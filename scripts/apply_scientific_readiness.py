@@ -14,6 +14,11 @@ def replace_once(relative: str, old: str, new: str) -> None:
 
 
 replace_once(
+    "src/paperagent/scientific_readiness.py",
+    '                "appears in both",\n',
+    '                "appears in both",\n                "appear in both",\n',
+)
+replace_once(
     "src/paperagent/method_design_draft.py",
     "from paperagent.schemas.method import (\n",
     "from paperagent.scientific_readiness import derive_scientific_readiness\n"
@@ -21,12 +26,12 @@ replace_once(
 )
 replace_once(
     "src/paperagent/method_design_draft.py",
-    '''    if request is None or plan is None or evidence_bundle is None:
+    """    if request is None or plan is None or evidence_bundle is None:
         raise ValueError("request, research plan, and evidence are required")
 
     accepted = tuple(evidence_bundle.accepted_items())
-''',
-    '''    if request is None or plan is None or evidence_bundle is None:
+""",
+    """    if request is None or plan is None or evidence_bundle is None:
         raise ValueError("request, research plan, and evidence are required")
 
     explicit = derive_scientific_readiness(request.question)
@@ -64,7 +69,7 @@ replace_once(
     )
 
     accepted = tuple(evidence_bundle.accepted_items())
-''',
+""",
 )
 
 print("scientific readiness integration applied")
