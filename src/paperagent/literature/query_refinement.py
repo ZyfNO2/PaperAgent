@@ -158,17 +158,16 @@ def _normalize_scientific_phrasing(
         canonical = "multimodal medical imaging disease classification feature fusion"
         if refined.casefold() != canonical:
             refined = canonical
-            reasons.append(
-                "canonicalized multimodal medical classification to a stable task query"
-            )
+            reasons.append("canonicalized multimodal medical classification to a stable task query")
 
     combined = f"{refined} {research_context}".casefold()
-    if _contains_any(combined, _ACTION_RECOGNITION_HINTS) and _contains_any(
-        research_context.casefold(), _CAMERA_CONTEXT_HINTS
+    if (
+        _contains_any(combined, _ACTION_RECOGNITION_HINTS)
+        and _contains_any(research_context.casefold(), _CAMERA_CONTEXT_HINTS)
+        and not _contains_any(refined.casefold(), _CAMERA_CONTEXT_HINTS)
     ):
-        if not _contains_any(refined.casefold(), _CAMERA_CONTEXT_HINTS):
-            refined = f"camera video pose {refined}"
-            reasons.append("restored the explicit camera modality for action retrieval")
+        refined = f"camera video pose {refined}"
+        reasons.append("restored the explicit camera modality for action retrieval")
 
     return refined, reasons
 
@@ -230,7 +229,7 @@ def refine_search_query(
                     "removed three or more unverified method families to preserve retrieval recall"
                 )
 
-    if len(normalized.split()) > 8 and not reasons:
+    if len(normalized.split()) > 8:
         compacted = _compact_long_query(refined)
         if compacted != refined:
             refined = compacted
