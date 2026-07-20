@@ -5,7 +5,9 @@
       "locator": "doi:10.3390/s24175496",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_comparison"
+        "baseline_comparison",
+        "failure_mechanism_limitations",
+        "risk_negative_evidence"
       ],
       "title": "Drone-DETR: Efficient Small Object Detection for Remote Sensing Image Using Enhanced RT-DETR Model",
       "verification_status": "accepted"
@@ -13,18 +15,9 @@
   ],
   "case_id": "at-001-uav-small-object-lightweight",
   "decision_matches": true,
-  "execution_status": "completed",
+  "execution_status": "blocked",
   "expected_decision": "REVISE_TO_PILOT",
   "failed_stages": [
-    {
-      "available": 10,
-      "earned": 8,
-      "findings": [
-        "explicit facts, inferences, or proposals were not recorded"
-      ],
-      "passed": false,
-      "stage": "parse_user_input"
-    },
     {
       "available": 8,
       "earned": 5,
@@ -103,8 +96,8 @@
     "remaining": 0,
     "used": 8
   },
-  "report_status": "completed",
-  "score": 60,
+  "report_status": "blocked",
+  "score": 62,
   "search_diagnostics": [
     {
       "attempted_providers": [
@@ -147,21 +140,14 @@
       ],
       "fallback_used": false,
       "informative_terms": [
-        "lightweight",
         "drone",
         "small",
         "object",
         "detection",
         "failure",
-        "mechanism",
+        "mode",
         "limitation",
-        "parallel",
-        "method",
-        "feature",
-        "enhancement",
-        "data",
-        "augmentation",
-        "post-processing"
+        "methods"
       ],
       "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
@@ -170,7 +156,7 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q_mechanism",
+      "query_id": "q_failure_mechanism",
       "relevant_verified_papers": 0,
       "returned_papers": 0,
       "stop_reason": "academic_budget_exhausted"
@@ -183,7 +169,6 @@
       ],
       "fallback_used": false,
       "informative_terms": [
-        "lightweight",
         "drone",
         "small",
         "object",
@@ -193,9 +178,10 @@
         "negative",
         "evidence",
         "failure",
-        "case",
-        "environmental",
-        "interference"
+        "scenario",
+        "power",
+        "consumption",
+        "latency"
       ],
       "maximum_provider_calls": 4,
       "minimum_rank_score": 0.62,
@@ -204,7 +190,7 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q_risk",
+      "query_id": "q_risk_negative",
       "relevant_verified_papers": 0,
       "returned_papers": 0,
       "stop_reason": "academic_budget_exhausted"
@@ -217,6 +203,6 @@
     "used": 9
   },
   "web_search_enabled": false,
-  "workflow_head_sha": "47a128cf37028e7201ab609127e9a28ab51310fe",
-  "workflow_run_id": 29711250427
+  "workflow_head_sha": "b244f9732470fb298ee26904e43c33001970fab3",
+  "workflow_run_id": 29711443148
 }
