@@ -32,9 +32,9 @@ from paperagent.schemas.plan import SearchQuery
             False,
         ),
         (
-            "large language model hallucination survey causes taxonomy",
-            "A survey of hallucination in large language models presents a taxonomy of factual "
-            "errors, causes, challenges, and mitigation methods.",
+            "semantic entropy probes hallucination detection uncertainty",
+            "Semantic entropy probes provide reliable hallucination detection through uncertainty "
+            "quantification in large language models.",
             True,
         ),
     ],
@@ -56,7 +56,7 @@ def test_professional_qa_candidate_guards(
         (
             "failure_mechanism_limitation_evidence",
             "hallucination failure mechanism and limitations",
-            "large language model hallucination survey causes taxonomy",
+            "semantic entropy probes hallucination detection uncertainty",
         ),
         (
             "parallel_method_evidence",
@@ -78,11 +78,12 @@ def test_professional_qa_queries_are_role_specific(
     assert result.query == expected
 
 
-def test_hallucination_survey_supports_mechanism_gap_only() -> None:
+def test_semantic_entropy_probes_supports_mechanism_gap() -> None:
     gap = EvidenceGap(
         gap_id="failure_mechanism_limitation_evidence",
-        description="hallucination failure mechanism, causes, taxonomy, and limitations",
+        description="hallucination failure mechanism, uncertainty, and detection limitations",
     )
+    query = "semantic entropy probes hallucination detection uncertainty"
     plan = ResearchPlan(
         status="ready",
         problem_statement="professional question answering hallucination reduction",
@@ -90,9 +91,9 @@ def test_hallucination_survey_supports_mechanism_gap_only() -> None:
         evidence_gaps=[gap],
         search_queries=[
             SearchQuery(
-                query_id="q-survey",
+                query_id="q-semantic-entropy",
                 gap_id=gap.gap_id,
-                query="large language model hallucination survey causes taxonomy",
+                query=query,
                 source_types=["paper"],
             )
         ],
@@ -100,22 +101,19 @@ def test_hallucination_survey_supports_mechanism_gap_only() -> None:
         risks=["domain corpus and acceptable abstention rate are unresolved"],
     )
     item = EvidenceItem(
-        evidence_id="ev-hallucination-survey",
+        evidence_id="ev-semantic-entropy-probes",
         source_type="paper",
-        title=(
-            "A Survey on Hallucination in Large Language Models: Principles, Taxonomy, "
-            "Challenges, and Open Questions"
-        ),
-        locator="arxiv:2311.05232",
+        title="Semantic Entropy Probes: Robust and Cheap Hallucination Detection in LLMs",
+        locator="arxiv:2406.15927",
         retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
         verification_status="accepted",
         supports_gap_ids=[gap.gap_id],
         summary=(
-            "This survey studies hallucination in large language models, presents a taxonomy of "
-            "factual errors and causes, analyzes challenges and limitations, and reviews detection "
-            "and mitigation methods."
+            "Hallucinations are a major challenge to the practical adoption of large language "
+            "models. We propose semantic entropy probes, a reliable uncertainty quantification "
+            "method that detects hallucinations while reducing sampling overhead."
         ),
-        content_hash="sha256:hallucination-survey",
+        content_hash="sha256:semantic-entropy-probes",
         provider="literature_retrieval",
         metadata={"candidate_gap_ids": gap.gap_id},
     )
