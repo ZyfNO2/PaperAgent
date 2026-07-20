@@ -7,6 +7,14 @@ on:
     paths:
       - ".github/workflows/claw-case-001-end-to-end.yml"
       - "scripts/probe_claw_case_end_to_end.py"
+      - "scripts/probe_claw_case_retrieval.py"
+      - "src/paperagent/prompts/v0_1/planning.md"
+      - "src/paperagent/schemas/plan.py"
+      - "src/paperagent/literature/query_concepts.py"
+      - "src/paperagent/literature/ranking.py"
+      - "tests/literature/test_query_concepts.py"
+      - "tests/literature/test_source_selection_policy.py"
+      - "tests/schemas/test_plan_nonblocking_clarification.py"
   workflow_dispatch:
 
 permissions:
@@ -41,7 +49,12 @@ jobs:
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
       - name: Validate Case 001 changes before using LLM quota
+        id: validate
+        shell: bash
         run: |
+          set +e
+          out="build/claw-case-001-e2e"
+          mkdir -p "$out"
           files=(
             src/paperagent/schemas/plan.py
             src/paperagent/literature/query_concepts.py
@@ -51,19 +64,62 @@ jobs:
             tests/literature/test_query_concepts.py
             tests/schemas/test_plan_nonblocking_clarification.py
           )
-          ruff check "${files[@]}"
-          ruff format --check "${files[@]}"
+          ruff check "${files[@]}" > "$out/ruff.log" 2>&1
+          ruff_status=$?
+          ruff format --check "${files[@]}" > "$out/format.log" 2>&1
+          format_status=$?
           pytest -q \
             tests/literature/test_query_concepts.py \
             tests/literature/test_source_selection_policy.py \
-            tests/schemas/test_plan_nonblocking_clarification.py
+            tests/schemas/test_plan_nonblocking_clarification.py \
+            > "$out/pytest.log" 2>&1
+          pytest_status=$?
+          python - "$out/validation.json" "$ruff_status" "$format_status" "$pytest_status" <<'PY'
+          import json
+          import sys
+
+          payload = {
+              "ruff": int(sys.argv[2]),
+              "format": int(sys.argv[3]),
+              "pytest": int(sys.argv[4]),
+          }
+          payload["passed"] = all(value == 0 for value in payload.values())
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, indent=2, sort_keys=True)
+              handle.write("\n")
+          print(json.dumps(payload, sort_keys=True))
+          PY
+          if (( ruff_status || format_status || pytest_status )); then
+            python - "$out/summary.json" "$ruff_status" "$format_status" "$pytest_status" <<'PY'
+          import json
+          import sys
+
+          payload = {
+              "case_id": "at-001-uav-small-object-lightweight",
+              "status": "validation_failed_before_llm",
+              "passed": False,
+              "validation": {
+                  "ruff": int(sys.argv[2]),
+                  "format": int(sys.argv[3]),
+                  "pytest": int(sys.argv[4]),
+              },
+              "web_search_enabled": False,
+          }
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, ensure_ascii=False, indent=2, sort_keys=True)
+              handle.write("\n")
+          PY
+            echo "passed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "passed=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Execute Case 001
+        if: steps.validate.outputs.passed == 'true'
         id: execute
         shell: bash
         run: |
           set +e
           out="build/claw-case-001-e2e"
-          mkdir -p "$out"
           if [[ -z "${MISTRAL_API_KEY:-}" ]]; then
             python - "$out/summary.json" <<'PY'
           import json
@@ -168,19 +224,32 @@ jobs:
           import sys
 
           payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          validation = payload.get("validation", {})
           print(
               "status={status}; passed={passed}; score={score}; decision_match={match}; "
-              "hard_failures={hard}".format(
+              "hard_failures={hard}; validation={validation}".format(
                   status=payload.get("status"),
                   passed=payload.get("passed"),
                   score=payload.get("score"),
                   match=payload.get("decision_matches"),
                   hard=len(payload.get("hard_failures", [])),
+                  validation=validation,
               )
           )
           PY
           )
           else
-            summary="result file was not produced; validation may have failed before LLM execution"
+            summary="result file was not produced"
           fi
           gh pr comment "$pr_number" --body "Case 001 end-to-end probe\n\n- Run: $GITHUB_RUN_ID\n- Head: \`$GITHUB_SHA\`\n- $summary\n- Artifact: \`claw-case-001-e2e-$GITHUB_RUN_ID\`"
+      - name: Enforce Case 001 outcome
+        if: always()
+        shell: bash
+        run: |
+          python - "build/claw-case-001-e2e/summary.json" <<'PY'
+          import json
+          import sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          raise SystemExit(0 if payload.get("passed") is True else 1)
+          PY
