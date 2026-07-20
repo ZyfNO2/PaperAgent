@@ -153,10 +153,7 @@ def override_task_query(
         ):
             canonical = "Searching for MobileNetV3"
         elif role == "baseline":
-            canonical = (
-                "MobileNetV2 EfficientNet-Lite ShuffleNetV2 "
-                "plant disease classification benchmark"
-            )
+            canonical = "MobileNetV2 EfficientNet-Lite ShuffleNetV2 plant disease classification benchmark"
         elif role == "mechanism":
             canonical = (
                 "plant disease classification field imagery small lesions "
@@ -168,10 +165,7 @@ def override_task_query(
                 "INT8 quantization mobile deployment"
             )
         elif _contains_any(role_text, _DATASET_METRIC_HINTS):
-            canonical = (
-                "plant disease classification field dataset macro F1 "
-                "calibration device latency"
-            )
+            canonical = "plant disease classification field dataset macro F1 calibration device latency"
         else:
             canonical = "MobileNetV3 plant disease classification lightweight backbone"
         return _result(

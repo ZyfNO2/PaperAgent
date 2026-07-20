@@ -19,19 +19,22 @@ from paperagent.literature.task_query_overrides import override_task_query
             "MobileNetV2 EfficientNet-Lite ShuffleNetV2 plant disease classification benchmark",
             "baseline_comparison",
             "compare lightweight plant-disease baselines",
-            "MobileNetV2 EfficientNet-Lite ShuffleNetV2 plant disease classification benchmark",
+            "MobileNetV2 EfficientNet-Lite ShuffleNetV2 "
+            "plant disease classification benchmark",
         ),
         (
             "MobileNetV3 failure mechanism limitation plant disease recognition",
             "mechanism_and_limitation",
             "field background shift, small symptoms, and class imbalance",
-            "plant disease classification field imagery small lesions background shift class imbalance",
+            "plant disease classification field imagery small lesions "
+            "background shift class imbalance",
         ),
         (
             "plant disease datasets and evaluation metrics",
             "task_dataset_and_metrics",
             "field dataset, macro-F1, calibration, and device latency",
-            "plant disease classification field dataset macro F1 calibration device latency",
+            "plant disease classification field dataset macro F1 "
+            "calibration device latency",
         ),
     ],
 )
@@ -48,10 +51,14 @@ def test_case_017_queries_separate_backbone_identity_from_task_evidence(
 
 
 def test_exact_mobilenetv3_identity_query_accepts_original_paper() -> None:
-    assert matches_specialized_candidate_terms(
-        "Searching for MobileNetV3",
-        "Searching for MobileNetV3 presents efficient mobile architectures evaluated on ImageNet.",
-    ) is True
+    assert (
+        matches_specialized_candidate_terms(
+            "Searching for MobileNetV3",
+            "Searching for MobileNetV3 presents efficient mobile architectures "
+            "evaluated on ImageNet.",
+        )
+        is True
+    )
 
 
 @pytest.mark.parametrize(
@@ -66,7 +73,9 @@ def test_exact_mobilenetv3_identity_query_rejects_application_papers(candidate: 
 
 
 def test_plant_disease_query_accepts_task_matched_evidence() -> None:
-    query = "plant disease classification field imagery small lesions background shift class imbalance"
+    query = (
+        "plant disease classification field imagery small lesions background shift class imbalance"
+    )
     candidate = (
         "A lightweight network classifies rice leaf disease in field images with small symptom "
         "lesions, complex backgrounds, and class imbalance."
@@ -85,5 +94,7 @@ def test_plant_disease_query_accepts_task_matched_evidence() -> None:
 def test_plant_disease_query_rejects_cross_domain_or_non_disease_evidence(
     candidate: str,
 ) -> None:
-    query = "plant disease classification field imagery small lesions background shift class imbalance"
+    query = (
+        "plant disease classification field imagery small lesions background shift class imbalance"
+    )
     assert matches_specialized_candidate_terms(query, candidate) is False
