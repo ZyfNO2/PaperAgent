@@ -69,9 +69,31 @@ _FAILURE_DETAIL_PATTERNS = (
     r"\bfalse positives?\b",
     r"\bboundary ambiguity\b",
 )
-_MULTIMODAL_MEDICAL_CLASSIFICATION_PATTERN = re.compile(
-    r"\bmultimodal\s+medical\s+image\s+fusion\s+classification\b",
-    re.IGNORECASE,
+_MULTIMODAL_HINTS = ("multimodal", "multi-modal", "multi modal", "多模态")
+_MEDICAL_IMAGING_HINTS = (
+    "medical image",
+    "medical imaging",
+    "医学影像",
+    "医学图像",
+)
+_CLASSIFICATION_HINTS = ("classification", "classifier", "分类")
+_ACTION_RECOGNITION_HINTS = (
+    "action recognition",
+    "activity recognition",
+    "human action",
+    "人体动作识别",
+)
+_CAMERA_CONTEXT_HINTS = (
+    "camera",
+    "video",
+    "rgb",
+    "pose",
+    "skeleton",
+    "摄像头",
+    "相机",
+    "视频",
+    "姿态",
+    "骨骼",
 )
 
 
@@ -81,6 +103,10 @@ class QueryRefinement:
     changed: bool
     reason: str | None = None
     removed_families: tuple[str, ...] = ()
+
+
+def _contains_any(value: str, terms: tuple[str, ...]) -> bool:
+    return any(term in value for term in terms)
 
 
 def _contains_mechanism_role(gap_id: str, gap_description: str) -> bool:
@@ -114,13 +140,37 @@ def _remove_family_phrases(query: str, families: tuple[str, ...]) -> str:
     return refined
 
 
-def _normalize_scientific_phrasing(query: str) -> str:
-    """Resolve wording that academic indexes commonly interpret as the wrong task."""
+def _normalize_scientific_phrasing(
+    query: str,
+    *,
+    research_context: str,
+) -> tuple[str, list[str]]:
+    """Resolve task wording that academic indexes commonly interpret too broadly."""
 
-    return _MULTIMODAL_MEDICAL_CLASSIFICATION_PATTERN.sub(
-        "multimodal medical imaging disease classification feature fusion",
-        query,
-    )
+    refined = query
+    reasons: list[str] = []
+    combined = f"{query} {research_context}".casefold()
+    if (
+        _contains_any(combined, _MULTIMODAL_HINTS)
+        and _contains_any(combined, _MEDICAL_IMAGING_HINTS)
+        and _contains_any(combined, _CLASSIFICATION_HINTS)
+    ):
+        canonical = "multimodal medical imaging disease classification feature fusion"
+        if refined.casefold() != canonical:
+            refined = canonical
+            reasons.append(
+                "canonicalized multimodal medical classification to a stable task query"
+            )
+
+    combined = f"{refined} {research_context}".casefold()
+    if _contains_any(combined, _ACTION_RECOGNITION_HINTS) and _contains_any(
+        research_context.casefold(), _CAMERA_CONTEXT_HINTS
+    ):
+        if not _contains_any(refined.casefold(), _CAMERA_CONTEXT_HINTS):
+            refined = f"camera video pose {refined}"
+            reasons.append("restored the explicit camera modality for action retrieval")
+
+    return refined, reasons
 
 
 def _compact_long_query(query: str) -> str:
@@ -149,26 +199,25 @@ def refine_search_query(
     *,
     gap_id: str,
     gap_description: str,
+    research_context: str = "",
 ) -> QueryRefinement:
     """Reduce overconstrained queries before rate-limited academic retrieval.
 
-    Exact DOI/arXiv lookups are never changed. Ambiguous scientific phrases are normalized to
-    the requested task. Mechanism queries that name three or more unverified method families
-    drop those families. Queries longer than eight words also drop generic role words and
-    redundant failure examples while retaining task, domain, scale, and constraint terms.
+    Exact DOI/arXiv lookups are never changed. Explicit task and modality constraints from the
+    research context are restored deterministically. Mechanism queries that name three or more
+    unverified method families drop those families. Queries longer than eight words also drop
+    generic role words and redundant failure examples while retaining task and domain terms.
     """
 
     normalized = " ".join(query.split())
     if _IDENTIFIER.search(normalized):
         return QueryRefinement(query=normalized, changed=False)
 
-    refined = _normalize_scientific_phrasing(normalized)
+    refined, reasons = _normalize_scientific_phrasing(
+        normalized,
+        research_context=research_context,
+    )
     removed_families: tuple[str, ...] = ()
-    reasons: list[str] = []
-    if refined != normalized:
-        reasons.append(
-            "normalized ambiguous image-fusion wording to explicit disease-classification terms"
-        )
 
     if _contains_mechanism_role(gap_id, gap_description):
         families = _family_hits(refined)
@@ -181,7 +230,7 @@ def refine_search_query(
                     "removed three or more unverified method families to preserve retrieval recall"
                 )
 
-    if len(normalized.split()) > 8:
+    if len(normalized.split()) > 8 and not reasons:
         compacted = _compact_long_query(refined)
         if compacted != refined:
             refined = compacted
