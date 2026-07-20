@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from types import GenericAlias
 from typing import Any, Literal
 
 from langchain_core.runnables import RunnableConfig
@@ -19,6 +20,10 @@ def _literal_type(values: tuple[str, ...]) -> Any:
     return Literal.__getitem__(values)  # type: ignore[attr-defined]
 
 
+def _list_type(item_type: Any) -> Any:
+    return GenericAlias(list, item_type)
+
+
 def _constrained_synthesis_schema(
     *,
     accepted_evidence_ids: tuple[str, ...],
@@ -28,7 +33,7 @@ def _constrained_synthesis_schema(
 
     evidence_id_type = _literal_type(accepted_evidence_ids)
     gap_id_type = _literal_type(gap_ids)
-    evidence_id_list = list[evidence_id_type]
+    evidence_id_list = _list_type(evidence_id_type)
 
     claim = create_model(
         "ConstrainedEvidenceSynthesisClaim",
@@ -53,9 +58,9 @@ def _constrained_synthesis_schema(
     return create_model(
         "ConstrainedEvidenceSynthesis",
         schema_version=(Literal["0.1"], "0.1"),
-        gap_assessments=(list[gap], ...),
-        verified_findings=(list[claim], ...),
-        conflicts=(list[conflict], ...),
+        gap_assessments=(_list_type(gap), ...),
+        verified_findings=(_list_type(claim), ...),
+        conflicts=(_list_type(conflict), ...),
         feasibility=(
             Literal["feasible", "partially_feasible", "not_feasible", "unknown"],
             ...,
