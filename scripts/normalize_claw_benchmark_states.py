@@ -3,11 +3,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from paperagent.claw_benchmark_adapter import (
+from paperagent.claw_benchmark_normalizer import (
     BenchmarkNormalizationContext,
     normalize_paperagent_state,
 )
-from paperagent.claw_trace_reconciliation import reconcile_ledger_relevance
 from paperagent.state import state_from_json
 
 
@@ -45,8 +44,7 @@ def main() -> int:
             if context.case_id in seen_case_ids:
                 raise ValueError(f"duplicate case_id {context.case_id!r}")
             seen_case_ids.add(context.case_id)
-            trace = normalize_paperagent_state(state, context)
-            traces.append(reconcile_ledger_relevance(state, trace))
+            traces.append(normalize_paperagent_state(state, context))
         except ValueError as exc:
             raise ValueError(f"row {row_number}: {exc}") from exc
 
