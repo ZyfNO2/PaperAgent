@@ -87,6 +87,16 @@ _FEW_SHOT_CANDIDATE_TERMS = (
     "meta-learning",
     "transfer learning",
 )
+_RECOMMENDATION_QUERY_TERMS = (
+    "recommendation",
+    "recommender",
+    "collaborative filtering",
+    "user-item",
+    "lightgcn",
+    "ngcf",
+    "pinsage",
+    "推荐",
+)
 _MULTI_BEHAVIOR_RECOMMENDATION_QUERY_TERMS = (
     "multi-behavior recommendation",
     "multi behavior recommendation",
@@ -180,6 +190,10 @@ def matches_specialized_candidate_terms(query: str, candidate_text: str) -> bool
         time_series_query and _contains_any(normalized_query, _FEW_SHOT_QUERY_TERMS)
     ) or _contains_any(normalized_candidate, _FEW_SHOT_CANDIDATE_TERMS)
 
+    recommendation_query = _contains_any(normalized_query, _RECOMMENDATION_QUERY_TERMS)
+    recommendation_match = not recommendation_query or _contains_any(
+        normalized_candidate, _RECOMMENDATION_CANDIDATE_TERMS
+    )
     multi_behavior_query = _contains_any(
         normalized_query, _MULTI_BEHAVIOR_RECOMMENDATION_QUERY_TERMS
     )
@@ -204,6 +218,7 @@ def matches_specialized_candidate_terms(query: str, candidate_text: str) -> bool
         and time_series_match
         and anomaly_transformer_match
         and few_shot_match
+        and recommendation_match
         and multi_behavior_match
         and mobilenetv3_identity_match
         and plant_disease_match
