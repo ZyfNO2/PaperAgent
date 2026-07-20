@@ -39,9 +39,7 @@ from paperagent.schemas.plan import SearchQuery
         ),
     ],
 )
-def test_professional_qa_candidate_guards(
-    query: str, candidate: str, expected: bool
-) -> None:
+def test_professional_qa_candidate_guards(query: str, candidate: str, expected: bool) -> None:
     assert matches_specialized_candidate_terms(query, candidate) is expected
 
 
@@ -130,4 +128,5 @@ def test_semantic_entropy_probes_supports_mechanism_gap() -> None:
     support = next(value for value in supports if value.gap_id == gap.gap_id)
     assert ledger.accepted_ids == [item.evidence_id]
     assert support.decision == "accept"
-    assert support.checklist_results["role_evidence_present"] is True
+    assert support.support_type == "direct_support"
+    assert support.supported_claim is not None
