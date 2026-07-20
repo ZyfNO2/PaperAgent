@@ -11,6 +11,19 @@ from paperagent.providers.runtime import (
 )
 
 
+def allocate_case_budgets(total: int, case_count: int) -> tuple[int, ...]:
+    """Split one hard full-run budget fairly without exceeding it."""
+
+    if total < 1:
+        raise ValueError("total budget must be positive")
+    if case_count < 1:
+        raise ValueError("case_count must be positive")
+    if total < case_count:
+        raise ValueError("total budget must allow at least one call per case")
+    base, remainder = divmod(total, case_count)
+    return tuple(base + (index < remainder) for index in range(case_count))
+
+
 def provider_config_for_case(
     config: ProviderRuntimeConfig,
     *,
@@ -29,6 +42,47 @@ def provider_config_for_case(
     if maximum is None:
         return config
     return config.model_copy(update={"max_estimated_cost_usd": maximum / selected_case_count})
+
+
+def summarize_search_budgets(
+    case_ids: Iterable[str],
+    budgets: Iterable[dict[str, int | None] | None],
+    *,
+    configured_total: int,
+) -> dict[str, Any]:
+    case_rows = []
+    total_used = 0
+    total_remaining = 0
+    complete = True
+    for case_id, budget in zip(case_ids, budgets, strict=True):
+        if budget is None:
+            complete = False
+            case_rows.append({"case_id": case_id, "maximum": None, "used": None, "remaining": None})
+            continue
+        maximum = budget.get("maximum")
+        used = budget.get("used")
+        remaining = budget.get("remaining")
+        if not isinstance(maximum, int) or not isinstance(used, int) or not isinstance(remaining, int):
+            complete = False
+        else:
+            total_used += used
+            total_remaining += remaining
+        case_rows.append(
+            {
+                "case_id": case_id,
+                "maximum": maximum,
+                "used": used,
+                "remaining": remaining,
+            }
+        )
+    return {
+        "configured_total": configured_total,
+        "used": total_used if complete else None,
+        "remaining": total_remaining if complete else None,
+        "complete": complete,
+        "within_configured_total": total_used <= configured_total if complete else None,
+        "cases": case_rows,
+    }
 
 
 def _telemetry_records(provider: object) -> tuple[InvocationTelemetry, ...]:
@@ -101,4 +155,9 @@ def summarize_llm_providers(
     }
 
 
-__all__ = ["provider_config_for_case", "summarize_llm_providers"]
+__all__ = [
+    "allocate_case_budgets",
+    "provider_config_for_case",
+    "summarize_llm_providers",
+    "summarize_search_budgets",
+]
