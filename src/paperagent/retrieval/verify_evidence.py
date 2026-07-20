@@ -121,9 +121,11 @@ def _runtime_query_texts(
         and query_text.strip()
     }
     runtime_by_id.update(
-        query.query_id: query.query.strip()
-        for query in prepared_queries
-        if query.query.strip()
+        {
+            query.query_id: query.query.strip()
+            for query in prepared_queries
+            if query.query.strip()
+        }
     )
     return runtime_by_id
 
