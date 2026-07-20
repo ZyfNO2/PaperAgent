@@ -34,6 +34,7 @@ def _ensure_legacy_adapter_test_precondition() -> None:
     path.write_text(text.replace(marker, legacy_test + marker), encoding="utf-8")
 
 
+# Explicitly run only from the one-shot workflow; production imports never apply patches.
 _ensure_legacy_adapter_test_precondition()
 payload = "".join((ROOT / part).read_text(encoding="utf-8").strip() for part in PARTS)
 source = gzip.decompress(base64.b64decode(payload))
