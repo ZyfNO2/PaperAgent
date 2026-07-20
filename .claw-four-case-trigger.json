@@ -1,17 +1,19 @@
 {
-  "batch_id": "batch-03-cases-010-013",
+  "batch_id": "batch-03-cases-010-013-final-stability",
   "case_ids": [
     "at-010-chinese-long-document-classification",
     "at-011-few-shot-intent-detection",
     "at-012-enterprise-rag",
     "at-013-professional-qa-hallucination"
   ],
-  "reason": "run third controlled batch after second-batch stability and cross-domain method gate",
-  "attempt": 1,
-  "prerequisite_batches": {
-    "batch_01_passed_count": 4,
-    "batch_02_passed_count": 4,
-    "batch_02_workflow_run_id": 29738275611,
+  "reason": "confirm third-batch stability after long-document and few-shot intent precision repairs",
+  "attempt": 2,
+  "prerequisite_repairs": {
+    "case_010_score": 95,
+    "case_011_score": 95,
+    "case_012_previous_score": 97,
+    "case_013_previous_score": 95,
+    "retrieval_gate_run_id": 29739721796,
     "method_gate_run_id": 29738468350,
     "hard_failures": 0
   },
