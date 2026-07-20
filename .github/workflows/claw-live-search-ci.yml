@@ -6,7 +6,7 @@ on:
       - feat/claw-live-search-runtime
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
 
 concurrency:
@@ -26,17 +26,6 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Apply exact Ruff format to benchmark adapter
-        shell: bash
-        run: |
-          ruff format src/paperagent/claw_benchmark_adapter.py
-          if ! git diff --quiet -- src/paperagent/claw_benchmark_adapter.py; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add src/paperagent/claw_benchmark_adapter.py
-            git commit -m "style(eval): apply Ruff format to recovery classifier"
-            git push
-          fi
       - name: Verify adaptive search runtime
         id: verify
         shell: bash
