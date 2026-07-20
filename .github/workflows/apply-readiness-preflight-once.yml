@@ -1,0 +1,85 @@
+name: Apply Readiness Preflight Once
+
+on:
+  pull_request:
+    branches:
+      - feat/claw-academic-tailoring-benchmark-v1
+    types: [opened, reopened, synchronize]
+    paths:
+      - "scripts/apply_readiness_preflight.py"
+      - "src/paperagent/nodes/readiness_preflight.py"
+      - "tests/nodes/test_readiness_preflight.py"
+      - ".github/workflows/apply-readiness-preflight-once.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-readiness-preflight-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  apply-and-verify:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'feat/claw-live-search-runtime'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Apply integration and remove one-shot files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/apply_readiness_preflight.py
+          rm scripts/apply_readiness_preflight.py
+          rm .github/workflows/apply-readiness-preflight-once.yml
+          ruff format src tests scripts
+          ruff check --fix src tests scripts
+      - name: Ruff and format gate
+        run: |
+          ruff check src tests scripts
+          ruff format --check src tests scripts
+      - name: Leakage boundary audit
+        run: |
+          python - <<'PY'
+          from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
+
+          result = audit_benchmark_execution_boundary()
+          print(result.model_dump_json(indent=2))
+          if not result.passed:
+              raise SystemExit(result.findings)
+          PY
+      - name: Targeted readiness and graph tests
+        run: |
+          pytest --no-cov -q \
+            tests/methodology/test_scientific_readiness.py \
+            tests/methodology/test_scientific_decision_policy.py \
+            tests/methodology/test_method_design_draft.py \
+            tests/nodes/test_readiness_preflight.py \
+            tests/evals/test_claw_benchmark_adapter.py \
+            tests/evals/test_benchmark_input_boundary_v2.py \
+            tests/unit/test_schemas.py
+      - name: Strict Mypy
+        run: mypy --config-file pyproject.toml
+      - name: Full tests and branch coverage
+        run: pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
+      - name: Commit clean source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(method): route explicit readiness before retrieval"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
