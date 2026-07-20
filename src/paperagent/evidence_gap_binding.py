@@ -74,6 +74,167 @@ _METRIC_PATTERN = re.compile(
     r"flops?|parameters?|params?|memory|energy|power)\b",
     re.IGNORECASE,
 )
+_FEW_SHOT_INTENT_TASK_CUES = (
+    "few-shot intent",
+    "few shot intent",
+    "low-resource intent",
+    "low resource intent",
+    "intent classification",
+    "intent detection",
+    "intent recognition",
+    "multi-label intent",
+    "multilabel intent",
+    "user intent",
+)
+_FEW_SHOT_CUES = (
+    "few-shot",
+    "few shot",
+    "low-resource",
+    "low resource",
+    "k-shot",
+    "few examples",
+    "few utterances",
+    "few annotated",
+    "limited labeled",
+    "limited training",
+    "data scarcity",
+    "scarce data",
+    "prototypical",
+    "prototype",
+)
+
+
+def _is_few_shot_intent_evidence(text: str) -> bool:
+    return any(cue in text for cue in _FEW_SHOT_INTENT_TASK_CUES) and any(
+        cue in text for cue in _FEW_SHOT_CUES
+    )
+
+
+def _few_shot_intent_baseline_support(text: str) -> bool:
+    if not _is_few_shot_intent_evidence(text):
+        return False
+    evaluation = any(
+        cue in text
+        for cue in (
+            "experiment",
+            "experimental",
+            "dataset",
+            "benchmark",
+            "evaluation",
+            "evaluate",
+            "test set",
+            "validation set",
+            "result",
+            "performance",
+            "accuracy",
+            "f1",
+        )
+    )
+    method_or_comparison = any(
+        cue in text
+        for cue in (
+            "we propose",
+            "we introduce",
+            "framework",
+            "network",
+            "model",
+            "approach",
+            "method",
+            "prototypical",
+            "prototype",
+            "nearest neighbor",
+            "contrastive learning",
+            "natural language inference",
+            "baseline",
+            "state-of-the-art",
+            "outperform",
+        )
+    )
+    return evaluation and method_or_comparison
+
+
+def _few_shot_intent_mechanism_support(text: str) -> bool:
+    if not _is_few_shot_intent_evidence(text):
+        return False
+    problem = any(
+        cue in text
+        for cue in (
+            "data scarcity",
+            "scarce data",
+            "few annotated",
+            "few examples",
+            "few utterances",
+            "limited labeled",
+            "limited training",
+            "insufficient training",
+            "lack of training",
+            "low-resource",
+            "low resource",
+            "overfitting",
+            "noisy",
+            "confusion",
+            "semantically similar",
+            "unseen intent",
+            "out-of-scope",
+            "out of scope",
+            "oos detection",
+            "threshold",
+            "domain shift",
+            "data-rich domains",
+        )
+    )
+    intervention = any(
+        cue in text
+        for cue in (
+            "we propose",
+            "we introduce",
+            "framework",
+            "network",
+            "prototypical",
+            "prototype",
+            "contrastive",
+            "label semantics",
+            "label name embedding",
+            "label description",
+            "calibration",
+            "meta-learning",
+            "natural language inference",
+            "entailment",
+            "nearest neighbor",
+            "distance metric",
+            "paraphras",
+            "transfer",
+        )
+    )
+    return problem and intervention
+
+
+def _few_shot_intent_risk_support(text: str) -> bool:
+    if not _is_few_shot_intent_evidence(text):
+        return False
+    return any(
+        cue in text
+        for cue in (
+            "unknown intent",
+            "unknown intents",
+            "unseen intent",
+            "out-of-scope",
+            "out of scope",
+            "oos detection",
+            "open-set",
+            "open set",
+            "novel intent",
+            "reject option",
+            "rejection",
+            "more challenging",
+            "overfitting",
+            "performance degradation",
+            "data scarcity",
+            "scarce data",
+            "few annotated",
+            "limited labeled",
+        )
+    )
 
 
 def _dedupe(values: Iterable[str]) -> list[str]:
@@ -114,6 +275,8 @@ def _query_overlap(item: EvidenceItem, query_texts: Iterable[str]) -> list[str]:
 
 
 def _baseline_role_support(text: str) -> bool:
+    if _few_shot_intent_baseline_support(text):
+        return True
     evaluation_context = any(
         cue in text
         for cue in (
@@ -144,6 +307,8 @@ def _baseline_role_support(text: str) -> bool:
 
 
 def _mechanism_role_support(text: str) -> bool:
+    if _few_shot_intent_mechanism_support(text):
+        return True
     problem = any(
         cue in text
         for cue in (
@@ -207,6 +372,8 @@ def _mechanism_role_support(text: str) -> bool:
 
 
 def _risk_role_support(text: str) -> bool:
+    if _few_shot_intent_risk_support(text):
+        return True
     return any(
         cue in text
         for cue in (
