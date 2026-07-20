@@ -1,56 +1,21 @@
 {
-  "artifact_name": "claw-paid-full-20-29770957035",
+  "artifact_name": "claw-paid-full-20-29772719986",
   "execution_summary": {
-    "actions_artifact_name": "claw-paid-full-20-29770957035",
-    "average_score": 79.7,
+    "actions_artifact_name": "claw-paid-full-20-29772719986",
+    "average_score": 92.8,
     "cases": [
       {
         "case_id": "at-001-uav-small-object-lightweight",
-        "decision_matches": false,
+        "decision_matches": true,
         "expected_decision": "REVISE_TO_PILOT",
-        "hard_failures": [
-          {
-            "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-            "details": "stronger baselines or negative results were not preserved"
-          }
-        ],
+        "hard_failures": [],
         "minimum_score": 80,
-        "observed_decision": "REVISE",
-        "score": 57,
-        "status": "failed"
+        "observed_decision": "REVISE_TO_PILOT",
+        "score": 95,
+        "status": "passed"
       },
       {
         "case_id": "at-002-edge-road-crack-detection",
-        "decision_matches": true,
-        "expected_decision": "REVISE_TO_PILOT",
-        "hard_failures": [],
-        "minimum_score": 80,
-        "observed_decision": "REVISE_TO_PILOT",
-        "score": 95,
-        "status": "passed"
-      },
-      {
-        "case_id": "at-003-skin-lesion-explainability",
-        "decision_matches": true,
-        "expected_decision": "REVISE_TO_PILOT",
-        "hard_failures": [],
-        "minimum_score": 80,
-        "observed_decision": "REVISE_TO_PILOT",
-        "score": 95,
-        "status": "passed"
-      },
-      {
-        "case_id": "at-004-steel-surface-defect",
-        "decision_matches": false,
-        "expected_decision": "REVISE_TO_PILOT",
-        "hard_failures": [],
-        "minimum_score": 80,
-        "observed_decision": "REVISE",
-        "score": 92,
-        "status": "failed"
-      },
-      {
-        "case_id": "at-005-remote-sensing-dense-small-objects",
         "decision_matches": true,
         "expected_decision": "REVISE_TO_PILOT",
         "hard_failures": [],
@@ -60,13 +25,48 @@
         "status": "passed"
       },
       {
+        "case_id": "at-003-skin-lesion-explainability",
+        "decision_matches": true,
+        "expected_decision": "REVISE_TO_PILOT",
+        "hard_failures": [],
+        "minimum_score": 80,
+        "observed_decision": "REVISE_TO_PILOT",
+        "score": 97,
+        "status": "passed"
+      },
+      {
+        "case_id": "at-004-steel-surface-defect",
+        "decision_matches": true,
+        "expected_decision": "REVISE_TO_PILOT",
+        "hard_failures": [],
+        "minimum_score": 80,
+        "observed_decision": "REVISE_TO_PILOT",
+        "score": 97,
+        "status": "passed"
+      },
+      {
+        "case_id": "at-005-remote-sensing-dense-small-objects",
+        "decision_matches": false,
+        "expected_decision": "REVISE_TO_PILOT",
+        "hard_failures": [
+          {
+            "code": "TRACE_CONTRACT_FAILURE",
+            "details": "trace audit failed: NOT_EVALUATED, FINAL_OUTCOME_AND_REPORT_PRESENT"
+          }
+        ],
+        "minimum_score": 80,
+        "observed_decision": "REVISE",
+        "score": 92,
+        "status": "failed"
+      },
+      {
         "case_id": "at-006-low-light-pedestrian",
         "decision_matches": true,
         "expected_decision": "REVISE_TO_PILOT",
         "hard_failures": [],
         "minimum_score": 80,
         "observed_decision": "REVISE_TO_PILOT",
-        "score": 95,
+        "score": 97,
         "status": "passed"
       },
       {
@@ -96,23 +96,18 @@
         "hard_failures": [],
         "minimum_score": 80,
         "observed_decision": "REVISE_TO_PILOT",
-        "score": 95,
+        "score": 93,
         "status": "passed"
       },
       {
         "case_id": "at-010-chinese-long-document-classification",
-        "decision_matches": false,
+        "decision_matches": true,
         "expected_decision": "REVISE_TO_PILOT",
-        "hard_failures": [
-          {
-            "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-            "details": "stronger baselines or negative results were not preserved"
-          }
-        ],
+        "hard_failures": [],
         "minimum_score": 80,
-        "observed_decision": "REVISE",
-        "score": 59,
-        "status": "failed"
+        "observed_decision": "REVISE_TO_PILOT",
+        "score": 95,
+        "status": "passed"
       },
       {
         "case_id": "at-011-few-shot-intent-detection",
@@ -126,38 +121,28 @@
         ],
         "minimum_score": 80,
         "observed_decision": "REVISE",
-        "score": 55,
+        "score": 59,
         "status": "failed"
       },
       {
         "case_id": "at-012-enterprise-rag",
-        "decision_matches": false,
+        "decision_matches": true,
         "expected_decision": "REVISE_TO_PILOT",
-        "hard_failures": [
-          {
-            "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-            "details": "stronger baselines or negative results were not preserved"
-          }
-        ],
+        "hard_failures": [],
         "minimum_score": 80,
-        "observed_decision": "REVISE",
-        "score": 59,
-        "status": "failed"
+        "observed_decision": "REVISE_TO_PILOT",
+        "score": 95,
+        "status": "passed"
       },
       {
         "case_id": "at-013-professional-qa-hallucination",
-        "decision_matches": false,
+        "decision_matches": true,
         "expected_decision": "REVISE_TO_PILOT",
-        "hard_failures": [
-          {
-            "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-            "details": "stronger baselines or negative results were not preserved"
-          }
-        ],
+        "hard_failures": [],
         "minimum_score": 80,
-        "observed_decision": "REVISE",
-        "score": 59,
-        "status": "failed"
+        "observed_decision": "REVISE_TO_PILOT",
+        "score": 95,
+        "status": "passed"
       },
       {
         "case_id": "at-014-gnn-fraud-detection",
@@ -171,21 +156,26 @@
       },
       {
         "case_id": "at-015-multibehavior-recommendation",
-        "decision_matches": false,
+        "decision_matches": true,
         "expected_decision": "REVISE_TO_PILOT",
-        "hard_failures": [
-          {
-            "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-            "details": "stronger baselines or negative results were not preserved"
-          }
-        ],
+        "hard_failures": [],
         "minimum_score": 80,
-        "observed_decision": "REVISE",
-        "score": 57,
-        "status": "failed"
+        "observed_decision": "REVISE_TO_PILOT",
+        "score": 95,
+        "status": "passed"
       },
       {
         "case_id": "at-016-anomaly-transformer-supplied",
+        "decision_matches": true,
+        "expected_decision": "REVISE_TO_PILOT",
+        "hard_failures": [],
+        "minimum_score": 80,
+        "observed_decision": "REVISE_TO_PILOT",
+        "score": 94,
+        "status": "passed"
+      },
+      {
+        "case_id": "at-017-mobilenetv3-plant-disease-supplied",
         "decision_matches": false,
         "expected_decision": "REVISE_TO_PILOT",
         "hard_failures": [
@@ -200,21 +190,6 @@
         "status": "failed"
       },
       {
-        "case_id": "at-017-mobilenetv3-plant-disease-supplied",
-        "decision_matches": false,
-        "expected_decision": "REVISE_TO_PILOT",
-        "hard_failures": [
-          {
-            "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-            "details": "stronger baselines or negative results were not preserved"
-          }
-        ],
-        "minimum_score": 80,
-        "observed_decision": "REVISE",
-        "score": 55,
-        "status": "failed"
-      },
-      {
         "case_id": "at-018-yolox-tinydet-supplied",
         "decision_matches": true,
         "expected_decision": "REVISE_TO_PILOT",
@@ -226,28 +201,28 @@
       },
       {
         "case_id": "at-019-unet-unspecified-medical-segmentation",
-        "decision_matches": true,
+        "decision_matches": false,
         "expected_decision": "REVISE",
         "hard_failures": [
           {
-            "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-            "details": "stronger baselines or negative results were not preserved"
+            "code": "TRACE_CONTRACT_FAILURE",
+            "details": "trace audit failed: FINAL_OUTCOME_AND_REPORT_PRESENT"
           }
         ],
         "minimum_score": 80,
-        "observed_decision": "REVISE",
-        "score": 62,
+        "observed_decision": "REVISE_TO_PILOT",
+        "score": 91,
         "status": "failed"
       },
       {
         "case_id": "at-020-lightgcn-contrastive-supplied",
-        "decision_matches": false,
+        "decision_matches": true,
         "expected_decision": "REVISE",
         "hard_failures": [],
         "minimum_score": 80,
-        "observed_decision": "REVISE_TO_PILOT",
-        "score": 92,
-        "status": "failed"
+        "observed_decision": "REVISE",
+        "score": 94,
+        "status": "passed"
       }
     ],
     "completed": 20,
@@ -273,26 +248,26 @@
       "at-019-unet-unspecified-medical-segmentation",
       "at-020-lightgcn-contrastive-supplied"
     ],
-    "decision_accuracy": 0.5,
+    "decision_accuracy": 0.8,
     "errors": [],
-    "failed": 11,
-    "hard_failure_count": 9,
+    "failed": 4,
+    "hard_failure_count": 4,
     "llm": {
       "configured_full_run_max_cost_usd": 1.0,
       "configured_per_case_max_cost_usd": 0.05,
       "cost_estimate_complete": true,
-      "estimated_cost_usd": 0.0894081,
-      "failed_attempts": 2,
-      "input_tokens": 251266,
-      "logical_calls": 81,
+      "estimated_cost_usd": 0.13518765,
+      "failed_attempts": 6,
+      "input_tokens": 408871,
+      "logical_calls": 96,
       "model": "mistral-small-latest",
-      "output_tokens": 86197,
+      "output_tokens": 123095,
       "price_table_loaded": true,
       "price_table_version": "mistral-public-api-2026-07-21",
       "provider": "mistral",
-      "provider_attempts": 81,
+      "provider_attempts": 96,
       "provider_instances": 20,
-      "successful_attempts": 79,
+      "successful_attempts": 90,
       "usage_complete": true,
       "within_configured_cost": true
     },
@@ -303,7 +278,7 @@
       "states": "states.jsonl"
     },
     "passed": false,
-    "passed_cases": 9,
+    "passed_cases": 16,
     "provider_call_budget": {
       "cases": [
         {
@@ -399,14 +374,14 @@
         {
           "case_id": "at-016-anomaly-transformer-supplied",
           "maximum": 10,
-          "remaining": 0,
-          "used": 10
+          "remaining": 2,
+          "used": 8
         },
         {
           "case_id": "at-017-mobilenetv3-plant-disease-supplied",
           "maximum": 10,
-          "remaining": 4,
-          "used": 6
+          "remaining": 2,
+          "used": 8
         },
         {
           "case_id": "at-018-yolox-tinydet-supplied",
@@ -417,23 +392,23 @@
         {
           "case_id": "at-019-unet-unspecified-medical-segmentation",
           "maximum": 10,
-          "remaining": 4,
-          "used": 6
+          "remaining": 0,
+          "used": 10
         },
         {
           "case_id": "at-020-lightgcn-contrastive-supplied",
           "maximum": 10,
-          "remaining": 1,
-          "used": 9
+          "remaining": 0,
+          "used": 10
         }
       ],
       "complete": true,
       "configured_total": 200,
-      "remaining": 9,
-      "used": 191,
+      "remaining": 4,
+      "used": 196,
       "within_configured_total": true
     },
-    "report_digest": "434824b078b402b9735fb3023be95f6da77954dc8ecd8eea316bf52280be4246",
+    "report_digest": "717311383530b03b37230cc5e832365587bf9ff8ec234b51c285bbad0cf64f66",
     "report_status": "generated",
     "runtime_failures": [],
     "schema": "paperagent.claw-paid-full-runtime-summary.v1",
@@ -461,14 +436,14 @@
       "at-019-unet-unspecified-medical-segmentation",
       "at-020-lightgcn-contrastive-supplied"
     ],
-    "source_sha": "f66abf9538f357c0bc5db90168e21018bc854c7e",
+    "source_sha": "5edc3e319786c141cc8b80147284d7c454d954f1",
     "static_leakage_audit": {
       "findings": [],
       "passed": true
     },
     "web_search_enabled": false,
     "workflow_name": "CLAW Paid Full 20 E2E",
-    "workflow_run_id": "29770957035"
+    "workflow_run_id": "29772719986"
   },
   "outcomes": {
     "full_runtime": "failure",
@@ -487,7 +462,7 @@
     "semantic_scholar_api_key_present": false,
     "web_search_enabled": false
   },
-  "source_sha": "f66abf9538f357c0bc5db90168e21018bc854c7e",
+  "source_sha": "5edc3e319786c141cc8b80147284d7c454d954f1",
   "status": "failed",
-  "workflow_run_id": 29770957035
+  "workflow_run_id": 29772719986
 }
