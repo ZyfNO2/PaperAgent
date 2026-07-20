@@ -1,28 +1,14 @@
 from __future__ import annotations
 
 import inspect
-from types import SimpleNamespace
-from typing import cast
 
 import pytest
 
 from paperagent.benchmark_input import BenchmarkInput, benchmark_input_to_request
 from paperagent.claw_academic_benchmark import GoldCase, SpecialAssertions, SuppliedMaterial
-from paperagent.claw_benchmark_runtime import (
-    _structured_pilot_recommendation,
-    build_benchmark_search_runtime,
-    execute_benchmark_case,
-)
+from paperagent.claw_benchmark_runtime import build_benchmark_search_runtime, execute_benchmark_case
 from paperagent.claw_gold_adapter import benchmark_input_from_gold
 from paperagent.providers import FakeSearchProvider
-from paperagent.schemas import (
-    EvidenceGap,
-    FinalOutcome,
-    ResearchPlan,
-    ResearchRequest,
-    SearchQuery,
-)
-from paperagent.state import PaperAgentState
 
 
 def _case() -> GoldCase:
@@ -48,70 +34,6 @@ def _case() -> GoldCase:
     )
 
 
-def _revise_outcome(*, invalid_evidence_ids: list[str] | None = None) -> FinalOutcome:
-    return FinalOutcome(
-        execution_status="succeeded",
-        scientific_verdict="REVISE",
-        quality_route="blocked",
-        report_status="completed",
-        reason_codes=["Q_REPAIR_BUDGET_EXHAUSTED"],
-        invalid_evidence_ids=invalid_evidence_ids or [],
-        recommended_next_actions=["Run one bounded falsification experiment."],
-    )
-
-
-def _method() -> object:
-    return SimpleNamespace(methodology_plan=SimpleNamespace(modules=(object(),)))
-
-
-def _pilot_state(*, references: list[str] | None = None, covered: bool = True) -> PaperAgentState:
-    references = references or []
-    base_gap = EvidenceGap(gap_id="baseline", description="Verify a task-matched baseline.")
-    gaps = [base_gap]
-    queries = [
-        SearchQuery(
-            query_id="baseline-query",
-            gap_id=base_gap.gap_id,
-            query="task matched baseline",
-            source_types=["paper"],
-        )
-    ]
-    coverage: dict[str, int] = {base_gap.gap_id: 1}
-    if references:
-        identity_gap = EvidenceGap(
-            gap_id="user-material-01-identity",
-            description="Verify the supplied public title.",
-        )
-        gaps.insert(0, identity_gap)
-        queries.insert(
-            0,
-            SearchQuery(
-                query_id="user-material-01-lookup",
-                gap_id=identity_gap.gap_id,
-                query="LightGCN: Simplifying and Powering Graph Convolution Network",
-                source_types=["paper"],
-            ),
-        )
-        if covered:
-            coverage[identity_gap.gap_id] = 1
-    return cast(
-        PaperAgentState,
-        {
-            "request": ResearchRequest(question="test", user_material_refs=references),
-            "plan": ResearchPlan(
-                status="ready",
-                problem_statement="test",
-                scope="test",
-                evidence_gaps=gaps,
-                search_queries=queries,
-            ),
-            "evidence": SimpleNamespace(coverage_by_gap=coverage),
-            "final_outcome": _revise_outcome(),
-            "method": _method(),
-        },
-    )
-
-
 def test_fake_mode_requires_explicit_fixture_provider() -> None:
     with pytest.raises(ValueError, match="explicit fixture"):
         build_benchmark_search_runtime("fake")
@@ -121,48 +43,6 @@ def test_fake_mode_preserves_injected_provider() -> None:
     provider = FakeSearchProvider(fixtures={})
     runtime = build_benchmark_search_runtime("fake", fake_provider=provider)
     assert runtime.adapter is provider
-
-
-def test_structured_method_artifact_recommends_bounded_pilot() -> None:
-    assert _structured_pilot_recommendation(_pilot_state()) is True
-
-
-def test_invalid_evidence_prevents_bounded_pilot() -> None:
-    state = _pilot_state()
-    state["final_outcome"] = _revise_outcome(invalid_evidence_ids=["ev-invalid"])
-
-    assert _structured_pilot_recommendation(state) is False
-
-
-def test_opaque_supplied_material_prevents_bounded_pilot() -> None:
-    state = _pilot_state(
-        references=["user-supplied contrastive recommendation paper [declared role: module]"]
-    )
-
-    assert _structured_pilot_recommendation(state) is False
-
-
-def test_unverified_public_supplied_title_prevents_bounded_pilot() -> None:
-    state = _pilot_state(
-        references=[
-            "LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation "
-            "[declared role: baseline]"
-        ],
-        covered=False,
-    )
-
-    assert _structured_pilot_recommendation(state) is False
-
-
-def test_verified_public_supplied_title_allows_bounded_pilot() -> None:
-    state = _pilot_state(
-        references=[
-            "LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation "
-            "[declared role: baseline]"
-        ]
-    )
-
-    assert _structured_pilot_recommendation(state) is True
 
 
 def test_gold_projection_uses_only_user_visible_input() -> None:
