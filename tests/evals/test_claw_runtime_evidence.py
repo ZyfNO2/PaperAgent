@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from decimal import Decimal
 
+import pytest
 from pydantic import SecretStr
 
 from paperagent.claw_runtime_evidence import (
+    allocate_case_budgets,
     provider_config_for_case,
     summarize_llm_providers,
+    summarize_search_budgets,
 )
 from paperagent.pricing import ModelPrice, PriceTable
 from paperagent.providers.runtime import (
@@ -64,6 +67,19 @@ def _record(
     )
 
 
+def test_allocate_case_budgets_is_fair_and_bounded() -> None:
+    budgets = allocate_case_budgets(23, 5)
+
+    assert budgets == (5, 5, 5, 4, 4)
+    assert sum(budgets) == 23
+    assert max(budgets) - min(budgets) == 1
+
+
+def test_allocate_case_budgets_requires_one_call_per_case() -> None:
+    with pytest.raises(ValueError, match="at least one call per case"):
+        allocate_case_budgets(3, 4)
+
+
 def test_provider_config_for_case_splits_full_run_cost_cap() -> None:
     per_case = provider_config_for_case(_config(), selected_case_count=20)
 
@@ -76,6 +92,23 @@ def test_provider_config_for_case_preserves_unpriced_configuration() -> None:
     config = _config(maximum=None)
 
     assert provider_config_for_case(config, selected_case_count=20) is config
+
+
+def test_summarize_search_budgets_accumulates_case_usage() -> None:
+    summary = summarize_search_budgets(
+        ("case-a", "case-b"),
+        (
+            {"maximum": 5, "used": 4, "remaining": 1},
+            {"maximum": 4, "used": 4, "remaining": 0},
+        ),
+        configured_total=9,
+    )
+
+    assert summary["complete"] is True
+    assert summary["used"] == 8
+    assert summary["remaining"] == 1
+    assert summary["within_configured_total"] is True
+    assert summary["cases"][1]["case_id"] == "case-b"
 
 
 def test_summarize_llm_providers_accumulates_usage_and_cost() -> None:
