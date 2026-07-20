@@ -7,13 +7,15 @@ from pydantic import Field
 
 from paperagent.academic_methodology import (
     BaselineCard,
-    EvidenceItem as MethodEvidenceItem,
     ExperimentArmType,
     ExperimentCard,
     FalsifiableHypothesis,
     MethodPlan,
     ModuleCard,
     ResearchContract,
+)
+from paperagent.academic_methodology import (
+    EvidenceItem as MethodEvidenceItem,
 )
 from paperagent.schemas.base import FrozenModel
 from paperagent.schemas.method import (
