@@ -29,7 +29,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          probe_path=$(gh api repos/${GITHUB_REPOSITORY}/actions/runs/29709781962 --jq '.path')
+          mkdir -p build/claw-prerequisites
+          probe_path=unknown
+          for attempt in 1 2 3; do
+            candidate=$(gh api repos/${GITHUB_REPOSITORY}/actions/runs/29709781962 --jq '.path' 2>/dev/null) && {
+              probe_path="$candidate"
+              break
+            }
+            sleep $((attempt * 2))
+          done
           if [[ -n "${MISTRAL_API_KEY:-}" ]]; then
             mistral_present=true
           else
@@ -37,6 +45,16 @@ jobs:
           fi
           echo "probe_path=$probe_path" >> "$GITHUB_OUTPUT"
           echo "mistral_present=$mistral_present" >> "$GITHUB_OUTPUT"
+          printf '{"probe_workflow_path":"%s","mistral_api_key_present":%s}\n' \
+            "$probe_path" "$mistral_present" \
+            > build/claw-prerequisites/result.json
+      - name: Upload prerequisite result
+        uses: actions/upload-artifact@v4
+        with:
+          name: claw-prerequisites-${{ github.run_id }}
+          path: build/claw-prerequisites/result.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Publish prerequisite result
         env:
           GH_TOKEN: ${{ github.token }}
