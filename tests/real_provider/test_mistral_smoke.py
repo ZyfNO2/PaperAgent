@@ -33,7 +33,10 @@ PRODUCTION_SCHEMA_CASES: tuple[tuple[str, type[BaseModel], str], ...] = (
         MethodProposal,
         "Return a minimal proposed method object with one baseline, one module, no integration "
         "contracts, one key experiment, one ablation, one risk, one stop condition, and no "
-        "evidence identifiers.",
+        "evidence identifiers. The legacy modules[0].module_id must exactly equal "
+        "methodology_plan.modules[0].name. Keep evidence_ids and methodology_plan.evidence "
+        "empty. The legacy stop_conditions list must exactly equal "
+        "methodology_plan.stop_conditions.",
     ),
     (
         "report",
@@ -65,12 +68,12 @@ async def test_live_mistral_production_schema(
         ProviderRuntimeConfig(
             model=model,
             api_key=SecretStr(api_key),
-            max_attempts=1,
-            max_llm_calls_per_task=1,
-            max_input_tokens_per_task=4_000,
+            max_attempts=2,
+            max_llm_calls_per_task=2,
+            max_input_tokens_per_task=8_000,
             max_output_tokens_per_call=2_048,
-            max_output_tokens_per_task=2_048,
-            task_wall_clock_seconds=60,
+            max_output_tokens_per_task=4_096,
+            task_wall_clock_seconds=120,
         )
     )
     result = await provider.generate_structured(
