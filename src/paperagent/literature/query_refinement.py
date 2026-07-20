@@ -169,13 +169,13 @@ def _remove_family_phrases(query: str, families: tuple[str, ...]) -> str:
 
 def _medical_query_for_role(*, gap_id: str, gap_description: str) -> str:
     role = f"{gap_id} {gap_description}".casefold()
-    core = "multimodal medical imaging classification"
+    core = "multimodal medical image classification"
     if _contains_any(role, _MEDICAL_BASELINE_ROLE_HINTS):
-        return f"{core} late fusion baseline"
+        return f"{core} information fusion"
     if _contains_any(role, _MEDICAL_FAILURE_ROLE_HINTS):
-        return f"{core} missing modality robustness"
+        return f"{core} incomplete data limitations"
     if _contains_any(role, _MEDICAL_PARALLEL_ROLE_HINTS):
-        return f"{core} ensemble alternatives"
+        return f"{core} fusion techniques"
     return f"{core} feature fusion"
 
 
