@@ -6,9 +6,7 @@ from paperagent.literature.specialized_guards import matches_specialized_candida
 
 def test_unseen_task_accepts_directly_aligned_evidence() -> None:
     query = "tidal turbine blade erosion acoustic monitoring"
-    candidate = (
-        "Acoustic monitoring detects blade erosion in tidal turbines under marine loading."
-    )
+    candidate = "Acoustic monitoring detects blade erosion in tidal turbines under marine loading."
     assert matches_required_candidate_terms(query, candidate)
     assert matches_specialized_candidate_terms(query, candidate)
 
