@@ -39,6 +39,7 @@ class LiteratureProviderSettings(BaseModel):
     empty_cache_ttl_seconds: float = Field(default=120.0, gt=0)
     results_per_provider_request: int = Field(default=6, ge=1, le=10)
     max_provider_calls_total: int | None = Field(default=48, ge=1, le=1000)
+    max_verification_calls_total: int | None = Field(default=96, ge=1, le=2000)
     enable_arxiv_fallback: bool = False
     enable_web_search: bool = False
     enable_duckduckgo: bool = True
@@ -109,7 +110,8 @@ def build_literature_runtime(
                 transport=shared_transport,
                 timeout_seconds=resolved.provider_timeout_seconds,
             ),
-        ]
+        ],
+        max_network_calls=resolved.max_verification_calls_total,
     )
     service = LiteratureRetrievalService(
         providers=providers,
