@@ -56,7 +56,14 @@ def _contains_mechanism_role(gap_id: str, gap_description: str) -> bool:
 
 def _family_hits(query: str) -> tuple[str, ...]:
     normalized = query.casefold()
-    return tuple(family for family in _METHOD_FAMILIES if family in normalized)
+    selected: list[str] = []
+    for family in sorted(_METHOD_FAMILIES, key=len, reverse=True):
+        if family not in normalized:
+            continue
+        if any(family in existing for existing in selected):
+            continue
+        selected.append(family)
+    return tuple(selected)
 
 
 def _remove_family_phrases(query: str, families: tuple[str, ...]) -> str:
