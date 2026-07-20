@@ -1,8 +1,123 @@
 {
-  "accepted_evidence": [],
+  "accepted_evidence": [
+    {
+      "evidence_id": "ev-paper-7aa842c3471996be25ce",
+      "locator": "doi:10.1016/j.compbiomed.2024.108635",
+      "provider": "literature_retrieval",
+      "supports_gap_ids": [
+        "failure_mechanism_limitation",
+        "parallel_methods_evidence"
+      ],
+      "title": "A review of deep learning-based information fusion techniques for multimodal medical image classification",
+      "verification_status": "accepted"
+    }
+  ],
   "case_id": "at-009-multimodal-medical-fusion",
   "decision_matches": true,
-  "evidence_review": [],
+  "evidence_review": [
+    {
+      "accepted": true,
+      "evidence_id": "ev-paper-7aa842c3471996be25ce",
+      "gap_supports": [
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
+          },
+          "confidence": 0.2,
+          "decision": "reject",
+          "gap_id": "baseline_comparison",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: role-specific evidence structure"
+          ],
+          "support_type": "insufficient"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "failure_mechanism_limitation",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "parallel_methods_evidence",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": true,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": false,
+            "query_term_overlap": false,
+            "relevance_passed": true,
+            "required_concepts_match": false,
+            "role_evidence_present": true,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
+          },
+          "confidence": 0.0,
+          "decision": "reject",
+          "gap_id": "risk_negative_evidence",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: query-term overlap, required query concepts"
+          ],
+          "support_type": "insufficient"
+        }
+      ],
+      "rejection_reasons": [],
+      "title": "A review of deep learning-based information fusion techniques for multimodal medical image classification"
+    }
+  ],
   "execution_status": "completed",
   "expected_decision": "REVISE_TO_PILOT",
   "failed_stages": [
@@ -19,19 +134,10 @@
       "available": 8,
       "earned": 6,
       "findings": [
-        "retrieval role parallel_method is missing"
+        "retrieval role strong_comparison is missing"
       ],
       "passed": false,
       "stage": "exploratory_retrieval"
-    },
-    {
-      "available": 7,
-      "earned": 5,
-      "findings": [
-        "no evidence reviews were recorded"
-      ],
-      "passed": false,
-      "stage": "relevance_review"
     },
     {
       "available": 10,
@@ -89,11 +195,11 @@
   "provider": "mistral",
   "provider_call_budget": {
     "maximum": 8,
-    "remaining": 0,
-    "used": 8
+    "remaining": 1,
+    "used": 7
   },
   "report_status": "completed",
-  "score": 61,
+  "score": 63,
   "search_diagnostics": [
     {
       "attempted_providers": [
@@ -105,11 +211,10 @@
       "informative_terms": [
         "multimodal",
         "medical",
-        "imaging",
+        "image",
         "classification",
-        "late",
-        "fusion",
-        "baseline"
+        "information",
+        "fusion"
       ],
       "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
@@ -119,8 +224,8 @@
       "provider_call_count": 3,
       "query_approved": true,
       "query_id": "q1_baseline_methods",
-      "relevant_verified_papers": 0,
-      "returned_papers": 0,
+      "relevant_verified_papers": 1,
+      "returned_papers": 1,
       "stop_reason": "academic_budget_exhausted"
     },
     {
@@ -133,11 +238,11 @@
       "informative_terms": [
         "multimodal",
         "medical",
-        "imaging",
+        "image",
         "classification",
-        "missing",
-        "modality",
-        "robustness"
+        "incomplete",
+        "data",
+        "limitations"
       ],
       "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
@@ -147,8 +252,8 @@
       "provider_call_count": 3,
       "query_approved": true,
       "query_id": "q2_failure_mechanism",
-      "relevant_verified_papers": 0,
-      "returned_papers": 0,
+      "relevant_verified_papers": 1,
+      "returned_papers": 1,
       "stop_reason": "academic_budget_exhausted"
     },
     {
@@ -161,10 +266,11 @@
       "informative_terms": [
         "multimodal",
         "medical",
-        "imaging",
+        "image",
         "classification",
-        "ensemble",
-        "alternatives"
+        "incomplete",
+        "data",
+        "limitations"
       ],
       "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
@@ -174,8 +280,8 @@
       "provider_call_count": 3,
       "query_approved": true,
       "query_id": "q3_parallel_methods",
-      "relevant_verified_papers": 0,
-      "returned_papers": 0,
+      "relevant_verified_papers": 1,
+      "returned_papers": 1,
       "stop_reason": "academic_budget_exhausted"
     }
   ],
