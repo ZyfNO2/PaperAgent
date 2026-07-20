@@ -1,5 +1,5 @@
 name: Retrieval Precision Offline Gate
-# Runs the guarded Case 011 patch exactly once from an isolated trigger file.
+# Applies the already verified Case 011 source patch and commits only core artifacts.
 
 on:
   push:
@@ -13,15 +13,17 @@ permissions:
   contents: write
 
 concurrency:
-  group: case011-isolated-repair
-  cancel-in-progress: true
+  group: case011-core-finalizer
+  cancel-in-progress: false
 
 jobs:
-  patch-and-verify:
+  finalize-core:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -29,144 +31,86 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Harden transaction script
+      - name: Apply verified Case 011 patch
         run: |
           python - <<'PY'
-          from pathlib import Path
+          import runpy
 
-          path = Path("scripts/clouddev_fix_few_shot_intent_roles.py")
-          text = path.read_text(encoding="utf-8")
-          text = text.replace(
-              "updated, count = pattern.subn(replacement, text, count=1)",
-              "updated, count = pattern.subn(lambda _: replacement, text, count=1)",
-          )
-          start = text.index("def commit_result() -> None:\n")
-          end = text.index("\n\ndef main() -> None:\n", start)
-          replacement = '''def commit_result() -> None:
-              subprocess.run(
-                  ["git", "config", "user.name", "github-actions[bot]"],
-                  cwd=ROOT,
-                  check=True,
-              )
-              subprocess.run(
-                  [
-                      "git",
-                      "config",
-                      "user.email",
-                      "41898282+github-actions[bot]@users.noreply.github.com",
-                  ],
-                  cwd=ROOT,
-                  check=True,
-              )
-              temporary_paths = (
-                  ".github/workflows/fix-few-shot-intent-binding-once.yml",
-                  ".github/workflows/add-few-shot-intent-binding-once.yml",
-              )
-              for value in temporary_paths:
-                  temporary = ROOT / value
-                  if temporary.exists():
-                      temporary.unlink()
-              subprocess.run(
-                  [
-                      "git",
-                      "add",
-                      str(SOURCE.relative_to(ROOT)),
-                      str(TEST.relative_to(ROOT)),
-                      str(GATE.relative_to(ROOT)),
-                      str(STATUS.relative_to(ROOT)),
-                  ],
-                  cwd=ROOT,
-                  check=True,
-              )
-              subprocess.run(
-                  [
-                      "git",
-                      "rm",
-                      "--ignore-unmatch",
-                      "scripts/clouddev_fix_few_shot_intent_roles.py",
-                      *temporary_paths,
-                  ],
-                  cwd=ROOT,
-                  check=True,
-              )
-              subprocess.run(
-                  [
-                      "git",
-                      "commit",
-                      "-m",
-                      "fix(evidence): bind Case 011 intent evidence and restore gate",
-                  ],
-                  cwd=ROOT,
-                  check=True,
-              )
-              subprocess.run(
-                  ["git", "pull", "--rebase", "origin", "feat/claw-live-search-runtime"],
-                  cwd=ROOT,
-                  check=True,
-              )
-              subprocess.run(
-                  ["git", "push", "origin", "HEAD:feat/claw-live-search-runtime"],
-                  cwd=ROOT,
-                  check=True,
-              )
-          '''
-          path.write_text(text[:start] + replacement + text[end:], encoding="utf-8")
+          namespace = runpy.run_path("scripts/clouddev_fix_few_shot_intent_roles.py")
+          namespace["patch_source"]()
+          namespace["write_test"]()
+          namespace["restore_gate"]()
           PY
-      - name: Patch and verify Case 011 role evidence
-        run: python scripts/clouddev_fix_few_shot_intent_roles.py
-      - name: Restore live workflows, add regression coverage, and remove trigger
+          ruff format \
+            src/paperagent/evidence_gap_binding.py \
+            tests/review/test_few_shot_intent_role_binding.py
+      - name: Run deterministic gates
+        shell: bash
         run: |
-          git show "8a627ff77522af766265bdbbe2dbd11c0afe79f7:.github/workflows/claw-single-case-live-repair.yml" \
-            > .github/workflows/claw-single-case-live-repair.yml
-          python - <<'PY'
-          from pathlib import Path
+          set +e
+          out="build/case011-core-finalizer"
+          mkdir -p "$out"
+          files=(
+            src/paperagent/evidence_gap_binding.py
+            tests/review/test_few_shot_intent_role_binding.py
+          )
+          ruff check "${files[@]}" > "$out/ruff.log" 2>&1
+          ruff_status=$?
+          ruff format --check --diff "${files[@]}" > "$out/format.log" 2>&1
+          format_status=$?
+          mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
+          mypy_status=$?
+          pytest -q \
+            tests/review/test_few_shot_intent_role_binding.py \
+            tests/literature/test_third_batch_query_precision.py \
+            tests/literature/test_qa_hallucination_precision.py \
+            tests/review/test_semantic_gap_binding.py \
+            tests/review/test_consolidated_regressions.py \
+            tests/nodes/test_retrieval.py \
+            > "$out/pytest.log" 2>&1
+          pytest_status=$?
+          target="evals/claw_academic_tailoring_v1/live-probes/few-shot-intent-role-gate-latest.json"
+          mkdir -p "$(dirname "$target")"
+          python - "$target" "$ruff_status" "$format_status" "$mypy_status" "$pytest_status" <<'PY'
+          import json
+          import os
+          import sys
 
-          def insert_after(path: Path, anchor: str, addition: str) -> None:
-              text = path.read_text(encoding="utf-8")
-              if addition.strip() in text:
-                  return
-              if anchor not in text:
-                  raise SystemExit(f"missing anchor in {path}: {anchor!r}")
-              path.write_text(text.replace(anchor, anchor + addition, 1), encoding="utf-8")
-
-          single = Path(".github/workflows/claw-single-case-live-repair.yml")
-          insert_after(
-              single,
-              "            tests/review/test_research_contract_priority.py\n",
-              "            tests/review/test_few_shot_intent_role_binding.py\n",
+          payload = {
+              "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "workflow_head_sha": os.environ["GITHUB_SHA"],
+              "ruff": int(sys.argv[2]),
+              "format": int(sys.argv[3]),
+              "mypy": int(sys.argv[4]),
+              "pytest": int(sys.argv[5]),
+          }
+          payload["passed"] = all(
+              payload[key] == 0 for key in ("ruff", "format", "mypy", "pytest")
           )
-          insert_after(
-              single,
-              "            tests/review/test_research_contract_priority.py \\\n",
-              "            tests/review/test_few_shot_intent_role_binding.py \\\n",
-          )
-
-          batch = Path(".github/workflows/claw-four-case-live-batch.yml")
-          insert_after(
-              batch,
-              "            tests/review/test_semantic_gap_binding.py\n",
-              "            tests/review/test_few_shot_intent_role_binding.py\n",
-          )
-          insert_after(
-              batch,
-              "            tests/review/test_semantic_gap_binding.py \\\n",
-              "            tests/review/test_few_shot_intent_role_binding.py \\\n",
-          )
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, indent=2, sort_keys=True)
+              handle.write("\n")
           PY
+          if (( ruff_status || format_status || mypy_status || pytest_status )); then
+            exit 1
+          fi
+      - name: Commit core repair
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git rm .case011-patch-trigger.json
           git add \
-            .github/workflows/claw-single-case-live-repair.yml \
-            .github/workflows/claw-four-case-live-batch.yml
-          git commit -m "chore(ci): finalize Case 011 live preflight coverage"
+            src/paperagent/evidence_gap_binding.py \
+            tests/review/test_few_shot_intent_role_binding.py \
+            .github/workflows/second-batch-retrieval-offline-gate.yml \
+            evals/claw_academic_tailoring_v1/live-probes/few-shot-intent-role-gate-latest.json
+          git commit -m "fix(evidence): bind verified Case 011 intent role evidence"
           git pull --rebase origin feat/claw-live-search-runtime
           git push origin HEAD:feat/claw-live-search-runtime
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: few-shot-intent-roles-${{ github.run_id }}
-          path: build/few-shot-intent-roles/
+          name: case011-core-finalizer-${{ github.run_id }}
+          path: build/case011-core-finalizer/
           if-no-files-found: warn
           retention-days: 30
