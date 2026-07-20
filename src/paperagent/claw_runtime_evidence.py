@@ -42,13 +42,14 @@ def provider_config_for_case(
         raise ValueError("selected_case_count must be positive")
     if max_logical_calls is not None and max_logical_calls < 1:
         raise ValueError("max_logical_calls must be positive")
-    updates: dict[str, int | float] = {}
+    logical_limit = max_logical_calls or config.max_llm_calls_per_task
+    updates: dict[str, int | float] = {
+        "max_llm_calls_per_task": logical_limit * config.max_attempts,
+    }
     maximum = config.max_estimated_cost_usd
     if maximum is not None:
         updates["max_estimated_cost_usd"] = maximum / selected_case_count
-    if max_logical_calls is not None:
-        updates["max_llm_calls_per_task"] = max_logical_calls * config.max_attempts
-    return config.model_copy(update=updates) if updates else config
+    return config.model_copy(update=updates)
 
 
 def summarize_search_budgets(
