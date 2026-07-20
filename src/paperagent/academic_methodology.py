@@ -336,6 +336,28 @@ def _license_is_acceptable(value: str | None) -> bool:
     }
 
 
+_UNRESOLVED_LICENSES = frozenset({"unknown", "missing", "unverified"})
+_EXPLICITLY_INCOMPATIBLE_LICENSES = frozenset({"incompatible", "proprietary-no-reuse"})
+
+
+def _license_failure_severity(
+    declared_license: str | None,
+    evidence_license: str | None,
+) -> AuditSeverity:
+    declared = _normalized_license(declared_license)
+    evidence = _normalized_license(evidence_license)
+    if (
+        declared in _EXPLICITLY_INCOMPATIBLE_LICENSES
+        or evidence in _EXPLICITLY_INCOMPATIBLE_LICENSES
+    ):
+        return AuditSeverity.CRITICAL
+    concrete_declared = declared is not None and declared not in _UNRESOLVED_LICENSES
+    concrete_evidence = evidence is not None and evidence not in _UNRESOLVED_LICENSES
+    if concrete_declared and concrete_evidence and declared != evidence:
+        return AuditSeverity.CRITICAL
+    return AuditSeverity.ERROR
+
+
 def _check(
     check_id: str,
     passed: bool,
@@ -536,7 +558,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
         _check(
             "baseline-license",
             baseline_license_bound,
-            AuditSeverity.CRITICAL,
+            _license_failure_severity(
+                baseline.license,
+                baseline_evidence.license if baseline_evidence is not None else None,
+            ),
             "baseline license is present, compatible, and bound to verified evidence metadata",
             evidence_ids=(baseline.source_evidence_id,) if baseline.source_evidence_id else (),
             status=(ClaimStatus.VERIFIED if baseline_license_bound else ClaimStatus.UNKNOWN),
@@ -611,7 +636,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             _check(
                 f"module-license:{module.name}",
                 module_license_bound,
-                AuditSeverity.CRITICAL,
+                _license_failure_severity(
+                    module.license,
+                    module_evidence.license if module_evidence is not None else None,
+                ),
                 f"module {module.name} license is compatible and bound to evidence metadata",
                 evidence_ids=(module.evidence_id,) if module.evidence_id else (),
                 status=(ClaimStatus.VERIFIED if module_license_bound else ClaimStatus.UNKNOWN),

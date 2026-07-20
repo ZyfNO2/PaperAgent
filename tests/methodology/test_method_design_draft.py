@@ -256,3 +256,32 @@ def test_ungrounded_dataset_and_comparator_are_not_promoted_to_facts() -> None:
     assert "InventedDroneBench" not in baseline.dataset
     assert strong_comparison.comparator is not None
     assert "ImaginaryDetector-X" not in strong_comparison.comparator
+
+
+def _audit_with_bound_license(license_value: str | None):
+    proposal = _bound_proposal(_state(), _draft())
+    plan = proposal.methodology_plan
+    evidence = tuple(item.model_copy(update={"license": license_value}) for item in plan.evidence)
+    baseline = plan.baseline.model_copy(update={"license": license_value})
+    modules = tuple(item.model_copy(update={"license": license_value}) for item in plan.modules)
+    return audit_method_plan(
+        plan.model_copy(update={"evidence": evidence, "baseline": baseline, "modules": modules})
+    )
+
+
+def test_missing_license_requires_revision_without_forcing_no_go() -> None:
+    audit = _audit_with_bound_license(None)
+    failed = {item.check_id: item for item in audit.checks if not item.passed}
+
+    assert audit.verdict is AuditVerdict.REVISE
+    assert failed["baseline-license"].severity.value == "error"
+    assert failed["module-license:shallow_feature_fusion"].severity.value == "error"
+
+
+def test_explicitly_incompatible_license_remains_no_go() -> None:
+    audit = _audit_with_bound_license("proprietary-no-reuse")
+    failed = {item.check_id: item for item in audit.checks if not item.passed}
+
+    assert audit.verdict is AuditVerdict.NO_GO
+    assert failed["baseline-license"].severity.value == "critical"
+    assert failed["module-license:shallow_feature_fusion"].severity.value == "critical"
