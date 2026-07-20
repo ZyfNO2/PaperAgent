@@ -113,8 +113,6 @@ def _remove_family_phrases(query: str, families: tuple[str, ...]) -> str:
 def _compact_long_query(query: str) -> str:
     """Remove provider-hostile role clutter while preserving the scientific task phrase."""
 
-    if len(query.split()) <= 8:
-        return query
     refined = query
     if re.search(r"\bfailure modes?\b", refined, flags=re.IGNORECASE):
         for pattern in _FAILURE_DETAIL_PATTERNS:
@@ -142,8 +140,9 @@ def refine_search_query(
     """Reduce overconstrained queries before rate-limited academic retrieval.
 
     Exact DOI/arXiv lookups are never changed. Mechanism queries that name three or more
-    unverified method families drop those families. Long queries also drop generic role words
-    and redundant failure examples while retaining task, domain, scale, and constraint terms.
+    unverified method families drop those families. Queries longer than eight words also drop
+    generic role words and redundant failure examples while retaining task, domain, scale,
+    and constraint terms.
     """
 
     normalized = " ".join(query.split())
@@ -164,10 +163,11 @@ def refine_search_query(
                     "removed three or more unverified method families to preserve retrieval recall"
                 )
 
-    compacted = _compact_long_query(refined)
-    if compacted != refined:
-        refined = compacted
-        reasons.append("removed low-information query terms to preserve provider recall")
+    if len(normalized.split()) > 8:
+        compacted = _compact_long_query(refined)
+        if compacted != refined:
+            refined = compacted
+            reasons.append("removed low-information query terms to preserve provider recall")
 
     changed = refined != normalized
     return QueryRefinement(
