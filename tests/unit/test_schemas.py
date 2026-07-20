@@ -122,20 +122,22 @@ def test_final_report__completed_without_limitations__is_rejected() -> None:
         )
 
 
-def test_research_plan__ready_with_clarification_is_rejected() -> None:
+def test_research_plan__ready_with_clarification_is_allowed() -> None:
     from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
 
-    with pytest.raises(ValidationError, match="cannot include clarification"):
-        ResearchPlan(
-            status="ready",
-            problem_statement="p",
-            scope="s",
-            evidence_gaps=[EvidenceGap(gap_id="g1", description="d")],
-            search_queries=[SearchQuery(query_id="q1", gap_id="g1", query="search")],
-            success_criteria=["c"],
-            risks=[],
-            clarification_question="?",
-        )
+    plan = ResearchPlan(
+        status="ready",
+        problem_statement="p",
+        scope="s",
+        evidence_gaps=[EvidenceGap(gap_id="g1", description="d")],
+        search_queries=[SearchQuery(query_id="q1", gap_id="g1", query="search")],
+        success_criteria=["c"],
+        risks=[],
+        clarification_question="?",
+    )
+
+    assert plan.clarification_question == "?"
+    assert plan.block_reason is None
 
 
 def test_research_plan__ready_with_block_reason_is_rejected() -> None:
