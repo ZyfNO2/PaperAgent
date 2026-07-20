@@ -43,7 +43,6 @@ _STOPWORDS = frozenset(
         "from",
         "in",
         "is",
-        "method",
         "model",
         "of",
         "on",
@@ -63,6 +62,7 @@ _GENERIC_TERMS = frozenset(
         "deep",
         "learning",
         "machine",
+        "method",
         "neural",
         "network",
         "survey",
@@ -125,12 +125,10 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
         reasons.append("query is too long and likely mixes multiple retrieval intents")
     if not identifier_query and not unique_informative:
         reasons.append("query has no discriminative academic terms")
-    if not identifier_query and len(unique_informative) < 3 and cjk_count < 8:
+    if not identifier_query and len(unique_informative) < 2 and cjk_count < 8:
         reasons.append("query is too broad for rate-limited scholarly search")
-    if not identifier_query and len(discriminative) < 2 and cjk_count < 8:
-        reasons.append(
-            "query lacks at least two task-, domain-, dataset-, or mechanism-specific terms"
-        )
+    if not identifier_query and not discriminative and cjk_count < 8:
+        reasons.append("query lacks a task-, domain-, dataset-, or mechanism-specific term")
     if generic_only:
         reasons.append("query contains only generic research vocabulary")
 
@@ -153,7 +151,7 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
 
     allow_web = approved and risk == "low" and "web" in query.source_types
     result_limit = 5 if risk == "low" else 6
-    minimum_results = 1 if identifier_query or risk != "low" else 2
+    minimum_results = 1 if identifier_query else 2
     minimum_relevance = 0.34 if risk == "low" else 0.42
     minimum_rank_score = 0.62 if risk == "low" else 0.68
 
