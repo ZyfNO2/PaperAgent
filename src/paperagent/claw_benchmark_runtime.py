@@ -5,13 +5,12 @@ from dataclasses import dataclass
 from typing import Any, Literal, Protocol, cast
 
 from paperagent.api.real_executor import SystemClock, UUIDIdFactory
-from paperagent.claw_academic_benchmark import AcademicTailoringRunTrace, GoldCase
+from paperagent.benchmark_input import BenchmarkInput, benchmark_input_to_request
+from paperagent.claw_academic_benchmark import AcademicTailoringRunTrace
 from paperagent.claw_benchmark_adapter import (
     BenchmarkNormalizationContext,
     normalize_paperagent_state,
 )
-from paperagent.claw_pilot_policy import infer_benchmark_pilot_override
-from paperagent.claw_trace_reconciliation import reconcile_ledger_relevance
 from paperagent.graph import build_graph
 from paperagent.literature.factory import (
     LiteratureProviderSettings,
@@ -21,7 +20,6 @@ from paperagent.persistence import InMemoryStateStore
 from paperagent.providers import LLMProvider, SearchProvider
 from paperagent.runtime import RuntimeServices
 from paperagent.schemas import RunBudgets
-from paperagent.schemas.request import ResearchRequest
 from paperagent.state import PaperAgentState, state_to_primitive
 
 SearchMode = Literal["fake", "literature"]
@@ -63,20 +61,29 @@ def build_benchmark_search_runtime(
     raise ValueError(f"unsupported benchmark search mode: {mode}")
 
 
-def case_to_request(case: GoldCase) -> ResearchRequest:
-    material_refs = [
-        f"{material.title} [declared role: {material.declared_role}]"
-        for material in case.supplied_materials
-    ]
-    return ResearchRequest(
-        question=case.user_input,
-        user_material_refs=material_refs,
+def _structured_pilot_recommendation(state: PaperAgentState) -> bool:
+    """Derive pilot routing only from production structured state.
+
+    Free-text next actions, clarification wording, supplied-paper titles, and benchmark
+    annotations are deliberately excluded. A bounded pilot is recommended only when the
+    completed outcome explicitly routes a REVISE verdict through method repair and a
+    concrete method artifact exists to test.
+    """
+
+    outcome = state.get("final_outcome")
+    method = state.get("method")
+    return bool(
+        outcome is not None
+        and outcome.scientific_verdict == "REVISE"
+        and outcome.quality_route == "repair_method"
+        and method is not None
     )
 
 
 async def execute_benchmark_case(
     *,
-    case: GoldCase,
+    benchmark_input: BenchmarkInput,
+    case_id: str,
     llm: LLMProvider,
     search: SearchProvider,
     max_llm_calls: int,
@@ -91,7 +98,7 @@ async def execute_benchmark_case(
     )
     graph = build_graph()
     stream = graph.astream(
-        {"request": case_to_request(case)},
+        {"request": benchmark_input_to_request(benchmark_input)},
         {
             "configurable": {
                 "services": services,
@@ -108,22 +115,21 @@ async def execute_benchmark_case(
         if isinstance(raw_state, Mapping):
             latest = cast(PaperAgentState, raw_state)
     if latest is None:
-        raise RuntimeError(f"benchmark case {case.case_id} emitted no state")
+        raise RuntimeError(f"benchmark case {case_id} emitted no state")
     primitive = state_to_primitive(latest)
     trace = normalize_paperagent_state(
         latest,
         BenchmarkNormalizationContext(
-            case_id=case.case_id,
-            pilot_recommended=infer_benchmark_pilot_override(latest),
+            case_id=case_id,
+            pilot_recommended=_structured_pilot_recommendation(latest),
         ),
     )
-    return primitive, reconcile_ledger_relevance(latest, trace)
+    return primitive, trace
 
 
 __all__ = [
     "BenchmarkSearchRuntime",
     "SearchMode",
     "build_benchmark_search_runtime",
-    "case_to_request",
     "execute_benchmark_case",
 ]
