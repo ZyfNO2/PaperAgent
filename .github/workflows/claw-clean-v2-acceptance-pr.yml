@@ -33,8 +33,31 @@ env:
   PAPERAGENT_ENABLE_WEB_SEARCH: "0"
 
 jobs:
-  accept-clean-v2:
+  gate:
     if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    outputs:
+      enabled: ${{ steps.subject.outputs.enabled }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+      - name: Check dedicated acceptance trigger
+        id: subject
+        shell: bash
+        run: |
+          subject=$(git log -1 --pretty=%s)
+          if [ "$subject" = "test(eval): trigger clean v2 acceptance" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping paid acceptance for commit: $subject"
+          fi
+
+  accept-clean-v2:
+    needs: gate
+    if: needs.gate.outputs.enabled == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 420
     steps:
@@ -88,6 +111,7 @@ jobs:
               tests/methodology/test_scientific_decision_policy.py \
               tests/methodology/test_method_design_draft.py \
               tests/methodology/test_evidence_binding.py \
+              tests/nodes/test_readiness_preflight.py \
               tests/evals/test_benchmark_input_boundary_v2.py
             mypy --config-file pyproject.toml
             pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
@@ -105,7 +129,12 @@ jobs:
         working-directory: production
         env:
           PAPERAGENT_RUN_REAL_LLM: "1"
-        run: pytest --no-cov -q tests/real_provider/test_mistral_smoke.py
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p build/clean-v2-acceptance
+          pytest --no-cov -q tests/real_provider/test_mistral_smoke.py \
+            2>&1 | tee build/clean-v2-acceptance/mistral-smoke.log
 
       - name: Real literature smoke
         id: literature
@@ -114,7 +143,23 @@ jobs:
         working-directory: production
         env:
           PAPERAGENT_RUN_REAL_PROVIDER: "1"
-        run: pytest --no-cov -q tests/real_provider/test_literature_smoke.py
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p build/clean-v2-acceptance
+          log=build/clean-v2-acceptance/literature-smoke.log
+          : > "$log"
+          for attempt in 1 2; do
+            echo "literature smoke attempt $attempt" | tee -a "$log"
+            if pytest --no-cov -q tests/real_provider/test_literature_smoke.py \
+              2>&1 | tee -a "$log"; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 2 ]; then
+              sleep 10
+            fi
+          done
+          exit 1
 
       - name: Resolve frozen SHAs
         id: refs
@@ -216,8 +261,7 @@ jobs:
               path = output / name
               return json.loads(path.read_text()) if path.exists() else None
 
-          def tail(name, lines=200):
-              path = output / name
+          def tail(path, lines=200):
               return (
                   "\n".join(path.read_text(errors="replace").splitlines()[-lines:])
                   if path.exists()
@@ -236,7 +280,7 @@ jobs:
               "public_dev_run": os.environ.get("PUBLIC_DEV_OUTCOME"),
           }
           payload = {
-              "schema": "paperagent.academic-holdout.public-dev-handoff.v6",
+              "schema": "paperagent.academic-holdout.public-dev-handoff.v7",
               "benchmark_source_sha": os.environ.get("BENCHMARK_SHA"),
               "production_source_sha": os.environ.get("PRODUCTION_SHA"),
               "workflow_run_id": os.environ["GITHUB_RUN_ID"],
@@ -248,8 +292,14 @@ jobs:
               "production_scan": load_json("production-scan.json"),
               "freeze_manifest": load_json("freeze-manifest.json"),
               "summary": load_json("execution-summary.json"),
-              "validation_log_tail": tail("validation.log"),
-              "public_run_log_tail": tail("public-run.log"),
+              "validation_log_tail": tail(output / "validation.log"),
+              "public_run_log_tail": tail(output / "public-run.log"),
+              "mistral_smoke_log_tail": tail(
+                  Path("../production/build/clean-v2-acceptance/mistral-smoke.log")
+              ),
+              "literature_smoke_log_tail": tail(
+                  Path("../production/build/clean-v2-acceptance/literature-smoke.log")
+              ),
               "passed": all(value == "success" for value in outcomes.values()),
           }
           serialized = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
