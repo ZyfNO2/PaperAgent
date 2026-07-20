@@ -1,88 +1,55 @@
 {
   "accepted_evidence": [
     {
-      "evidence_id": "ev-paper-e768f66cc516307530b6",
-      "locator": "doi:10.1109/iccv.2019.00140",
+      "evidence_id": "ev-paper-e0988bf5d6aafb186677",
+      "locator": "https://arxiv.org/abs/2501.09185",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_reproducibility",
-        "failure_mechanisms_limitations",
-        "optional_negative_evidence",
-        "strong_comparison_methods"
+        "baseline_organ_coverage",
+        "dataset_availability"
       ],
-      "title": "Searching for MobileNetV3",
+      "title": "Cancer-Net PCa-Seg: Benchmarking Deep Learning Models for Prostate Cancer Segmentation Using Synthetic Correlated Diffusion Imaging",
       "verification_status": "accepted"
     },
     {
-      "evidence_id": "ev-paper-60440915c7e02c293909",
-      "locator": "doi:10.36548/jscp.2026.3.001",
+      "evidence_id": "ev-paper-6393bb155e93e88179fc",
+      "locator": "https://arxiv.org/abs/1910.07521",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_reproducibility",
-        "failure_mechanisms_limitations",
-        "optional_negative_evidence",
-        "strong_comparison_methods"
+        "baseline_organ_coverage",
+        "dataset_availability"
       ],
-      "title": "Transfer Learning-based Multi-Class Plant Disease Detection Using MobileNetV2 and EfficientNet-B0",
+      "title": "End-to-End Cascaded U-Nets with a Localization Network for Kidney Tumor Segmentation",
       "verification_status": "accepted"
     },
     {
-      "evidence_id": "ev-paper-996c0df6cac1a6cf8082",
-      "locator": "doi:10.48550/arxiv.2508.10817",
+      "evidence_id": "ev-paper-5c236915717c246ca2ea",
+      "locator": "doi:10.1038/s41467-022-30695-9",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_reproducibility",
-        "failure_mechanisms_limitations",
-        "optional_negative_evidence",
-        "strong_comparison_methods"
+        "dataset_availability"
       ],
-      "title": "Mobile-Friendly Deep Learning for Plant Disease Detection: A Lightweight CNN Benchmark Across 101 Classes of 33 Crops",
+      "title": "The Medical Segmentation Decathlon",
       "verification_status": "accepted"
     },
     {
-      "evidence_id": "ev-paper-dc85966b4cc5d88e086e",
-      "locator": "doi:10.1007/s43926-026-00310-0",
+      "evidence_id": "ev-paper-b2acf21204c8ff9bc518",
+      "locator": "doi:10.1109/access.2021.3086020",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_reproducibility",
-        "failure_mechanisms_limitations",
-        "optional_negative_evidence",
-        "strong_comparison_methods"
+        "baseline_organ_coverage",
+        "dataset_availability"
       ],
-      "title": "Evaluation of lightweight and efficient deep learning models for plant disease classification",
-      "verification_status": "accepted"
-    },
-    {
-      "evidence_id": "ev-paper-a01d2017499ea416adea",
-      "locator": "doi:10.1109/access.2021.3069646",
-      "provider": "literature_retrieval",
-      "supports_gap_ids": [
-        "failure_mechanisms_limitations",
-        "optional_negative_evidence"
-      ],
-      "title": "Plant Disease Detection and Classification by Deep Learning—A Review",
-      "verification_status": "accepted"
-    },
-    {
-      "evidence_id": "ev-paper-5a4118be642a95b6696a",
-      "locator": "doi:10.1186/s13007-021-00722-9",
-      "provider": "literature_retrieval",
-      "supports_gap_ids": [
-        "baseline_reproducibility",
-        "failure_mechanisms_limitations",
-        "optional_negative_evidence",
-        "strong_comparison_methods"
-      ],
-      "title": "Plant diseases and pests detection based on deep learning: a review",
+      "title": "U-Net and Its Variants for Medical Image Segmentation: A Review of Theory and Applications",
       "verification_status": "accepted"
     }
   ],
-  "case_id": "at-017-mobilenetv3-plant-disease-supplied",
+  "case_id": "at-019-unet-unspecified-medical-segmentation",
   "decision_matches": true,
   "evidence_review": [
     {
       "accepted": true,
-      "evidence_id": "ev-paper-e768f66cc516307530b6",
+      "evidence_id": "ev-paper-e0988bf5d6aafb186677",
       "gap_supports": [
         {
           "checklist_results": {
@@ -93,78 +60,8 @@
           },
           "confidence": 0.9,
           "decision": "accept",
-          "gap_id": "baseline_reproducibility",
+          "gap_id": "baseline_organ_coverage",
           "limitations": [],
-          "support_type": "direct_support"
-        },
-        {
-          "checklist_results": {
-            "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": false,
-            "relevance_passed": true
-          },
-          "confidence": 0.7,
-          "decision": "accept",
-          "gap_id": "strong_comparison_methods",
-          "limitations": [],
-          "support_type": "direct_support"
-        },
-        {
-          "checklist_results": {
-            "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": false,
-            "relevance_passed": true
-          },
-          "confidence": 0.7,
-          "decision": "accept",
-          "gap_id": "failure_mechanisms_limitations",
-          "limitations": [],
-          "support_type": "direct_support"
-        },
-        {
-          "checklist_results": {
-            "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": false,
-            "relevance_passed": true
-          },
-          "confidence": 0.7,
-          "decision": "accept",
-          "gap_id": "optional_negative_evidence",
-          "limitations": [],
-          "support_type": "direct_support"
-        }
-      ],
-      "rejection_reasons": [],
-      "title": "Searching for MobileNetV3"
-    },
-    {
-      "accepted": true,
-      "evidence_id": "ev-paper-60440915c7e02c293909",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "cross_gap_reuse": true,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": true,
-            "semantic_gap_binding": true,
-            "supporting_span_present": true
-          },
-          "confidence": 0.72,
-          "decision": "accept",
-          "gap_id": "baseline_reproducibility",
-          "limitations": [
-            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-          ],
           "support_type": "direct_support"
         },
         {
@@ -184,79 +81,20 @@
           },
           "confidence": 0.82,
           "decision": "accept",
-          "gap_id": "strong_comparison_methods",
+          "gap_id": "dataset_availability",
           "limitations": [
             "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
           ],
           "support_type": "direct_support"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": true,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": true,
-            "semantic_gap_binding": true,
-            "supporting_span_present": true
-          },
-          "confidence": 0.72,
-          "decision": "accept",
-          "gap_id": "failure_mechanisms_limitations",
-          "limitations": [
-            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-          ],
-          "support_type": "direct_support"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": true,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": true,
-            "semantic_gap_binding": true,
-            "supporting_span_present": true
-          },
-          "confidence": 0.72,
-          "decision": "accept",
-          "gap_id": "optional_negative_evidence",
-          "limitations": [
-            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-          ],
-          "support_type": "direct_support"
         }
       ],
       "rejection_reasons": [],
-      "title": "Transfer Learning-based Multi-Class Plant Disease Detection Using MobileNetV2 and EfficientNet-B0"
+      "title": "Cancer-Net PCa-Seg: Benchmarking Deep Learning Models for Prostate Cancer Segmentation Using Synthetic Correlated Diffusion Imaging"
     },
     {
       "accepted": true,
-      "evidence_id": "ev-paper-996c0df6cac1a6cf8082",
+      "evidence_id": "ev-paper-6393bb155e93e88179fc",
       "gap_supports": [
-        {
-          "checklist_results": {
-            "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": false,
-            "relevance_passed": true
-          },
-          "confidence": 0.7,
-          "decision": "accept",
-          "gap_id": "baseline_reproducibility",
-          "limitations": [],
-          "support_type": "direct_support"
-        },
         {
           "checklist_results": {
             "fixture_explicit_support": false,
@@ -266,128 +104,41 @@
           },
           "confidence": 0.9,
           "decision": "accept",
-          "gap_id": "strong_comparison_methods",
+          "gap_id": "baseline_organ_coverage",
           "limitations": [],
           "support_type": "direct_support"
         },
-        {
-          "checklist_results": {
-            "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": false,
-            "relevance_passed": true
-          },
-          "confidence": 0.7,
-          "decision": "accept",
-          "gap_id": "failure_mechanisms_limitations",
-          "limitations": [],
-          "support_type": "direct_support"
-        },
-        {
-          "checklist_results": {
-            "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": false,
-            "relevance_passed": true
-          },
-          "confidence": 0.7,
-          "decision": "accept",
-          "gap_id": "optional_negative_evidence",
-          "limitations": [],
-          "support_type": "direct_support"
-        }
-      ],
-      "rejection_reasons": [],
-      "title": "Mobile-Friendly Deep Learning for Plant Disease Detection: A Lightweight CNN Benchmark Across 101 Classes of 33 Crops"
-    },
-    {
-      "accepted": true,
-      "evidence_id": "ev-paper-dc85966b4cc5d88e086e",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": false,
-            "relevance_passed": true
-          },
-          "confidence": 0.7,
-          "decision": "accept",
-          "gap_id": "baseline_reproducibility",
-          "limitations": [],
-          "support_type": "direct_support"
-        },
-        {
-          "checklist_results": {
-            "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": true,
-            "relevance_passed": true
-          },
-          "confidence": 0.9,
-          "decision": "accept",
-          "gap_id": "strong_comparison_methods",
-          "limitations": [],
-          "support_type": "direct_support"
-        },
-        {
-          "checklist_results": {
-            "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": false,
-            "relevance_passed": true
-          },
-          "confidence": 0.7,
-          "decision": "accept",
-          "gap_id": "failure_mechanisms_limitations",
-          "limitations": [],
-          "support_type": "direct_support"
-        },
-        {
-          "checklist_results": {
-            "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": false,
-            "relevance_passed": true
-          },
-          "confidence": 0.7,
-          "decision": "accept",
-          "gap_id": "optional_negative_evidence",
-          "limitations": [],
-          "support_type": "direct_support"
-        }
-      ],
-      "rejection_reasons": [],
-      "title": "Evaluation of lightweight and efficient deep learning models for plant disease classification"
-    },
-    {
-      "accepted": false,
-      "evidence_id": "ev-paper-9fc0c78ffc0d5ffdf8ed",
-      "gap_supports": [
         {
           "checklist_results": {
             "cross_gap_reuse": false,
             "direct_relevance": true,
             "fixture_explicit_support": false,
             "gap_overlap": false,
-            "provenance_qualified": false,
-            "query_provenance_match": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
             "query_term_overlap": true,
             "relevance_passed": true,
             "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
             "supporting_span_present": true
           },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "baseline_reproducibility",
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "dataset_availability",
           "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
           ],
-          "support_type": "insufficient"
-        },
+          "support_type": "direct_support"
+        }
+      ],
+      "rejection_reasons": [],
+      "title": "End-to-End Cascaded U-Nets with a Localization Network for Kidney Tumor Segmentation"
+    },
+    {
+      "accepted": true,
+      "evidence_id": "ev-paper-5c236915717c246ca2ea",
+      "gap_supports": [
         {
           "checklist_results": {
             "cross_gap_reuse": false,
@@ -405,7 +156,52 @@
           },
           "confidence": 0.2,
           "decision": "reject",
-          "gap_id": "strong_comparison_methods",
+          "gap_id": "baseline_organ_coverage",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: role-specific evidence structure"
+          ],
+          "support_type": "insufficient"
+        },
+        {
+          "checklist_results": {
+            "fixture_explicit_support": false,
+            "gap_overlap": true,
+            "query_provenance_match": true,
+            "relevance_passed": true
+          },
+          "confidence": 0.9,
+          "decision": "accept",
+          "gap_id": "dataset_availability",
+          "limitations": [],
+          "support_type": "direct_support"
+        }
+      ],
+      "rejection_reasons": [],
+      "title": "The Medical Segmentation Decathlon"
+    },
+    {
+      "accepted": false,
+      "evidence_id": "ev-paper-5ee4cf54aed18be339c5",
+      "gap_supports": [
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
+          },
+          "confidence": 0.2,
+          "decision": "reject",
+          "gap_id": "baseline_organ_coverage",
           "limitations": [
             "no claim-level overlap with the requested gap",
             "semantic binding missing: role-specific evidence structure"
@@ -423,40 +219,16 @@
             "query_term_overlap": true,
             "relevance_passed": true,
             "required_concepts_match": true,
-            "role_evidence_present": false,
+            "role_evidence_present": true,
             "semantic_gap_binding": false,
             "supporting_span_present": true
           },
           "confidence": 0.0,
           "decision": "reject",
-          "gap_id": "failure_mechanisms_limitations",
+          "gap_id": "dataset_availability",
           "limitations": [
             "no claim-level overlap with the requested gap",
-            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": false,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "optional_negative_evidence",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+            "semantic binding missing: query provenance or qualified cross-gap reuse"
           ],
           "support_type": "insufficient"
         }
@@ -464,158 +236,23 @@
       "rejection_reasons": [
         "NO_VALID_GAP_BINDING"
       ],
-      "title": "LCE-Net: A Lightweight Attention-Enhanced EfficientNet for Potato Leaf Disease Classification"
+      "title": "3D Kidneys and Kidney Tumor Semantic Segmentation using Boundary-Aware Networks"
     },
     {
       "accepted": true,
-      "evidence_id": "ev-paper-a01d2017499ea416adea",
+      "evidence_id": "ev-paper-b2acf21204c8ff9bc518",
       "gap_supports": [
         {
           "checklist_results": {
-            "cross_gap_reuse": true,
-            "direct_relevance": true,
             "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "baseline_reproducibility",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": true,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": false,
-            "semantic_gap_binding": false,
-            "supporting_span_present": true
-          },
-          "confidence": 0.0,
-          "decision": "reject",
-          "gap_id": "strong_comparison_methods",
-          "limitations": [
-            "no claim-level overlap with the requested gap",
-            "semantic binding missing: role-specific evidence structure"
-          ],
-          "support_type": "insufficient"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": false,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
+            "gap_overlap": true,
             "query_provenance_match": true,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": true,
-            "semantic_gap_binding": true,
-            "supporting_span_present": true
+            "relevance_passed": true
           },
-          "confidence": 0.82,
+          "confidence": 0.9,
           "decision": "accept",
-          "gap_id": "failure_mechanisms_limitations",
-          "limitations": [
-            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-          ],
-          "support_type": "direct_support"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": true,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": true,
-            "semantic_gap_binding": true,
-            "supporting_span_present": true
-          },
-          "confidence": 0.72,
-          "decision": "accept",
-          "gap_id": "optional_negative_evidence",
-          "limitations": [
-            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-          ],
-          "support_type": "direct_support"
-        }
-      ],
-      "rejection_reasons": [],
-      "title": "Plant Disease Detection and Classification by Deep Learning—A Review"
-    },
-    {
-      "accepted": true,
-      "evidence_id": "ev-paper-5a4118be642a95b6696a",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "cross_gap_reuse": true,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": true,
-            "semantic_gap_binding": true,
-            "supporting_span_present": true
-          },
-          "confidence": 0.72,
-          "decision": "accept",
-          "gap_id": "baseline_reproducibility",
-          "limitations": [
-            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-          ],
-          "support_type": "direct_support"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": true,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": true,
-            "semantic_gap_binding": true,
-            "supporting_span_present": true
-          },
-          "confidence": 0.72,
-          "decision": "accept",
-          "gap_id": "strong_comparison_methods",
-          "limitations": [
-            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-          ],
+          "gap_id": "baseline_organ_coverage",
+          "limitations": [],
           "support_type": "direct_support"
         },
         {
@@ -635,48 +272,26 @@
           },
           "confidence": 0.82,
           "decision": "accept",
-          "gap_id": "failure_mechanisms_limitations",
+          "gap_id": "dataset_availability",
           "limitations": [
             "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-          ],
-          "support_type": "direct_support"
-        },
-        {
-          "checklist_results": {
-            "cross_gap_reuse": true,
-            "direct_relevance": true,
-            "fixture_explicit_support": false,
-            "gap_overlap": false,
-            "provenance_qualified": true,
-            "query_provenance_match": false,
-            "query_term_overlap": true,
-            "relevance_passed": true,
-            "required_concepts_match": true,
-            "role_evidence_present": true,
-            "semantic_gap_binding": true,
-            "supporting_span_present": true
-          },
-          "confidence": 0.72,
-          "decision": "accept",
-          "gap_id": "optional_negative_evidence",
-          "limitations": [
-            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
           ],
           "support_type": "direct_support"
         }
       ],
       "rejection_reasons": [],
-      "title": "Plant diseases and pests detection based on deep learning: a review"
+      "title": "U-Net and Its Variants for Medical Image Segmentation: A Review of Theory and Applications"
     }
   ],
   "execution_status": "completed",
-  "expected_decision": "REVISE_TO_PILOT",
+  "expected_decision": "REVISE",
   "failed_stages": [
     {
       "available": 7,
-      "earned": 4,
+      "earned": 2,
       "findings": [
         "one or more candidates skipped relevance review",
+        "accepted evidence lacks identity, relevance, or role binding",
         "core accepted evidence lacks full-text review"
       ],
       "passed": false,
@@ -692,20 +307,25 @@
       "stage": "clarification_gate"
     }
   ],
-  "hard_failures": [],
+  "hard_failures": [
+    {
+      "code": "IDENTITY_ONLY_ACCEPTANCE",
+      "details": "accepted without identity, relevance, and role binding: ev-paper-5c236915717c246ca2ea"
+    }
+  ],
   "llm_call_budget": 12,
   "minimum_score": 80,
   "model": "mistral-small-latest",
-  "observed_decision": "REVISE_TO_PILOT",
-  "passed": true,
+  "observed_decision": "REVISE",
+  "passed": false,
   "provider": "mistral",
   "provider_call_budget": {
     "maximum": 8,
-    "remaining": 2,
-    "used": 6
+    "remaining": 4,
+    "used": 4
   },
   "report_status": "completed",
-  "score": 94,
+  "score": 92,
   "search_diagnostics": [
     {
       "attempted_providers": [
@@ -716,17 +336,30 @@
       "budget_exhausted_call_count": 0,
       "cache_hit_count": 0,
       "coalesced_provider_call_count": 0,
-      "executed_query": "Searching for MobileNetV3",
+      "executed_query": "U-Net medical image segmentation baseline organ liver lung heart prostate pancreas kidney brain cardiac retinal",
       "fallback_used": false,
       "informative_terms": [
-        "searching",
-        "mobilenetv3"
+        "u-net",
+        "medical",
+        "image",
+        "segmentation",
+        "baseline",
+        "organ",
+        "liver",
+        "lung",
+        "heart",
+        "prostate",
+        "pancreas",
+        "kidney",
+        "brain",
+        "cardiac",
+        "retinal"
       ],
-      "maximum_provider_calls": 3,
-      "minimum_rank_score": 0.68,
-      "minimum_relevance": 0.42,
+      "maximum_provider_calls": 4,
+      "minimum_rank_score": 0.62,
+      "minimum_relevance": 0.34,
       "policy_reasons": [],
-      "precision_risk": "high",
+      "precision_risk": "low",
       "provider_call_count": 3,
       "provider_results": [
         {
@@ -738,75 +371,26 @@
         },
         {
           "cache_status": "miss",
-          "error_code": null,
+          "error_code": "RATE_LIMITED",
           "provider": "semantic_scholar",
           "retry_count": 0,
-          "status": "success"
+          "status": "rate_limited"
         },
         {
           "cache_status": "miss",
-          "error_code": "TRANSPORT_ERROR",
+          "error_code": null,
           "provider": "arxiv",
           "retry_count": 0,
-          "status": "failed"
-        }
-      ],
-      "query_approved": true,
-      "query_id": "q1_baseline_mobilenetv3_plant_disease",
-      "relevant_verified_papers": 1,
-      "returned_candidate_count": 1,
-      "returned_papers": 1,
-      "stop_reason": "academic_budget_exhausted",
-      "uncached_provider_call_count": 3
-    },
-    {
-      "attempted_providers": [
-        "openalex",
-        "semantic_scholar"
-      ],
-      "budget_exhausted_call_count": 0,
-      "cache_hit_count": 0,
-      "coalesced_provider_call_count": 0,
-      "executed_query": "MobileNetV2 EfficientNet-Lite ShuffleNetV2 plant disease classification benchmark",
-      "fallback_used": false,
-      "informative_terms": [
-        "mobilenetv2",
-        "efficientnet-lite",
-        "shufflenetv2",
-        "plant",
-        "disease",
-        "classification",
-        "benchmark"
-      ],
-      "maximum_provider_calls": 3,
-      "minimum_rank_score": 0.62,
-      "minimum_relevance": 0.34,
-      "policy_reasons": [],
-      "precision_risk": "low",
-      "provider_call_count": 2,
-      "provider_results": [
-        {
-          "cache_status": "miss",
-          "error_code": null,
-          "provider": "openalex",
-          "retry_count": 0,
-          "status": "success"
-        },
-        {
-          "cache_status": "miss",
-          "error_code": null,
-          "provider": "semantic_scholar",
-          "retry_count": 0,
           "status": "success"
         }
       ],
       "query_approved": true,
-      "query_id": "q2_lightweight_plant_disease_methods_comparison",
+      "query_id": "q1_baseline_organ_coverage",
       "relevant_verified_papers": 4,
       "returned_candidate_count": 4,
       "returned_papers": 4,
       "stop_reason": "sufficient_academic_evidence",
-      "uncached_provider_call_count": 2
+      "uncached_provider_call_count": 3
     },
     {
       "attempted_providers": [
@@ -815,20 +399,22 @@
       "budget_exhausted_call_count": 0,
       "cache_hit_count": 0,
       "coalesced_provider_call_count": 0,
-      "executed_query": "plant disease classification field imagery small lesions background shift class imbalance",
+      "executed_query": "medical image segmentation liver lung heart prostate pancreas kidney brain cardiac retinal public",
       "fallback_used": false,
       "informative_terms": [
-        "plant",
-        "disease",
-        "classification",
-        "field",
-        "imagery",
-        "small",
-        "lesions",
-        "background",
-        "shift",
-        "class",
-        "imbalance"
+        "medical",
+        "image",
+        "segmentation",
+        "liver",
+        "lung",
+        "heart",
+        "prostate",
+        "pancreas",
+        "kidney",
+        "brain",
+        "cardiac",
+        "retinal",
+        "public"
       ],
       "maximum_provider_calls": 4,
       "minimum_rank_score": 0.62,
@@ -846,7 +432,7 @@
         }
       ],
       "query_approved": true,
-      "query_id": "q3_mobilenetv3_limitations_plant_disease_failure_mechanisms",
+      "query_id": "q2_dataset_availability",
       "relevant_verified_papers": 2,
       "returned_candidate_count": 2,
       "returned_papers": 2,
@@ -854,11 +440,11 @@
       "uncached_provider_call_count": 1
     }
   ],
-  "status": "passed",
+  "status": "failed",
   "verification_call_budget": {
     "maximum": 16,
-    "remaining": 2,
-    "used": 14
+    "remaining": 10,
+    "used": 6
   },
   "web_search_enabled": false
 }
