@@ -1,18 +1,19 @@
 {
-  "batch_id": "batch-04-cases-014-017-initial-live",
+  "batch_id": "batch-05-cases-015-018-020-live-validation",
   "case_ids": [
-    "at-014-gnn-fraud-detection",
     "at-015-multibehavior-recommendation",
-    "at-016-anomaly-transformer-supplied",
-    "at-017-mobilenetv3-plant-disease-supplied"
+    "at-018-yolox-tinydet-supplied",
+    "at-019-unet-unspecified-medical-segmentation",
+    "at-020-lightgcn-contrastive-supplied"
   ],
-  "reason": "begin the next exact four-case live batch after 010-013 passed 4/4",
+  "reason": "validate the repaired Case 015 and execute the final three benchmark cases without repeating the already-passed Case 017 repair",
   "attempt": 1,
   "prerequisites": {
-    "previous_batch_run_id": 29749281258,
-    "previous_batch_passed_count": 4,
-    "previous_batch_failed_count": 0,
-    "retrieval_gate_run_id": 29749022189,
+    "case015_offline_gate_run_id": 29755802086,
+    "case015_offline_gate_passed": true,
+    "case017_offline_gate_run_id": 29757888425,
+    "case017_live_result_commit": "bf473916e3c0c9bacbb485712b39eab56e66f5aa",
+    "case017_live_passed": true,
     "web_search_enabled": false
   },
   "requested_scope": "exactly_four_cases",
