@@ -60,6 +60,43 @@ def _verification_budget(service: object) -> dict[str, int | None] | None:
     return value if isinstance(value, dict) else None
 
 
+def _candidate_query_audit(
+    state: dict[str, Any],
+) -> tuple[dict[str, str], dict[str, int]]:
+    retrieval = state.get("retrieval")
+    if not isinstance(retrieval, dict):
+        return {}, {}
+    raw_candidates = retrieval.get("raw_candidates")
+    if not isinstance(raw_candidates, list):
+        return {}, {}
+    queries: dict[str, str] = {}
+    counts: dict[str, int] = {}
+    for candidate in raw_candidates:
+        if not isinstance(candidate, dict):
+            continue
+        query_id = candidate.get("query_id")
+        if not isinstance(query_id, str):
+            continue
+        counts[query_id] = counts.get(query_id, 0) + 1
+        metadata = candidate.get("metadata")
+        if not isinstance(metadata, dict):
+            continue
+        query_text = metadata.get("query_text")
+        if isinstance(query_text, str) and query_text.strip():
+            queries.setdefault(query_id, query_text.strip())
+    return queries, counts
+
+
+def _provider_result_audit(result: object) -> dict[str, object]:
+    return {
+        "provider": getattr(result, "provider", None),
+        "status": getattr(result, "status", None),
+        "cache_status": getattr(result, "cache_status", None),
+        "error_code": getattr(result, "error_code", None),
+        "retry_count": getattr(result, "retry_count", 0),
+    }
+
+
 def _search_diagnostics(state: dict[str, Any], adapter: object) -> list[dict[str, object]]:
     retrieval = state.get("retrieval")
     if not isinstance(retrieval, dict):
@@ -70,11 +107,40 @@ def _search_diagnostics(state: dict[str, Any], adapter: object) -> list[dict[str
     reader = getattr(adapter, "last_query_diagnostics", None)
     if not callable(reader):
         return []
-    return [
-        value
-        for query_id in completed
-        if isinstance(query_id, str) and isinstance((value := reader(query_id)), dict)
-    ]
+    provider_reader = getattr(adapter, "last_provider_results", None)
+    executed_queries, candidate_counts = _candidate_query_audit(state)
+    output: list[dict[str, object]] = []
+    for query_id in completed:
+        if not isinstance(query_id, str):
+            continue
+        value = reader(query_id)
+        if not isinstance(value, dict):
+            continue
+        provider_results = provider_reader(query_id) if callable(provider_reader) else []
+        audits = [_provider_result_audit(result) for result in provider_results]
+        uncached = sum(
+            audit["cache_status"] in {"miss", "bypass"}
+            and audit["error_code"] != "PROVIDER_CALL_BUDGET_EXHAUSTED"
+            for audit in audits
+        )
+        diagnostic = dict(value)
+        diagnostic.update(
+            {
+                "executed_query": executed_queries.get(query_id),
+                "returned_candidate_count": candidate_counts.get(query_id, 0),
+                "uncached_provider_call_count": uncached,
+                "cache_hit_count": sum(audit["cache_status"] == "hit" for audit in audits),
+                "coalesced_provider_call_count": sum(
+                    audit["cache_status"] == "coalesced" for audit in audits
+                ),
+                "budget_exhausted_call_count": sum(
+                    audit["error_code"] == "PROVIDER_CALL_BUDGET_EXHAUSTED" for audit in audits
+                ),
+                "provider_results": audits,
+            }
+        )
+        output.append(diagnostic)
+    return output
 
 
 def _evidence_items(state: dict[str, Any]) -> dict[str, dict[str, object]]:
