@@ -28,10 +28,13 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
+          from textwrap import dedent
 
           source_path = Path("src/paperagent/academic_methodology.py")
           source = source_path.read_text(encoding="utf-8")
-          anchor = '''def _license_is_acceptable(value: str | None) -> bool:
+          anchor = dedent("""\
+          def _license_is_acceptable(value: str | None) -> bool:
               normalized = _normalized_license(value)
               if normalized is None:
                   return False
@@ -42,8 +45,9 @@ jobs:
                   "incompatible",
                   "proprietary-no-reuse",
               }
-          '''.replace("          ", "")
-          addition = anchor + '''
+          """)
+          helper = dedent("""\
+
 
           _UNRESOLVED_LICENSES = frozenset({"unknown", "missing", "unverified"})
           _EXPLICITLY_INCOMPATIBLE_LICENSES = frozenset(
@@ -67,87 +71,51 @@ jobs:
               if concrete_declared and concrete_evidence and declared != evidence:
                   return AuditSeverity.CRITICAL
               return AuditSeverity.ERROR
-          '''.replace("          ", "")
+          """)
           if "def _license_failure_severity(" not in source:
               if anchor not in source:
                   raise SystemExit("license helper anchor not found")
-              source = source.replace(anchor, addition, 1)
+              source = source.replace(anchor, anchor + helper, 1)
 
-          baseline_old = '''    baseline_license_bound = (
-              baseline_evidence is not None
-              and _license_is_acceptable(baseline.license)
-              and _license_is_acceptable(baseline_evidence.license)
-              and _normalized_license(baseline.license) == _normalized_license(baseline_evidence.license)
+          baseline_pattern = re.compile(
+              r'(\s+"baseline-license",\n\s+baseline_license_bound,\n)'
+              r'\s+AuditSeverity\.CRITICAL,'
           )
-          checks.append(
-              _check(
-                  "baseline-license",
-                  baseline_license_bound,
-                  AuditSeverity.CRITICAL,
-          '''.replace("          ", "")
-          baseline_new = '''    baseline_evidence_license = (
-              baseline_evidence.license if baseline_evidence is not None else None
+          source, baseline_count = baseline_pattern.subn(
+              r'\1            _license_failure_severity(\n'
+              r'                baseline.license,\n'
+              r'                baseline_evidence.license if baseline_evidence is not None else None,\n'
+              r'            ),',
+              source,
+              count=1,
           )
-          baseline_license_bound = (
-              baseline_evidence is not None
-              and _license_is_acceptable(baseline.license)
-              and _license_is_acceptable(baseline_evidence_license)
-              and _normalized_license(baseline.license)
-              == _normalized_license(baseline_evidence_license)
-          )
-          checks.append(
-              _check(
-                  "baseline-license",
-                  baseline_license_bound,
-                  _license_failure_severity(baseline.license, baseline_evidence_license),
-          '''.replace("          ", "")
-          if baseline_old in source:
-              source = source.replace(baseline_old, baseline_new, 1)
-          elif "_license_failure_severity(baseline.license" not in source:
-              raise SystemExit("baseline license block not found")
+          if baseline_count != 1 and "_license_failure_severity(\n                baseline.license" not in source:
+              raise SystemExit("baseline license severity not patched")
 
-          module_old = '''        module_license_bound = (
-                  module_evidence is not None
-                  and _license_is_acceptable(module.license)
-                  and _license_is_acceptable(module_evidence.license)
-                  and _normalized_license(module.license) == _normalized_license(module_evidence.license)
-              )
-              checks.append(
-                  _check(
-                      f"module-license:{module.name}",
-                      module_license_bound,
-                      AuditSeverity.CRITICAL,
-          '''.replace("          ", "")
-          module_new = '''        module_evidence_license = (
-                  module_evidence.license if module_evidence is not None else None
-              )
-              module_license_bound = (
-                  module_evidence is not None
-                  and _license_is_acceptable(module.license)
-                  and _license_is_acceptable(module_evidence_license)
-                  and _normalized_license(module.license)
-                  == _normalized_license(module_evidence_license)
-              )
-              checks.append(
-                  _check(
-                      f"module-license:{module.name}",
-                      module_license_bound,
-                      _license_failure_severity(module.license, module_evidence_license),
-          '''.replace("          ", "")
-          if module_old in source:
-              source = source.replace(module_old, module_new, 1)
-          elif "_license_failure_severity(module.license" not in source:
-              raise SystemExit("module license block not found")
+          module_pattern = re.compile(
+              r'(\s+f"module-license:\{module\.name\}",\n\s+module_license_bound,\n)'
+              r'\s+AuditSeverity\.CRITICAL,'
+          )
+          source, module_count = module_pattern.subn(
+              r'\1                _license_failure_severity(\n'
+              r'                    module.license,\n'
+              r'                    module_evidence.license if module_evidence is not None else None,\n'
+              r'                ),',
+              source,
+              count=1,
+          )
+          if module_count != 1 and "_license_failure_severity(\n                    module.license" not in source:
+              raise SystemExit("module license severity not patched")
           source_path.write_text(source, encoding="utf-8")
 
           test_path = Path("tests/methodology/test_method_design_draft.py")
           tests = test_path.read_text(encoding="utf-8")
           marker = "def test_missing_license_requires_revision_without_forcing_no_go()"
           if marker not in tests:
-              tests += '''
+              tests += dedent("""\
 
 
-def _audit_with_bound_license(license_value: str | None):
+          def _audit_with_bound_license(license_value: str | None):
               proposal = _bound_proposal(_state(), _draft())
               plan = proposal.methodology_plan
               evidence = tuple(
@@ -180,7 +148,7 @@ def _audit_with_bound_license(license_value: str | None):
               assert audit.verdict is AuditVerdict.NO_GO
               assert failed["baseline-license"].severity.value == "critical"
               assert failed["module-license:shallow_feature_fusion"].severity.value == "critical"
-          '''.replace("          ", "")
+          """)
               test_path.write_text(tests, encoding="utf-8")
 
           case_path = Path(".github/workflows/claw-case-001-end-to-end.yml")
