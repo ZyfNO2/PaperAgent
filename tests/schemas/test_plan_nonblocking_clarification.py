@@ -26,7 +26,8 @@ def _ready_plan(**updates: object) -> ResearchPlan:
             )
         ],
         "clarification_question": (
-            "Which dataset, deployment device, and accuracy-latency priority should constrain the method?"
+            "Which dataset, deployment device, and accuracy-latency priority should "
+            "constrain the method?"
         ),
     }
     payload.update(updates)
