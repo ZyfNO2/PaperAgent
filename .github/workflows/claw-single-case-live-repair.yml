@@ -123,7 +123,13 @@ jobs:
           path.write_text(text[:start] + replacement + text[end:], encoding="utf-8")
           PY
       - name: Patch and verify Case 011 role evidence
-        run: python scripts/clouddev_fix_few_shot_intent_roles.py
+        shell: bash
+        run: |
+          mkdir -p build/few-shot-intent-roles
+          set +e
+          python scripts/clouddev_fix_few_shot_intent_roles.py 2>&1 | tee build/few-shot-intent-roles/driver.log
+          status=${PIPESTATUS[0]}
+          exit "$status"
       - name: Restore single-case workflow and add live preflight coverage
         run: |
           restore_ref="$(python - <<'PY'
@@ -191,7 +197,7 @@ jobs:
               if [[ -f "$file" ]]; then
                 echo
                 echo "===== $file ====="
-                tail -n 120 "$file"
+                tail -n 160 "$file"
               fi
             done
           } > "$target"
