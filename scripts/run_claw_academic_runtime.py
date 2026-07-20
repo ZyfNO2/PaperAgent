@@ -283,7 +283,12 @@ async def _run(args: argparse.Namespace) -> int:
     if len(cases) == 20 and len(traces) == 20:
         report = evaluate_dataset(dataset, tuple(traces), minimum_score=args.minimum_score)
         _write_json(output_dir / "report.json", report.model_dump(mode="json", by_alias=True))
-        report_passed = report.failed == 0 and report.hard_failure_count == 0
+        report_passed = (
+            report.failed == 0
+            and report.hard_failure_count == 0
+            and not errors
+            and not runtime_failures
+        )
         summary.update(
             {
                 "report_status": "generated",
