@@ -101,6 +101,7 @@ _NON_TASK_TERMS = {
     "monitoring",
     "negative",
     "neural",
+    "open",
     "parallel",
     "postprocessing",
     "prediction",
@@ -112,6 +113,7 @@ _NON_TASK_TERMS = {
     "reproducible",
     "retrieval",
     "risk",
+    "set",
     "simulation",
     "strong",
     "supervised",
@@ -122,8 +124,22 @@ _NON_TASK_TERMS = {
 }
 
 
+def _singularize(value: str) -> str:
+    if value == "species":
+        return value
+    if len(value) > 5 and value.endswith("ies"):
+        return f"{value[:-3]}y"
+    if (
+        len(value) > 4
+        and value.endswith("s")
+        and not value.endswith(("ss", "us", "is"))
+    ):
+        return value[:-1]
+    return value
+
+
 def _normalize_token(value: str) -> str:
-    return _NON_ALNUM.sub("", value.casefold())
+    return _singularize(_NON_ALNUM.sub("", value.casefold()))
 
 
 def _looks_like_identifier(raw: str) -> bool:
