@@ -1,7 +1,10 @@
 from __future__ import annotations
 
-from paperagent.nodes.planning import _normalize_nonblocking_clarification
-from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+from paperagent.nodes.planning import (
+    _ensure_user_material_identity_queries,
+    _normalize_nonblocking_clarification,
+)
+from paperagent.schemas import EvidenceGap, ResearchPlan, ResearchRequest, SearchQuery
 
 
 def _need_human_plan(*, include_queries: bool = True) -> ResearchPlan:
@@ -51,4 +54,46 @@ def test_missing_query_contract_remains_need_human() -> None:
     normalized = _normalize_nonblocking_clarification(original)
 
     assert normalized.status == "need_human"
+    assert normalized is original
+
+
+def test_public_supplied_title_adds_identity_query_and_unblocks_retrieval() -> None:
+    original = _need_human_plan(include_queries=False)
+    request = ResearchRequest(
+        question="Assess how to use my supplied baseline.",
+        user_material_refs=[
+            "LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation "
+            "[declared role: baseline_candidate]"
+        ],
+    )
+
+    normalized = _ensure_user_material_identity_queries(
+        original,
+        request,
+        query_budget=10,
+    )
+
+    assert normalized.status == "ready"
+    assert len(normalized.evidence_gaps) == 2
+    assert len(normalized.search_queries) == 1
+    assert normalized.search_queries[0].query == (
+        "LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation"
+    )
+    assert normalized.search_queries[0].gap_id == normalized.evidence_gaps[-1].gap_id
+    assert normalized.evidence_gaps[-1].minimum_accepted_items == 1
+
+
+def test_supplied_title_does_not_exceed_query_budget() -> None:
+    original = _need_human_plan()
+    request = ResearchRequest(
+        question="Assess my supplied baseline.",
+        user_material_refs=["A Public Baseline Paper [declared role: baseline_candidate]"],
+    )
+
+    normalized = _ensure_user_material_identity_queries(
+        original,
+        request,
+        query_budget=1,
+    )
+
     assert normalized is original
