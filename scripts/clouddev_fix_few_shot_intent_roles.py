@@ -5,6 +5,7 @@ import os
 import subprocess
 from pathlib import Path
 
+# trigger: few-shot-intent-role-v2
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "build/few-shot-intent-roles"
 STATUS = ROOT / "evals/claw_academic_tailoring_v1/live-probes/few-shot-intent-role-gate-latest.json"
@@ -150,6 +151,8 @@ def _few_shot_intent_role_support(role: str, text: str) -> bool:
     test.write_text(
         '''from __future__ import annotations
 
+from collections.abc import Callable
+
 import pytest
 
 from paperagent.evidence_gap_binding import (
@@ -176,8 +179,9 @@ from paperagent.evidence_gap_binding import (
         ),
     ],
 )
-def test_few_shot_intent_papers_support_their_declared_roles(text: str, checker: object) -> None:
-    assert callable(checker)
+def test_few_shot_intent_papers_support_their_declared_roles(
+    text: str, checker: Callable[[str], bool]
+) -> None:
     assert checker(text) is True
 
 
