@@ -41,6 +41,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p build/readiness-preflight
           python scripts/apply_readiness_preflight.py
           rm scripts/apply_readiness_preflight.py
           rm .github/workflows/apply-readiness-preflight-once.yml
@@ -73,7 +74,19 @@ jobs:
       - name: Strict Mypy
         run: mypy --config-file pyproject.toml
       - name: Full tests and branch coverage
-        run: pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
+        shell: bash
+        run: |
+          set -o pipefail
+          pytest --cov=paperagent --cov-branch --cov-report=term-missing -q \
+            2>&1 | tee build/readiness-preflight/full-tests.log
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: readiness-preflight-${{ github.run_id }}
+          path: build/readiness-preflight/
+          if-no-files-found: warn
+          retention-days: 30
       - name: Commit clean source
         shell: bash
         run: |
