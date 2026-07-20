@@ -28,20 +28,27 @@ def provider_config_for_case(
     config: ProviderRuntimeConfig,
     *,
     selected_case_count: int,
+    max_logical_calls: int | None = None,
 ) -> ProviderRuntimeConfig:
-    """Create an isolated per-case provider budget from one full-run configuration.
+    """Create isolated per-case physical-request and monetary budgets.
 
-    Token, call, and wall-clock limits retain their existing per-task meaning. A configured
-    monetary ceiling is interpreted as the full-run ceiling and divided evenly across cases,
-    which provides a conservative aggregate hard cap.
+    Graph execution counts logical LLM calls, while a provider budget counts every physical
+    request, including schema-repair attempts. The physical limit therefore reserves the configured
+    number of attempts for every allowed logical call. A configured monetary ceiling is interpreted
+    as the full-run ceiling and divided evenly across cases, providing a conservative aggregate cap.
     """
 
     if selected_case_count < 1:
         raise ValueError("selected_case_count must be positive")
+    if max_logical_calls is not None and max_logical_calls < 1:
+        raise ValueError("max_logical_calls must be positive")
+    updates: dict[str, int | float] = {}
     maximum = config.max_estimated_cost_usd
-    if maximum is None:
-        return config
-    return config.model_copy(update={"max_estimated_cost_usd": maximum / selected_case_count})
+    if maximum is not None:
+        updates["max_estimated_cost_usd"] = maximum / selected_case_count
+    if max_logical_calls is not None:
+        updates["max_llm_calls_per_task"] = max_logical_calls * config.max_attempts
+    return config.model_copy(update=updates) if updates else config
 
 
 def summarize_search_budgets(
