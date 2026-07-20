@@ -42,11 +42,7 @@ class CrossrefVerifier:
     async def verify(self, paper: PaperRecord) -> VerificationAttempt:
         if not paper.doi:
             return VerificationAttempt(status="not_found")
-        headers = (
-            {"User-Agent": f"PaperAgent/0.2 (mailto:{self._mailto})"}
-            if self._mailto
-            else None
-        )
+        headers = {"User-Agent": f"PaperAgent/0.2 (mailto:{self._mailto})"} if self._mailto else None
         try:
             response = await self._transport.get(
                 f"{self.endpoint}/{quote(paper.doi, safe='')}",
