@@ -1,13 +1,13 @@
 {
-  "case_id": "at-017-mobilenetv3-plant-disease-supplied",
-  "reason": "verify exact Searching for MobileNetV3 identity, task-specific plant-disease evidence, and rejection of retinal or skin-disease cross-domain candidates",
+  "case_id": "at-019-unet-unspecified-medical-segmentation",
+  "reason": "verify that unresolved organ and dataset selection remains REVISE instead of being promoted to a premature pilot",
   "attempt": 2,
-  "offline_gate_run_id": 29757888425,
+  "offline_gate_run_id": 29759670180,
   "previous_result": {
-    "score": 94,
+    "score": 92,
     "hard_failures": 0,
-    "accepted_evidence": 6,
-    "issue": "original MobileNetV3 paper was not accepted and diabetic-retinopathy evidence crossed the plant-disease boundary"
+    "accepted_evidence": 1,
+    "issue": "expected REVISE but benchmark normalization inferred REVISE_TO_PILOT while the experimental target remained undefined"
   },
   "requested_scope": "single_case_only",
   "web_search_enabled": false
