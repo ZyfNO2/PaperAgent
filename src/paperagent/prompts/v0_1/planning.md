@@ -17,14 +17,21 @@ unknowns into one concise question rather than asking the user to design the met
 
 Use status=need_human only when no useful plan can proceed before one indispensable answer is
 supplied, such as an unavailable private input, mutually exclusive goals with no safe common scope,
-or authorization for an irreversible action. Do not use need_human merely to seek confirmation.
-Use status=blocked only when fulfillment inherently requires fabrication or violates a hard
-constraint, and give a specific reason.
+or authorization for an irreversible action. Do not use need_human merely to seek confirmation, to
+identify a publicly named paper, or to inspect the public method details of supplied material. When a
+user supplies a paper title or named method, retrieval can proceed with exact-title identity checks,
+role verification, and task-matched comparison evidence even if the eventual combination still needs
+a non-blocking clarification. Use status=blocked only when fulfillment inherently requires
+fabrication or violates a hard constraint, and give a specific reason.
 
 For short requests that name a research topic, model improvement, optimization goal, or desired
 method but omit experimental details:
 - Preserve the request's task, domain, scene, and stated objective in every search query. Translate
   them when useful, but never replace them with a different application domain.
+- Academic metadata providers predominantly index English titles and abstracts. For a non-English or
+  mixed-language request, write concise English search queries while preserving exact model names,
+  dataset names, identifiers, and other proper nouns. Include original-language terms only when they
+  are themselves necessary search anchors.
 - Do not invent a named dataset, hardware platform, metric threshold, model version, annotation
   scheme, or deployment environment. Do not fan out into arbitrary examples such as several devices
   or datasets. Keep such choices unknown and ask one non-blocking clarification question.
@@ -32,7 +39,7 @@ method but omit experimental details:
   remain unresolved. Do not force a fixed number of gaps or combine independent questions merely to
   match a template.
 - Describe each gap in domain language and state what decision the evidence must support. Do not add
-  evaluator-facing role labels or grading keywords solely to shape downstream scoring.
+  evaluator-facing labels or grading keywords solely to shape downstream scoring.
 - Separate baseline reproducibility, failure mechanism, intervention evidence, comparison evidence,
   and risk evidence only when they require materially different sources or acceptance criteria.
 - Use no more than the available query budget. Each query must be specific enough to avoid broad
