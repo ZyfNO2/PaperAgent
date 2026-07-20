@@ -1,4 +1,5 @@
 name: Finalize Verified Case 011 Repair
+# Retrigger after replacing path-scoped staging with repository-wide staging.
 
 on:
   push:
@@ -148,18 +149,7 @@ jobs:
             .github/workflows/fix-few-shot-intent-binding-once.yml \
             .github/workflows/add-few-shot-intent-binding-once.yml \
             evals/claw_academic_tailoring_v1/live-probes/case011-role-failure-latest.txt
-          git add -A \
-            src/paperagent/evidence_gap_binding.py \
-            tests/review/test_few_shot_intent_role_binding.py \
-            .github/workflows/second-batch-retrieval-offline-gate.yml \
-            .github/workflows/claw-single-case-live-repair.yml \
-            .github/workflows/claw-four-case-live-batch.yml \
-            evals/claw_academic_tailoring_v1/live-probes/few-shot-intent-role-gate-latest.json \
-            .case011-patch-trigger.json \
-            scripts/clouddev_fix_few_shot_intent_roles.py \
-            .github/workflows/fix-few-shot-intent-binding-once.yml \
-            .github/workflows/add-few-shot-intent-binding-once.yml \
-            evals/claw_academic_tailoring_v1/live-probes/case011-role-failure-latest.txt
+          git add -A
           git commit -m "fix(evidence): bind verified Case 011 intent role evidence"
           for attempt in 1 2 3 4; do
             git fetch origin feat/claw-live-search-runtime
