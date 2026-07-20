@@ -39,8 +39,7 @@ class PreparedQuery(FrozenModel):
 
     @model_validator(mode="after")
     def validate_refinement_audit(self) -> PreparedQuery:
-        changed = self.original_query is not None
-        if changed:
+        if self.original_query is not None:
             if not self.refinement_reason:
                 raise ValueError("refined query requires refinement_reason")
             if not self.removed_families:
