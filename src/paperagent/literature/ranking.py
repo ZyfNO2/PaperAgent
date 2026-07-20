@@ -4,6 +4,7 @@ import math
 import re
 
 from paperagent.literature.query_concepts import matches_required_candidate_terms
+from paperagent.literature.specialized_guards import matches_specialized_candidate_terms
 from paperagent.schemas.literature import LiteratureQueryPlan, PaperRecord, RankFeatures
 
 _TOKEN = re.compile(r"[a-z0-9]+")
@@ -22,7 +23,11 @@ def _paper_text(paper: PaperRecord) -> str:
 
 
 def _concept_match(paper: PaperRecord, plan: LiteratureQueryPlan) -> bool:
-    return matches_required_candidate_terms(_query_text(plan), _paper_text(paper))
+    query = _query_text(plan)
+    candidate = _paper_text(paper)
+    return matches_required_candidate_terms(
+        query, candidate
+    ) and matches_specialized_candidate_terms(query, candidate)
 
 
 def _relevance(paper: PaperRecord, plan: LiteratureQueryPlan) -> float:
