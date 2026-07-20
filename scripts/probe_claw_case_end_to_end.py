@@ -9,6 +9,7 @@ from typing import Any
 
 from paperagent.claw_academic_benchmark import evaluate_case, load_gold_dataset
 from paperagent.claw_benchmark_runtime import execute_benchmark_case
+from paperagent.claw_gold_adapter import benchmark_input_from_gold
 from paperagent.literature.factory import LiteratureProviderSettings, build_literature_runtime
 from paperagent.providers.config import load_provider_config
 from paperagent.providers.runtime_factory import build_llm_provider
@@ -250,7 +251,8 @@ async def _run(args: argparse.Namespace) -> int:
 
     try:
         state, trace = await execute_benchmark_case(
-            case=case,
+            benchmark_input=benchmark_input_from_gold(case),
+            case_id=case.case_id,
             llm=llm,
             search=literature.adapter,
             max_llm_calls=args.max_llm_calls,
