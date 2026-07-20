@@ -1,19 +1,18 @@
 {
-  "batch_id": "batch-02-cases-006-009-final-stability",
+  "batch_id": "batch-03-cases-010-013",
   "case_ids": [
-    "at-006-low-light-pedestrian",
-    "at-007-camera-action-quality",
-    "at-008-mobile-hand-gesture",
-    "at-009-multimodal-medical-fusion"
+    "at-010-chinese-long-document-classification",
+    "at-011-few-shot-intent-detection",
+    "at-012-enterprise-rag",
+    "at-013-professional-qa-hallucination"
   ],
-  "reason": "confirm all second-batch cases after concrete medical baseline and role-specific retrieval",
-  "attempt": 4,
-  "prerequisite_repairs": {
-    "case_006_score": 95,
-    "case_007_score": 97,
-    "case_008_score": 95,
-    "case_009_score": 97,
-    "retrieval_gate_run_id": 29738087532,
+  "reason": "run third controlled batch after second-batch stability and cross-domain method gate",
+  "attempt": 1,
+  "prerequisite_batches": {
+    "batch_01_passed_count": 4,
+    "batch_02_passed_count": 4,
+    "batch_02_workflow_run_id": 29738275611,
+    "method_gate_run_id": 29738468350,
     "hard_failures": 0
   },
   "requested_scope": "exactly_four_cases",
