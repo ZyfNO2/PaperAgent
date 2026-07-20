@@ -42,9 +42,7 @@ def test_generic_concepts_accept_unseen_domain_candidate() -> None:
 
 
 def test_generic_concepts_reject_cross_domain_false_positive() -> None:
-    candidate = (
-        "A finite-volume neural surrogate predicts combustion chemistry in gas turbines."
-    )
+    candidate = "A finite-volume neural surrogate predicts combustion chemistry in gas turbines."
     assert not matches_required_candidate_terms(_QUERY, candidate)
 
 
@@ -87,9 +85,7 @@ def test_counterfactual_model_name_does_not_override_task_mismatch() -> None:
     same_name_wrong_task = (
         "AeroFormer-X2 forecasts lithium battery degradation from charging curves."
     )
-    different_name_right_task = (
-        "CoastSpec maps marine debris from hyperspectral coastal imagery."
-    )
+    different_name_right_task = "CoastSpec maps marine debris from hyperspectral coastal imagery."
     assert not matches_required_candidate_terms(query, same_name_wrong_task)
     assert matches_required_candidate_terms(query, different_name_right_task)
 
