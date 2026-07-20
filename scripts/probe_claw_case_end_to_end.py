@@ -77,6 +77,21 @@ def _search_diagnostics(state: dict[str, Any], adapter: object) -> list[dict[str
     ]
 
 
+def _evidence_items(state: dict[str, Any]) -> dict[str, dict[str, object]]:
+    evidence = state.get("evidence")
+    if not isinstance(evidence, dict):
+        return {}
+    items = evidence.get("items")
+    if not isinstance(items, list):
+        return {}
+    return {
+        evidence_id: item
+        for item in items
+        if isinstance(item, dict)
+        and isinstance((evidence_id := item.get("evidence_id")), str)
+    }
+
+
 def _accepted_evidence(state: dict[str, Any]) -> list[dict[str, object]]:
     evidence = state.get("evidence")
     if not isinstance(evidence, dict):
@@ -98,6 +113,48 @@ def _accepted_evidence(state: dict[str, Any]) -> list[dict[str, object]]:
                 "provider": item.get("provider"),
                 "verification_status": item.get("verification_status"),
                 "supports_gap_ids": item.get("supports_gap_ids", []),
+            }
+        )
+    return output
+
+
+def _evidence_review(state: dict[str, Any]) -> list[dict[str, object]]:
+    ledger = state.get("evidence_ledger")
+    if not isinstance(ledger, dict):
+        return []
+    entries = ledger.get("entries")
+    if not isinstance(entries, list):
+        return []
+    items = _evidence_items(state)
+    output: list[dict[str, object]] = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        evidence_id = entry.get("evidence_id")
+        item = items.get(evidence_id, {}) if isinstance(evidence_id, str) else {}
+        supports = entry.get("gap_supports")
+        support_summary: list[dict[str, object]] = []
+        if isinstance(supports, list):
+            for support in supports:
+                if not isinstance(support, dict):
+                    continue
+                support_summary.append(
+                    {
+                        "gap_id": support.get("gap_id"),
+                        "decision": support.get("decision"),
+                        "support_type": support.get("support_type"),
+                        "confidence": support.get("confidence"),
+                        "checklist_results": support.get("checklist_results", {}),
+                        "limitations": support.get("limitations", []),
+                    }
+                )
+        output.append(
+            {
+                "evidence_id": evidence_id,
+                "title": item.get("title"),
+                "accepted": entry.get("accepted"),
+                "rejection_reasons": entry.get("rejection_reasons", []),
+                "gap_supports": support_summary,
             }
         )
     return output
@@ -161,6 +218,7 @@ async def _run(args: argparse.Namespace) -> int:
             "verification_call_budget": _verification_budget(literature.service),
             "search_diagnostics": _search_diagnostics(state, literature.adapter),
             "accepted_evidence": _accepted_evidence(state),
+            "evidence_review": _evidence_review(state),
             "web_search_enabled": False,
         }
         _write_json(output_dir / "state.json", state)
