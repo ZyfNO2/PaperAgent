@@ -244,7 +244,7 @@ def test_ungrounded_dataset_and_comparator_are_not_promoted_to_facts() -> None:
 
     baseline = proposal.methodology_plan.baseline
     assert baseline.dataset is not None
-    assert "unresolved task-matched dataset" in baseline.dataset
+    assert "unresolved task-matched" in baseline.dataset
     strong_comparison = next(
         item
         for item in proposal.methodology_plan.experiments
@@ -256,6 +256,75 @@ def test_ungrounded_dataset_and_comparator_are_not_promoted_to_facts() -> None:
     assert "InventedDroneBench" not in baseline.dataset
     assert strong_comparison.comparator is not None
     assert "ImaginaryDetector-X" not in strong_comparison.comparator
+
+
+def test_non_vision_task_does_not_inherit_detector_specific_contracts() -> None:
+    state = _state()
+    plan = state["plan"]
+    evidence = state["evidence"]
+    synthesis = state["synthesis"]
+    ledger = state["evidence_ledger"]
+    assert plan is not None
+    assert evidence is not None
+    assert synthesis is not None
+    assert ledger is not None
+
+    medical_item = evidence.items[0].model_copy(
+        update={
+            "title": "MultiFusionNet for chest X-ray image classification",
+            "summary": (
+                "MultiFusionNet fuses chest X-ray representations for multimodal medical image "
+                "classification and reports AUC on a public dataset."
+            ),
+            "locator": "doi:10.1007/s00500-024-09901-x",
+            "metadata": {
+                "doi": "10.1007/s00500-024-09901-x",
+                "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+            },
+        }
+    )
+    medical_state = cast(
+        PaperAgentState,
+        {
+            "request": ResearchRequest(question="多模态医学影像融合分类"),
+            "plan": plan.model_copy(
+                update={
+                    "problem_statement": "multimodal medical image classification",
+                    "scope": "paired medical image representations with unresolved modalities",
+                }
+            ),
+            "evidence": evidence.model_copy(update={"items": [medical_item]}),
+            "evidence_ledger": ledger,
+            "synthesis": synthesis,
+        },
+    )
+    proposal = build_method_proposal(
+        medical_state,
+        _draft(
+            primary_metric="AUC",
+            reported_dataset="InventedMedicalBench",
+            reported_comparator=None,
+            module_name="gated_multimodal_fusion",
+            module_original_role="medical representation fusion",
+            module_proposed_role="single causal fusion intervention",
+            input_semantics="paired modality representations",
+            output_semantics="fused representation for the classification head",
+        ),
+    )
+
+    baseline = proposal.methodology_plan.baseline
+    module = proposal.methodology_plan.modules[0]
+    assert baseline.dataset is not None
+    assert "UAV" not in baseline.dataset
+    assert "detector" not in (module.input_shape or "").casefold()
+    assert "detector" not in " ".join(module.loss_terms).casefold()
+    metrics = {
+        metric
+        for experiment in proposal.methodology_plan.experiments
+        for metric in experiment.metrics
+    }
+    assert "AUC" in metrics
+    assert "AP_small" not in metrics
 
 
 def _audit_with_bound_license(license_value: str | None):
