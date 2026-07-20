@@ -1,54 +1,23 @@
 {
   "accepted_evidence": [
     {
-      "evidence_id": "ev-paper-05f78c47d6bcc217dce5",
-      "locator": "https://arxiv.org/abs/2408.03030",
+      "evidence_id": "ev-paper-6edd47a9ad853c812eb6",
+      "locator": "https://arxiv.org/abs/1910.10504",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_comparison_low_light_pedestrian",
-        "failure_mechanism_limitations_low_light_pedestrian",
-        "risk_contradictory_evidence_low_light_pedestrian"
+        "baseline_comparison",
+        "failure_mechanism_limitation",
+        "parallel_methods_evidence"
       ],
-      "title": "Nighttime Pedestrian Detection Based on Fore-Background Contrast Learning",
-      "verification_status": "accepted"
-    },
-    {
-      "evidence_id": "ev-paper-4dade96f646bd5453786",
-      "locator": "doi:10.3390/s22031082",
-      "provider": "literature_retrieval",
-      "supports_gap_ids": [
-        "baseline_comparison_low_light_pedestrian",
-        "failure_mechanism_limitations_low_light_pedestrian"
-      ],
-      "title": "Adopting the YOLOv4 Architecture for Low-Latency Multispectral Pedestrian Detection in Autonomous Driving",
-      "verification_status": "accepted"
-    },
-    {
-      "evidence_id": "ev-paper-805721c2a96afb4f93b6",
-      "locator": "doi:10.3390/app10030809",
-      "provider": "literature_retrieval",
-      "supports_gap_ids": [
-        "baseline_comparison_low_light_pedestrian",
-        "failure_mechanism_limitations_low_light_pedestrian"
-      ],
-      "title": "Pedestrian Detection at Night in Infrared Images Using an Attention-Guided Encoder-Decoder Convolutional Neural Network",
+      "title": "Liver Segmentation from Multimodal Images using HED-Mask R-CNN",
       "verification_status": "accepted"
     }
   ],
-  "case_id": "at-006-low-light-pedestrian",
+  "case_id": "at-009-multimodal-medical-fusion",
   "decision_matches": true,
   "execution_status": "completed",
   "expected_decision": "REVISE_TO_PILOT",
   "failed_stages": [
-    {
-      "available": 7,
-      "earned": 5,
-      "findings": [
-        "core accepted evidence lacks full-text review"
-      ],
-      "passed": false,
-      "stage": "relevance_review"
-    },
     {
       "available": 10,
       "earned": 7,
@@ -72,7 +41,7 @@
     "used": 8
   },
   "report_status": "completed",
-  "score": 95,
+  "score": 97,
   "search_diagnostics": [
     {
       "attempted_providers": [
@@ -82,25 +51,31 @@
       ],
       "fallback_used": false,
       "informative_terms": [
-        "low-light",
-        "pedestrian",
-        "detection",
-        "accuracy",
-        "speed",
-        "efficiency",
-        "nighttime"
+        "multimodal",
+        "medical",
+        "imaging",
+        "classification",
+        "diagnosis",
+        "feature",
+        "fusion",
+        "baseline",
+        "reproducible",
+        "ct",
+        "mri",
+        "pet",
+        "ultrasound"
       ],
-      "maximum_provider_calls": 4,
+      "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
       "minimum_relevance": 0.34,
       "policy_reasons": [],
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q1_baseline_low_light_pedestrian",
-      "relevant_verified_papers": 2,
-      "returned_papers": 2,
-      "stop_reason": "sufficient_academic_evidence"
+      "query_id": "q1_baseline_methods",
+      "relevant_verified_papers": 1,
+      "returned_papers": 1,
+      "stop_reason": "academic_budget_exhausted"
     },
     {
       "attempted_providers": [
@@ -110,25 +85,32 @@
       ],
       "fallback_used": false,
       "informative_terms": [
-        "low-light",
-        "pedestrian",
-        "detection",
+        "multimodal",
+        "medical",
+        "imaging",
+        "classification",
+        "diagnosis",
+        "feature",
+        "fusion",
         "failure",
-        "limitations",
+        "mode",
+        "limitation",
         "mechanism",
-        "nighttime"
+        "noise",
+        "modality",
+        "missing"
       ],
-      "maximum_provider_calls": 4,
+      "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
       "minimum_relevance": 0.34,
       "policy_reasons": [],
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q2_failure_mechanism_low_light_pedestrian",
-      "relevant_verified_papers": 2,
-      "returned_papers": 2,
-      "stop_reason": "sufficient_academic_evidence"
+      "query_id": "q2_failure_mechanism",
+      "relevant_verified_papers": 1,
+      "returned_papers": 1,
+      "stop_reason": "academic_budget_exhausted"
     },
     {
       "attempted_providers": [
@@ -138,23 +120,21 @@
       ],
       "fallback_used": false,
       "informative_terms": [
-        "low-light",
-        "pedestrian",
-        "detection",
-        "contradictory",
-        "evidence",
-        "limitations",
-        "bias",
-        "inconsistency"
+        "medical",
+        "image",
+        "classification",
+        "feature",
+        "alignment",
+        "cross-modal"
       ],
-      "maximum_provider_calls": 4,
+      "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
       "minimum_relevance": 0.34,
       "policy_reasons": [],
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q3_risk_contradictory_low_light_pedestrian",
+      "query_id": "q3_parallel_methods",
       "relevant_verified_papers": 0,
       "returned_papers": 0,
       "stop_reason": "academic_budget_exhausted"
