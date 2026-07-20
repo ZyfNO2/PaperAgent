@@ -170,7 +170,7 @@ def _contains_any(value: str, terms: tuple[str, ...]) -> bool:
     return any(term in value for term in terms)
 
 
-def _required_candidate_term_groups(query: str) -> tuple[tuple[str, ...], ...]:
+def required_candidate_term_groups(query: str) -> tuple[tuple[str, ...], ...]:
     normalized = query.casefold()
     groups: list[tuple[str, ...]] = []
     if _contains_any(normalized, _AERIAL_QUERY_HINTS):
@@ -233,7 +233,7 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
         reasons=tuple(dict.fromkeys(reasons)),
         informative_terms=unique_informative,
         discriminative_terms=discriminative,
-        required_candidate_term_groups=_required_candidate_term_groups(normalized),
+        required_candidate_term_groups=required_candidate_term_groups(normalized),
         primary_provider=primary,
         escalation_providers=escalation,
         allow_web_fallback=allow_web,
@@ -245,4 +245,8 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
     )
 
 
-__all__ = ["SearchSourcePolicy", "review_search_query"]
+__all__ = [
+    "SearchSourcePolicy",
+    "required_candidate_term_groups",
+    "review_search_query",
+]
