@@ -1,78 +1,84 @@
 {
   "accepted_evidence": [
     {
-      "evidence_id": "ev-paper-410b2ebbd766de3473b9",
-      "locator": "doi:10.1007/s10462-022-10152-1",
+      "evidence_id": "ev-paper-d4be115d54a33a621a20",
+      "locator": "doi:10.1145/3604915.3609489",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_organ_dataset_mapping",
-        "strong_comparison_methods"
+        "baseline_evidence",
+        "mechanism_and_limitation",
+        "risk_negative_evidence"
       ],
-      "title": "Modality specific U-Net variants for biomedical image segmentation: a survey",
+      "title": "Challenging the Myth of Graph Collaborative Filtering: a Reasoned and Reproducibility-driven Analysis",
       "verification_status": "accepted"
     },
     {
-      "evidence_id": "ev-paper-9dab9d8be226da273ef4",
-      "locator": "doi:10.1109/tpami.2021.3100536",
+      "evidence_id": "ev-paper-5d069eae86e301b4b4f1",
+      "locator": "doi:10.1007/s40747-022-00849-9",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_organ_dataset_mapping",
-        "strong_comparison_methods"
+        "baseline_evidence",
+        "mechanism_and_limitation",
+        "risk_negative_evidence"
       ],
-      "title": "AbdomenCT-1K: Is Abdominal Organ Segmentation a Solved Problem?",
+      "title": "Unexpected interest recommender system with graph neural network",
       "verification_status": "accepted"
     },
     {
-      "evidence_id": "ev-paper-e0988bf5d6aafb186677",
-      "locator": "https://arxiv.org/abs/2501.09185",
+      "evidence_id": "ev-paper-1108533177a4dfb00f47",
+      "locator": "https://arxiv.org/abs/2505.15103",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_organ_dataset_mapping",
-        "strong_comparison_methods"
+        "baseline_evidence",
+        "mechanism_and_limitation",
+        "risk_negative_evidence"
       ],
-      "title": "Cancer-Net PCa-Seg: Benchmarking Deep Learning Models for Prostate Cancer Segmentation Using Synthetic Correlated Diffusion Imaging",
+      "title": "Khan-GCL: Kolmogorov-Arnold Network Based Graph Contrastive Learning with Hard Negatives",
       "verification_status": "accepted"
     },
     {
-      "evidence_id": "ev-paper-c416e6a89331a5eb943e",
-      "locator": "https://arxiv.org/abs/2411.01896",
+      "evidence_id": "ev-paper-28d31e749f46fb3c7147",
+      "locator": "https://arxiv.org/abs/2209.02544",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_organ_dataset_mapping",
-        "strong_comparison_methods"
+        "baseline_evidence",
+        "mechanism_and_limitation",
+        "risk_negative_evidence"
       ],
-      "title": "MBDRes-U-Net: Multi-Scale Lightweight Brain Tumor Segmentation Network",
+      "title": "XSimGCL: Towards Extremely Simple Graph Contrastive Learning for Recommendation",
       "verification_status": "accepted"
     },
     {
-      "evidence_id": "ev-paper-47aeac22c4a6e663c807",
-      "locator": "https://arxiv.org/abs/2011.11052",
+      "evidence_id": "ev-paper-7884836ccb226ff5316b",
+      "locator": "https://arxiv.org/abs/2502.03664",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_organ_dataset_mapping",
-        "strong_comparison_methods"
+        "baseline_evidence",
+        "mechanism_and_limitation",
+        "risk_negative_evidence"
       ],
-      "title": "Efficient embedding network for 3D brain tumor segmentation",
+      "title": "Contrastive Learning for Cold Start Recommendation with Adaptive Feature Fusion",
       "verification_status": "accepted"
     },
     {
-      "evidence_id": "ev-paper-b2acf21204c8ff9bc518",
-      "locator": "doi:10.1109/access.2021.3086020",
+      "evidence_id": "ev-paper-d2516a34644f010ee2f5",
+      "locator": "doi:10.1038/s41598-026-39632-y",
       "provider": "literature_retrieval",
       "supports_gap_ids": [
-        "baseline_organ_dataset_mapping",
-        "strong_comparison_methods"
+        "baseline_evidence",
+        "mechanism_and_limitation",
+        "risk_negative_evidence"
       ],
-      "title": "U-Net and Its Variants for Medical Image Segmentation: A Review of Theory and Applications",
+      "title": "Optimizing solar and wind forecasting with iHow optimization algorithm and multi-scale attention networks",
       "verification_status": "accepted"
     }
   ],
-  "case_id": "at-019-unet-unspecified-medical-segmentation",
+  "case_id": "at-020-lightgcn-contrastive-supplied",
   "decision_matches": true,
   "evidence_review": [
     {
       "accepted": true,
-      "evidence_id": "ev-paper-410b2ebbd766de3473b9",
+      "evidence_id": "ev-paper-d4be115d54a33a621a20",
       "gap_supports": [
         {
           "checklist_results": {
@@ -83,7 +89,7 @@
           },
           "confidence": 0.9,
           "decision": "accept",
-          "gap_id": "baseline_organ_dataset_mapping",
+          "gap_id": "baseline_evidence",
           "limitations": [],
           "support_type": "direct_support"
         },
@@ -91,23 +97,208 @@
           "checklist_results": {
             "fixture_explicit_support": false,
             "gap_overlap": true,
-            "query_provenance_match": true,
+            "query_provenance_match": false,
             "relevance_passed": true
           },
-          "confidence": 0.9,
+          "confidence": 0.7,
           "decision": "accept",
-          "gap_id": "strong_comparison_methods",
+          "gap_id": "mechanism_and_limitation",
+          "limitations": [],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "fixture_explicit_support": false,
+            "gap_overlap": true,
+            "query_provenance_match": false,
+            "relevance_passed": true
+          },
+          "confidence": 0.7,
+          "decision": "accept",
+          "gap_id": "risk_negative_evidence",
           "limitations": [],
           "support_type": "direct_support"
         }
       ],
       "rejection_reasons": [],
-      "title": "Modality specific U-Net variants for biomedical image segmentation: a survey"
+      "title": "Challenging the Myth of Graph Collaborative Filtering: a Reasoned and Reproducibility-driven Analysis"
     },
     {
       "accepted": true,
-      "evidence_id": "ev-paper-9dab9d8be226da273ef4",
+      "evidence_id": "ev-paper-5d069eae86e301b4b4f1",
       "gap_supports": [
+        {
+          "checklist_results": {
+            "fixture_explicit_support": false,
+            "gap_overlap": true,
+            "query_provenance_match": true,
+            "relevance_passed": true
+          },
+          "confidence": 0.9,
+          "decision": "accept",
+          "gap_id": "baseline_evidence",
+          "limitations": [],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": true,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.72,
+          "decision": "accept",
+          "gap_id": "mechanism_and_limitation",
+          "limitations": [
+            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": true,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.72,
+          "decision": "accept",
+          "gap_id": "risk_negative_evidence",
+          "limitations": [
+            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        }
+      ],
+      "rejection_reasons": [],
+      "title": "Unexpected interest recommender system with graph neural network"
+    },
+    {
+      "accepted": false,
+      "evidence_id": "ev-paper-352304ac84072e47add5",
+      "gap_supports": [
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": false,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
+          },
+          "confidence": 0.0,
+          "decision": "reject",
+          "gap_id": "baseline_evidence",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+          ],
+          "support_type": "insufficient"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
+          },
+          "confidence": 0.2,
+          "decision": "reject",
+          "gap_id": "mechanism_and_limitation",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: role-specific evidence structure"
+          ],
+          "support_type": "insufficient"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": false,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
+          },
+          "confidence": 0.0,
+          "decision": "reject",
+          "gap_id": "risk_negative_evidence",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+          ],
+          "support_type": "insufficient"
+        }
+      ],
+      "rejection_reasons": [
+        "NO_VALID_GAP_BINDING"
+      ],
+      "title": "Let Invariant Rationale Discovery Inspire Graph Contrastive Learning"
+    },
+    {
+      "accepted": true,
+      "evidence_id": "ev-paper-1108533177a4dfb00f47",
+      "gap_supports": [
+        {
+          "checklist_results": {
+            "cross_gap_reuse": true,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.72,
+          "decision": "accept",
+          "gap_id": "baseline_evidence",
+          "limitations": [
+            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
         {
           "checklist_results": {
             "cross_gap_reuse": false,
@@ -125,7 +316,84 @@
           },
           "confidence": 0.82,
           "decision": "accept",
-          "gap_id": "baseline_organ_dataset_mapping",
+          "gap_id": "mechanism_and_limitation",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": true,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.72,
+          "decision": "accept",
+          "gap_id": "risk_negative_evidence",
+          "limitations": [
+            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        }
+      ],
+      "rejection_reasons": [],
+      "title": "Khan-GCL: Kolmogorov-Arnold Network Based Graph Contrastive Learning with Hard Negatives"
+    },
+    {
+      "accepted": true,
+      "evidence_id": "ev-paper-28d31e749f46fb3c7147",
+      "gap_supports": [
+        {
+          "checklist_results": {
+            "cross_gap_reuse": true,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.72,
+          "decision": "accept",
+          "gap_id": "baseline_evidence",
+          "limitations": [
+            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "mechanism_and_limitation",
           "limitations": [
             "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
           ],
@@ -148,7 +416,7 @@
           },
           "confidence": 0.82,
           "decision": "accept",
-          "gap_id": "strong_comparison_methods",
+          "gap_id": "risk_negative_evidence",
           "limitations": [
             "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
           ],
@@ -156,143 +424,233 @@
         }
       ],
       "rejection_reasons": [],
-      "title": "AbdomenCT-1K: Is Abdominal Organ Segmentation a Solved Problem?"
+      "title": "XSimGCL: Towards Extremely Simple Graph Contrastive Learning for Recommendation"
     },
     {
       "accepted": true,
-      "evidence_id": "ev-paper-e0988bf5d6aafb186677",
+      "evidence_id": "ev-paper-7884836ccb226ff5316b",
       "gap_supports": [
         {
           "checklist_results": {
+            "cross_gap_reuse": true,
+            "direct_relevance": true,
             "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": true,
-            "relevance_passed": true
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
           },
-          "confidence": 0.9,
+          "confidence": 0.72,
           "decision": "accept",
-          "gap_id": "baseline_organ_dataset_mapping",
-          "limitations": [],
+          "gap_id": "baseline_evidence",
+          "limitations": [
+            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": true,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.72,
+          "decision": "accept",
+          "gap_id": "mechanism_and_limitation",
+          "limitations": [
+            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        },
+        {
+          "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": true,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.82,
+          "decision": "accept",
+          "gap_id": "risk_negative_evidence",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
+          "support_type": "direct_support"
+        }
+      ],
+      "rejection_reasons": [],
+      "title": "Contrastive Learning for Cold Start Recommendation with Adaptive Feature Fusion"
+    },
+    {
+      "accepted": true,
+      "evidence_id": "ev-paper-d2516a34644f010ee2f5",
+      "gap_supports": [
+        {
+          "checklist_results": {
+            "cross_gap_reuse": true,
+            "direct_relevance": true,
+            "fixture_explicit_support": false,
+            "gap_overlap": false,
+            "provenance_qualified": true,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
+          },
+          "confidence": 0.72,
+          "decision": "accept",
+          "gap_id": "baseline_evidence",
+          "limitations": [
+            "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+          ],
           "support_type": "direct_support"
         },
         {
           "checklist_results": {
             "fixture_explicit_support": false,
             "gap_overlap": true,
-            "query_provenance_match": true,
+            "query_provenance_match": false,
             "relevance_passed": true
           },
-          "confidence": 0.9,
+          "confidence": 0.7,
           "decision": "accept",
-          "gap_id": "strong_comparison_methods",
-          "limitations": [],
-          "support_type": "direct_support"
-        }
-      ],
-      "rejection_reasons": [],
-      "title": "Cancer-Net PCa-Seg: Benchmarking Deep Learning Models for Prostate Cancer Segmentation Using Synthetic Correlated Diffusion Imaging"
-    },
-    {
-      "accepted": true,
-      "evidence_id": "ev-paper-c416e6a89331a5eb943e",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": true,
-            "relevance_passed": true
-          },
-          "confidence": 0.9,
-          "decision": "accept",
-          "gap_id": "baseline_organ_dataset_mapping",
+          "gap_id": "mechanism_and_limitation",
           "limitations": [],
           "support_type": "direct_support"
         },
         {
           "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
             "fixture_explicit_support": false,
-            "gap_overlap": true,
+            "gap_overlap": false,
+            "provenance_qualified": true,
             "query_provenance_match": true,
-            "relevance_passed": true
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": true,
+            "semantic_gap_binding": true,
+            "supporting_span_present": true
           },
-          "confidence": 0.9,
+          "confidence": 0.82,
           "decision": "accept",
-          "gap_id": "strong_comparison_methods",
-          "limitations": [],
+          "gap_id": "risk_negative_evidence",
+          "limitations": [
+            "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+          ],
           "support_type": "direct_support"
         }
       ],
       "rejection_reasons": [],
-      "title": "MBDRes-U-Net: Multi-Scale Lightweight Brain Tumor Segmentation Network"
+      "title": "Optimizing solar and wind forecasting with iHow optimization algorithm and multi-scale attention networks"
     },
     {
-      "accepted": true,
-      "evidence_id": "ev-paper-47aeac22c4a6e663c807",
+      "accepted": false,
+      "evidence_id": "ev-paper-2f3cf76c0da5b5a59a4c",
       "gap_supports": [
         {
           "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
             "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": true,
-            "relevance_passed": true
+            "gap_overlap": false,
+            "provenance_qualified": false,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
           },
-          "confidence": 0.9,
-          "decision": "accept",
-          "gap_id": "baseline_organ_dataset_mapping",
-          "limitations": [],
-          "support_type": "direct_support"
+          "confidence": 0.0,
+          "decision": "reject",
+          "gap_id": "baseline_evidence",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+          ],
+          "support_type": "insufficient"
         },
         {
           "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
             "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": true,
-            "relevance_passed": true
+            "gap_overlap": false,
+            "provenance_qualified": false,
+            "query_provenance_match": false,
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
           },
-          "confidence": 0.9,
-          "decision": "accept",
-          "gap_id": "strong_comparison_methods",
-          "limitations": [],
-          "support_type": "direct_support"
-        }
-      ],
-      "rejection_reasons": [],
-      "title": "Efficient embedding network for 3D brain tumor segmentation"
-    },
-    {
-      "accepted": true,
-      "evidence_id": "ev-paper-b2acf21204c8ff9bc518",
-      "gap_supports": [
-        {
-          "checklist_results": {
-            "fixture_explicit_support": false,
-            "gap_overlap": true,
-            "query_provenance_match": true,
-            "relevance_passed": true
-          },
-          "confidence": 0.9,
-          "decision": "accept",
-          "gap_id": "baseline_organ_dataset_mapping",
-          "limitations": [],
-          "support_type": "direct_support"
+          "confidence": 0.0,
+          "decision": "reject",
+          "gap_id": "mechanism_and_limitation",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+          ],
+          "support_type": "insufficient"
         },
         {
           "checklist_results": {
+            "cross_gap_reuse": false,
+            "direct_relevance": true,
             "fixture_explicit_support": false,
-            "gap_overlap": true,
+            "gap_overlap": false,
+            "provenance_qualified": true,
             "query_provenance_match": true,
-            "relevance_passed": true
+            "query_term_overlap": true,
+            "relevance_passed": true,
+            "required_concepts_match": true,
+            "role_evidence_present": false,
+            "semantic_gap_binding": false,
+            "supporting_span_present": true
           },
-          "confidence": 0.9,
-          "decision": "accept",
-          "gap_id": "strong_comparison_methods",
-          "limitations": [],
-          "support_type": "direct_support"
+          "confidence": 0.2,
+          "decision": "reject",
+          "gap_id": "risk_negative_evidence",
+          "limitations": [
+            "no claim-level overlap with the requested gap",
+            "semantic binding missing: role-specific evidence structure"
+          ],
+          "support_type": "insufficient"
         }
       ],
-      "rejection_reasons": [],
-      "title": "U-Net and Its Variants for Medical Image Segmentation: A Review of Theory and Applications"
+      "rejection_reasons": [
+        "NO_VALID_GAP_BINDING"
+      ],
+      "title": "On the Similarities of Embeddings in Contrastive Learning"
     }
   ],
   "execution_status": "completed",
@@ -327,8 +685,8 @@
   "provider": "mistral",
   "provider_call_budget": {
     "maximum": 8,
-    "remaining": 4,
-    "used": 4
+    "remaining": 1,
+    "used": 7
   },
   "report_status": "completed",
   "score": 94,
@@ -340,19 +698,23 @@
       "budget_exhausted_call_count": 0,
       "cache_hit_count": 0,
       "coalesced_provider_call_count": 0,
-      "executed_query": "U-Net medical image segmentation organ baseline nnU-Net Attention",
+      "executed_query": "LightGCN graph convolutional network recommendation reproducible implementation NGCF PinSAGE matrix factorization baseline",
       "fallback_used": false,
       "informative_terms": [
-        "u-net",
-        "medical",
-        "image",
-        "segmentation",
-        "organ",
-        "baseline",
-        "nnu-net",
-        "attention"
+        "lightgcn",
+        "graph",
+        "convolutional",
+        "network",
+        "recommendation",
+        "reproducible",
+        "implementation",
+        "ngcf",
+        "pinsage",
+        "matrix",
+        "factorization",
+        "baseline"
       ],
-      "maximum_provider_calls": 4,
+      "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
       "minimum_relevance": 0.34,
       "policy_reasons": [],
@@ -368,7 +730,7 @@
         }
       ],
       "query_approved": true,
-      "query_id": "q1_baseline_organ_dataset",
+      "query_id": "baseline_lightgcn",
       "relevant_verified_papers": 2,
       "returned_candidate_count": 2,
       "returned_papers": 2,
@@ -384,18 +746,90 @@
       "budget_exhausted_call_count": 0,
       "cache_hit_count": 0,
       "coalesced_provider_call_count": 0,
-      "executed_query": "U-Net organ-specific segmentation liver lung prostate pancreas cardiac brain",
+      "executed_query": "contrastive learning recommendation graph neural network mechanism sample augmentation loss design SGL NCL CLRec limitations failure mode",
       "fallback_used": false,
       "informative_terms": [
-        "u-net",
-        "organ-specific",
-        "segmentation",
-        "liver",
-        "lung",
-        "prostate",
-        "pancreas",
-        "cardiac",
-        "brain"
+        "contrastive",
+        "learning",
+        "recommendation",
+        "graph",
+        "neural",
+        "network",
+        "mechanism",
+        "sample",
+        "augmentation",
+        "loss",
+        "design",
+        "sgl",
+        "ncl",
+        "clrec",
+        "limitations",
+        "failure",
+        "mode"
+      ],
+      "maximum_provider_calls": 3,
+      "minimum_rank_score": 0.62,
+      "minimum_relevance": 0.34,
+      "policy_reasons": [],
+      "precision_risk": "low",
+      "provider_call_count": 3,
+      "provider_results": [
+        {
+          "cache_status": "miss",
+          "error_code": null,
+          "provider": "openalex",
+          "retry_count": 0,
+          "status": "empty"
+        },
+        {
+          "cache_status": "miss",
+          "error_code": "RATE_LIMITED",
+          "provider": "semantic_scholar",
+          "retry_count": 0,
+          "status": "rate_limited"
+        },
+        {
+          "cache_status": "miss",
+          "error_code": null,
+          "provider": "arxiv",
+          "retry_count": 0,
+          "status": "success"
+        }
+      ],
+      "query_approved": true,
+      "query_id": "contrastive_rec_mechanism",
+      "relevant_verified_papers": 3,
+      "returned_candidate_count": 3,
+      "returned_papers": 3,
+      "stop_reason": "sufficient_academic_evidence",
+      "uncached_provider_call_count": 3
+    },
+    {
+      "attempted_providers": [
+        "openalex",
+        "semantic_scholar",
+        "arxiv"
+      ],
+      "budget_exhausted_call_count": 0,
+      "cache_hit_count": 0,
+      "coalesced_provider_call_count": 0,
+      "executed_query": "contrastive learning recommendation limitations negative failure cases computational overhead hyperparameter sensitivity long-tail cold start",
+      "fallback_used": false,
+      "informative_terms": [
+        "contrastive",
+        "learning",
+        "recommendation",
+        "limitations",
+        "negative",
+        "failure",
+        "cases",
+        "computational",
+        "overhead",
+        "hyperparameter",
+        "sensitivity",
+        "long-tail",
+        "cold",
+        "start"
       ],
       "maximum_provider_calls": 4,
       "minimum_rank_score": 0.62,
@@ -427,7 +861,7 @@
         }
       ],
       "query_approved": true,
-      "query_id": "q2_specific_organ_dataset",
+      "query_id": "risk_negative_evidence_cl",
       "relevant_verified_papers": 4,
       "returned_candidate_count": 4,
       "returned_papers": 4,
