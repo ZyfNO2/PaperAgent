@@ -82,6 +82,11 @@ replace_once(
 # Static typing and lint fixes; behavior is unchanged.
 replace_once(
     "src/paperagent/method_design_draft.py",
+    "from paperagent.schemas.base import FrozenModel\n",
+    "from paperagent.schemas.base import FrozenModel\nfrom paperagent.schemas.evidence import EvidenceItem\n",
+)
+replace_once(
+    "src/paperagent/method_design_draft.py",
     '''def _grounded_evidence_id(\n    value: str | None, accepted: tuple[object, ...]\n) -> str | None:''',
     '''def _grounded_evidence_id(\n    value: str | None, accepted: tuple[EvidenceItem, ...]\n) -> str | None:''',
 )
