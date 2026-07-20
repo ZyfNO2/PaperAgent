@@ -1,5 +1,21 @@
-workflow_run_id=29746833113
-workflow_head_sha=abf629b66b79c54bd880baaeea7e488a6a0b5454
+workflow_run_id=29747118148
+workflow_head_sha=f892f59a43a8d58b94848719b7571e029d1209db
+
+===== build/few-shot-intent-roles/driver.log =====
+2 files left unchanged
+error: the following file has local modifications:
+    scripts/clouddev_fix_few_shot_intent_roles.py
+(use --cached to keep the file, or -f to force removal)
+Traceback (most recent call last):
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/clouddev_fix_few_shot_intent_roles.py", line 726, in <module>
+    main()
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/clouddev_fix_few_shot_intent_roles.py", line 722, in main
+    commit_result()
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/clouddev_fix_few_shot_intent_roles.py", line 648, in commit_result
+    subprocess.run(
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'rm', '--ignore-unmatch', 'scripts/clouddev_fix_few_shot_intent_roles.py', '.github/workflows/fix-few-shot-intent-binding-once.yml', '.github/workflows/add-few-shot-intent-binding-once.yml']' returned non-zero exit status 1.
 
 ===== build/few-shot-intent-roles/format.log =====
 2 files already formatted
@@ -9,7 +25,7 @@ Success: no issues found in 128 source files
 
 ===== build/few-shot-intent-roles/pytest.log =====
 ....................................................                     [100%]
-52 passed in 0.87s
+52 passed in 0.89s
 
 ===== build/few-shot-intent-roles/ruff.log =====
 All checks passed!
