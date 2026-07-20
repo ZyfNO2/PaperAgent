@@ -295,9 +295,8 @@ def _normalize_scientific_phrasing(
             )
 
     combined = f"{refined} {research_context}".casefold()
-    if (
-        _contains_any(combined, _LONG_DOCUMENT_CONTEXT_HINTS)
-        and _contains_any(combined, _TEXT_CLASSIFICATION_CONTEXT_HINTS)
+    if _contains_any(combined, _LONG_DOCUMENT_CONTEXT_HINTS) and _contains_any(
+        combined, _TEXT_CLASSIFICATION_CONTEXT_HINTS
     ):
         canonical = _long_document_query_for_role(
             gap_id=gap_id,
@@ -310,9 +309,8 @@ def _normalize_scientific_phrasing(
             )
 
     combined = f"{refined} {research_context}".casefold()
-    if (
-        _contains_any(combined, _FEW_SHOT_CONTEXT_HINTS)
-        and _contains_any(combined, _INTENT_CONTEXT_HINTS)
+    if _contains_any(combined, _FEW_SHOT_CONTEXT_HINTS) and _contains_any(
+        combined, _INTENT_CONTEXT_HINTS
     ):
         canonical = _few_shot_intent_query_for_role(
             gap_id=gap_id,
