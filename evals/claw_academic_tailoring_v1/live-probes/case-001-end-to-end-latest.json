@@ -27,9 +27,10 @@
     },
     {
       "available": 8,
-      "earned": 6,
+      "earned": 5,
       "findings": [
-        "retrieval role parallel_method is missing"
+        "retrieval role parallel_method is missing",
+        "retrieval role strong_comparison is missing"
       ],
       "passed": false,
       "stage": "exploratory_retrieval"
@@ -103,7 +104,7 @@
     "used": 8
   },
   "report_status": "completed",
-  "score": 61,
+  "score": 60,
   "search_diagnostics": [
     {
       "attempted_providers": [
@@ -118,12 +119,13 @@
         "small",
         "object",
         "detection",
-        "real-time",
         "baseline",
         "reproducible",
+        "method",
         "dataset",
         "metrics",
-        "efficiency"
+        "efficiency",
+        "real-time"
       ],
       "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
@@ -132,7 +134,7 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q1_baseline",
+      "query_id": "q_baseline",
       "relevant_verified_papers": 1,
       "returned_papers": 1,
       "stop_reason": "academic_budget_exhausted"
@@ -150,16 +152,9 @@
         "object",
         "detection",
         "failure",
-        "mechanism",
+        "mode",
         "limitation",
-        "parallel",
-        "method",
-        "feature",
-        "enhancement",
-        "multi-scale",
-        "fusion",
-        "knowledge",
-        "distillation"
+        "methods"
       ],
       "maximum_provider_calls": 3,
       "minimum_rank_score": 0.62,
@@ -168,7 +163,7 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q2_failure_mechanism",
+      "query_id": "q_failure_mechanism",
       "relevant_verified_papers": 0,
       "returned_papers": 0,
       "stop_reason": "academic_budget_exhausted"
@@ -189,11 +184,11 @@
         "limitation",
         "negative",
         "evidence",
-        "safety",
-        "generalization",
-        "bias",
-        "computational",
-        "bottleneck"
+        "failure",
+        "scenario",
+        "power",
+        "consumption",
+        "latency"
       ],
       "maximum_provider_calls": 4,
       "minimum_rank_score": 0.62,
@@ -202,7 +197,7 @@
       "precision_risk": "low",
       "provider_call_count": 3,
       "query_approved": true,
-      "query_id": "q3_risk_negative",
+      "query_id": "q_risk_negative",
       "relevant_verified_papers": 0,
       "returned_papers": 0,
       "stop_reason": "academic_budget_exhausted"
@@ -215,6 +210,6 @@
     "used": 9
   },
   "web_search_enabled": false,
-  "workflow_head_sha": "26bd54f3d437c87e209e4d839bb2a250b907ccc5",
-  "workflow_run_id": 29711042597
+  "workflow_head_sha": "01396f17ffba0affac1c8ee98b3023ec51cb3019",
+  "workflow_run_id": 29711117710
 }
