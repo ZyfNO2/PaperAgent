@@ -30,20 +30,41 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Restore permanent gate and apply Case 015 patch
+      - name: Run auditable Case 015 transaction
+        shell: bash
         run: |
-          git show HEAD^:.github/workflows/second-batch-retrieval-offline-gate.yml \
+          set +e
+          out="build/case015-multibehavior-patch"
+          status_file="evals/claw_academic_tailoring_v1/live-probes/case015-multibehavior-patch-latest.json"
+          mkdir -p "$out" "$(dirname "$status_file")"
+
+          git show HEAD^^:.github/workflows/second-batch-retrieval-offline-gate.yml \
             > .github/workflows/second-batch-retrieval-offline-gate.yml
-          python scripts/clouddev_patch_case_015_multibehavior.py
-          ruff format \
-            src/paperagent/evidence_gap_binding.py \
-            src/paperagent/literature/query_concepts.py \
-            src/paperagent/literature/specialized_guards.py \
-            src/paperagent/literature/task_query_overrides.py \
-            tests/literature/test_multibehavior_recommendation_precision.py \
-            tests/review/test_multibehavior_recommendation_binding.py
-      - name: Verify Case 015 patch
-        run: |
+          restore_status=$?
+
+          if (( restore_status == 0 )); then
+            python scripts/clouddev_patch_case_015_multibehavior.py \
+              > "$out/patch.log" 2>&1
+            patch_status=$?
+          else
+            patch_status=99
+            echo "failed to restore permanent gate" > "$out/patch.log"
+          fi
+
+          if (( patch_status == 0 )); then
+            ruff format \
+              src/paperagent/evidence_gap_binding.py \
+              src/paperagent/literature/query_concepts.py \
+              src/paperagent/literature/specialized_guards.py \
+              src/paperagent/literature/task_query_overrides.py \
+              tests/literature/test_multibehavior_recommendation_precision.py \
+              tests/review/test_multibehavior_recommendation_binding.py \
+              > "$out/format-apply.log" 2>&1
+            format_apply_status=$?
+          else
+            format_apply_status=99
+          fi
+
           files=(
             src/paperagent/evidence_gap_binding.py
             src/paperagent/literature/query_concepts.py
@@ -52,38 +73,103 @@ jobs:
             tests/literature/test_multibehavior_recommendation_precision.py
             tests/review/test_multibehavior_recommendation_binding.py
           )
-          ruff check "${files[@]}"
-          ruff format --check --diff "${files[@]}"
-          mypy --config-file pyproject.toml
-          pytest -q \
-            tests/literature/test_multibehavior_recommendation_precision.py \
-            tests/review/test_multibehavior_recommendation_binding.py \
-            tests/literature/test_time_series_anomaly_precision.py \
-            tests/literature/test_qa_hallucination_precision.py \
-            tests/literature/test_third_batch_query_precision.py \
-            tests/review/test_few_shot_intent_role_binding.py \
-            tests/review/test_semantic_gap_binding.py \
-            tests/review/test_consolidated_regressions.py \
-            tests/nodes/test_retrieval.py
-      - name: Commit verified patch
-        run: |
+          if (( patch_status == 0 && format_apply_status == 0 )); then
+            ruff check "${files[@]}" > "$out/ruff.log" 2>&1
+            ruff_status=$?
+            ruff format --check --diff "${files[@]}" > "$out/format.log" 2>&1
+            format_status=$?
+            mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
+            mypy_status=$?
+            pytest -q \
+              tests/literature/test_multibehavior_recommendation_precision.py \
+              tests/review/test_multibehavior_recommendation_binding.py \
+              tests/literature/test_time_series_anomaly_precision.py \
+              tests/literature/test_qa_hallucination_precision.py \
+              tests/literature/test_third_batch_query_precision.py \
+              tests/review/test_few_shot_intent_role_binding.py \
+              tests/review/test_semantic_gap_binding.py \
+              tests/review/test_consolidated_regressions.py \
+              tests/nodes/test_retrieval.py \
+              > "$out/pytest.log" 2>&1
+            pytest_status=$?
+          else
+            ruff_status=99
+            format_status=99
+            mypy_status=99
+            pytest_status=99
+          fi
+
+          python - "$status_file" \
+            "$restore_status" "$patch_status" "$format_apply_status" \
+            "$ruff_status" "$format_status" "$mypy_status" "$pytest_status" <<'PY'
+          import json
+          import os
+          import sys
+
+          names = (
+              "restore_gate",
+              "patch",
+              "format_apply",
+              "ruff",
+              "format",
+              "mypy",
+              "pytest",
+          )
+          payload = {
+              "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "workflow_head_sha": os.environ["GITHUB_SHA"],
+              **{name: int(value) for name, value in zip(names, sys.argv[2:], strict=True)},
+          }
+          payload["passed"] = all(payload[name] == 0 for name in names)
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, indent=2, sort_keys=True)
+              handle.write("\n")
+          PY
+
+          passed="$(python - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('evals/claw_academic_tailoring_v1/live-probes/case015-multibehavior-patch-latest.json').read_text(encoding='utf-8'))
+          print('true' if value.get('passed') is True else 'false')
+          PY
+          )"
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            src/paperagent/evidence_gap_binding.py \
-            src/paperagent/literature/query_concepts.py \
-            src/paperagent/literature/specialized_guards.py \
-            src/paperagent/literature/task_query_overrides.py \
-            tests/literature/test_multibehavior_recommendation_precision.py \
-            tests/review/test_multibehavior_recommendation_binding.py \
-            .github/workflows/second-batch-retrieval-offline-gate.yml \
-            .github/workflows/claw-single-case-live-repair.yml \
-            .github/workflows/claw-four-case-live-batch.yml
-          git rm \
-            .github/workflows/patch-case-015-multibehavior-once.yml \
-            .github/workflows/patch-case-015-multibehavior-v2.yml \
-            scripts/clouddev_patch_case_015_multibehavior.py \
-            .case015-multibehavior-patch-trigger.json
-          git commit -m "fix(search): canonicalize and bind multi-behavior recommendation evidence"
+          if [[ "$passed" == "true" ]]; then
+            git add \
+              src/paperagent/evidence_gap_binding.py \
+              src/paperagent/literature/query_concepts.py \
+              src/paperagent/literature/specialized_guards.py \
+              src/paperagent/literature/task_query_overrides.py \
+              tests/literature/test_multibehavior_recommendation_precision.py \
+              tests/review/test_multibehavior_recommendation_binding.py \
+              .github/workflows/second-batch-retrieval-offline-gate.yml \
+              .github/workflows/claw-single-case-live-repair.yml \
+              .github/workflows/claw-four-case-live-batch.yml \
+              "$status_file"
+            git rm \
+              .github/workflows/patch-case-015-multibehavior-once.yml \
+              .github/workflows/patch-case-015-multibehavior-v2.yml \
+              scripts/clouddev_patch_case_015_multibehavior.py \
+              .case015-multibehavior-patch-trigger.json
+            git commit -m "fix(search): canonicalize and bind multi-behavior recommendation evidence"
+          else
+            cp "$status_file" /tmp/case015-status.json
+            git reset --hard HEAD
+            cp /tmp/case015-status.json "$status_file"
+            git add "$status_file"
+            git commit -m "chore(search): persist Case 015 patch failure [skip ci]"
+          fi
+
           git pull --rebase origin feat/claw-live-search-runtime
           git push origin HEAD:feat/claw-live-search-runtime
+          [[ "$passed" == "true" ]]
+      - name: Upload transaction logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: case015-multibehavior-patch-${{ github.run_id }}
+          path: build/case015-multibehavior-patch/
+          if-no-files-found: warn
+          retention-days: 30
