@@ -1,4 +1,5 @@
 name: Patch Cases 015-017 Offline
+# Applies only deterministic planning, benchmark-normalization, and retrieval-precision repairs.
 
 on:
   push:
@@ -281,7 +282,6 @@ jobs:
               reviews: list[EvidenceReview] = []
               for reference in request.user_material_refs[existing_count:]:
                   match = _SUPPLIED_REF.match(reference.strip())
-                  title = match.group("title").strip() if match else reference.strip()
                   declared_role = match.group("role").strip() if match else "other"
                   digest = hashlib.sha256(reference.encode("utf-8")).hexdigest()[:16]
                   role = _role_from_text(declared_role)
