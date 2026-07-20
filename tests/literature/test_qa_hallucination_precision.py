@@ -7,10 +7,12 @@ import pytest
 from paperagent.evidence_gap_binding import build_evidence_ledger
 from paperagent.literature.specialized_guards import matches_specialized_candidate_terms
 from paperagent.literature.task_query_overrides import override_task_query
+from paperagent.retrieval.verify_evidence import _plan_with_prepared_queries
 from paperagent.schemas import (
     EvidenceBundle,
     EvidenceGap,
     EvidenceItem,
+    PreparedQuery,
     ResearchPlan,
     ResearchRequest,
 )
@@ -81,7 +83,8 @@ def test_semantic_entropy_probes_supports_mechanism_gap() -> None:
         gap_id="failure_mechanism_limitation_evidence",
         description="hallucination failure mechanism, uncertainty, and detection limitations",
     )
-    query = "semantic entropy probes hallucination detection uncertainty"
+    original_query = "professional question answering hallucination mechanism evidence"
+    refined_query = "semantic entropy probes hallucination detection uncertainty"
     plan = ResearchPlan(
         status="ready",
         problem_statement="professional question answering hallucination reduction",
@@ -91,13 +94,30 @@ def test_semantic_entropy_probes_supports_mechanism_gap() -> None:
             SearchQuery(
                 query_id="q-semantic-entropy",
                 gap_id=gap.gap_id,
-                query=query,
+                query=original_query,
                 source_types=["paper"],
             )
         ],
         success_criteria=["identify direct failure-mechanism evidence"],
         risks=["domain corpus and acceptable abstention rate are unresolved"],
     )
+    effective_plan = _plan_with_prepared_queries(
+        plan,
+        [
+            PreparedQuery(
+                query_id="q-semantic-entropy",
+                gap_id=gap.gap_id,
+                query=refined_query,
+                original_query=original_query,
+                refinement_reason="canonicalized professional-QA hallucination mechanism query",
+                source_types=["paper"],
+                round=1,
+            )
+        ],
+    )
+    assert effective_plan is not None
+    assert effective_plan.search_queries[0].query == refined_query
+
     item = EvidenceItem(
         evidence_id="ev-semantic-entropy-probes",
         source_type="paper",
@@ -115,9 +135,9 @@ def test_semantic_entropy_probes_supports_mechanism_gap() -> None:
         provider="literature_retrieval",
         metadata={"candidate_gap_ids": gap.gap_id},
     )
-    _, _, _, supports, ledger = build_evidence_ledger(
+    _, lexical, _, supports, ledger = build_evidence_ledger(
         request=ResearchRequest(question="专业问答系统中的大模型幻觉问题"),
-        plan=plan,
+        plan=effective_plan,
         evidence=EvidenceBundle(
             items=[item],
             accepted_ids=[item.evidence_id],
@@ -126,6 +146,7 @@ def test_semantic_entropy_probes_supports_mechanism_gap() -> None:
         ),
     )
     support = next(value for value in supports if value.gap_id == gap.gap_id)
+    assert lexical[0].decision == "pass"
     assert ledger.accepted_ids == [item.evidence_id]
     assert support.decision == "accept"
     assert support.support_type == "direct_support"
