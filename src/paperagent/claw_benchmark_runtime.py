@@ -6,8 +6,9 @@ from typing import Any, Literal, Protocol, cast
 
 from paperagent.api.real_executor import SystemClock, UUIDIdFactory
 from paperagent.benchmark_input import BenchmarkInput, benchmark_input_to_request
+from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
 from paperagent.claw_academic_benchmark import AcademicTailoringRunTrace
-from paperagent.claw_benchmark_adapter import (
+from paperagent.claw_benchmark_normalizer import (
     BenchmarkNormalizationContext,
     normalize_paperagent_state,
 )
@@ -116,12 +117,16 @@ async def execute_benchmark_case(
             latest = cast(PaperAgentState, raw_state)
     if latest is None:
         raise RuntimeError(f"benchmark case {case_id} emitted no state")
+
+    leakage_audit = audit_benchmark_execution_boundary()
     primitive = state_to_primitive(latest)
     trace = normalize_paperagent_state(
         latest,
         BenchmarkNormalizationContext(
             case_id=case_id,
             pilot_recommended=_structured_pilot_recommendation(latest),
+            future_or_test_leakage=not leakage_audit.passed,
+            leakage_findings=leakage_audit.findings,
         ),
     )
     return primitive, trace
