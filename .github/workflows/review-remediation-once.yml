@@ -53,7 +53,12 @@ jobs:
       - name: Apply review remediation
         run: |
           python scripts/run_review_remediation.py
+          git checkout -- \
+            tests/review/test_few_shot_intent_role_binding.py \
+            tests/review/test_low_light_mechanism_binding.py \
+            tests/review/test_multibehavior_recommendation_binding.py
           rm -f scripts/.review-remediation-*.b64 scripts/run_review_remediation.py
+          rm -f .review-remediation-trigger.json
 
       - name: Format changed Python files
         shell: bash
@@ -77,23 +82,44 @@ jobs:
       - name: Targeted regression
         run: |
           pytest -q \
+            tests/evals/test_00_production_pilot.py \
             tests/evals/test_benchmark_leakage_audit.py \
             tests/evals/test_claw_benchmark_adapter.py \
             tests/methodology/test_method_design_draft.py \
+            tests/review/test_few_shot_intent_role_binding.py \
+            tests/review/test_low_light_mechanism_binding.py \
+            tests/review/test_multibehavior_recommendation_binding.py \
             tests/review/test_semantic_gap_binding.py \
             tests/review/test_action_mechanism_binding.py \
             tests/review/test_research_contract_priority.py \
             tests/literature/test_source_selection_policy.py \
             tests/nodes/test_synthesis_method_quality_report.py
 
-      - name: Full offline regression
-        run: pytest -q
+      - name: Full offline regression with coverage gate
+        run: pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
 
       - name: Type check and final lint
         run: |
           mypy --config-file pyproject.toml
           ruff check src tests scripts
           ruff format --check src tests scripts
+
+      - name: Commit clean remediation
+        run: |
+          rm -f .github/workflows/review-remediation-once.yml
+          rm -f .review-remediation-trigger.json
+          rm -f scripts/.review-remediation-*.b64 scripts/run_review_remediation.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(eval): remove benchmark-conditioned production logic"
+          git push origin HEAD:feat/claw-live-search-runtime
+
+      - name: Require Mistral secret
+        if: env.MISTRAL_API_KEY == ''
+        run: |
+          echo "MISTRAL_API_KEY is required for merge-readiness verification" >&2
+          exit 1
 
       - name: Real Mistral smoke
         id: mistral
@@ -135,13 +161,15 @@ jobs:
           python - <<'PY'
           import json
           import os
+          import subprocess
           from pathlib import Path
 
           summary_path = Path('build/review-remediation-development-20/execution-summary.json')
           summary = json.loads(summary_path.read_text()) if summary_path.exists() else None
+          source_sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
           payload = {
               'schema': 'paperagent.review-remediation-handoff.v1',
-              'source_sha': os.environ['GITHUB_SHA'],
+              'source_sha': source_sha,
               'original_20_status': 'development benchmark / contaminated evaluation set',
               'offline_regression': 'success',
               'mistral_smoke': os.environ.get('MISTRAL_OUTCOME'),
@@ -156,12 +184,13 @@ jobs:
           print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
           PY
 
-      - name: Remove one-shot workflow and commit
-        if: success()
+      - name: Commit verification handoff
+        if: always()
         run: |
-          rm -f .github/workflows/review-remediation-once.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "fix(eval): remove benchmark-conditioned production logic"
-          git push origin HEAD:feat/claw-live-search-runtime
+          git add evals/claw_academic_tailoring_v1/live-probes/review-remediation-latest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "test(eval): record real-provider remediation verification"
+            git push origin HEAD:feat/claw-live-search-runtime
+          fi
