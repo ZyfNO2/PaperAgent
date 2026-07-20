@@ -40,9 +40,7 @@ def test_constrained_schema_accepts_exact_runtime_identifiers() -> None:
         gap_ids=("gap-accepted",),
     )
 
-    constrained = schema.model_validate(
-        _payload(evidence_id="ev-accepted", gap_id="gap-accepted")
-    )
+    constrained = schema.model_validate(_payload(evidence_id="ev-accepted", gap_id="gap-accepted"))
     synthesis = _to_evidence_synthesis(constrained)
 
     assert synthesis.referenced_evidence_ids() == {"ev-accepted"}
@@ -56,9 +54,7 @@ def test_constrained_schema_rejects_invented_evidence_identifier() -> None:
     )
 
     with pytest.raises(ValidationError):
-        schema.model_validate(
-            _payload(evidence_id="ev-invented", gap_id="gap-accepted")
-        )
+        schema.model_validate(_payload(evidence_id="ev-invented", gap_id="gap-accepted"))
 
 
 def test_constrained_schema_rejects_unknown_gap_identifier() -> None:
@@ -68,6 +64,4 @@ def test_constrained_schema_rejects_unknown_gap_identifier() -> None:
     )
 
     with pytest.raises(ValidationError):
-        schema.model_validate(
-            _payload(evidence_id="ev-accepted", gap_id="gap-invented")
-        )
+        schema.model_validate(_payload(evidence_id="ev-accepted", gap_id="gap-invented"))
