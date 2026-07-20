@@ -6,49 +6,37 @@ from pydantic import ValidationError
 from paperagent.literature.query_refinement import refine_search_query
 from paperagent.schemas import PreparedQuery
 
-_OVERSTUFFED_QUERY = (
-    "drone small object detection failure mechanism limitation parallel method "
-    "feature enhancement multi-scale fusion knowledge distillation"
+_LONG_QUERY = (
+    "glacier calving finite-volume uncertainty evidence benchmark dataset "
+    "evaluation metrics glacier"
 )
-_REFINED_QUERY = "drone small object detection failure mechanism limitation"
-_MECHANISM_DESCRIPTION = (
-    "failure mechanism, limitation, and parallel method evidence for aerial small objects"
-)
+_REFINED_QUERY = "glacier calving finite-volume uncertainty"
 
 
-def test_overconstrained_mechanism_query_is_refined_without_losing_task_terms() -> None:
+def test_long_query_is_compacted_without_domain_rewrite() -> None:
     result = refine_search_query(
-        _OVERSTUFFED_QUERY,
-        gap_id="failure_mechanism_parallel",
-        gap_description=_MECHANISM_DESCRIPTION,
+        _LONG_QUERY,
+        gap_id="mechanism-gap",
+        gap_description="boundary-condition failure mechanism",
+        research_context="physics-informed glacier simulation",
     )
 
     assert result.changed is True
     assert result.query == _REFINED_QUERY
-    assert set(result.removed_families) == {
-        "feature enhancement",
-        "multi-scale fusion",
-        "knowledge distillation",
-    }
+    assert result.removed_families == ()
     assert result.reason is not None
-    for preserved in (
-        "drone",
-        "small object detection",
-        "failure mechanism",
-        "limitation",
-    ):
+    for preserved in ("glacier", "calving", "finite-volume", "uncertainty"):
         assert preserved in result.query
 
 
-def test_baseline_query_is_not_refined_even_when_it_lists_method_families() -> None:
-    query = "drone detector transformer attention quantization baseline comparison"
-
+def test_short_query_is_not_rewritten_from_context_or_gap_role() -> None:
+    query = "marine debris hyperspectral mapping"
     result = refine_search_query(
         query,
         gap_id="baseline_comparison",
-        gap_description="reproducible baseline and strong comparison evidence",
+        gap_description="baseline and strong comparison evidence",
+        research_context="unrelated hidden context must not inject terms",
     )
-
     assert result.changed is False
     assert result.query == query
     assert result.removed_families == ()
@@ -65,79 +53,34 @@ def test_exact_identifier_query_is_never_refined(query: str) -> None:
     result = refine_search_query(
         query,
         gap_id="failure_mechanism",
-        gap_description=_MECHANISM_DESCRIPTION,
+        gap_description="mechanism evidence",
     )
-
     assert result.changed is False
     assert result.query == query
 
 
-@pytest.mark.parametrize(
-    "query",
-    [
-        "drone small object detection knowledge distillation attention",
-        "drone small object detection feature enhancement multi-scale fusion",
-    ],
-)
-def test_one_or_two_method_families_are_kept(query: str) -> None:
+def test_duplicate_tokens_are_removed_only_for_long_queries() -> None:
+    query = "coral bleaching thermal stress satellite monitoring evidence study coral thermal"
     result = refine_search_query(
         query,
-        gap_id="parallel_method",
-        gap_description=_MECHANISM_DESCRIPTION,
+        gap_id="risk",
+        gap_description="negative evidence",
     )
-
-    assert result.changed is False
-    assert result.query == query
-
-
-@pytest.mark.parametrize(
-    ("query", "gap_id", "description", "expected", "removed_families"),
-    [
-        (
-            "remote sensing dense small object detection benchmark dataset "
-            "evaluation metrics survey",
-            "baseline_comparison",
-            "reproducible baseline, dataset, and comparison evidence",
-            "remote sensing dense small object detection",
-            set(),
-        ),
-        (
-            "remote sensing small object detection failure modes missed detections false positives "
-            "boundary ambiguity analysis",
-            "failure_mechanism_and_parallel_methods",
-            "failure mechanism and parallel method evidence",
-            "remote sensing small object detection failure modes",
-            set(),
-        ),
-        (
-            "remote sensing small object detection multi-scale feature fusion attention mechanism "
-            "super-resolution auxiliary methods",
-            "failure_mechanism_and_parallel_methods",
-            "failure mechanism and parallel method evidence",
-            "remote sensing small object detection mechanism",
-            {"multi-scale feature fusion", "attention", "super-resolution"},
-        ),
-    ],
-)
-def test_case005_queries_are_compacted_without_losing_domain_and_task(
-    query: str,
-    gap_id: str,
-    description: str,
-    expected: str,
-    removed_families: set[str],
-) -> None:
-    result = refine_search_query(
-        query,
-        gap_id=gap_id,
-        gap_description=description,
-    )
-
+    assert result.query == "coral bleaching thermal stress satellite monitoring"
     assert result.changed is True
-    assert result.query == expected
-    assert set(result.removed_families) == removed_families
-    assert result.reason is not None
-    assert "remote sensing" in result.query
-    assert "small object detection" in result.query
+
+
+def test_domain_names_and_unknown_model_identifiers_are_preserved() -> None:
+    query = "RiverNet-Z4 river discharge forecasting comparison dataset evidence efficiency latency"
+    result = refine_search_query(
+        query,
+        gap_id="baseline",
+        gap_description="baseline evidence",
+    )
+    assert result.changed is True
+    assert "RiverNet-Z4" in result.query
+    assert "river discharge forecasting" in result.query
+    assert "efficiency latency" in result.query
 
 
 def test_prepared_query_requires_complete_refinement_audit() -> None:
@@ -147,7 +90,7 @@ def test_prepared_query_requires_complete_refinement_audit() -> None:
             gap_id="g1",
             query="refined query",
             original_query="original query",
-            removed_families=["attention"],
+            removed_families=[],
             source_types=["paper"],
             round=1,
         )
@@ -175,26 +118,25 @@ async def test_prepare_search_refines_once_and_preserves_audit_fields(fixed_time
         SequenceIdFactory("test"),
         InMemoryStateStore(),
     )
+    gap = EvidenceGap(
+        gap_id="mechanism-gap",
+        description="glacier calving boundary-condition mechanism",
+    )
     plan = ResearchPlan(
         status="ready",
-        problem_statement="lightweight UAV small object detection",
-        scope="aerial visual object detection",
-        evidence_gaps=[
-            EvidenceGap(
-                gap_id="failure_mechanism_parallel",
-                description=_MECHANISM_DESCRIPTION,
-            )
-        ],
+        problem_statement="glacier calving simulation",
+        scope="physics-informed surrogate",
+        evidence_gaps=[gap],
         search_queries=[
             SearchQuery(
                 query_id="q-mechanism",
-                gap_id="failure_mechanism_parallel",
-                query=_OVERSTUFFED_QUERY,
+                gap_id=gap.gap_id,
+                query=_LONG_QUERY,
                 source_types=["paper"],
             )
         ],
         success_criteria=["find relevant mechanism evidence"],
-        risks=["overconstrained query"],
+        risks=["boundary observations are sparse"],
     )
     state = {
         "run": RunContext(
@@ -214,11 +156,7 @@ async def test_prepare_search_refines_once_and_preserves_audit_fields(fixed_time
     assert len(prepared) == 1
     assert prepared[0].query_id == "q-mechanism"
     assert prepared[0].query == _REFINED_QUERY
-    assert prepared[0].original_query == _OVERSTUFFED_QUERY
+    assert prepared[0].original_query == _LONG_QUERY
     assert prepared[0].refinement_reason is not None
-    assert set(prepared[0].removed_families) == {
-        "feature enhancement",
-        "multi-scale fusion",
-        "knowledge distillation",
-    }
-    assert plan.search_queries[0].query == _OVERSTUFFED_QUERY
+    assert prepared[0].removed_families == []
+    assert plan.search_queries[0].query == _LONG_QUERY
