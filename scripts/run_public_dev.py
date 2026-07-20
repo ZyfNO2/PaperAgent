@@ -8,7 +8,10 @@ import os
 from pathlib import Path
 from typing import Any
 
-from score_runs import load_jsonl, project_runtime_input, score_dataset
+try:
+    from scripts.score_runs import load_jsonl, project_runtime_input, score_dataset
+except ModuleNotFoundError:  # Direct script execution sets scripts/ as sys.path[0].
+    from score_runs import load_jsonl, project_runtime_input, score_dataset
 
 
 def _write_json(path: Path, value: object) -> None:
@@ -170,9 +173,7 @@ async def _run(args: argparse.Namespace) -> int:
         report["report_digest"] = _report_digest(report)
         _write_json(output_dir / "report.json", report)
 
-    metamorphic_passed = (
-        metamorphic_consistency is None or metamorphic_consistency >= 0.85
-    )
+    metamorphic_passed = metamorphic_consistency is None or metamorphic_consistency >= 0.85
     thresholds_passed = bool(
         report is not None
         and report["decision_accuracy"] >= 0.80
