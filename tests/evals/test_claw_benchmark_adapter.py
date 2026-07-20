@@ -351,7 +351,7 @@ def test_blocked_pre_retrieval_state_records_plan_inference_and_supplied_role() 
         PaperAgentState,
         {
             "request": ResearchRequest(
-                question="我上传了 MobileNetV3 论文，想用于轻量化植物病害识别",
+                question="我上传了 MobileNetV3 论文, 想用于轻量化植物病害识别",
                 user_material_refs=[
                     "Searching for MobileNetV3 [declared role: baseline_or_backbone_candidate]"
                 ],

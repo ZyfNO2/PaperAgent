@@ -219,6 +219,27 @@ def _retrieval_roles(
     return tuple(dict.fromkeys(roles))
 
 
+def _method_evidence_roles(state: PaperAgentState) -> dict[str, EvidenceRole]:
+    method = state.get("method")
+    if method is None:
+        return {}
+    plan = method.methodology_plan
+    roles: dict[str, EvidenceRole] = {}
+    if plan.baseline.source_evidence_id:
+        roles[plan.baseline.source_evidence_id] = "baseline"
+    for module in plan.modules:
+        if module.evidence_id:
+            roles[module.evidence_id] = "parallel_method"
+    for experiment in plan.experiments:
+        if not experiment.source_evidence_id:
+            continue
+        if experiment.arm_type is ExperimentArmType.STRONG_COMPARISON:
+            roles[experiment.source_evidence_id] = "strong_comparison"
+        elif experiment.arm_type is ExperimentArmType.NEGATIVE_CONTROL:
+            roles[experiment.source_evidence_id] = "risk"
+    return roles
+
+
 _SUPPLIED_REF = re.compile(
     r"^(?P<title>.+?) \[declared role: (?P<role>.+?)\]$",
     re.IGNORECASE,
@@ -263,7 +284,7 @@ def _evidence_reviews(
 ) -> tuple[EvidenceReview, ...]:
     bundle = state.get("evidence")
     if bundle is None:
-        return ()
+        return _supplied_material_reviews(state, existing_count=0)
     ledger = state.get("evidence_ledger")
     relevance_by_id = {item.evidence_id: item for item in state.get("relevance_assessments", [])}
     ledger_by_id = {item.evidence_id: item for item in ledger.entries} if ledger else {}
