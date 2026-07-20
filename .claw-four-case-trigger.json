@@ -1,17 +1,17 @@
 {
-  "batch_id": "batch-02-cases-006-009",
+  "batch_id": "batch-02-cases-006-009-rerun",
   "case_ids": [
     "at-006-low-light-pedestrian",
     "at-007-camera-action-quality",
     "at-008-mobile-hand-gesture",
     "at-009-multimodal-medical-fusion"
   ],
-  "prerequisite_batch": "batch-01-cases-002-005",
-  "prerequisite_result": {
-    "passed_count": 4,
-    "failed_count": 0,
-    "case_005_repair_score": 91,
-    "hard_failures": 0
+  "reason": "confirm second-batch quality after domain guards and strict medical classification",
+  "prerequisite_repairs": {
+    "case_006_score": 95,
+    "case_009_score": 97,
+    "strict_classification_gate_run_id": 29714593977,
+    "case_008_old_false_positive": "Metaverse taxonomy review"
   },
   "requested_scope": "exactly_four_cases",
   "web_search_enabled": false
