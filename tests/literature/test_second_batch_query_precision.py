@@ -81,7 +81,7 @@ def test_diagnosis_query_can_use_diagnostic_evidence() -> None:
         (
             "baseline_methods",
             "reproducible baseline comparison",
-            "multimodal medical image classification information fusion",
+            "multimodal medical image classification MultiFusionNet",
         ),
         (
             "failure_mechanism",
@@ -107,6 +107,16 @@ def test_medical_queries_preserve_evidence_roles(
     assert result.query == expected
     assert result.reason is not None
     assert "role-specific task query" in result.reason
+
+
+def test_parallel_medical_role_wins_over_limitation_words() -> None:
+    result = refine_search_query(
+        "multimodal medical image classification alternatives and limitations",
+        gap_id="parallel_methods_evidence",
+        gap_description="parallel methods, alternatives, and known limitations",
+        research_context="多模态医学影像融合分类",
+    )
+    assert result.query == "multimodal medical image classification fusion techniques"
 
 
 def test_medical_primary_roles_do_not_collapse_to_one_query() -> None:
