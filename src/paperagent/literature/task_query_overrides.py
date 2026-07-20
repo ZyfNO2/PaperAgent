@@ -70,6 +70,18 @@ _DATASET_METRIC_HINTS = (
     "校准",
     "延迟",
 )
+_MOBILE_BASELINE_COMPARISON_QUERY = " ".join(
+    (
+        "MobileNetV2 EfficientNet-Lite ShuffleNetV2",
+        "plant disease classification benchmark",
+    )
+)
+_PLANT_DATASET_METRIC_QUERY = " ".join(
+    (
+        "plant disease classification field dataset macro F1",
+        "calibration device latency",
+    )
+)
 _BASELINE_ROLE_HINTS = ("baseline", "comparison", "reproducible", "基线", "比较", "复现")
 _PARALLEL_ROLE_HINTS = (
     "parallel",
@@ -153,7 +165,7 @@ def override_task_query(
         ):
             canonical = "Searching for MobileNetV3"
         elif role == "baseline":
-            canonical = "MobileNetV2 EfficientNet-Lite ShuffleNetV2 plant disease classification benchmark"
+            canonical = _MOBILE_BASELINE_COMPARISON_QUERY
         elif role == "mechanism":
             canonical = (
                 "plant disease classification field imagery small lesions "
@@ -165,7 +177,7 @@ def override_task_query(
                 "INT8 quantization mobile deployment"
             )
         elif _contains_any(role_text, _DATASET_METRIC_HINTS):
-            canonical = "plant disease classification field dataset macro F1 calibration device latency"
+            canonical = _PLANT_DATASET_METRIC_QUERY
         else:
             canonical = "MobileNetV3 plant disease classification lightweight backbone"
         return _result(

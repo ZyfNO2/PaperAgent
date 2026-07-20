@@ -6,6 +6,20 @@ from paperagent.literature.specialized_guards import matches_specialized_candida
 from paperagent.literature.task_query_overrides import override_task_query
 
 
+_MOBILE_BASELINE_COMPARISON_QUERY = " ".join(
+    (
+        "MobileNetV2 EfficientNet-Lite ShuffleNetV2",
+        "plant disease classification benchmark",
+    )
+)
+_PLANT_DATASET_METRIC_QUERY = " ".join(
+    (
+        "plant disease classification field dataset macro F1",
+        "calibration device latency",
+    )
+)
+
+
 @pytest.mark.parametrize(
     ("query", "gap_id", "description", "expected"),
     [
@@ -19,8 +33,7 @@ from paperagent.literature.task_query_overrides import override_task_query
             "MobileNetV2 EfficientNet-Lite ShuffleNetV2 plant disease classification benchmark",
             "baseline_comparison",
             "compare lightweight plant-disease baselines",
-            "MobileNetV2 EfficientNet-Lite ShuffleNetV2 "
-            "plant disease classification benchmark",
+            _MOBILE_BASELINE_COMPARISON_QUERY,
         ),
         (
             "MobileNetV3 failure mechanism limitation plant disease recognition",
@@ -33,8 +46,7 @@ from paperagent.literature.task_query_overrides import override_task_query
             "plant disease datasets and evaluation metrics",
             "task_dataset_and_metrics",
             "field dataset, macro-F1, calibration, and device latency",
-            "plant disease classification field dataset macro F1 "
-            "calibration device latency",
+            _PLANT_DATASET_METRIC_QUERY,
         ),
     ],
 )
