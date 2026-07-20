@@ -73,11 +73,11 @@ jobs:
         run: |
           source_file="build/claw-case-001-live/result.json"
           target_file="evals/claw_academic_tailoring_v1/live-probes/case-001-latest.json"
+          prepared_file="/tmp/case-001-latest.json"
           if [[ ! -f "$source_file" ]]; then
             exit 0
           fi
-          mkdir -p "$(dirname "$target_file")"
-          python - "$source_file" "$target_file" <<'PY'
+          python - "$source_file" "$prepared_file" <<'PY'
           import json
           import os
           import sys
@@ -91,12 +91,23 @@ jobs:
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin "$GITHUB_REF_NAME"
+          git checkout -B "$GITHUB_REF_NAME" "origin/$GITHUB_REF_NAME"
+          mkdir -p "$(dirname "$target_file")"
+          cp "$prepared_file" "$target_file"
           git add "$target_file"
           if git diff --cached --quiet; then
             exit 0
           fi
           git commit -m "chore(eval): persist Case 001 live probe [skip ci]"
-          git push origin "HEAD:$GITHUB_REF_NAME"
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:$GITHUB_REF_NAME"; then
+              exit 0
+            fi
+            git fetch origin "$GITHUB_REF_NAME"
+            git rebase "origin/$GITHUB_REF_NAME"
+          done
+          exit 1
       - name: Publish Case 001 status to Draft PR
         if: always()
         env:
