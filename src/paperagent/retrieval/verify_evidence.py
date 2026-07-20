@@ -103,22 +103,59 @@ def _merge_candidate_gap_ids(
     return ",".join(sorted(gap_ids))
 
 
-def _plan_with_prepared_queries(
+def _runtime_query_texts(
+    prepared_queries: list[PreparedQuery],
+    candidates: list[SearchCandidate],
+) -> dict[str, str]:
+    """Recover approved runtime query text from durable candidate provenance.
+
+    Prepared queries are preferred when they are still present in state. Search
+    candidates provide the durable fallback after the transient prepared-query
+    batch has been consumed by the retrieval node.
+    """
+
+    runtime_by_id = {
+        candidate.query_id: query_text.strip()
+        for candidate in candidates
+        if (query_text := candidate.metadata.get("query_text")) is not None
+        and query_text.strip()
+    }
+    runtime_by_id.update(
+        query.query_id: query.query.strip()
+        for query in prepared_queries
+        if query.query.strip()
+    )
+    return runtime_by_id
+
+
+def _plan_with_runtime_queries(
     plan: ResearchPlan | None,
     prepared_queries: list[PreparedQuery],
+    candidates: list[SearchCandidate],
 ) -> ResearchPlan | None:
-    """Use the approved runtime query text for evidence relevance and gap binding."""
+    """Use approved provider queries for evidence relevance and gap binding."""
 
-    if plan is None or not prepared_queries:
+    if plan is None:
+        return None
+    runtime_by_id = _runtime_query_texts(prepared_queries, candidates)
+    if not runtime_by_id:
         return plan
-    prepared_by_id = {query.query_id: query.query for query in prepared_queries}
     updated_queries = [
-        query.model_copy(update={"query": prepared_by_id.get(query.query_id, query.query)})
+        query.model_copy(update={"query": runtime_by_id.get(query.query_id, query.query)})
         for query in plan.search_queries
     ]
     if updated_queries == plan.search_queries:
         return plan
     return plan.model_copy(update={"search_queries": updated_queries})
+
+
+def _plan_with_prepared_queries(
+    plan: ResearchPlan | None,
+    prepared_queries: list[PreparedQuery],
+) -> ResearchPlan | None:
+    """Compatibility wrapper for callers that only have prepared queries."""
+
+    return _plan_with_runtime_queries(plan, prepared_queries, [])
 
 
 async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -> StatePatch:
@@ -205,9 +242,10 @@ async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -
         coverage_by_gap=provisional_coverage,
         conflicts=conflicts,
     )
-    effective_plan = _plan_with_prepared_queries(
+    effective_plan = _plan_with_runtime_queries(
         state.get("plan"),
         retrieval.prepared_queries,
+        retrieval.raw_candidates,
     )
     contract, lexical, relevance, gap_support, ledger = build_evidence_ledger(
         request=state.get("request"),
