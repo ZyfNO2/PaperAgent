@@ -9,7 +9,7 @@ on:
       - ".claw-paid-full-20-trigger.json"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: claw-paid-full-20-e2e
@@ -50,6 +50,8 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Assert clean source tree
+        id: clean_source
+        continue-on-error: true
         run: |
           test ! -e scripts/run_review_remediation.py
           test -z "$(find scripts -maxdepth 1 -name '.review-remediation-*.b64' -print -quit)"
@@ -57,9 +59,14 @@ jobs:
           test ! -e .github/workflows/review-remediation-once.yml
 
       - name: Install project
+        id: install
+        continue-on-error: true
         run: python -m pip install -q -e '.[dev]'
 
-      - name: Static leakage audit
+      - name: Static leakage audit and offline merge gates
+        id: offline
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
         run: |
           python - <<'PY'
           from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
@@ -69,15 +76,14 @@ jobs:
           if not result.passed:
               raise SystemExit(result.findings)
           PY
-
-      - name: Offline merge gates
-        run: |
           ruff check src tests scripts
           ruff format --check src tests scripts
           mypy --config-file pyproject.toml
           pytest --no-cov -q
 
       - name: Require Mistral secret
+        id: secret
+        continue-on-error: true
         run: |
           test -n "$MISTRAL_API_KEY" || {
             echo "MISTRAL_API_KEY is required for paid verification" >&2
@@ -85,16 +91,25 @@ jobs:
           }
 
       - name: Real Mistral smoke
+        id: mistral
+        if: steps.install.outcome == 'success' && steps.secret.outcome == 'success'
+        continue-on-error: true
         env:
           PAPERAGENT_RUN_REAL_LLM: "1"
         run: pytest --no-cov -q tests/real_provider/test_mistral_smoke.py
 
       - name: Real literature smoke
+        id: literature
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
         env:
           PAPERAGENT_RUN_REAL_PROVIDER: "1"
         run: pytest --no-cov -q tests/real_provider/test_literature_smoke.py
 
       - name: Contaminated development benchmark regression
+        id: development
+        if: steps.mistral.outcome == 'success' && steps.literature.outcome == 'success'
+        continue-on-error: true
         run: |
           python scripts/run_claw_academic_runtime.py \
             --search-mode literature \
@@ -102,13 +117,23 @@ jobs:
             --max-llm-calls 12 \
             --provider-call-budget 200 \
             --minimum-score 80 \
+            --require-pass \
             --llm-provider mistral \
             --llm-model mistral-small-latest \
             --llm-price-table "$PAPERAGENT_LLM_PRICE_TABLE" \
             --output-dir build/claw-paid-full-20
 
-      - name: Write immutable run manifest
+      - name: Write immutable run manifest and handoff
+        id: handoff
         if: always()
+        env:
+          CLEAN_SOURCE_OUTCOME: ${{ steps.clean_source.outcome }}
+          INSTALL_OUTCOME: ${{ steps.install.outcome }}
+          OFFLINE_OUTCOME: ${{ steps.offline.outcome }}
+          SECRET_OUTCOME: ${{ steps.secret.outcome }}
+          MISTRAL_OUTCOME: ${{ steps.mistral.outcome }}
+          LITERATURE_OUTCOME: ${{ steps.literature.outcome }}
+          DEVELOPMENT_OUTCOME: ${{ steps.development.outcome }}
         run: |
           python - <<'PY'
           import hashlib
@@ -123,19 +148,29 @@ jobs:
           for path in sorted(output.glob('*')) if output.exists() else []:
               if path.is_file():
                   files[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
+          outcomes = {
+              'clean_source': os.environ.get('CLEAN_SOURCE_OUTCOME'),
+              'install': os.environ.get('INSTALL_OUTCOME'),
+              'offline': os.environ.get('OFFLINE_OUTCOME'),
+              'mistral_secret': os.environ.get('SECRET_OUTCOME'),
+              'mistral_smoke': os.environ.get('MISTRAL_OUTCOME'),
+              'literature_smoke': os.environ.get('LITERATURE_OUTCOME'),
+              'development_benchmark': os.environ.get('DEVELOPMENT_OUTCOME'),
+          }
           manifest = {
-              'schema': 'paperagent.claw-paid-full-20.manifest.v2',
+              'schema': 'paperagent.claw-paid-full-20.manifest.v3',
               'source_sha': os.environ['GITHUB_SHA'],
               'workflow_run_id': os.environ['GITHUB_RUN_ID'],
               'original_20_status': 'development benchmark / contaminated evaluation set',
+              'outcomes': outcomes,
               'summary': summary,
               'file_sha256': files,
           }
           output.mkdir(parents=True, exist_ok=True)
-          (output / 'manifest.json').write_text(
-              json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + '\n'
-          )
-          print(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True))
+          serialized = json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + '\n'
+          (output / 'manifest.json').write_text(serialized)
+          Path('/tmp/paid-verification-latest.json').write_text(serialized)
+          print(serialized)
           PY
 
       - name: Upload paid verification artifacts
@@ -146,3 +181,43 @@ jobs:
           path: build/claw-paid-full-20
           if-no-files-found: warn
           retention-days: 90
+
+      - name: Commit exact verification handoff
+        if: always() && steps.handoff.outcome == 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin feat/claw-live-search-runtime
+          git reset --hard origin/feat/claw-live-search-runtime
+          mkdir -p evals/claw_academic_tailoring_v1/live-probes
+          cp /tmp/paid-verification-latest.json \
+            evals/claw_academic_tailoring_v1/live-probes/paid-verification-latest.json
+          git add evals/claw_academic_tailoring_v1/live-probes/paid-verification-latest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "test(eval): record clean-head paid verification"
+            git push origin HEAD:feat/claw-live-search-runtime
+          fi
+
+      - name: Enforce paid verification
+        if: always()
+        env:
+          CLEAN_SOURCE_OUTCOME: ${{ steps.clean_source.outcome }}
+          INSTALL_OUTCOME: ${{ steps.install.outcome }}
+          OFFLINE_OUTCOME: ${{ steps.offline.outcome }}
+          SECRET_OUTCOME: ${{ steps.secret.outcome }}
+          MISTRAL_OUTCOME: ${{ steps.mistral.outcome }}
+          LITERATURE_OUTCOME: ${{ steps.literature.outcome }}
+          DEVELOPMENT_OUTCOME: ${{ steps.development.outcome }}
+          HANDOFF_OUTCOME: ${{ steps.handoff.outcome }}
+        run: |
+          for value in \
+            "$CLEAN_SOURCE_OUTCOME" \
+            "$INSTALL_OUTCOME" \
+            "$OFFLINE_OUTCOME" \
+            "$SECRET_OUTCOME" \
+            "$MISTRAL_OUTCOME" \
+            "$LITERATURE_OUTCOME" \
+            "$DEVELOPMENT_OUTCOME" \
+            "$HANDOFF_OUTCOME"; do
+            test "$value" = success || exit 1
+          done
