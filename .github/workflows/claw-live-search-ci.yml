@@ -16,11 +16,9 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -28,26 +26,43 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Apply canonical Ruff fixes
-        run: |
-          ruff check --fix tests/literature/test_mobilenetv3_plant_disease_precision.py
-          ruff format \
-            src/paperagent/literature/task_query_overrides.py \
-            tests/literature/test_mobilenetv3_plant_disease_precision.py
-      - name: Verify Case 017 precision and stable regressions
+      - name: Verify adaptive search runtime
         shell: bash
         run: |
           set +e
-          out="build/case017-precision-verification"
-          mkdir -p "$out/bundle/src/paperagent/literature" "$out/bundle/tests/literature"
+          out="build/claw-live-search-ci"
+          mkdir -p "$out"
           files=(
-            src/paperagent/literature/specialized_guards.py
-            src/paperagent/literature/task_query_overrides.py
-            tests/literature/test_mobilenetv3_plant_disease_precision.py
-            tests/literature/test_multibehavior_recommendation_precision.py
-            tests/literature/test_time_series_anomaly_precision.py
-            tests/literature/test_qa_hallucination_precision.py
-            tests/literature/test_third_batch_query_precision.py
+            scripts/probe_claw_case_retrieval.py
+            scripts/run_claw_academic_runtime.py
+            src/paperagent/claw_benchmark_adapter.py
+            src/paperagent/claw_benchmark_runtime.py
+            src/paperagent/cli.py
+            src/paperagent/evidence_gap_binding.py
+            src/paperagent/retrieval/verify_evidence.py
+            src/paperagent/literature/adapter.py
+            src/paperagent/literature/factory.py
+            src/paperagent/literature/query_concepts.py
+            src/paperagent/literature/ranking.py
+            src/paperagent/literature/service.py
+            src/paperagent/literature/source_policy.py
+            src/paperagent/literature/verification.py
+            src/paperagent/literature/providers/__init__.py
+            src/paperagent/literature/providers/_web.py
+            src/paperagent/literature/providers/base.py
+            src/paperagent/literature/providers/duckduckgo.py
+            src/paperagent/literature/providers/tavily.py
+            tests/evals/test_claw_benchmark_adapter.py
+            tests/evals/test_gate_l_remediation.py
+            tests/literature/test_adaptive_search_edges.py
+            tests/literature/test_claw_benchmark_runtime.py
+            tests/literature/test_graph_adapter.py
+            tests/literature/test_merge_adapter_service_edges.py
+            tests/literature/test_provider_call_budget.py
+            tests/literature/test_query_concepts.py
+            tests/literature/test_source_selection_policy.py
+            tests/literature/test_web_search_providers.py
+            tests/review/test_semantic_gap_binding.py
           )
           ruff check "${files[@]}" --output-format=concise > "$out/ruff.log" 2>&1
           ruff_status=$?
@@ -56,35 +71,34 @@ jobs:
           mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
           mypy_status=$?
           pytest -q \
-            tests/literature/test_mobilenetv3_plant_disease_precision.py \
-            tests/literature/test_multibehavior_recommendation_precision.py \
-            tests/literature/test_time_series_anomaly_precision.py \
-            tests/literature/test_qa_hallucination_precision.py \
-            tests/literature/test_third_batch_query_precision.py \
+            tests/evals/test_claw_benchmark_adapter.py \
+            tests/evals/test_gate_l_remediation.py \
+            tests/literature/test_adaptive_search_edges.py \
+            tests/literature/test_claw_benchmark_runtime.py \
+            tests/literature/test_graph_adapter.py \
+            tests/literature/test_merge_adapter_service_edges.py \
+            tests/literature/test_provider_call_budget.py \
             tests/literature/test_query_concepts.py \
-            tests/literature/test_query_refinement.py \
-            tests/review/test_few_shot_intent_role_binding.py \
-            tests/review/test_multibehavior_recommendation_binding.py \
+            tests/literature/test_source_selection_policy.py \
+            tests/literature/test_web_search_providers.py \
             tests/review/test_semantic_gap_binding.py \
-            tests/nodes/test_retrieval.py \
-            > "$out/pytest.log" 2>&1
-          pytest_status=$?
-          cp src/paperagent/literature/task_query_overrides.py \
-            "$out/bundle/src/paperagent/literature/task_query_overrides.py"
-          cp tests/literature/test_mobilenetv3_plant_disease_precision.py \
-            "$out/bundle/tests/literature/test_mobilenetv3_plant_disease_precision.py"
-          printf '{"head":"%s","run_id":%s,"ruff":%s,"format":%s,"mypy":%s,"pytest":%s}\n' \
+            > "$out/targeted-pytest.log" 2>&1
+          targeted_status=$?
+          pytest --cov=paperagent --cov-branch --cov-report=term-missing -q \
+            > "$out/full-pytest-coverage.log" 2>&1
+          full_status=$?
+          printf '{"head":"%s","run_id":%s,"ruff":%s,"format":%s,"mypy":%s,"targeted":%s,"full":%s}\n' \
             "$GITHUB_SHA" "$GITHUB_RUN_ID" "$ruff_status" "$format_status" \
-            "$mypy_status" "$pytest_status" > "$out/status.json"
+            "$mypy_status" "$targeted_status" "$full_status" > "$out/status.json"
           cat "$out/status.json"
-          if (( ruff_status || format_status || mypy_status || pytest_status )); then
+          if (( ruff_status || format_status || mypy_status || targeted_status || full_status )); then
             exit 1
           fi
-      - name: Upload Case 017 verification evidence
+      - name: Upload verification evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: case017-precision-${{ github.run_id }}
-          path: build/case017-precision-verification/
+          name: claw-live-search-${{ github.run_id }}
+          path: build/claw-live-search-ci/
           if-no-files-found: error
           retention-days: 30

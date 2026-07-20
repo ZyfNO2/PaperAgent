@@ -5,7 +5,6 @@ import pytest
 from paperagent.literature.specialized_guards import matches_specialized_candidate_terms
 from paperagent.literature.task_query_overrides import override_task_query
 
-
 _MOBILE_BASELINE_COMPARISON_QUERY = " ".join(
     (
         "MobileNetV2 EfficientNet-Lite ShuffleNetV2",
