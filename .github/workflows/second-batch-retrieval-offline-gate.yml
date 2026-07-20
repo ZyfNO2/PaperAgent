@@ -1,5 +1,5 @@
 name: Retrieval Precision Offline Gate
-# Validates task precision, durable executed-query provenance, and evidence binding.
+# Validates task precision, benchmark normalization, and evidence binding.
 
 on:
   push:
@@ -7,7 +7,11 @@ on:
       - feat/claw-live-search-runtime
     paths:
       - ".retrieval-precision-trigger.json"
+      - ".cases-015-017-patch-trigger.json"
       - ".github/workflows/second-batch-retrieval-offline-gate.yml"
+      - "scripts/clouddev_patch_cases_015_017.py"
+      - "src/paperagent/claw_benchmark_adapter.py"
+      - "src/paperagent/nodes/planning.py"
       - "src/paperagent/evidence_relevance.py"
       - "src/paperagent/evidence_gap_binding.py"
       - "src/paperagent/literature/adapter.py"
@@ -18,6 +22,9 @@ on:
       - "src/paperagent/literature/task_query_overrides.py"
       - "src/paperagent/retrieval/prepare_search.py"
       - "src/paperagent/retrieval/verify_evidence.py"
+      - "tests/evals/test_claw_benchmark_adapter.py"
+      - "tests/nodes/test_planning_nonblocking.py"
+      - "tests/literature/test_time_series_anomaly_precision.py"
       - "tests/literature/test_prepared_query_contract.py"
       - "tests/literature/test_second_batch_query_precision.py"
       - "tests/literature/test_third_batch_query_precision.py"
@@ -38,9 +45,11 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -48,13 +57,24 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Run retrieval precision checks
+      - name: Apply requested deterministic benchmark patch
+        shell: bash
+        run: |
+          if [[ -f .cases-015-017-patch-trigger.json ]]; then
+            python scripts/clouddev_patch_cases_015_017.py
+            ruff format \
+              src/paperagent/claw_benchmark_adapter.py \
+              tests/evals/test_claw_benchmark_adapter.py
+          fi
+      - name: Run retrieval and benchmark precision checks
         shell: bash
         run: |
           set +e
           out="build/retrieval-precision"
           mkdir -p "$out"
           files=(
+            src/paperagent/claw_benchmark_adapter.py
+            src/paperagent/nodes/planning.py
             src/paperagent/evidence_relevance.py
             src/paperagent/evidence_gap_binding.py
             src/paperagent/literature/adapter.py
@@ -65,6 +85,9 @@ jobs:
             src/paperagent/literature/task_query_overrides.py
             src/paperagent/retrieval/prepare_search.py
             src/paperagent/retrieval/verify_evidence.py
+            tests/evals/test_claw_benchmark_adapter.py
+            tests/nodes/test_planning_nonblocking.py
+            tests/literature/test_time_series_anomaly_precision.py
             tests/literature/test_prepared_query_contract.py
             tests/literature/test_second_batch_query_precision.py
             tests/literature/test_third_batch_query_precision.py
@@ -81,6 +104,10 @@ jobs:
           mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
           mypy_status=$?
           pytest -q \
+            tests/evals/test_claw_benchmark_adapter.py \
+            tests/nodes/test_planning_nonblocking.py \
+            tests/schemas/test_plan_nonblocking_clarification.py \
+            tests/literature/test_time_series_anomaly_precision.py \
             tests/literature/test_prepared_query_contract.py \
             tests/literature/test_second_batch_query_precision.py \
             tests/literature/test_third_batch_query_precision.py \
@@ -96,7 +123,11 @@ jobs:
             tests/nodes/test_retrieval.py \
             > "$out/pytest.log" 2>&1
           pytest_status=$?
-          target="evals/claw_academic_tailoring_v1/live-probes/second-batch-retrieval-gate-latest.json"
+          if [[ -f .cases-015-017-patch-trigger.json ]]; then
+            target="evals/claw_academic_tailoring_v1/live-probes/cases-015-017-offline-gate-latest.json"
+          else
+            target="evals/claw_academic_tailoring_v1/live-probes/second-batch-retrieval-gate-latest.json"
+          fi
           mkdir -p "$(dirname "$target")"
           python - "$target" "$ruff_status" "$format_status" "$mypy_status" "$pytest_status" <<'PY'
           import json
@@ -121,6 +152,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$target"
+          if [[ -f .cases-015-017-patch-trigger.json ]]; then
+            git add \
+              src/paperagent/claw_benchmark_adapter.py \
+              tests/evals/test_claw_benchmark_adapter.py
+          fi
           git commit -m "chore(search): persist retrieval precision gate [skip ci]" || true
           git pull --rebase origin feat/claw-live-search-runtime
           git push origin HEAD:feat/claw-live-search-runtime
