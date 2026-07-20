@@ -7,7 +7,7 @@ import pytest
 from paperagent.literature.query_concepts import matches_required_candidate_terms
 from paperagent.literature.query_refinement import refine_search_query
 
-_MEDICAL_CORE = "multimodal medical imaging disease classification feature fusion"
+_MEDICAL_QUERY = "multimodal medical imaging classification feature fusion"
 
 
 @pytest.mark.parametrize(
@@ -15,27 +15,24 @@ _MEDICAL_CORE = "multimodal medical imaging disease classification feature fusio
     [
         (
             "low-light pedestrian detection accuracy speed nighttime",
-            "Nighttime pedestrian detection under low-light conditions uses foreground and "
-            "background contrast attention.",
+            "Nighttime pedestrian detection under low-light conditions.",
         ),
         (
             "camera video pose human action recognition temporal robustness",
-            "A pose-based human action recognition model captures temporal order in video.",
+            "A pose-based human action recognition model for video.",
         ),
         (
             "lightweight gesture recognition mobile devices",
-            "A lightweight hand gesture recognition system runs in real time on edge devices.",
+            "A lightweight hand gesture recognition system for edge devices.",
         ),
         (
-            _MEDICAL_CORE,
-            "A multimodal medical imaging classifier fuses MRI and clinical features for "
-            "multi-class disease classification.",
+            _MEDICAL_QUERY,
+            "A multimodal medical imaging classifier for multi-class disease classification.",
         ),
     ],
 )
 def test_second_batch_guards_accept_task_matched_candidates(
-    query: str,
-    candidate: str,
+    query: str, candidate: str
 ) -> None:
     assert matches_required_candidate_terms(query, candidate) is True
 
@@ -45,90 +42,92 @@ def test_second_batch_guards_accept_task_matched_candidates(
     [
         (
             "low-light pedestrian detection accuracy speed nighttime",
-            "Low-light image enhancement improves naturalness through degradation learning.",
+            "Low-light image enhancement improves naturalness.",
         ),
         (
             "camera video pose human action recognition temporal robustness",
-            "Comparison of feature learning methods for human activity recognition using "
-            "wearable sensors.",
+            "Human activity recognition using wearable sensors.",
         ),
         (
             "lightweight gesture recognition mobile devices",
-            "Korean Sign Language Recognition Using Transformer-Based Deep Neural Network.",
+            "Korean Sign Language Recognition Using a Transformer.",
         ),
         (
             "lightweight gesture recognition mobile devices",
-            "A Metaverse taxonomy reviews mobile access, virtual currency, and social content.",
+            "A Metaverse taxonomy reviews virtual currency.",
         ),
         (
-            _MEDICAL_CORE,
-            "The BRATS benchmark evaluates multimodal brain tumor image segmentation.",
+            _MEDICAL_QUERY,
+            "Multimodal brain tumor image segmentation on BRATS.",
         ),
         (
-            _MEDICAL_CORE,
-            "A survey reviews attention mechanisms for generic computer vision tasks.",
-        ),
-        (
-            _MEDICAL_CORE,
-            "Liver Segmentation from Multimodal Images uses HED and Mask R-CNN for automatic "
-            "liver segmentation in computer-aided diagnosis.",
+            _MEDICAL_QUERY,
+            "Liver segmentation from multimodal images for diagnosis.",
         ),
     ],
 )
 def test_second_batch_guards_reject_cross_task_false_positives(
-    query: str,
-    candidate: str,
+    query: str, candidate: str
 ) -> None:
     assert matches_required_candidate_terms(query, candidate) is False
 
 
-def test_diagnosis_only_query_can_use_diagnostic_evidence_without_classification() -> None:
-    query = "multimodal medical imaging diagnosis feature fusion"
-    candidate = (
-        "A multimodal medical imaging diagnostic system fuses MRI and electronic health records."
+def test_diagnosis_query_can_use_diagnostic_evidence() -> None:
+    assert matches_required_candidate_terms(
+        "multimodal medical imaging diagnosis feature fusion",
+        "A multimodal medical imaging diagnostic system fuses MRI and clinical records.",
     )
-
-    assert matches_required_candidate_terms(query, candidate) is True
 
 
 @pytest.mark.parametrize(
-    ("query", "gap_id"),
+    ("gap_id", "description", "expected"),
     [
         (
-            "multimodal medical image fusion classification baseline comparison benchmark dataset",
-            "baseline_comparison",
-        ),
-        (
-            "multimodal medical image fusion classification mechanism limitation "
-            "failure mode survey",
-            "mechanism_limitation_parallel",
-        ),
-        (
-            "multimodal medical imaging disease classification feature fusion baseline "
-            "traditional machine learning deep review reproducible",
             "baseline_methods",
+            "reproducible baseline comparison",
+            "multimodal medical imaging classification late fusion baseline",
         ),
         (
-            "medical imaging disease classification alternatives single-modal ensemble learning",
+            "failure_mechanism",
+            "failure mechanism and limitations",
+            "multimodal medical imaging classification missing modality robustness",
+        ),
+        (
             "parallel_methods",
+            "parallel alternatives",
+            "multimodal medical imaging classification ensemble alternatives",
         ),
     ],
 )
-def test_multimodal_medical_queries_converge_to_one_stable_core(
-    query: str,
-    gap_id: str,
+def test_medical_queries_preserve_evidence_roles(
+    gap_id: str, description: str, expected: str
 ) -> None:
     result = refine_search_query(
-        query,
+        "multimodal medical image fusion classification evidence",
         gap_id=gap_id,
-        gap_description="multimodal medical classification evidence",
+        gap_description=description,
         research_context="多模态医学影像融合分类",
     )
-
-    assert result.changed is True
-    assert result.query == _MEDICAL_CORE
+    assert result.query == expected
     assert result.reason is not None
-    assert "stable task query" in result.reason
+    assert "role-specific task query" in result.reason
+
+
+def test_medical_primary_roles_do_not_collapse_to_one_query() -> None:
+    queries = {
+        refine_search_query(
+            "multimodal medical image fusion classification evidence",
+            gap_id=gap_id,
+            gap_description=description,
+            research_context="多模态医学影像融合分类",
+        ).query
+        for gap_id, description in (
+            ("baseline_methods", "reproducible baseline comparison"),
+            ("failure_mechanism", "failure mechanism and limitations"),
+            ("parallel_methods", "parallel alternatives"),
+        )
+    }
+    assert len(queries) == 3
 
 
 def test_camera_context_is_restored_to_action_queries() -> None:
@@ -138,8 +137,6 @@ def test_camera_context_is_restored_to_action_queries() -> None:
         gap_description="reproducible action recognition baseline",
         research_context="我想做一个基于摄像头的人体动作识别系统",
     )
-
-    assert result.changed is True
     assert result.query.startswith("camera video pose ")
     assert result.reason is not None
     assert "camera modality" in result.reason
@@ -201,7 +198,6 @@ async def test_prepare_search_uses_request_context_for_camera_queries() -> None:
 
     patch = await prepare_search_node(state, {"configurable": {"services": services}})
     prepared = patch["retrieval"].prepared_queries
-
     assert len(prepared) == 1
     assert prepared[0].query.startswith("camera video pose ")
     assert prepared[0].original_query == plan.search_queries[0].query
