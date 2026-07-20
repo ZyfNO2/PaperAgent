@@ -13,8 +13,7 @@ from paperagent.schemas import SearchQuery
 
 _QUERY_OVERRIDES = {
     "at-001-uav-small-object-lightweight": (
-        "lightweight UAV aerial small object detection VisDrone AP_small "
-        "latency TensorRT"
+        "lightweight UAV aerial small object detection VisDrone AP_small latency TensorRT"
     ),
 }
 
@@ -84,11 +83,7 @@ def _query_for(case: GoldCase) -> str:
 
 def _topic_matches(title: str, snippet: str) -> list[str]:
     text = f"{title} {snippet}".casefold()
-    return [
-        group
-        for group, terms in _TOPIC_GROUPS.items()
-        if any(term in text for term in terms)
-    ]
+    return [group for group, terms in _TOPIC_GROUPS.items() if any(term in text for term in terms)]
 
 
 def _verification_budget(service: object) -> dict[str, int | None] | None:
@@ -144,12 +139,8 @@ async def _run(args: argparse.Namespace) -> int:
                     "title": candidate.title,
                     "locator": candidate.locator,
                     "providers": candidate.metadata.get("providers", ""),
-                    "verification_status": candidate.metadata.get(
-                        "verification_status", ""
-                    ),
-                    "relevance_score": float(
-                        candidate.metadata.get("relevance_score", "0")
-                    ),
+                    "verification_status": candidate.metadata.get("verification_status", ""),
+                    "relevance_score": float(candidate.metadata.get("relevance_score", "0")),
                     "rank_score": float(candidate.metadata.get("rank_score", "0")),
                     "topic_matches": matches,
                     "snippet": candidate.snippet,
@@ -157,9 +148,7 @@ async def _run(args: argparse.Namespace) -> int:
             )
         provider_budget = runtime.service.provider_call_budget()
         verification_budget = _verification_budget(runtime.service)
-        verified = [
-            item for item in results if item["verification_status"] == "verified"
-        ]
+        verified = [item for item in results if item["verification_status"] == "verified"]
         high_topic_match = [
             item
             for item in results
