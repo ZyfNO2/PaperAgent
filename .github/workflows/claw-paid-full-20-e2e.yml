@@ -13,31 +13,31 @@ permissions:
 
 concurrency:
   group: claw-paid-full-20-e2e
-  cancel-in-progress: false
+  cancel-in-progress: true
+
+env:
+  MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+  PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL || 'Z1015558261@outlook.com' }}
+  SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+  PAPERAGENT_LLM_PROVIDER: mistral
+  PAPERAGENT_LLM_MODEL: mistral-small-latest
+  PAPERAGENT_MISTRAL_MODEL: mistral-small-latest
+  PAPERAGENT_LLM_BASE_URL: https://api.mistral.ai/v1
+  PAPERAGENT_LLM_PRICE_TABLE: config/llm-prices/mistral-small-latest.json
+  PAPERAGENT_LLM_MAX_ATTEMPTS: "2"
+  PAPERAGENT_LLM_MAX_CALLS: "12"
+  PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "32000"
+  PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "4096"
+  PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "16384"
+  PAPERAGENT_LLM_TASK_TIMEOUT: "900"
+  PAPERAGENT_ENABLE_WEB_SEARCH: "0"
 
 jobs:
-  verify-clean-head:
+  preflight:
     runs-on: ubuntu-24.04
-    timeout-minutes: 360
+    timeout-minutes: 60
     env:
-      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
-      PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL || 'Z1015558261@outlook.com' }}
-      SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
-      PAPERAGENT_LLM_PROVIDER: mistral
-      PAPERAGENT_LLM_MODEL: mistral-small-latest
-      PAPERAGENT_MISTRAL_MODEL: mistral-small-latest
-      PAPERAGENT_LLM_BASE_URL: https://api.mistral.ai/v1
-      PAPERAGENT_LLM_PRICE_TABLE: config/llm-prices/mistral-small-latest.json
       PAPERAGENT_LLM_MAX_COST_USD: "1.00"
-      PAPERAGENT_LLM_MAX_ATTEMPTS: "2"
-      PAPERAGENT_LLM_MAX_CALLS: "12"
-      PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "32000"
-      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "4096"
-      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "16384"
-      PAPERAGENT_LLM_TASK_TIMEOUT: "900"
-      PAPERAGENT_ENABLE_WEB_SEARCH: "0"
-      PAPERAGENT_SOURCE_SHA: ${{ github.sha }}
-      PAPERAGENT_ARTIFACT_NAME: claw-paid-full-20-${{ github.run_id }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,8 +50,6 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Assert clean source tree
-        id: clean_source
-        continue-on-error: true
         run: |
           test ! -e scripts/run_review_remediation.py
           test -z "$(find scripts -maxdepth 1 -name '.review-remediation-*.b64' -print -quit)"
@@ -59,14 +57,9 @@ jobs:
           test ! -e .github/workflows/review-remediation-once.yml
 
       - name: Install project
-        id: install
-        continue-on-error: true
         run: python -m pip install -q -e '.[dev]'
 
-      - name: Static leakage audit and offline merge gates
-        id: offline
-        if: steps.install.outcome == 'success'
-        continue-on-error: true
+      - name: Offline merge gates
         run: |
           python - <<'PY'
           from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
@@ -82,58 +75,221 @@ jobs:
           pytest --no-cov -q
 
       - name: Require Mistral secret
-        id: secret
-        continue-on-error: true
-        run: |
-          test -n "$MISTRAL_API_KEY" || {
-            echo "MISTRAL_API_KEY is required for paid verification" >&2
-            exit 1
-          }
+        run: test -n "$MISTRAL_API_KEY"
 
       - name: Real Mistral smoke
-        id: mistral
-        if: steps.install.outcome == 'success' && steps.secret.outcome == 'success'
-        continue-on-error: true
         env:
           PAPERAGENT_RUN_REAL_LLM: "1"
         run: pytest --no-cov -q tests/real_provider/test_mistral_smoke.py
 
       - name: Real literature smoke
-        id: literature
-        if: steps.install.outcome == 'success'
-        continue-on-error: true
         env:
           PAPERAGENT_RUN_REAL_PROVIDER: "1"
         run: pytest --no-cov -q tests/real_provider/test_literature_smoke.py
 
-      - name: Contaminated development benchmark regression
-        id: development
-        if: steps.mistral.outcome == 'success' && steps.literature.outcome == 'success'
-        continue-on-error: true
+  run-shard:
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - shard: "01"
+            case_args: >-
+              --case-id at-001-uav-small-object-lightweight
+              --case-id at-002-edge-road-crack-detection
+              --case-id at-003-skin-lesion-explainability
+              --case-id at-004-steel-surface-defect
+              --case-id at-005-remote-sensing-dense-small-objects
+          - shard: "02"
+            case_args: >-
+              --case-id at-006-low-light-pedestrian
+              --case-id at-007-camera-action-quality
+              --case-id at-008-mobile-hand-gesture
+              --case-id at-009-multimodal-medical-fusion
+              --case-id at-010-chinese-long-document-classification
+          - shard: "03"
+            case_args: >-
+              --case-id at-011-few-shot-intent-detection
+              --case-id at-012-enterprise-rag
+              --case-id at-013-professional-qa-hallucination
+              --case-id at-014-gnn-fraud-detection
+              --case-id at-015-multibehavior-recommendation
+          - shard: "04"
+            case_args: >-
+              --case-id at-016-anomaly-transformer-supplied
+              --case-id at-017-mobilenetv3-plant-disease-supplied
+              --case-id at-018-yolox-tinydet-supplied
+              --case-id at-019-unet-unspecified-medical-segmentation
+              --case-id at-020-lightgcn-contrastive-supplied
+    env:
+      PAPERAGENT_LLM_MAX_COST_USD: "0.25"
+      PAPERAGENT_SOURCE_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+
+      - name: Run five-case shard
         run: |
           python scripts/run_claw_academic_runtime.py \
             --search-mode literature \
-            --max-cases 20 \
+            ${{ matrix.case_args }} \
+            --max-cases 5 \
             --max-llm-calls 12 \
-            --provider-call-budget 200 \
+            --provider-call-budget 50 \
             --minimum-score 80 \
-            --require-pass \
             --llm-provider mistral \
             --llm-model mistral-small-latest \
             --llm-price-table "$PAPERAGENT_LLM_PRICE_TABLE" \
-            --output-dir build/claw-paid-full-20
+            --output-dir "build/claw-paid-shard-${{ matrix.shard }}"
 
-      - name: Write immutable run manifest and handoff
+      - name: Upload shard evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: claw-paid-shard-${{ matrix.shard }}-${{ github.run_id }}
+          path: build/claw-paid-shard-${{ matrix.shard }}
+          if-no-files-found: error
+          retention-days: 90
+
+  aggregate:
+    needs: [preflight, run-shard]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PAPERAGENT_ARTIFACT_NAME: claw-paid-full-20-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+
+      - name: Download shard evidence
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: claw-paid-shard-*-${{ github.run_id }}
+          path: build/shards
+
+      - name: Aggregate and score all twenty traces
+        id: scoring
+        continue-on-error: true
+        env:
+          PREFLIGHT_RESULT: ${{ needs.preflight.result }}
+          SHARD_RESULT: ${{ needs.run-shard.result }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from paperagent.claw_academic_benchmark import (
+              AcademicTailoringRunTrace,
+              evaluate_dataset,
+              load_gold_dataset,
+          )
+
+          root = Path('build/shards')
+          output = Path('build/claw-paid-full-20')
+          output.mkdir(parents=True, exist_ok=True)
+          traces = []
+          shard_summaries = []
+          states = []
+          for path in sorted(root.rglob('run-traces.jsonl')):
+              for line in path.read_text(encoding='utf-8').splitlines():
+                  if line.strip():
+                      traces.append(AcademicTailoringRunTrace.model_validate_json(line))
+          for path in sorted(root.rglob('states.jsonl')):
+              states.extend(json.loads(line) for line in path.read_text().splitlines() if line.strip())
+          for path in sorted(root.rglob('execution-summary.json')):
+              shard_summaries.append(json.loads(path.read_text()))
+
+          trace_ids = [trace.case_id for trace in traces]
+          errors = []
+          if len(traces) != 20:
+              errors.append(f'expected 20 traces, found {len(traces)}')
+          if len(trace_ids) != len(set(trace_ids)):
+              errors.append('duplicate trace case IDs')
+          if os.environ.get('PREFLIGHT_RESULT') != 'success':
+              errors.append(f"preflight result: {os.environ.get('PREFLIGHT_RESULT')}")
+          if os.environ.get('SHARD_RESULT') != 'success':
+              errors.append(f"shard result: {os.environ.get('SHARD_RESULT')}")
+          for summary in shard_summaries:
+              errors.extend(summary.get('errors', []))
+              errors.extend(summary.get('runtime_failures', []))
+
+          report_payload = None
+          passed = False
+          if not errors and len(traces) == 20:
+              dataset = load_gold_dataset(Path('evals/claw_academic_tailoring_v1'))
+              report = evaluate_dataset(dataset, tuple(traces), minimum_score=80)
+              report_payload = report.model_dump(mode='json', by_alias=True)
+              passed = report.failed == 0 and report.hard_failure_count == 0
+              (output / 'report.json').write_text(
+                  json.dumps(report_payload, ensure_ascii=False, indent=2, sort_keys=True) + '\n'
+              )
+
+          (output / 'run-traces.jsonl').write_text(
+              ''.join(
+                  json.dumps(trace.model_dump(mode='json', by_alias=True), ensure_ascii=False, sort_keys=True) + '\n'
+                  for trace in traces
+              )
+          )
+          (output / 'states.jsonl').write_text(
+              ''.join(json.dumps(state, ensure_ascii=False, sort_keys=True) + '\n' for state in states)
+          )
+          summary = {
+              'schema': 'paperagent.claw-paid-full-20.parallel-summary.v1',
+              'source_sha': os.environ['GITHUB_SHA'],
+              'workflow_run_id': os.environ['GITHUB_RUN_ID'],
+              'original_20_status': 'development benchmark / contaminated evaluation set',
+              'preflight_result': os.environ.get('PREFLIGHT_RESULT'),
+              'shard_result': os.environ.get('SHARD_RESULT'),
+              'completed': len(traces),
+              'completed_case_ids': sorted(trace_ids),
+              'errors': errors,
+              'shard_summaries': shard_summaries,
+              'report': report_payload,
+              'passed': passed,
+          }
+          (output / 'execution-summary.json').write_text(
+              json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + '\n'
+          )
+          print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
+          if not passed:
+              raise SystemExit(1)
+          PY
+
+      - name: Write immutable manifest
         id: handoff
         if: always()
         env:
-          CLEAN_SOURCE_OUTCOME: ${{ steps.clean_source.outcome }}
-          INSTALL_OUTCOME: ${{ steps.install.outcome }}
-          OFFLINE_OUTCOME: ${{ steps.offline.outcome }}
-          SECRET_OUTCOME: ${{ steps.secret.outcome }}
-          MISTRAL_OUTCOME: ${{ steps.mistral.outcome }}
-          LITERATURE_OUTCOME: ${{ steps.literature.outcome }}
-          DEVELOPMENT_OUTCOME: ${{ steps.development.outcome }}
+          PREFLIGHT_RESULT: ${{ needs.preflight.result }}
+          SHARD_RESULT: ${{ needs.run-shard.result }}
+          DOWNLOAD_OUTCOME: ${{ steps.download.outcome }}
+          SCORING_OUTCOME: ${{ steps.scoring.outcome }}
         run: |
           python - <<'PY'
           import hashlib
@@ -144,27 +300,34 @@ jobs:
           output = Path('build/claw-paid-full-20')
           summary_path = output / 'execution-summary.json'
           summary = json.loads(summary_path.read_text()) if summary_path.exists() else None
-          files = {}
-          for path in sorted(output.glob('*')) if output.exists() else []:
-              if path.is_file():
-                  files[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
+          files = {
+              path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+              for path in sorted(output.glob('*'))
+              if path.is_file()
+          }
           outcomes = {
-              'clean_source': os.environ.get('CLEAN_SOURCE_OUTCOME'),
-              'install': os.environ.get('INSTALL_OUTCOME'),
-              'offline': os.environ.get('OFFLINE_OUTCOME'),
-              'mistral_secret': os.environ.get('SECRET_OUTCOME'),
-              'mistral_smoke': os.environ.get('MISTRAL_OUTCOME'),
-              'literature_smoke': os.environ.get('LITERATURE_OUTCOME'),
-              'development_benchmark': os.environ.get('DEVELOPMENT_OUTCOME'),
+              'preflight': os.environ.get('PREFLIGHT_RESULT'),
+              'shards': os.environ.get('SHARD_RESULT'),
+              'artifact_download': os.environ.get('DOWNLOAD_OUTCOME'),
+              'aggregate_scoring': os.environ.get('SCORING_OUTCOME'),
           }
           manifest = {
-              'schema': 'paperagent.claw-paid-full-20.manifest.v3',
+              'schema': 'paperagent.claw-paid-full-20.manifest.v4',
               'source_sha': os.environ['GITHUB_SHA'],
               'workflow_run_id': os.environ['GITHUB_RUN_ID'],
               'original_20_status': 'development benchmark / contaminated evaluation set',
+              'budget_contract': {
+                  'search_provider_calls_total_maximum': 200,
+                  'llm_estimated_cost_usd_total_maximum': 1.0,
+                  'shards': 4,
+                  'cases_per_shard': 5,
+                  'max_parallel_shards': 2,
+              },
               'outcomes': outcomes,
               'summary': summary,
               'file_sha256': files,
+              'passed': all(value == 'success' for value in outcomes.values())
+                  and bool(summary and summary.get('passed')),
           }
           output.mkdir(parents=True, exist_ok=True)
           serialized = json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + '\n'
@@ -173,7 +336,7 @@ jobs:
           print(serialized)
           PY
 
-      - name: Upload paid verification artifacts
+      - name: Upload full verification evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -194,30 +357,24 @@ jobs:
             evals/claw_academic_tailoring_v1/live-probes/paid-verification-latest.json
           git add evals/claw_academic_tailoring_v1/live-probes/paid-verification-latest.json
           if ! git diff --cached --quiet; then
-            git commit -m "test(eval): record clean-head paid verification"
+            git commit -m "test(eval): record parallel paid verification"
             git push origin HEAD:feat/claw-live-search-runtime
           fi
 
       - name: Enforce paid verification
         if: always()
         env:
-          CLEAN_SOURCE_OUTCOME: ${{ steps.clean_source.outcome }}
-          INSTALL_OUTCOME: ${{ steps.install.outcome }}
-          OFFLINE_OUTCOME: ${{ steps.offline.outcome }}
-          SECRET_OUTCOME: ${{ steps.secret.outcome }}
-          MISTRAL_OUTCOME: ${{ steps.mistral.outcome }}
-          LITERATURE_OUTCOME: ${{ steps.literature.outcome }}
-          DEVELOPMENT_OUTCOME: ${{ steps.development.outcome }}
+          PREFLIGHT_RESULT: ${{ needs.preflight.result }}
+          SHARD_RESULT: ${{ needs.run-shard.result }}
+          DOWNLOAD_OUTCOME: ${{ steps.download.outcome }}
+          SCORING_OUTCOME: ${{ steps.scoring.outcome }}
           HANDOFF_OUTCOME: ${{ steps.handoff.outcome }}
         run: |
           for value in \
-            "$CLEAN_SOURCE_OUTCOME" \
-            "$INSTALL_OUTCOME" \
-            "$OFFLINE_OUTCOME" \
-            "$SECRET_OUTCOME" \
-            "$MISTRAL_OUTCOME" \
-            "$LITERATURE_OUTCOME" \
-            "$DEVELOPMENT_OUTCOME" \
+            "$PREFLIGHT_RESULT" \
+            "$SHARD_RESULT" \
+            "$DOWNLOAD_OUTCOME" \
+            "$SCORING_OUTCOME" \
             "$HANDOFF_OUTCOME"; do
             test "$value" = success || exit 1
           done
