@@ -130,6 +130,121 @@ _SURFACE_DEFECT_CANDIDATE_TERMS = (
     "defect classification",
     "industrial defect",
 )
+_LOW_LIGHT_QUERY_HINTS = (
+    "low-light",
+    "low light",
+    "nighttime",
+    "night-time",
+    "night pedestrian",
+)
+_LOW_LIGHT_CANDIDATE_TERMS = (
+    "low-light",
+    "low light",
+    "nighttime",
+    "night-time",
+    "at night",
+    "darkness",
+    "poor illumination",
+    "adverse illumination",
+    "varying illumination",
+    "illumination factor",
+    "infrared",
+    "thermal image",
+)
+_PEDESTRIAN_QUERY_HINTS = ("pedestrian", "person detection", "people detection")
+_PEDESTRIAN_CANDIDATE_TERMS = (
+    "pedestrian",
+    "person detection",
+    "people detection",
+    "human detection",
+    "walking person",
+)
+_ACTION_QUERY_HINTS = (
+    "action recognition",
+    "activity recognition",
+    "human action",
+    "skeleton action",
+)
+_ACTION_CANDIDATE_TERMS = (
+    "action recognition",
+    "activity recognition",
+    "human action",
+    "human activity",
+    "skeleton-based action",
+    "pose-based human action",
+    "video action",
+)
+_GESTURE_QUERY_HINTS = (
+    "gesture recognition",
+    "hand gesture",
+    "sign language recognition",
+)
+_GESTURE_CANDIDATE_TERMS = (
+    "gesture recognition",
+    "hand gesture",
+    "sign language recognition",
+    "sign language classification",
+    "gesture classification",
+    "recognize gestures",
+)
+_MEDICAL_IMAGING_QUERY_HINTS = (
+    "medical image",
+    "medical imaging",
+    "radiology",
+    "clinical imaging",
+)
+_MEDICAL_IMAGING_CANDIDATE_TERMS = (
+    "medical image",
+    "medical imaging",
+    "radiology",
+    "radiological",
+    "clinical imaging",
+    "ct image",
+    "mri",
+    "magnetic resonance",
+    "pet-ct",
+    "pet/ct",
+    "ultrasound",
+)
+_MULTIMODAL_FUSION_QUERY_HINTS = (
+    "multimodal",
+    "multi-modal",
+    "multi modal",
+    "cross-modal",
+    "cross modal",
+    "modality fusion",
+)
+_MULTIMODAL_FUSION_CANDIDATE_TERMS = (
+    "multimodal",
+    "multi-modal",
+    "multi modal",
+    "multimodality",
+    "multiple modalities",
+    "cross-modal",
+    "cross modal",
+    "modality fusion",
+    "fusion of medical imaging",
+    "combine medical imaging",
+    "combining medical imaging",
+    "imaging and electronic health records",
+)
+_CLASSIFICATION_QUERY_HINTS = (
+    "classification",
+    "classifier",
+    "diagnosis",
+    "diagnostic",
+    "prediction",
+)
+_CLASSIFICATION_CANDIDATE_TERMS = (
+    "classification",
+    "classifier",
+    "classify",
+    "diagnosis",
+    "diagnostic",
+    "prediction",
+    "prognosis",
+    "disease detection",
+)
 
 
 def _contains_any(value: str, terms: tuple[str, ...]) -> bool:
@@ -161,6 +276,24 @@ def required_candidate_term_groups(query: str) -> tuple[tuple[str, ...], ...]:
         normalized, _SURFACE_DEFECT_QUERY_HINTS
     ):
         groups.extend((_STEEL_CANDIDATE_TERMS, _SURFACE_DEFECT_CANDIDATE_TERMS))
+
+    if _contains_any(normalized, _LOW_LIGHT_QUERY_HINTS) and _contains_any(
+        normalized, _PEDESTRIAN_QUERY_HINTS
+    ):
+        groups.extend((_LOW_LIGHT_CANDIDATE_TERMS, _PEDESTRIAN_CANDIDATE_TERMS))
+
+    if _contains_any(normalized, _ACTION_QUERY_HINTS):
+        groups.append(_ACTION_CANDIDATE_TERMS)
+
+    if _contains_any(normalized, _GESTURE_QUERY_HINTS):
+        groups.append(_GESTURE_CANDIDATE_TERMS)
+
+    if _contains_any(normalized, _MEDICAL_IMAGING_QUERY_HINTS) and _contains_any(
+        normalized, _MULTIMODAL_FUSION_QUERY_HINTS
+    ):
+        groups.extend((_MEDICAL_IMAGING_CANDIDATE_TERMS, _MULTIMODAL_FUSION_CANDIDATE_TERMS))
+        if _contains_any(normalized, _CLASSIFICATION_QUERY_HINTS):
+            groups.append(_CLASSIFICATION_CANDIDATE_TERMS)
 
     return tuple(groups)
 
