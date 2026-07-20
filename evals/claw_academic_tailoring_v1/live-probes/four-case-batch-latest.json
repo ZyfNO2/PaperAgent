@@ -1,5 +1,5 @@
 {
-  "batch_id": "batch-02-cases-006-009-stability-rerun",
+  "batch_id": "batch-02-cases-006-009-final-stability",
   "case_ids": [
     "at-006-low-light-pedestrian",
     "at-007-camera-action-quality",
@@ -10,70 +10,12 @@
     {
       "accepted_evidence": [
         {
-          "evidence_id": "ev-paper-05f78c47d6bcc217dce5",
-          "locator": "https://arxiv.org/abs/2408.03030",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison_low_light_pedestrian",
-            "failure_mechanism_limitations_low_light_pedestrian",
-            "risk_contradictory_evidence_low_light_pedestrian"
-          ],
-          "title": "Nighttime Pedestrian Detection Based on Fore-Background Contrast Learning",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-4dade96f646bd5453786",
-          "locator": "doi:10.3390/s22031082",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison_low_light_pedestrian",
-            "failure_mechanism_limitations_low_light_pedestrian"
-          ],
-          "title": "Adopting the YOLOv4 Architecture for Low-Latency Multispectral Pedestrian Detection in Autonomous Driving",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-42e93ff121508cd2440d",
-          "locator": "doi:10.3390/s26102987",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison_low_light_pedestrian",
-            "failure_mechanism_limitations_low_light_pedestrian",
-            "risk_contradictory_evidence_low_light_pedestrian"
-          ],
-          "title": "GSC-YOLO: A Pedestrian Detection Method for Low-Light Security Surveillance Scenarios",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-8fe4cafeddaf6eeaf31f",
-          "locator": "doi:10.1038/s41598-025-03567-7",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "failure_mechanism_limitations_low_light_pedestrian",
-            "risk_contradictory_evidence_low_light_pedestrian"
-          ],
-          "title": "Multimodal fusion transformer network for multispectral pedestrian detection in low-light condition",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-75edf9a9ea895c796ee4",
-          "locator": "doi:10.3390/s26010260",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison_low_light_pedestrian",
-            "failure_mechanism_limitations_low_light_pedestrian",
-            "risk_contradictory_evidence_low_light_pedestrian"
-          ],
-          "title": "BNE-DETR: Nighttime Pedestrian Detection with Visible Light Sensors via Feature Enhancement and Multi-Scale Fusion",
-          "verification_status": "accepted"
-        },
-        {
           "evidence_id": "ev-paper-805721c2a96afb4f93b6",
           "locator": "doi:10.3390/app10030809",
           "provider": "literature_retrieval",
           "supports_gap_ids": [
-            "baseline_comparison_low_light_pedestrian",
-            "failure_mechanism_limitations_low_light_pedestrian"
+            "baseline_comparison",
+            "failure_mechanism"
           ],
           "title": "Pedestrian Detection at Night in Infrared Images Using an Attention-Guided Encoder-Decoder Convolutional Neural Network",
           "verification_status": "accepted"
@@ -84,393 +26,6 @@
       "evidence_review": [
         {
           "accepted": true,
-          "evidence_id": "ev-paper-05f78c47d6bcc217dce5",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "baseline_comparison_low_light_pedestrian",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.72,
-              "decision": "accept",
-              "gap_id": "failure_mechanism_limitations_low_light_pedestrian",
-              "limitations": [
-                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.72,
-              "decision": "accept",
-              "gap_id": "risk_contradictory_evidence_low_light_pedestrian",
-              "limitations": [
-                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "Nighttime Pedestrian Detection Based on Fore-Background Contrast Learning"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-4dade96f646bd5453786",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "baseline_comparison_low_light_pedestrian",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.72,
-              "decision": "accept",
-              "gap_id": "failure_mechanism_limitations_low_light_pedestrian",
-              "limitations": [
-                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "risk_contradictory_evidence_low_light_pedestrian",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "Adopting the YOLOv4 Architecture for Low-Latency Multispectral Pedestrian Detection in Autonomous Driving"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-42e93ff121508cd2440d",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.72,
-              "decision": "accept",
-              "gap_id": "baseline_comparison_low_light_pedestrian",
-              "limitations": [
-                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "failure_mechanism_limitations_low_light_pedestrian",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.72,
-              "decision": "accept",
-              "gap_id": "risk_contradictory_evidence_low_light_pedestrian",
-              "limitations": [
-                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "GSC-YOLO: A Pedestrian Detection Method for Low-Light Security Surveillance Scenarios"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-8fe4cafeddaf6eeaf31f",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "baseline_comparison_low_light_pedestrian",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "failure_mechanism_limitations_low_light_pedestrian",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.72,
-              "decision": "accept",
-              "gap_id": "risk_contradictory_evidence_low_light_pedestrian",
-              "limitations": [
-                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "Multimodal fusion transformer network for multispectral pedestrian detection in low-light condition"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-75edf9a9ea895c796ee4",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.72,
-              "decision": "accept",
-              "gap_id": "baseline_comparison_low_light_pedestrian",
-              "limitations": [
-                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "failure_mechanism_limitations_low_light_pedestrian",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.72,
-              "decision": "accept",
-              "gap_id": "risk_contradictory_evidence_low_light_pedestrian",
-              "limitations": [
-                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "BNE-DETR: Nighttime Pedestrian Detection with Visible Light Sensors via Feature Enhancement and Multi-Scale Fusion"
-        },
-        {
-          "accepted": true,
           "evidence_id": "ev-paper-805721c2a96afb4f93b6",
           "gap_supports": [
             {
@@ -490,236 +45,9 @@
               },
               "confidence": 0.72,
               "decision": "accept",
-              "gap_id": "baseline_comparison_low_light_pedestrian",
+              "gap_id": "baseline_comparison",
               "limitations": [
                 "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "failure_mechanism_limitations_low_light_pedestrian",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "risk_contradictory_evidence_low_light_pedestrian",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "Pedestrian Detection at Night in Infrared Images Using an Attention-Guided Encoder-Decoder Convolutional Neural Network"
-        }
-      ],
-      "execution_status": "completed",
-      "expected_decision": "REVISE_TO_PILOT",
-      "failed_stages": [
-        {
-          "available": 7,
-          "earned": 5,
-          "findings": [
-            "core accepted evidence lacks full-text review"
-          ],
-          "passed": false,
-          "stage": "relevance_review"
-        },
-        {
-          "available": 10,
-          "earned": 7,
-          "findings": [
-            "clarification did not target a declared high-impact unknown"
-          ],
-          "passed": false,
-          "stage": "clarification_gate"
-        }
-      ],
-      "hard_failures": [],
-      "llm_call_budget": 12,
-      "minimum_score": 80,
-      "model": "mistral-small-latest",
-      "observed_decision": "REVISE_TO_PILOT",
-      "passed": true,
-      "provider": "mistral",
-      "provider_call_budget": {
-        "maximum": 8,
-        "remaining": 0,
-        "used": 8
-      },
-      "report_status": "completed",
-      "score": 95,
-      "search_diagnostics": [
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "low-light",
-            "pedestrian",
-            "detection",
-            "accuracy",
-            "speed",
-            "efficiency",
-            "nighttime"
-          ],
-          "maximum_provider_calls": 4,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q1_baseline_low_light_pedestrian",
-          "relevant_verified_papers": 2,
-          "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence"
-        },
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "low-light",
-            "pedestrian",
-            "detection",
-            "failure",
-            "limitations",
-            "mechanism",
-            "nighttime"
-          ],
-          "maximum_provider_calls": 4,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 2,
-          "query_approved": true,
-          "query_id": "q2_failure_mechanism_low_light_pedestrian",
-          "relevant_verified_papers": 4,
-          "returned_papers": 4,
-          "stop_reason": "sufficient_academic_evidence"
-        },
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "low-light",
-            "pedestrian",
-            "detection",
-            "contradictory",
-            "evidence",
-            "limitations",
-            "bias",
-            "inconsistency"
-          ],
-          "maximum_provider_calls": 4,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q3_risk_contradictory_low_light_pedestrian",
-          "relevant_verified_papers": 0,
-          "returned_papers": 0,
-          "stop_reason": "academic_budget_exhausted"
-        }
-      ],
-      "status": "passed",
-      "verification_call_budget": {
-        "maximum": 16,
-        "remaining": 4,
-        "used": 12
-      },
-      "web_search_enabled": false
-    },
-    {
-      "accepted_evidence": [
-        {
-          "evidence_id": "ev-paper-f7648a4b6276f6496c7f",
-          "locator": "https://arxiv.org/abs/2107.00606",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_repro",
-            "failure_mechanism",
-            "parallel_methods"
-          ],
-          "title": "Action Transformer: A Self-Attention Model for Short-Time Pose-Based Human Action Recognition",
-          "verification_status": "accepted"
-        }
-      ],
-      "case_id": "at-007-camera-action-quality",
-      "decision_matches": true,
-      "evidence_review": [
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-f7648a4b6276f6496c7f",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "baseline_repro",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
               "support_type": "direct_support"
             },
@@ -748,31 +76,202 @@
             },
             {
               "checklist_results": {
-                "cross_gap_reuse": false,
+                "cross_gap_reuse": true,
                 "direct_relevance": true,
                 "fixture_explicit_support": false,
                 "gap_overlap": false,
                 "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
+                "query_provenance_match": false,
+                "query_term_overlap": false,
                 "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
+                "required_concepts_match": false,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
                 "supporting_span_present": true
               },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "parallel_methods",
+              "confidence": 0.0,
+              "decision": "reject",
+              "gap_id": "optional_risk",
               "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: query-term overlap, required query concepts, role-specific evidence structure"
               ],
-              "support_type": "direct_support"
+              "support_type": "insufficient"
             }
           ],
           "rejection_reasons": [],
-          "title": "Action Transformer: A Self-Attention Model for Short-Time Pose-Based Human Action Recognition"
+          "title": "Pedestrian Detection at Night in Infrared Images Using an Attention-Guided Encoder-Decoder Convolutional Neural Network"
+        }
+      ],
+      "execution_status": "completed",
+      "expected_decision": "REVISE_TO_PILOT",
+      "failed_stages": [
+        {
+          "available": 10,
+          "earned": 7,
+          "findings": [
+            "clarification did not target a declared high-impact unknown"
+          ],
+          "passed": false,
+          "stage": "clarification_gate"
+        }
+      ],
+      "hard_failures": [],
+      "llm_call_budget": 12,
+      "minimum_score": 80,
+      "model": "mistral-small-latest",
+      "observed_decision": "REVISE_TO_PILOT",
+      "passed": true,
+      "provider": "mistral",
+      "provider_call_budget": {
+        "maximum": 8,
+        "remaining": 0,
+        "used": 8
+      },
+      "report_status": "completed",
+      "score": 97,
+      "search_diagnostics": [
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "low-light",
+            "pedestrian",
+            "detection",
+            "real-time",
+            "speed",
+            "accuracy",
+            "trade-off",
+            "reproducible",
+            "baseline"
+          ],
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q1_baseline",
+          "relevant_verified_papers": 0,
+          "returned_papers": 0,
+          "stop_reason": "academic_budget_exhausted"
         },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "low-light",
+            "pedestrian",
+            "detection",
+            "failure",
+            "mechanism",
+            "noise",
+            "feature",
+            "degradation",
+            "illumination",
+            "variation",
+            "limitations"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q2_mechanism",
+          "relevant_verified_papers": 1,
+          "returned_papers": 1,
+          "stop_reason": "academic_budget_exhausted"
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "low-light",
+            "pedestrian",
+            "detection",
+            "parallel",
+            "yolo",
+            "faster",
+            "r-cnn",
+            "retinanet"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q3_parallel_method",
+          "relevant_verified_papers": 0,
+          "returned_papers": 0,
+          "stop_reason": "academic_budget_exhausted"
+        }
+      ],
+      "status": "passed",
+      "verification_call_budget": {
+        "maximum": 16,
+        "remaining": 7,
+        "used": 9
+      },
+      "web_search_enabled": false
+    },
+    {
+      "accepted_evidence": [
+        {
+          "evidence_id": "ev-paper-f7648a4b6276f6496c7f",
+          "locator": "https://arxiv.org/abs/2107.00606",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_repro",
+            "efficiency_deployment",
+            "limitations_mechanisms"
+          ],
+          "title": "Action Transformer: A Self-Attention Model for Short-Time Pose-Based Human Action Recognition",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-3eb855eefcc9b0667182",
+          "locator": "doi:10.1609/aaai.v32i1.12328",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_repro",
+            "efficiency_deployment",
+            "limitations_mechanisms"
+          ],
+          "title": "Spatial Temporal Graph Convolutional Networks for Skeleton-Based Action Recognition",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-722ba37fc604879a7bb8",
+          "locator": "https://arxiv.org/abs/2308.05430",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "efficiency_deployment",
+            "limitations_mechanisms"
+          ],
+          "title": "Ensemble Modeling for Multimodal Visual Action Recognition",
+          "verification_status": "accepted"
+        }
+      ],
+      "case_id": "at-007-camera-action-quality",
+      "decision_matches": true,
+      "evidence_review": [
         {
           "accepted": false,
           "evidence_id": "ev-paper-3c1f517cd933334493f0",
@@ -818,7 +317,7 @@
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "failure_mechanism",
+              "gap_id": "limitations_mechanisms",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: query provenance or qualified cross-gap reuse"
@@ -836,16 +335,16 @@
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
-                "role_evidence_present": false,
+                "role_evidence_present": true,
                 "semantic_gap_binding": false,
                 "supporting_span_present": true
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "parallel_methods",
+              "gap_id": "efficiency_deployment",
               "limitations": [
                 "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+                "semantic binding missing: query provenance or qualified cross-gap reuse"
               ],
               "support_type": "insufficient"
             }
@@ -900,7 +399,7 @@
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "failure_mechanism",
+              "gap_id": "limitations_mechanisms",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
@@ -918,16 +417,16 @@
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
-                "role_evidence_present": false,
+                "role_evidence_present": true,
                 "semantic_gap_binding": false,
                 "supporting_span_present": true
               },
               "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "parallel_methods",
+              "gap_id": "efficiency_deployment",
               "limitations": [
                 "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse, role-specific evidence structure"
+                "semantic binding missing: query provenance or qualified cross-gap reuse"
               ],
               "support_type": "insufficient"
             }
@@ -938,8 +437,8 @@
           "title": "Attention-Driven Body Pose Encoding for Human Activity Recognition"
         },
         {
-          "accepted": false,
-          "evidence_id": "ev-paper-519ed7208c0865dc3d4f",
+          "accepted": true,
+          "evidence_id": "ev-paper-f7648a4b6276f6496c7f",
           "gap_supports": [
             {
               "checklist_results": {
@@ -947,12 +446,166 @@
                 "direct_relevance": true,
                 "fixture_explicit_support": false,
                 "gap_overlap": false,
-                "provenance_qualified": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "baseline_repro",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "limitations_mechanisms",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
                 "query_provenance_match": false,
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
                 "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.72,
+              "decision": "accept",
+              "gap_id": "efficiency_deployment",
+              "limitations": [
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "Action Transformer: A Self-Attention Model for Short-Time Pose-Based Human Action Recognition"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-3eb855eefcc9b0667182",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "baseline_repro",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.72,
+              "decision": "accept",
+              "gap_id": "limitations_mechanisms",
+              "limitations": [
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.72,
+              "decision": "accept",
+              "gap_id": "efficiency_deployment",
+              "limitations": [
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "Spatial Temporal Graph Convolutional Networks for Skeleton-Based Action Recognition"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-722ba37fc604879a7bb8",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
                 "semantic_gap_binding": false,
                 "supporting_span_present": true
               },
@@ -961,7 +614,7 @@
               "gap_id": "baseline_repro",
               "limitations": [
                 "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse"
+                "semantic binding missing: role-specific evidence structure"
               ],
               "support_type": "insufficient"
             },
@@ -976,13 +629,733 @@
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "limitations_mechanisms",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.72,
+              "decision": "accept",
+              "gap_id": "efficiency_deployment",
+              "limitations": [
+                "reused across gaps after an existing accepted binding, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "Ensemble Modeling for Multimodal Visual Action Recognition"
+        }
+      ],
+      "execution_status": "completed",
+      "expected_decision": "REVISE_TO_PILOT",
+      "failed_stages": [
+        {
+          "available": 7,
+          "earned": 5,
+          "findings": [
+            "core accepted evidence lacks full-text review"
+          ],
+          "passed": false,
+          "stage": "relevance_review"
+        },
+        {
+          "available": 10,
+          "earned": 7,
+          "findings": [
+            "clarification did not target a declared high-impact unknown"
+          ],
+          "passed": false,
+          "stage": "clarification_gate"
+        }
+      ],
+      "hard_failures": [],
+      "llm_call_budget": 12,
+      "minimum_score": 80,
+      "model": "mistral-small-latest",
+      "observed_decision": "REVISE_TO_PILOT",
+      "passed": true,
+      "provider": "mistral",
+      "provider_call_budget": {
+        "maximum": 8,
+        "remaining": 0,
+        "used": 8
+      },
+      "report_status": "completed",
+      "score": 95,
+      "search_diagnostics": [
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "camera",
+            "video",
+            "pose",
+            "human",
+            "action",
+            "recognition",
+            "baseline",
+            "reproducible"
+          ],
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q1_baseline_papers",
+          "relevant_verified_papers": 4,
+          "returned_papers": 4,
+          "stop_reason": "sufficient_academic_evidence"
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "camera",
+            "video",
+            "pose",
+            "human",
+            "action",
+            "recognition",
+            "limitations",
+            "failure",
+            "modes",
+            "occlusion",
+            "lighting",
+            "variation",
+            "temporal",
+            "modeling",
+            "multimodal",
+            "fusion"
+          ],
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q2_limitations_mechanisms",
+          "relevant_verified_papers": 2,
+          "returned_papers": 2,
+          "stop_reason": "sufficient_academic_evidence"
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "camera",
+            "video",
+            "pose",
+            "human",
+            "action",
+            "recognition",
+            "efficiency",
+            "real-time",
+            "deployment",
+            "latency",
+            "parameters",
+            "flops",
+            "hardware",
+            "compatibility"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q3_efficiency_deployment",
+          "relevant_verified_papers": 0,
+          "returned_papers": 0,
+          "stop_reason": "academic_budget_exhausted"
+        }
+      ],
+      "status": "passed",
+      "verification_call_budget": {
+        "maximum": 16,
+        "remaining": 7,
+        "used": 9
+      },
+      "web_search_enabled": false
+    },
+    {
+      "accepted_evidence": [
+        {
+          "evidence_id": "ev-paper-093aa541135a1b4f0a26",
+          "locator": "doi:10.1109/tmc.2022.3153717",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_methods",
+            "failure_mechanisms"
+          ],
+          "title": "Tesla-Rapture: A Lightweight Gesture Recognition System From mmWave Radar Sparse Point Clouds",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-20a87dc07bc41b7bbc0a",
+          "locator": "https://arxiv.org/abs/2003.00951",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_methods",
+            "failure_mechanisms",
+            "optional_risks"
+          ],
+          "title": "DriverMHG: A Multi-Modal Dataset for Dynamic Recognition of Driver Micro Hand Gestures and a Real-Time Recognition Framework",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-b4a3820df00ae3f87191",
+          "locator": "https://arxiv.org/abs/2007.08847",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_methods",
+            "failure_mechanisms"
+          ],
+          "title": "Two-stream Fusion Model for Dynamic Hand Gesture Recognition using 3D-CNN and 2D-CNN Optical Flow guided Motion Template",
+          "verification_status": "accepted"
+        }
+      ],
+      "case_id": "at-008-mobile-hand-gesture",
+      "decision_matches": true,
+      "evidence_review": [
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-093aa541135a1b4f0a26",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "baseline_methods",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "failure_mechanisms",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
                 "role_evidence_present": false,
                 "semantic_gap_binding": false,
                 "supporting_span_present": true
               },
-              "confidence": 0.2,
+              "confidence": 0.0,
               "decision": "reject",
-              "gap_id": "failure_mechanism",
+              "gap_id": "optional_risks",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "Tesla-Rapture: A Lightweight Gesture Recognition System From mmWave Radar Sparse Point Clouds"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-20a87dc07bc41b7bbc0a",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "baseline_methods",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "failure_mechanisms",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "optional_risks",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "DriverMHG: A Multi-Modal Dataset for Dynamic Recognition of Driver Micro Hand Gestures and a Real-Time Recognition Framework"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-b4a3820df00ae3f87191",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "baseline_methods",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "failure_mechanisms",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.0,
+              "decision": "reject",
+              "gap_id": "optional_risks",
+              "limitations": [
+                "no claim-level overlap with the requested gap",
+                "semantic binding missing: role-specific evidence structure"
+              ],
+              "support_type": "insufficient"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "Two-stream Fusion Model for Dynamic Hand Gesture Recognition using 3D-CNN and 2D-CNN Optical Flow guided Motion Template"
+        }
+      ],
+      "execution_status": "completed",
+      "expected_decision": "REVISE_TO_PILOT",
+      "failed_stages": [
+        {
+          "available": 7,
+          "earned": 5,
+          "findings": [
+            "core accepted evidence lacks full-text review"
+          ],
+          "passed": false,
+          "stage": "relevance_review"
+        },
+        {
+          "available": 10,
+          "earned": 7,
+          "findings": [
+            "clarification did not target a declared high-impact unknown"
+          ],
+          "passed": false,
+          "stage": "clarification_gate"
+        }
+      ],
+      "hard_failures": [],
+      "llm_call_budget": 12,
+      "minimum_score": 80,
+      "model": "mistral-small-latest",
+      "observed_decision": "REVISE_TO_PILOT",
+      "passed": true,
+      "provider": "mistral",
+      "provider_call_budget": {
+        "maximum": 8,
+        "remaining": 0,
+        "used": 8
+      },
+      "report_status": "completed",
+      "score": 95,
+      "search_diagnostics": [
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "mobile",
+            "gesture",
+            "recognition",
+            "lightweight",
+            "accuracy",
+            "latency",
+            "power",
+            "efficiency"
+          ],
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q1_baseline",
+          "relevant_verified_papers": 2,
+          "returned_papers": 2,
+          "stop_reason": "sufficient_academic_evidence"
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "mobile",
+            "gesture",
+            "recognition",
+            "failure",
+            "mode",
+            "limitation",
+            "robustness",
+            "occlusion",
+            "fast",
+            "motion",
+            "parallel"
+          ],
+          "maximum_provider_calls": 3,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q2_mechanism",
+          "relevant_verified_papers": 1,
+          "returned_papers": 1,
+          "stop_reason": "academic_budget_exhausted"
+        },
+        {
+          "attempted_providers": [
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
+          ],
+          "fallback_used": false,
+          "informative_terms": [
+            "mobile",
+            "gesture",
+            "recognition",
+            "low-light",
+            "occlusion",
+            "fast",
+            "motion",
+            "negative",
+            "evidence",
+            "risk"
+          ],
+          "maximum_provider_calls": 4,
+          "minimum_rank_score": 0.62,
+          "minimum_relevance": 0.34,
+          "policy_reasons": [],
+          "precision_risk": "low",
+          "provider_call_count": 3,
+          "query_approved": true,
+          "query_id": "q3_optional_risks",
+          "relevant_verified_papers": 0,
+          "returned_papers": 0,
+          "stop_reason": "academic_budget_exhausted"
+        }
+      ],
+      "status": "passed",
+      "verification_call_budget": {
+        "maximum": 16,
+        "remaining": 7,
+        "used": 9
+      },
+      "web_search_enabled": false
+    },
+    {
+      "accepted_evidence": [
+        {
+          "evidence_id": "ev-paper-3c97fcd9fab0e114e1aa",
+          "locator": "doi:10.1007/s00500-024-09901-x",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "baseline_and_strong_comparison",
+            "dataset_metric_efficiency_constraints",
+            "failure_mechanism_limitation_parallel_method"
+          ],
+          "title": "MultiFusionNet: multilayer multimodal fusion of deep neural networks for chest X-ray image classification",
+          "verification_status": "accepted"
+        },
+        {
+          "evidence_id": "ev-paper-7aa842c3471996be25ce",
+          "locator": "doi:10.1016/j.compbiomed.2024.108635",
+          "provider": "literature_retrieval",
+          "supports_gap_ids": [
+            "dataset_metric_efficiency_constraints",
+            "failure_mechanism_limitation_parallel_method"
+          ],
+          "title": "A review of deep learning-based information fusion techniques for multimodal medical image classification",
+          "verification_status": "accepted"
+        }
+      ],
+      "case_id": "at-009-multimodal-medical-fusion",
+      "decision_matches": true,
+      "evidence_review": [
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-3c97fcd9fab0e114e1aa",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "baseline_and_strong_comparison",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "failure_mechanism_limitation_parallel_method",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "dataset_metric_efficiency_constraints",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
+            }
+          ],
+          "rejection_reasons": [],
+          "title": "MultiFusionNet: multilayer multimodal fusion of deep neural networks for chest X-ray image classification"
+        },
+        {
+          "accepted": true,
+          "evidence_id": "ev-paper-7aa842c3471996be25ce",
+          "gap_supports": [
+            {
+              "checklist_results": {
+                "cross_gap_reuse": true,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": false,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": false,
+                "semantic_gap_binding": false,
+                "supporting_span_present": true
+              },
+              "confidence": 0.0,
+              "decision": "reject",
+              "gap_id": "baseline_and_strong_comparison",
               "limitations": [
                 "no claim-level overlap with the requested gap",
                 "semantic binding missing: role-specific evidence structure"
@@ -995,29 +1368,49 @@
                 "direct_relevance": true,
                 "fixture_explicit_support": false,
                 "gap_overlap": false,
-                "provenance_qualified": false,
-                "query_provenance_match": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
                 "query_term_overlap": true,
                 "relevance_passed": true,
                 "required_concepts_match": true,
                 "role_evidence_present": true,
-                "semantic_gap_binding": false,
+                "semantic_gap_binding": true,
                 "supporting_span_present": true
               },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "parallel_methods",
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "failure_mechanism_limitation_parallel_method",
               "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query provenance or qualified cross-gap reuse"
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
               ],
-              "support_type": "insufficient"
+              "support_type": "direct_support"
+            },
+            {
+              "checklist_results": {
+                "cross_gap_reuse": false,
+                "direct_relevance": true,
+                "fixture_explicit_support": false,
+                "gap_overlap": false,
+                "provenance_qualified": true,
+                "query_provenance_match": true,
+                "query_term_overlap": true,
+                "relevance_passed": true,
+                "required_concepts_match": true,
+                "role_evidence_present": true,
+                "semantic_gap_binding": true,
+                "supporting_span_present": true
+              },
+              "confidence": 0.82,
+              "decision": "accept",
+              "gap_id": "dataset_metric_efficiency_constraints",
+              "limitations": [
+                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
+              ],
+              "support_type": "direct_support"
             }
           ],
-          "rejection_reasons": [
-            "NO_VALID_GAP_BINDING"
-          ],
-          "title": "A Multi-viewpoint Outdoor Dataset for Human Action Recognition"
+          "rejection_reasons": [],
+          "title": "A review of deep learning-based information fusion techniques for multimodal medical image classification"
         }
       ],
       "execution_status": "completed",
@@ -1056,48 +1449,11 @@
           ],
           "fallback_used": false,
           "informative_terms": [
-            "camera",
-            "video",
-            "pose",
-            "human",
-            "action",
-            "recognition",
-            "baseline",
-            "reproducible",
-            "efficiency"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q_baseline_repro",
-          "relevant_verified_papers": 3,
-          "returned_papers": 3,
-          "stop_reason": "sufficient_academic_evidence"
-        },
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "camera",
-            "video",
-            "pose",
-            "human",
-            "action",
-            "recognition",
-            "failure",
-            "modes",
-            "occlusion",
-            "viewpoint",
-            "generalization",
-            "limitations"
+            "multimodal",
+            "medical",
+            "image",
+            "classification",
+            "multifusionnet"
           ],
           "maximum_provider_calls": 4,
           "minimum_rank_score": 0.62,
@@ -1106,387 +1462,7 @@
           "precision_risk": "low",
           "provider_call_count": 3,
           "query_approved": true,
-          "query_id": "q_failure_mechanism",
-          "relevant_verified_papers": 2,
-          "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence"
-        },
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "camera",
-            "video",
-            "pose",
-            "human",
-            "action",
-            "recognition",
-            "deep",
-            "learning",
-            "classical",
-            "approaches"
-          ],
-          "maximum_provider_calls": 4,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q_parallel_methods",
-          "relevant_verified_papers": 0,
-          "returned_papers": 0,
-          "stop_reason": "academic_budget_exhausted"
-        }
-      ],
-      "status": "passed",
-      "verification_call_budget": {
-        "maximum": 16,
-        "remaining": 6,
-        "used": 10
-      },
-      "web_search_enabled": false
-    },
-    {
-      "accepted_evidence": [
-        {
-          "evidence_id": "ev-paper-20a87dc07bc41b7bbc0a",
-          "locator": "https://arxiv.org/abs/2003.00951",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison",
-            "failure_mechanism_limitation"
-          ],
-          "title": "DriverMHG: A Multi-Modal Dataset for Dynamic Recognition of Driver Micro Hand Gestures and a Real-Time Recognition Framework",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-84d4b2cc8ebcee5c7870",
-          "locator": "doi:10.3390/app13053029",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison",
-            "failure_mechanism_limitation"
-          ],
-          "title": "Korean Sign Language Recognition Using Transformer-Based Deep Neural Network",
-          "verification_status": "accepted"
-        },
-        {
-          "evidence_id": "ev-paper-093aa541135a1b4f0a26",
-          "locator": "doi:10.1109/tmc.2022.3153717",
-          "provider": "literature_retrieval",
-          "supports_gap_ids": [
-            "baseline_comparison",
-            "failure_mechanism_limitation"
-          ],
-          "title": "Tesla-Rapture: A Lightweight Gesture Recognition System From mmWave Radar Sparse Point Clouds",
-          "verification_status": "accepted"
-        }
-      ],
-      "case_id": "at-008-mobile-hand-gesture",
-      "decision_matches": true,
-      "evidence_review": [
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-20a87dc07bc41b7bbc0a",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "baseline_comparison",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "failure_mechanism_limitation",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": false,
-                "relevance_passed": true,
-                "required_concepts_match": false,
-                "role_evidence_present": true,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "optional_negative_evidence",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query-term overlap, required query concepts"
-              ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "DriverMHG: A Multi-Modal Dataset for Dynamic Recognition of Driver Micro Hand Gestures and a Real-Time Recognition Framework"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-84d4b2cc8ebcee5c7870",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "baseline_comparison",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "failure_mechanism_limitation",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": false,
-                "relevance_passed": true,
-                "required_concepts_match": false,
-                "role_evidence_present": true,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "optional_negative_evidence",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query-term overlap, required query concepts"
-              ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "Korean Sign Language Recognition Using Transformer-Based Deep Neural Network"
-        },
-        {
-          "accepted": true,
-          "evidence_id": "ev-paper-093aa541135a1b4f0a26",
-          "gap_supports": [
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "baseline_comparison",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": false,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": true,
-                "query_term_overlap": true,
-                "relevance_passed": true,
-                "required_concepts_match": true,
-                "role_evidence_present": true,
-                "semantic_gap_binding": true,
-                "supporting_span_present": true
-              },
-              "confidence": 0.82,
-              "decision": "accept",
-              "gap_id": "failure_mechanism_limitation",
-              "limitations": [
-                "bound through verified query provenance, direct relevance, query concepts, and role-specific evidence cues"
-              ],
-              "support_type": "direct_support"
-            },
-            {
-              "checklist_results": {
-                "cross_gap_reuse": true,
-                "direct_relevance": true,
-                "fixture_explicit_support": false,
-                "gap_overlap": false,
-                "provenance_qualified": true,
-                "query_provenance_match": false,
-                "query_term_overlap": false,
-                "relevance_passed": true,
-                "required_concepts_match": false,
-                "role_evidence_present": false,
-                "semantic_gap_binding": false,
-                "supporting_span_present": true
-              },
-              "confidence": 0.0,
-              "decision": "reject",
-              "gap_id": "optional_negative_evidence",
-              "limitations": [
-                "no claim-level overlap with the requested gap",
-                "semantic binding missing: query-term overlap, required query concepts, role-specific evidence structure"
-              ],
-              "support_type": "insufficient"
-            }
-          ],
-          "rejection_reasons": [],
-          "title": "Tesla-Rapture: A Lightweight Gesture Recognition System From mmWave Radar Sparse Point Clouds"
-        }
-      ],
-      "execution_status": "completed",
-      "expected_decision": "REVISE_TO_PILOT",
-      "failed_stages": [
-        {
-          "available": 7,
-          "earned": 5,
-          "findings": [
-            "core accepted evidence lacks full-text review"
-          ],
-          "passed": false,
-          "stage": "relevance_review"
-        },
-        {
-          "available": 10,
-          "earned": 7,
-          "findings": [
-            "clarification did not target a declared high-impact unknown"
-          ],
-          "passed": false,
-          "stage": "clarification_gate"
-        }
-      ],
-      "hard_failures": [],
-      "llm_call_budget": 12,
-      "minimum_score": 80,
-      "model": "mistral-small-latest",
-      "observed_decision": "REVISE_TO_PILOT",
-      "passed": true,
-      "provider": "mistral",
-      "provider_call_budget": {
-        "maximum": 8,
-        "remaining": 1,
-        "used": 7
-      },
-      "report_status": "completed",
-      "score": 95,
-      "search_diagnostics": [
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "lightweight",
-            "gesture",
-            "recognition",
-            "mobile",
-            "devices",
-            "latency",
-            "accuracy",
-            "size"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q_baseline_gesture_mobile",
+          "query_id": "baseline_query_001",
           "relevant_verified_papers": 1,
           "returned_papers": 1,
           "stop_reason": "academic_budget_exhausted"
@@ -1499,262 +1475,67 @@
           ],
           "fallback_used": false,
           "informative_terms": [
-            "gesture",
-            "recognition",
-            "failure",
-            "modes",
-            "limitations",
-            "mobile",
-            "deployment",
-            "efficiency",
-            "accuracy",
-            "bias"
+            "multimodal",
+            "medical",
+            "image",
+            "classification",
+            "fusion",
+            "techniques"
           ],
-          "maximum_provider_calls": 3,
+          "maximum_provider_calls": 4,
           "minimum_rank_score": 0.62,
           "minimum_relevance": 0.34,
           "policy_reasons": [],
           "precision_risk": "low",
           "provider_call_count": 3,
           "query_approved": true,
-          "query_id": "q_failure_mechanism_gesture",
+          "query_id": "mechanism_query_001",
           "relevant_verified_papers": 1,
           "returned_papers": 1,
           "stop_reason": "academic_budget_exhausted"
         },
         {
           "attempted_providers": [
-            "openalex"
+            "openalex",
+            "semantic_scholar",
+            "arxiv"
           ],
           "fallback_used": false,
           "informative_terms": [
-            "mobile",
-            "gesture",
-            "recognition",
-            "parallel",
-            "lightweight",
-            "cnn",
-            "transformer",
-            "efficiency",
-            "accuracy"
+            "multimodal",
+            "medical",
+            "image",
+            "classification",
+            "feature",
+            "fusion"
           ],
-          "maximum_provider_calls": 3,
+          "maximum_provider_calls": 4,
           "minimum_rank_score": 0.62,
           "minimum_relevance": 0.34,
           "policy_reasons": [],
           "precision_risk": "low",
-          "provider_call_count": 1,
+          "provider_call_count": 3,
           "query_approved": true,
-          "query_id": "q_parallel_methods_gesture",
-          "relevant_verified_papers": 2,
-          "returned_papers": 2,
-          "stop_reason": "sufficient_academic_evidence"
+          "query_id": "dataset_query_001",
+          "relevant_verified_papers": 0,
+          "returned_papers": 0,
+          "stop_reason": "academic_budget_exhausted"
         }
       ],
       "status": "passed",
       "verification_call_budget": {
         "maximum": 16,
-        "remaining": 6,
-        "used": 10
-      },
-      "web_search_enabled": false
-    },
-    {
-      "accepted_evidence": [],
-      "case_id": "at-009-multimodal-medical-fusion",
-      "decision_matches": true,
-      "evidence_review": [],
-      "execution_status": "completed",
-      "expected_decision": "REVISE_TO_PILOT",
-      "failed_stages": [
-        {
-          "available": 10,
-          "earned": 8,
-          "findings": [
-            "explicit facts, inferences, or proposals were not recorded"
-          ],
-          "passed": false,
-          "stage": "parse_user_input"
-        },
-        {
-          "available": 8,
-          "earned": 6,
-          "findings": [
-            "retrieval role strong_comparison is missing"
-          ],
-          "passed": false,
-          "stage": "exploratory_retrieval"
-        },
-        {
-          "available": 7,
-          "earned": 5,
-          "findings": [
-            "no evidence reviews were recorded"
-          ],
-          "passed": false,
-          "stage": "relevance_review"
-        },
-        {
-          "available": 10,
-          "earned": 7,
-          "findings": [
-            "clarification did not target a declared high-impact unknown"
-          ],
-          "passed": false,
-          "stage": "clarification_gate"
-        },
-        {
-          "available": 15,
-          "earned": 4,
-          "findings": [
-            "baseline card is missing",
-            "baseline source is not accepted evidence",
-            "baseline freeze contract is incomplete"
-          ],
-          "passed": false,
-          "stage": "freeze_baseline"
-        },
-        {
-          "available": 15,
-          "earned": 0,
-          "findings": [
-            "falsifiable hypothesis is missing condition, limitation, mechanism, intervention, metric, or guardrail"
-          ],
-          "passed": false,
-          "stage": "gap_hypothesis"
-        },
-        {
-          "available": 5,
-          "earned": 1,
-          "findings": [
-            "experiment matrix fields are incomplete",
-            "baseline experiment arm is missing",
-            "strong-comparison experiment arm is missing",
-            "stop conditions are missing"
-          ],
-          "passed": false,
-          "stage": "experiment_matrix"
-        }
-      ],
-      "hard_failures": [
-        {
-          "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
-          "details": "stronger baselines or negative results were not preserved"
-        }
-      ],
-      "llm_call_budget": 12,
-      "minimum_score": 80,
-      "model": "mistral-small-latest",
-      "observed_decision": "REVISE_TO_PILOT",
-      "passed": false,
-      "provider": "mistral",
-      "provider_call_budget": {
-        "maximum": 8,
-        "remaining": 3,
-        "used": 5
-      },
-      "report_status": "completed",
-      "score": 61,
-      "search_diagnostics": [
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "multimodal",
-            "medical",
-            "imaging",
-            "disease",
-            "classification",
-            "feature",
-            "fusion"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q1_baseline_methods",
-          "relevant_verified_papers": 0,
-          "returned_papers": 0,
-          "stop_reason": "academic_budget_exhausted"
-        },
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "multimodal",
-            "medical",
-            "imaging",
-            "disease",
-            "classification",
-            "feature",
-            "fusion"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q2_failure_mechanism",
-          "relevant_verified_papers": 0,
-          "returned_papers": 0,
-          "stop_reason": "academic_budget_exhausted"
-        },
-        {
-          "attempted_providers": [
-            "openalex",
-            "semantic_scholar",
-            "arxiv"
-          ],
-          "fallback_used": false,
-          "informative_terms": [
-            "multimodal",
-            "medical",
-            "imaging",
-            "disease",
-            "classification",
-            "feature",
-            "fusion"
-          ],
-          "maximum_provider_calls": 3,
-          "minimum_rank_score": 0.62,
-          "minimum_relevance": 0.34,
-          "policy_reasons": [],
-          "precision_risk": "low",
-          "provider_call_count": 3,
-          "query_approved": true,
-          "query_id": "q3_parallel_methods",
-          "relevant_verified_papers": 0,
-          "returned_papers": 0,
-          "stop_reason": "academic_budget_exhausted"
-        }
-      ],
-      "status": "failed",
-      "verification_call_budget": {
-        "maximum": 16,
-        "remaining": 7,
-        "used": 9
+        "remaining": 8,
+        "used": 8
       },
       "web_search_enabled": false
     }
   ],
-  "failed_count": 1,
-  "passed": false,
-  "passed_count": 3,
-  "status": "failed",
+  "failed_count": 0,
+  "passed": true,
+  "passed_count": 4,
+  "status": "passed",
   "web_search_enabled": false,
-  "workflow_head_sha": "14014b7749630c160071469cfc300db327ad2227",
-  "workflow_run_id": 29735798132
+  "workflow_head_sha": "a2bca03b17e5617a10c6808dce2b05aa606eec48",
+  "workflow_run_id": 29738275611
 }
