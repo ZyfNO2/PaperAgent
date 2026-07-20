@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperagent.local/schemas/academic-holdout-case-v2.json",
+  "title": "Academic Method Holdout Case v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "case_id", "input", "oracle", "metadata"],
+  "properties": {
+    "schema": {"const": "paperagent.academic-holdout.case.v2"},
+    "case_id": {"type": "string", "minLength": 1},
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["user_request", "supplied_materials", "declared_constraints"],
+      "properties": {
+        "user_request": {"type": "string", "minLength": 1},
+        "supplied_materials": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["title", "declared_role"],
+            "properties": {
+              "title": {"type": "string", "minLength": 1},
+              "declared_role": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "declared_constraints": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "oracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accepted_decisions",
+        "required_findings",
+        "forbidden_claims",
+        "evidence_requirements",
+        "pilot_allowed",
+        "hard_failure_conditions"
+      ],
+      "properties": {
+        "accepted_decisions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["GO", "REVISE", "NO_GO"]}
+        },
+        "required_findings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "forbidden_claims": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "evidence_requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "minimum_contract"],
+            "properties": {
+              "role": {
+                "enum": ["baseline", "strong_comparator", "mechanism", "risk", "supplied_material"]
+              },
+              "minimum_contract": {
+                "type": "array",
+                "minItems": 1,
+                "items": {"type": "string", "minLength": 1}
+              }
+            }
+          }
+        },
+        "pilot_allowed": {"type": "boolean"},
+        "hard_failure_conditions": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["split", "capability", "domain", "language", "metamorphic_group"],
+      "properties": {
+        "split": {"enum": ["development", "private_holdout", "metamorphic"]},
+        "capability": {
+          "enum": [
+            "baseline_reproducibility",
+            "strong_comparator",
+            "evidence_role_binding",
+            "interface_compatibility",
+            "falsifiable_novelty",
+            "negative_results",
+            "material_identity",
+            "pilot_gate"
+          ]
+        },
+        "domain": {"type": "string", "minLength": 1},
+        "language": {"enum": ["zh", "en", "ja", "mixed"]},
+        "metamorphic_group": {"type": ["string", "null"]}
+      }
+    }
+  }
+}
