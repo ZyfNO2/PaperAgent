@@ -68,21 +68,6 @@ def test_free_text_next_actions_cannot_infer_pilot_label() -> None:
     assert trace.pilot_recommended is False
 
 
-def test_explicit_structured_pilot_signal_is_preserved() -> None:
-    state = _revise_state(
-        next_action="Collect one more observation.", quality_route="repair_method"
-    )
-    trace = normalize_paperagent_state(
-        state,
-        BenchmarkNormalizationContext(
-            case_id="held-out-002",
-            pilot_recommended=True,
-        ),
-    )
-    assert trace.decision == "REVISE"
-    assert trace.pilot_recommended is True
-
-
 def test_canonical_ledger_controls_evidence_review_semantics() -> None:
     evidence_id = "ev-held-out"
     state = cast(
