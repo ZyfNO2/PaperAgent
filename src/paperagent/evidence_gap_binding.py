@@ -156,6 +156,22 @@ def _mechanism_role_support(text: str) -> bool:
             "tiny object",
             "complex background",
             "redundant computation",
+            "low-light",
+            "low light",
+            "nighttime",
+            "less effective",
+            "drawback",
+            "low-resolution",
+            "low resolution",
+            "noise",
+            "degradation",
+            "background interference",
+            "illumination",
+            "domain shift",
+            "distribution shift",
+            "missing modality",
+            "modality absence",
+            "misregistration",
         )
     )
     intervention = any(
