@@ -47,14 +47,13 @@ async def prepare_search_node(state: PaperAgentState, config: RunnableConfig) ->
                 gap_description=gap_description,
                 research_context=research_context,
             )
-            changed = refinement.query != query.query
             prepared.append(
                 PreparedQuery(
                     query_id=query.query_id,
                     gap_id=query.gap_id,
                     query=refinement.query,
-                    original_query=query.query if changed else None,
-                    refinement_reason=refinement.reason if changed else None,
+                    original_query=query.query if refinement.changed else None,
+                    refinement_reason=refinement.reason if refinement.changed else None,
                     removed_families=(
                         list(refinement.removed_families) if refinement.changed else []
                     ),
