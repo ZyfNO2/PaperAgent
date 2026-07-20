@@ -1,11 +1,242 @@
 {
-  "artifact_name": "claw-paid-full-20-29769952010",
-  "execution_summary": null,
+  "artifact_name": "claw-paid-full-20-29770102419",
+  "execution_summary": {
+    "actions_artifact_name": "claw-paid-full-20-29770102419",
+    "completed": 17,
+    "completed_case_ids": [
+      "at-001-uav-small-object-lightweight",
+      "at-002-edge-road-crack-detection",
+      "at-003-skin-lesion-explainability",
+      "at-004-steel-surface-defect",
+      "at-005-remote-sensing-dense-small-objects",
+      "at-006-low-light-pedestrian",
+      "at-007-camera-action-quality",
+      "at-009-multimodal-medical-fusion",
+      "at-010-chinese-long-document-classification",
+      "at-012-enterprise-rag",
+      "at-013-professional-qa-hallucination",
+      "at-014-gnn-fraud-detection",
+      "at-016-anomaly-transformer-supplied",
+      "at-017-mobilenetv3-plant-disease-supplied",
+      "at-018-yolox-tinydet-supplied",
+      "at-019-unet-unspecified-medical-segmentation",
+      "at-020-lightgcn-contrastive-supplied"
+    ],
+    "errors": [
+      {
+        "case_id": "at-008-mobile-hand-gesture",
+        "error_type": "ValidationError",
+        "message": "1 validation error for QualityDecision\n  Value error, repair_retrieval requires repair_target=retrieval [type=value_error, input_value={'verdict': 'repair_retri...ds': ['EG004', 'EG005']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error"
+      },
+      {
+        "case_id": "at-011-few-shot-intent-detection",
+        "error_type": "ValidationError",
+        "message": "1 validation error for QualityDecision\n  Value error, repair_retrieval requires repair_target=retrieval [type=value_error, input_value={'verdict': 'repair_retri...002', 'EG003', 'EG004']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error"
+      },
+      {
+        "case_id": "at-015-multibehavior-recommendation",
+        "error_type": "ValidationError",
+        "message": "1 validation error for QualityDecision\n  Value error, repair_retrieval requires repair_target=retrieval [type=value_error, input_value={'verdict': 'repair_retri...ing_gap_ids': ['EG003']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error"
+      }
+    ],
+    "llm": {
+      "configured_full_run_max_cost_usd": 1.0,
+      "configured_per_case_max_cost_usd": 0.05,
+      "cost_estimate_complete": true,
+      "estimated_cost_usd": 0.07389,
+      "failed_attempts": 2,
+      "input_tokens": 193320,
+      "logical_calls": 67,
+      "model": "mistral-small-latest",
+      "output_tokens": 74820,
+      "price_table_loaded": true,
+      "price_table_version": "mistral-public-api-2026-07-21",
+      "provider": "mistral",
+      "provider_attempts": 67,
+      "provider_instances": 20,
+      "successful_attempts": 65,
+      "usage_complete": true,
+      "within_configured_cost": true
+    },
+    "output_files": {
+      "execution_summary": "execution-summary.json",
+      "report": null,
+      "run_traces": "run-traces.jsonl",
+      "states": "states.jsonl"
+    },
+    "passed": false,
+    "provider_call_budget": {
+      "cases": [
+        {
+          "case_id": "at-001-uav-small-object-lightweight",
+          "maximum": 10,
+          "remaining": 1,
+          "used": 9
+        },
+        {
+          "case_id": "at-002-edge-road-crack-detection",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-003-skin-lesion-explainability",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-004-steel-surface-defect",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-005-remote-sensing-dense-small-objects",
+          "maximum": 10,
+          "remaining": 1,
+          "used": 9
+        },
+        {
+          "case_id": "at-006-low-light-pedestrian",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-007-camera-action-quality",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-008-mobile-hand-gesture",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-009-multimodal-medical-fusion",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-010-chinese-long-document-classification",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-011-few-shot-intent-detection",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-012-enterprise-rag",
+          "maximum": 10,
+          "remaining": 1,
+          "used": 9
+        },
+        {
+          "case_id": "at-013-professional-qa-hallucination",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-014-gnn-fraud-detection",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-015-multibehavior-recommendation",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-016-anomaly-transformer-supplied",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-017-mobilenetv3-plant-disease-supplied",
+          "maximum": 10,
+          "remaining": 6,
+          "used": 4
+        },
+        {
+          "case_id": "at-018-yolox-tinydet-supplied",
+          "maximum": 10,
+          "remaining": 0,
+          "used": 10
+        },
+        {
+          "case_id": "at-019-unet-unspecified-medical-segmentation",
+          "maximum": 10,
+          "remaining": 4,
+          "used": 6
+        },
+        {
+          "case_id": "at-020-lightgcn-contrastive-supplied",
+          "maximum": 10,
+          "remaining": 10,
+          "used": 0
+        }
+      ],
+      "complete": true,
+      "configured_total": 200,
+      "remaining": 23,
+      "used": 177,
+      "within_configured_total": true
+    },
+    "report_status": "not_generated",
+    "runtime_failures": [
+      "formal report requires exactly 20 completed cases"
+    ],
+    "schema": "paperagent.claw-paid-full-runtime-summary.v1",
+    "search_mode": "literature",
+    "selected_case_count": 20,
+    "selected_cases": [
+      "at-001-uav-small-object-lightweight",
+      "at-002-edge-road-crack-detection",
+      "at-003-skin-lesion-explainability",
+      "at-004-steel-surface-defect",
+      "at-005-remote-sensing-dense-small-objects",
+      "at-006-low-light-pedestrian",
+      "at-007-camera-action-quality",
+      "at-008-mobile-hand-gesture",
+      "at-009-multimodal-medical-fusion",
+      "at-010-chinese-long-document-classification",
+      "at-011-few-shot-intent-detection",
+      "at-012-enterprise-rag",
+      "at-013-professional-qa-hallucination",
+      "at-014-gnn-fraud-detection",
+      "at-015-multibehavior-recommendation",
+      "at-016-anomaly-transformer-supplied",
+      "at-017-mobilenetv3-plant-disease-supplied",
+      "at-018-yolox-tinydet-supplied",
+      "at-019-unet-unspecified-medical-segmentation",
+      "at-020-lightgcn-contrastive-supplied"
+    ],
+    "source_sha": "a96ee74cd43cb09ae9600e6375f09d2b9e0ae602",
+    "static_leakage_audit": {
+      "findings": [],
+      "passed": true
+    },
+    "web_search_enabled": false,
+    "workflow_name": "CLAW Paid Full 20 E2E",
+    "workflow_run_id": "29770102419"
+  },
   "outcomes": {
-    "full_runtime": "skipped",
-    "literature_smoke": "skipped",
-    "mistral_smoke": "skipped",
-    "offline_gate": "failure",
+    "full_runtime": "failure",
+    "literature_smoke": "success",
+    "mistral_smoke": "success",
+    "offline_gate": "success",
     "preflight": "success"
   },
   "passed": false,
@@ -18,7 +249,7 @@
     "semantic_scholar_api_key_present": false,
     "web_search_enabled": false
   },
-  "source_sha": "ac23120570c032494e45cf3e77e026344dcdc21c",
+  "source_sha": "a96ee74cd43cb09ae9600e6375f09d2b9e0ae602",
   "status": "failed",
-  "workflow_run_id": 29769952010
+  "workflow_run_id": 29770102419
 }
