@@ -52,6 +52,14 @@ def test_accepts_openai_content_block_arrays() -> None:
     assert reply == _Reply(status="ok", count=3)
 
 
+def test_accepts_single_content_block_object() -> None:
+    reply = validate_structured_response(
+        _body({"type": "output_text", "text": '{"status":"ok","count":8}'}),
+        _Reply,
+    )
+    assert reply == _Reply(status="ok", count=8)
+
+
 def test_accepts_tool_call_arguments_when_content_is_empty() -> None:
     body = {
         "choices": [
@@ -157,7 +165,7 @@ def test_bounded_schema_repair_is_model_agnostic(
     assert reply == _Reply(status="ok", count=7)
     assert len(requests) == 2
     assert "structured-output repair" in requests[1]["json"]["messages"][0]["content"]
-    assert "any-openai-compatible-model" == requests[0]["json"]["model"]
+    assert requests[0]["json"]["model"] == "any-openai-compatible-model"
 
 
 def test_schema_repair_can_be_disabled(
