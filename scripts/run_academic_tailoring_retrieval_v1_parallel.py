@@ -9,17 +9,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from paperagent.benchmark_input import BenchmarkInput
-from paperagent.claw_benchmark_runtime import build_benchmark_search_runtime, execute_benchmark_case
-from paperagent.claw_runtime_evidence import allocate_case_budgets, provider_config_for_case
-from paperagent.literature.factory import LiteratureProviderSettings
-from paperagent.pricing import load_price_table
-from paperagent.providers.config import load_provider_config
-from paperagent.providers.runtime_factory import build_llm_provider
-
 from run_academic_tailoring_retrieval_v1 import (
-    AuditedLLMProvider,
     _FATAL_PROVIDER_ERROR_CODES,
+    AuditedLLMProvider,
     _assert_gold_absent,
     _build_runtime_summary,
     _fatal_provider_error_code_from_trace,
@@ -27,6 +19,14 @@ from run_academic_tailoring_retrieval_v1 import (
     _normalize_provider_error_code,
     _write_runtime_outputs,
 )
+
+from paperagent.benchmark_input import BenchmarkInput
+from paperagent.claw_benchmark_runtime import build_benchmark_search_runtime, execute_benchmark_case
+from paperagent.claw_runtime_evidence import allocate_case_budgets, provider_config_for_case
+from paperagent.literature.factory import LiteratureProviderSettings
+from paperagent.pricing import load_price_table
+from paperagent.providers.config import load_provider_config
+from paperagent.providers.runtime_factory import build_llm_provider
 
 
 @dataclass(slots=True)
@@ -351,7 +351,10 @@ async def _run(args: argparse.Namespace) -> int:
                     {
                         "case_id": case_id,
                         "error_type": "CancelledAfterFatalProviderError",
-                        "message": "cancelled after another concurrent case hit a fatal provider error",
+                        "message": (
+                            "cancelled after another concurrent case hit a fatal "
+                            "provider error"
+                        ),
                     }
                 )
                 task.cancel()
