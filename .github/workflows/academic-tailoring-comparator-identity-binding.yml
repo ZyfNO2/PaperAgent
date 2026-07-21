@@ -66,21 +66,16 @@ jobs:
           printf '{"apply":%s,"format":%s,"fix":%s,"check":%s}\n' \
             "${{ steps.apply_patch.outputs.status }}" \
             "$format_status" "$fix_status" "$check_status" \
-            > build/comparator-identity-diagnostics/status.json
+            > build/comparator-identity-diagnostics/changed-path-status.json
           exit 0
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: academic-tailoring-comparator-identity-diagnostics
-          path: build/comparator-identity-diagnostics/
-          if-no-files-found: error
-          retention-days: 7
       - name: Enforce patch and changed-path lint
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          status = json.loads(Path("build/comparator-identity-diagnostics/status.json").read_text())
+          status = json.loads(
+              Path("build/comparator-identity-diagnostics/changed-path-status.json").read_text()
+          )
           print(status)
           if any(status.values()):
               raise SystemExit(status)
@@ -96,12 +91,44 @@ jobs:
           rm -f \
             scripts/apply_comparator_identity_binding_v1.py \
             scripts/fix_comparator_identity_patch_escape_v1.py
-      - name: Run full final-tree regression
+      - name: Capture full final-tree regression
+        shell: bash
         run: |
-          pytest -q
-          mypy --config-file pyproject.toml
-          ruff check src tests scripts
-          ruff format --check src tests scripts
+          set +e
+          pytest -q > build/comparator-identity-diagnostics/pytest.log 2>&1
+          pytest_status=$?
+          mypy --config-file pyproject.toml \
+            > build/comparator-identity-diagnostics/mypy.log 2>&1
+          mypy_status=$?
+          ruff check src tests scripts \
+            > build/comparator-identity-diagnostics/full-ruff-check.log 2>&1
+          ruff_status=$?
+          ruff format --check src tests scripts \
+            > build/comparator-identity-diagnostics/full-ruff-format.log 2>&1
+          format_status=$?
+          printf '{"pytest":%s,"mypy":%s,"ruff":%s,"format":%s}\n' \
+            "$pytest_status" "$mypy_status" "$ruff_status" "$format_status" \
+            > build/comparator-identity-diagnostics/full-status.json
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-comparator-identity-diagnostics
+          path: build/comparator-identity-diagnostics/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Enforce full final-tree regression
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(
+              Path("build/comparator-identity-diagnostics/full-status.json").read_text()
+          )
+          print(status)
+          if any(status.values()):
+              raise SystemExit(status)
+          PY
       - name: Commit production repair
         shell: bash
         run: |
