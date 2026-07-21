@@ -35,10 +35,33 @@ jobs:
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
       - name: Apply production runtime repairs
+        shell: bash
         run: |
-          python scripts/repair_academic_tailoring_retrieval_v1_truth_chain_v5.py
-          python scripts/apply_academic_tailoring_retrieval_v1_truth_chain_v5.py
-          python scripts/fix_academic_tailoring_retrieval_v1_truth_chain_v5_generated.py
+          mkdir -p build/runtime-repair-diagnostics
+          set +e
+          python scripts/repair_academic_tailoring_retrieval_v1_truth_chain_v5.py \
+            > build/runtime-repair-diagnostics/01-repair.log 2>&1
+          repair_status=$?
+          python scripts/apply_academic_tailoring_retrieval_v1_truth_chain_v5.py \
+            > build/runtime-repair-diagnostics/02-apply.log 2>&1
+          apply_status=$?
+          python scripts/fix_academic_tailoring_retrieval_v1_truth_chain_v5_generated.py \
+            > build/runtime-repair-diagnostics/03-fix-generated.log 2>&1
+          fix_status=$?
+          printf '{"repair":%s,"apply":%s,"fix_generated":%s}\n' \
+            "$repair_status" "$apply_status" "$fix_status" \
+            > build/runtime-repair-diagnostics/status.json
+          cat build/runtime-repair-diagnostics/*.log
+          if [ "$repair_status" -ne 0 ] || [ "$apply_status" -ne 0 ] || [ "$fix_status" -ne 0 ]; then
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-runtime-repair-diagnostics
+          path: build/runtime-repair-diagnostics/
+          if-no-files-found: warn
+          retention-days: 14
       - name: Format repaired runtime and focused tests
         run: |
           ruff format \
