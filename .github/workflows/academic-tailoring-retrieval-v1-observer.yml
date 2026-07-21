@@ -90,6 +90,7 @@ jobs:
             --dir build/downloaded
           download_exit=$?
           set -e
+          export DOWNLOAD_EXIT="$download_exit"
           find build/downloaded -type f -name boundary-report.json -exec cp {} "$RESULT_ROOT/boundary-report.json" \; || true
           find build/downloaded -type f -name execution-summary.json -exec cp {} "$RESULT_ROOT/execution-summary.json" \; || true
           find build/downloaded -type f -name diagnostic-report.json -exec cp {} "$RESULT_ROOT/diagnostic-report.json" \; || true
@@ -118,7 +119,7 @@ jobs:
               "observer_source_sha": os.environ["GITHUB_SHA"],
               "target_run": run,
               "target_exit": int("${{ steps.watch.outputs.target_exit || '1' }}"),
-              "artifact_download_exit": int("$download_exit"),
+              "artifact_download_exit": int(os.environ["DOWNLOAD_EXIT"]),
               "jobs": jobs,
               "safe_files": sorted(path.name for path in root.glob("*.json")),
               "excluded_from_commit": [
