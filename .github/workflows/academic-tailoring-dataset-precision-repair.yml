@@ -34,22 +34,52 @@ jobs:
       - name: Apply dataset precision repair
         run: python scripts/apply_dataset_entity_precision_v2.py
       - name: Format and lint changed paths
+        shell: bash
         run: |
+          mkdir -p build/dataset-precision-diagnostics
+          set +e
           ruff format \
             src/paperagent/literature/adapter.py \
             src/paperagent/method_design_draft.py \
             tests/literature/test_exact_identity_and_dataset_candidates.py \
-            tests/nodes/test_method_design_baseline_anchor.py
+            tests/nodes/test_method_design_baseline_anchor.py \
+            > build/dataset-precision-diagnostics/format.log 2>&1
+          format_status=$?
           ruff check --fix \
             src/paperagent/literature/adapter.py \
             src/paperagent/method_design_draft.py \
             tests/literature/test_exact_identity_and_dataset_candidates.py \
-            tests/nodes/test_method_design_baseline_anchor.py
+            tests/nodes/test_method_design_baseline_anchor.py \
+            > build/dataset-precision-diagnostics/ruff-fix.log 2>&1
+          fix_status=$?
           ruff check \
             src/paperagent/literature/adapter.py \
             src/paperagent/method_design_draft.py \
             tests/literature/test_exact_identity_and_dataset_candidates.py \
-            tests/nodes/test_method_design_baseline_anchor.py
+            tests/nodes/test_method_design_baseline_anchor.py \
+            > build/dataset-precision-diagnostics/ruff-check.log 2>&1
+          check_status=$?
+          printf '{"format":%s,"fix":%s,"check":%s}\n' \
+            "$format_status" "$fix_status" "$check_status" \
+            > build/dataset-precision-diagnostics/status.json
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-dataset-precision-diagnostics
+          path: build/dataset-precision-diagnostics/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Enforce changed-path lint
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(Path("build/dataset-precision-diagnostics/status.json").read_text())
+          print(status)
+          if any(status.values()):
+              raise SystemExit(status)
+          PY
       - name: Run focused production tests
         run: |
           pytest -q \
