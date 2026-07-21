@@ -1,13 +1,9 @@
 """OpenAI-compatible real LLM provider.
 
-Implements the :class:`paperagent.providers.base.LLMProvider` protocol against the
-OpenAI Chat Completions API using ``httpx`` for async transport. Structured outputs
-are requested via ``response_format={"type": "json_schema", ...}`` when enabled and
-validated against the supplied Pydantic schema. Providers that reject native JSON
-Schema automatically fall back to a schema-augmented plain chat request.
-
-This provider is intentionally offline-safe to import: no network access happens
-until :meth:`OpenAILLMProvider.generate_structured` is awaited.
+The adapter intentionally avoids model-name branches. It accepts the common response
+shapes emitted by OpenAI-compatible gateways, validates every result against the caller's
+Pydantic schema, and uses a bounded fallback/repair sequence when structured output is
+not natively supported or a model wraps otherwise valid JSON in prose or content blocks.
 """
 
 from __future__ import annotations
@@ -18,12 +14,16 @@ import time
 from typing import Any, TypeVar
 
 import httpx
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from paperagent.errors import ProviderError, ProviderTimeoutError
 from paperagent.pricing import PriceTable
 from paperagent.providers.request_rate_limit import shared_request_rate_limiter
 from paperagent.providers.runtime import TaskBudget, UsageRecord
+from paperagent.providers.structured_output import (
+    StructuredOutputFailure,
+    validate_structured_response,
+)
 from paperagent.schemas import Message, TokenUsage
 
 T = TypeVar("T", bound=BaseModel)
@@ -31,10 +31,27 @@ T = TypeVar("T", bound=BaseModel)
 _RETRY_BACKOFF_SECONDS: tuple[float, ...] = (0.5, 1.0, 2.0)
 _RATE_LIMIT_BACKOFF_SECONDS: tuple[float, ...] = (15.0, 30.0, 60.0)
 _MAX_RETRY_AFTER_SECONDS = 300.0
+_MAX_REPAIR_SOURCE_CHARS = 12_000
+_STRUCTURED_OUTPUT_ERROR_CODES = {
+    "LLM_RESPONSE_JSON_INVALID",
+    "LLM_RESPONSE_SCHEMA_INVALID",
+}
+
+
+class _StructuredProviderError(ProviderError):
+    def __init__(self, message: str, *, task: str, code: str, raw_output: str | None) -> None:
+        super().__init__(
+            message,
+            provider="openai",
+            task=task,
+            retryable=False,
+            code=code,
+        )
+        self.raw_output = raw_output
 
 
 class OpenAILLMProvider:
-    """Async OpenAI-compatible Chat Completions provider."""
+    """Async provider for OpenAI Chat Completions compatible endpoints."""
 
     provider_name = "openai"
 
@@ -52,6 +69,7 @@ class OpenAILLMProvider:
         temperature: float = 0.0,
         max_output_tokens: int | None = None,
         native_json_schema: bool = True,
+        allow_schema_repair: bool = True,
         budget: TaskBudget | None = None,
         price_table: PriceTable | None = None,
     ) -> None:
@@ -87,6 +105,7 @@ class OpenAILLMProvider:
         self._temperature = temperature
         self._max_output_tokens = max_output_tokens
         self._native_json_schema = native_json_schema
+        self._allow_schema_repair = allow_schema_repair
         self._budget = budget
         self._price_table = price_table
         self.last_usage: TokenUsage = TokenUsage(input_tokens=0, output_tokens=0)
@@ -97,12 +116,11 @@ class OpenAILLMProvider:
         return self._model
 
     def _build_response_format(self, schema: type[BaseModel]) -> dict[str, Any]:
-        json_schema = schema.model_json_schema()
         return {
             "type": "json_schema",
             "json_schema": {
                 "name": schema.__name__,
-                "schema": json_schema,
+                "schema": schema.model_json_schema(),
                 "strict": False,
             },
         }
@@ -137,59 +155,22 @@ class OpenAILLMProvider:
         try:
             body = response.json()
         except (ValueError, json.JSONDecodeError) as exc:
-            raise ProviderError(
+            raw = response.text[:_MAX_REPAIR_SOURCE_CHARS] if response.text else None
+            raise _StructuredProviderError(
                 "response body is not valid JSON",
-                provider=self.provider_name,
                 task=task,
-                retryable=False,
                 code="LLM_RESPONSE_JSON_INVALID",
+                raw_output=raw,
             ) from exc
-        try:
-            content = body["choices"][0]["message"]["content"]
-        except (KeyError, IndexError, TypeError) as exc:
-            raise ProviderError(
-                "response missing choices[0].message.content",
-                provider=self.provider_name,
-                task=task,
-                retryable=False,
-                code="LLM_RESPONSE_JSON_INVALID",
-            ) from exc
-        if not isinstance(content, str) or not content.strip():
-            raise ProviderError(
-                "response content is empty or not a string",
-                provider=self.provider_name,
-                task=task,
-                retryable=False,
-                code="LLM_RESPONSE_JSON_INVALID",
-            )
 
-        stripped = content.strip()
-        if stripped.startswith("```"):
-            lines = stripped.splitlines()
-            if len(lines) >= 2 and lines[0].startswith("```"):
-                lines = lines[1:]
-            if lines and lines[-1].strip() == "```":
-                lines = lines[:-1]
-            stripped = "\n".join(lines).strip()
         try:
-            parsed: Any = json.loads(stripped)
-        except json.JSONDecodeError as exc:
-            raise ProviderError(
-                "response content is not valid JSON",
-                provider=self.provider_name,
+            return validate_structured_response(body, schema)
+        except StructuredOutputFailure as exc:
+            raise _StructuredProviderError(
+                exc.message,
                 task=task,
-                retryable=False,
-                code="LLM_RESPONSE_JSON_INVALID",
-            ) from exc
-        try:
-            return schema.model_validate(parsed)
-        except ValidationError as exc:
-            raise ProviderError(
-                "response failed schema validation",
-                provider=self.provider_name,
-                task=task,
-                retryable=False,
-                code="LLM_RESPONSE_SCHEMA_INVALID",
+                code=exc.code,
+                raw_output=exc.raw_output,
             ) from exc
 
     async def generate_structured(
@@ -208,6 +189,7 @@ class OpenAILLMProvider:
             "Content-Type": "application/json",
         }
         url = f"{self._base_url}/chat/completions"
+        native_error: _StructuredProviderError | None = None
 
         if self._native_json_schema:
             payload = self._base_payload(messages)
@@ -220,39 +202,82 @@ class OpenAILLMProvider:
                     schema=schema,
                     task=task,
                 )
+            except _StructuredProviderError as exc:
+                native_error = exc
             except ProviderError as exc:
                 if exc.code != "LLM_RESPONSE_FORMAT_UNSUPPORTED":
                     raise
 
         fallback_messages = self._augment_messages_with_schema(messages, schema)
         fallback_payload = self._base_payload(fallback_messages)
-        return await self._post_with_retries(
-            url=url,
-            payload=fallback_payload,
-            headers=headers,
-            schema=schema,
-            task=task,
-        )
+        try:
+            return await self._post_with_retries(
+                url=url,
+                payload=fallback_payload,
+                headers=headers,
+                schema=schema,
+                task=task,
+            )
+        except _StructuredProviderError as fallback_error:
+            if not self._allow_schema_repair:
+                raise
+            raw_output = fallback_error.raw_output or (
+                native_error.raw_output if native_error is not None else None
+            )
+            if not raw_output:
+                raise
+            repair_payload = self._base_payload(
+                self._repair_messages(raw_output=raw_output, schema=schema)
+            )
+            return await self._post_with_retries(
+                url=url,
+                payload=repair_payload,
+                headers=headers,
+                schema=schema,
+                task=f"{task}:schema-repair",
+            )
 
     @staticmethod
     def _augment_messages_with_schema(
         messages: list[Message], schema: type[BaseModel]
     ) -> list[Message]:
-        """Append the JSON Schema to the final message for plain-chat fallback."""
+        """Append a portable JSON-only instruction for providers without json_schema."""
         if not messages:
             return messages
-        json_schema = schema.model_json_schema()
         schema_hint = (
             "\n\n--- JSON SCHEMA (follow these field names exactly) ---\n"
-            + json.dumps(json_schema, indent=2, ensure_ascii=False)
+            + json.dumps(schema.model_json_schema(), indent=2, ensure_ascii=False)
             + "\n--- END SCHEMA ---\n"
-            "Return ONLY a JSON object that validates against this schema. "
-            "Do not include markdown fences, prose, or explanations."
+            "Return ONLY one JSON object that validates against this schema. "
+            "Do not include markdown fences, prose, comments, or reasoning."
         )
         augmented = list(messages)
         last = augmented[-1]
         augmented[-1] = Message(role=last.role, content=last.content + schema_hint)
         return augmented
+
+    @staticmethod
+    def _repair_messages(*, raw_output: str, schema: type[BaseModel]) -> list[Message]:
+        schema_json = json.dumps(schema.model_json_schema(), ensure_ascii=False)
+        clipped = raw_output[:_MAX_REPAIR_SOURCE_CHARS]
+        return [
+            Message(
+                role="system",
+                content=(
+                    "You are a deterministic structured-output repair function. "
+                    "Preserve the source meaning, remove prose and markdown, correct only "
+                    "syntax or schema-shape defects, and return exactly one JSON object."
+                ),
+            ),
+            Message(
+                role="user",
+                content=(
+                    f"Required JSON Schema:\n{schema_json}\n\n"
+                    f"Invalid provider output:\n{clipped}\n\n"
+                    "Return only the repaired JSON object. Do not add facts."
+                ),
+            ),
+        ]
 
     async def _post_with_retries(
         self,
@@ -397,3 +422,6 @@ class OpenAILLMProvider:
         if "response_format" in message or "json_schema" in message:
             return True
         return bool(err_type == "invalid_request_error" and error.get("param") is None)
+
+
+__all__ = ["OpenAILLMProvider"]
