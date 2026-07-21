@@ -183,3 +183,31 @@ def test_relation_provider_order_respects_configured_availability() -> None:
 def test_relation_provider_order_supports_openalex_only_configuration() -> None:
     providers = LiteratureSearchAdapter._relation_providers(("openalex",))
     assert providers == ("openalex",)
+
+
+def test_context_free_dataset_tokens_reject_models_and_metrics() -> None:
+    assert (
+        _dataset_relation_names(
+            "PatchTST missing data forecasting SNR AUC F1",
+            (_paper("A Time Series is Worth 64 Words"),),
+        )
+        == ()
+    )
+    assert _dataset_relation_names(
+        "GraphSAGE PPI inductive node classification Micro-F1",
+        (_paper("Inductive Representation Learning on Large Graphs"),),
+    ) == ("PPI",)
+    assert (
+        _dataset_relation_names(
+            "DeepGO protein function prediction low annotation coverage",
+            (_paper("DeepGOPlus: improved protein function prediction from sequence"),),
+        )
+        == ()
+    )
+
+
+def test_explicit_camelcase_dataset_context_remains_supported() -> None:
+    assert _dataset_relation_names(
+        "Evaluate on AudioSet dataset under device shift",
+        (),
+    ) == ("AudioSet",)

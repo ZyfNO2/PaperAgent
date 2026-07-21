@@ -85,6 +85,27 @@ _DATASET_GENERIC = frozenset(
         "image",
         "images",
         "challenge",
+        "auc",
+        "auprc",
+        "auroc",
+        "eer",
+        "f1",
+        "flops",
+        "fps",
+        "hr",
+        "iou",
+        "macro-f1",
+        "mae",
+        "map",
+        "micro-f1",
+        "mrr",
+        "mse",
+        "ndcg",
+        "ood",
+        "rmse",
+        "snr",
+        "sota",
+        "weighted-f1",
     }
 )
 _DATASET_MODEL_TOKENS = frozenset(
@@ -176,7 +197,9 @@ def _distinctive_dataset_tokens(text: str) -> tuple[str, ...]:
     names: list[str] = []
     for token in re.findall(r"\b[A-Za-z][A-Za-z0-9._-]{2,}\b", text):
         name = token.strip(".,;:()[]{}")
-        if _looks_like_dataset_name(name) and name not in names:
+        compact = re.sub(r"[^A-Za-z0-9]", "", name)
+        identity_like = compact.isupper() or any(char.isdigit() for char in compact)
+        if identity_like and _looks_like_dataset_name(name) and name not in names:
             names.append(name)
     return tuple(names)
 
