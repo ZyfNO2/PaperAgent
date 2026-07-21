@@ -221,3 +221,52 @@ def test_config_parses_native_schema_switch() -> None:
     )
 
     assert config.native_json_schema is False
+
+
+def test_retry_after_header_controls_rate_limit_backoff(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, Any] = {}
+    sleeps: list[float] = []
+
+    async def fake_sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+
+    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
+    responses = iter(
+        [
+            httpx.Response(
+                429,
+                json={"error": {"message": "rate limited"}},
+                headers={"Retry-After": "17"},
+                request=httpx.Request("POST", "https://example.test/v1/chat/completions"),
+            ),
+            _response(
+                200,
+                {"choices": [{"message": {"content": '{"status":"ok"}'}}]},
+            ),
+        ]
+    )
+    _install_fake_client(monkeypatch, responses, captured)
+    provider = OpenAILLMProvider(
+        api_key="test-key",
+        model="z-ai/glm-5.2",
+        base_url="https://example.test/v1",
+        max_retries=1,
+    )
+
+    reply = _generate(provider)
+
+    assert reply.status == "ok"
+    assert sleeps == [17.0]
+
+
+def test_rate_limit_without_header_uses_long_backoff() -> None:
+    response = httpx.Response(
+        429,
+        request=httpx.Request("POST", "https://example.test/v1/chat/completions"),
+    )
+
+    assert OpenAILLMProvider._http_retry_delay(response, 0) == 15.0
+    assert OpenAILLMProvider._http_retry_delay(response, 1) == 30.0
+    assert OpenAILLMProvider._http_retry_delay(response, 9) == 60.0

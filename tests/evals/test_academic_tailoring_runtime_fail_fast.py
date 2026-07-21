@@ -35,12 +35,25 @@ def test_fatal_permission_code_is_detected_from_trace_errors() -> None:
     )
 
 
-def test_transient_and_scientific_codes_do_not_abort_the_suite() -> None:
+def test_exhausted_rate_limit_trace_aborts_the_suite() -> None:
     module = _load_script()
     assert (
         module._fatal_provider_error_code_from_trace(
             {
                 "module_defer_reason": "LLM_RATE_LIMITED",
+                "trace_error_codes": ["NOT_EVALUATED", "FINAL_OUTCOME_AND_REPORT_PRESENT"],
+            }
+        )
+        == "LLM_RATE_LIMITED"
+    )
+
+
+def test_scientific_trace_codes_do_not_abort_the_suite() -> None:
+    module = _load_script()
+    assert (
+        module._fatal_provider_error_code_from_trace(
+            {
+                "module_defer_reason": None,
                 "trace_error_codes": ["NOT_EVALUATED", "FINAL_OUTCOME_AND_REPORT_PRESENT"],
             }
         )

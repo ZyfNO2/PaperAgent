@@ -47,6 +47,15 @@ _FATAL_PROVIDER_ERROR_CODES = frozenset(
         "LLM_AUTHENTICATION",
         "LLM_CONFIGURATION",
         "LLM_PERMISSION",
+        "LLM_RATE_LIMITED",
+        "LLM_PROVIDER_HTTP_ERROR",
+        "LLM_PROVIDER_5XX",
+        "LLM_CONNECT",
+        "LLM_TIMEOUT",
+        "LLM_INVALID_REQUEST",
+        "LLM_RESPONSE_FORMAT_UNSUPPORTED",
+        "LLM_RESPONSE_JSON_INVALID",
+        "LLM_RESPONSE_SCHEMA_INVALID",
     }
 )
 
@@ -363,6 +372,17 @@ async def _run(args: argparse.Namespace) -> int:
                     }
                 )
                 break
+            execution = state.get("execution")
+            execution_status = execution.get("status") if isinstance(execution, dict) else None
+            if execution_status != "completed":
+                errors.append(
+                    {
+                        "case_id": case_id,
+                        "error_type": "CaseExecutionIncomplete",
+                        "message": f"execution status was {execution_status!r}",
+                    }
+                )
+                continue
             completed_case_count += 1
         except ProviderError as exc:
             normalized = _normalize_provider_error_code(exc.error_code) or exc.code

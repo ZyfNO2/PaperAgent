@@ -28,6 +28,8 @@ from paperagent.schemas import Message, TokenUsage
 T = TypeVar("T", bound=BaseModel)
 
 _RETRY_BACKOFF_SECONDS: tuple[float, ...] = (0.5, 1.0, 2.0)
+_RATE_LIMIT_BACKOFF_SECONDS: tuple[float, ...] = (15.0, 30.0, 60.0)
+_MAX_RETRY_AFTER_SECONDS = 300.0
 
 
 class OpenAILLMProvider:
@@ -309,7 +311,7 @@ class OpenAILLMProvider:
                     ) from exc
                 code, retryable = self._classify_http_status(status)
                 if retryable and attempt < self._max_retries:
-                    await asyncio.sleep(self._retry_delay(attempt))
+                    await asyncio.sleep(self._http_retry_delay(exc.response, attempt))
                     continue
                 raise ProviderError(
                     f"HTTP {status} from {self.provider_name}",
@@ -341,6 +343,20 @@ class OpenAILLMProvider:
     @staticmethod
     def _retry_delay(attempt: int) -> float:
         return _RETRY_BACKOFF_SECONDS[min(attempt, len(_RETRY_BACKOFF_SECONDS) - 1)]
+
+    @classmethod
+    def _http_retry_delay(cls, response: httpx.Response, attempt: int) -> float:
+        if response.status_code != 429:
+            return cls._retry_delay(attempt)
+        retry_after = response.headers.get("Retry-After")
+        if retry_after:
+            try:
+                parsed = float(retry_after)
+            except ValueError:
+                parsed = -1.0
+            if parsed >= 0:
+                return min(parsed, _MAX_RETRY_AFTER_SECONDS)
+        return _RATE_LIMIT_BACKOFF_SECONDS[min(attempt, len(_RATE_LIMIT_BACKOFF_SECONDS) - 1)]
 
     @staticmethod
     def _classify_http_status(status: int) -> tuple[str, bool]:
