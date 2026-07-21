@@ -38,6 +38,7 @@ jobs:
           {
             python scripts/repair_academic_tailoring_retrieval_v1_truth_chain_v5.py
             python scripts/apply_academic_tailoring_retrieval_v1_truth_chain_v5.py
+            python scripts/fix_academic_tailoring_retrieval_v1_truth_chain_v5_generated.py
           } > build/truth-chain-diagnostics/apply.log 2>&1
           apply_status=$?
           ruff format \
