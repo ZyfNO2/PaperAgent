@@ -1,10 +1,36 @@
 {
-  "completed": 10,
-  "errors": [],
+  "attempted_case_ids": [
+    "atr-v1-001-cv-crack-fewshot"
+  ],
+  "completed": 0,
+  "errors": [
+    {
+      "case_id": "atr-v1-001-cv-crack-fewshot",
+      "error_type": "FatalLLMProviderError",
+      "message": "LLM_RESPONSE_JSON_INVALID"
+    }
+  ],
+  "fatal_provider_error": {
+    "case_id": "atr-v1-001-cv-crack-fewshot",
+    "code": "LLM_RESPONSE_JSON_INVALID",
+    "message": "fatal LLM provider failure surfaced in the case trace"
+  },
   "gold_absent_from_candidate_workspace": true,
-  "passed": true,
-  "prompt_records": 48,
+  "not_run_case_ids": [
+    "atr-v1-002-timeseries-patchtst-missing",
+    "atr-v1-003-nlp-bert-lora-clinc",
+    "atr-v1-004-medical-ham10000-small",
+    "atr-v1-005-remote-oriented-small-edge",
+    "atr-v1-006-industrial-usad-anomaly-transformer",
+    "atr-v1-007-graph-graphsage-gat-ppi",
+    "atr-v1-008-bio-protein-function-lowlabel",
+    "atr-v1-009-audio-panns-mimii-domain",
+    "atr-v1-010-rec-coldstart-sequential"
+  ],
+  "passed": false,
+  "prompt_records": 3,
   "public_dataset_sha256": "7e5d67536ca139bb935b8a80c69671f9a4c3c1c483e85ae05eccfbd0edde89ec",
+  "recorded_traces": 1,
   "schema": "paperagent.academic-tailoring-retrieval.runtime-summary.v1",
   "selected_case_count": 10,
   "selected_case_ids": [
@@ -19,7 +45,7 @@
     "atr-v1-009-audio-panns-mimii-domain",
     "atr-v1-010-rec-coldstart-sequential"
   ],
-  "source_sha": "b0f292672be7790d323e4ee3e37908b95f21994f",
+  "source_sha": "68ed54eb804323877162c80e7f22f52c27f2f468",
   "static_leakage_audit": {
     "findings": [],
     "passed": true
