@@ -57,6 +57,10 @@ def _normalized_github_repository_urls(paper: PaperRecord) -> list[tuple[str, st
 
 
 _QUOTED_TITLE = re.compile(r'["“](?P<title>[^"”]{8,})["”]')
+_BASELINE_ROLE_QUERY = re.compile(
+    r"(?:\bbaselines?\b|\bcomparators?\b|\bcomparison\b|基线|对照|比较|对比)",
+    re.IGNORECASE,
+)
 _DATASET_CONTEXT = re.compile(
     r"\b(?P<name>[A-Za-z][A-Za-z0-9._-]{2,})\s+(?:dataset|benchmark|corpus)\b",
     re.IGNORECASE,
@@ -135,6 +139,10 @@ def _quoted_title(query: str) -> str | None:
         return None
     title = match.group("title").strip()
     return title or None
+
+
+def _query_seeks_baseline_role(query: str) -> bool:
+    return bool(_BASELINE_ROLE_QUERY.search(query))
 
 
 def _identity_tokens(value: str) -> tuple[str, ...]:
@@ -465,7 +473,11 @@ class LiteratureSearchAdapter:
                 else (
                     "parallel_via_dataset"
                     if paper.paper_id in relation_paper_ids
-                    else "direct_query"
+                    else (
+                        "baseline_role_query"
+                        if _query_seeks_baseline_role(query.query)
+                        else "direct_query"
+                    )
                 )
             )
             candidates.extend(
@@ -695,7 +707,7 @@ class LiteratureSearchAdapter:
                     if relation == "declared_identity"
                     else (
                         {"baseline_candidate": "inferred"}
-                        if relation == "parallel_via_dataset"
+                        if relation in {"parallel_via_dataset", "baseline_role_query"}
                         else {}
                     )
                 ),

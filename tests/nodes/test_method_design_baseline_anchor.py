@@ -197,3 +197,27 @@ def test_direct_query_cannot_self_declare_inferred_baseline() -> None:
         },
     )
     assert _select_inferred_baseline_evidence((direct,)) is None
+
+
+def test_explicit_baseline_role_query_outranks_dataset_parallel_candidate() -> None:
+    role_query = _item(
+        "role-query",
+        "A Reproducible Baseline Returned by a Baseline Query",
+        metadata={
+            "baseline_candidate": "inferred",
+            "relation": "baseline_role_query",
+            "rank_score": "0.70",
+        },
+    )
+    dataset_parallel = _item(
+        "dataset-parallel",
+        "A Higher Scoring Dataset-Parallel Method",
+        metadata={
+            "baseline_candidate": "inferred",
+            "relation": "parallel_via_dataset",
+            "rank_score": "0.95",
+        },
+    )
+    selected = _select_inferred_baseline_evidence((dataset_parallel, role_query))
+    assert selected is not None
+    assert selected.evidence_id == "role-query"

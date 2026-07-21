@@ -8,6 +8,7 @@ from paperagent.literature.adapter import (
     _dataset_relation_names,
     _exact_title_match,
     _looks_like_dataset_name,
+    _query_seeks_baseline_role,
     _quoted_title,
 )
 from paperagent.schemas import SearchQuery
@@ -265,3 +266,26 @@ def test_declared_identity_remains_a_declared_baseline_candidate() -> None:
         relation="declared_identity",
     )
     assert candidate.metadata["baseline_candidate"] == "declared"
+
+
+def test_explicit_baseline_role_queries_are_propagated() -> None:
+    assert _query_seeks_baseline_role("task-matched baseline implementation")
+    assert _query_seeks_baseline_role("strong comparator under matched compute")
+    assert _query_seeks_baseline_role("retrieve a reproducible comparison method")
+    assert not _query_seeks_baseline_role("analyze the failure mechanism")
+
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q-baseline-role",
+        gap_id="g-baseline-role",
+        query="task-matched baseline implementation comparison",
+        source_types=["paper"],
+    )
+    candidate = adapter._candidate(
+        query,
+        _paper("A Reproducible Task-Matched Comparator"),
+        False,
+        relation="baseline_role_query",
+    )
+    assert candidate.metadata["relation"] == "baseline_role_query"
+    assert candidate.metadata["baseline_candidate"] == "inferred"

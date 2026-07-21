@@ -151,7 +151,8 @@ def _baseline_evidence_rank(item: EvidenceItem) -> tuple[int, int, float, str]:
     relation = item.metadata.get("relation", "")
     marker_rank = {"declared": 3, "inferred": 2}.get(marker, 0)
     relation_rank = {
-        "declared_identity": 3,
+        "declared_identity": 4,
+        "baseline_role_query": 3,
         "parallel_via_dataset": 2,
     }.get(relation, 0)
     try:
@@ -169,7 +170,7 @@ def _select_inferred_baseline_evidence(
         for item in candidates
         if item.source_type == "paper"
         and item.metadata.get("baseline_candidate") == "inferred"
-        and item.metadata.get("relation") == "parallel_via_dataset"
+        and item.metadata.get("relation") in {"baseline_role_query", "parallel_via_dataset"}
     )
     if not papers:
         return None
@@ -199,7 +200,8 @@ def _module_evidence_rank(
         return (-1, -1, -1.0, item.evidence_id)
     relation = item.metadata.get("relation", "")
     relation_rank = {
-        "direct_query": 3,
+        "direct_query": 4,
+        "baseline_role_query": 3,
         "parallel_via_dataset": 2,
         "declared_identity": 1,
     }.get(relation, 0)
