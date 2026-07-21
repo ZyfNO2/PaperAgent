@@ -104,8 +104,8 @@ jobs:
           remote = cases["atr-v1-005-remote-oriented-small-edge"]
           assert remote["scoring_audit"]["baseline_target_match"] is False, remote
           assert "wrong_paper_identity" in remote["hard_failures"], remote
-          usad = cases["atr-v1-006-industrial-usad-anomaly-transformer"]
-          assert usad["scoring_audit"]["baseline_target_match"] is True, usad
+          patchtst = cases["atr-v1-002-timeseries-patchtst-missing"]
+          assert patchtst["scoring_audit"]["baseline_target_match"] is True, patchtst
           assert report["prompt_leakage_findings"] == [], report
           print(json.dumps(report, ensure_ascii=False, indent=2))
           PY
