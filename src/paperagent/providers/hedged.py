@@ -57,7 +57,7 @@ class HedgedLLMProvider:
         messages: list[Message],
     ) -> T:
         active: dict[asyncio.Task[T], LLMProvider] = {}
-        failures: list[BaseException] = []
+        failures: list[Exception] = []
 
         def launch(delegate: LLMProvider) -> None:
             request = delegate.generate_structured(
@@ -94,7 +94,7 @@ class HedgedLLMProvider:
                     result = completed.result()
                 except asyncio.CancelledError:
                     raise
-                except BaseException as exc:
+                except Exception as exc:
                     failures.append(exc)
                     continue
                 copy_winner_metrics(delegate)
