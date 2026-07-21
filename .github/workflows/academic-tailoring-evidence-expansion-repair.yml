@@ -85,12 +85,40 @@ jobs:
             scripts/apply_evidence_graph_expansion_v1.py \
             scripts/fix_evidence_graph_expansion_v1_generated.py \
             .github/workflows/academic-tailoring-evidence-expansion-repair.yml
-      - name: Run full offline regression
+      - name: Run final tree regression diagnostics
+        shell: bash
         run: |
-          pytest -q
-          mypy --config-file pyproject.toml
-          ruff check src tests scripts
-          ruff format --check src tests scripts
+          mkdir -p build/evidence-expansion-final
+          set +e
+          pytest -q > build/evidence-expansion-final/pytest.log 2>&1
+          pytest_status=$?
+          mypy --config-file pyproject.toml > build/evidence-expansion-final/mypy.log 2>&1
+          mypy_status=$?
+          ruff check src tests scripts > build/evidence-expansion-final/ruff-check.log 2>&1
+          ruff_status=$?
+          ruff format --check src tests scripts > build/evidence-expansion-final/ruff-format.log 2>&1
+          format_status=$?
+          printf '{"pytest":%s,"mypy":%s,"ruff":%s,"format":%s}\n' \
+            "$pytest_status" "$mypy_status" "$ruff_status" "$format_status" \
+            > build/evidence-expansion-final/status.json
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-evidence-expansion-final-regression
+          path: build/evidence-expansion-final/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Enforce final tree regression
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(Path("build/evidence-expansion-final/status.json").read_text())
+          print(status)
+          if any(status.values()):
+              raise SystemExit(status)
+          PY
       - name: Commit production implementation
         shell: bash
         run: |
