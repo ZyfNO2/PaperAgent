@@ -12,6 +12,17 @@ on:
       - "tests/evals/test_academic_tailoring_retrieval_v1_boundary.py"
       - ".github/workflows/academic-tailoring-retrieval-v1-live-test.yml"
       - "src/paperagent/**"
+  pull_request:
+    branches:
+      - eval/academic-tailoring-retrieval-v1-authoring
+    paths:
+      - "evals/academic_tailoring_retrieval_v1/**"
+      - "scripts/project_academic_tailoring_retrieval_v1.py"
+      - "scripts/run_academic_tailoring_retrieval_v1.py"
+      - "scripts/score_academic_tailoring_retrieval_v1.py"
+      - "tests/evals/test_academic_tailoring_retrieval_v1_boundary.py"
+      - ".github/workflows/academic-tailoring-retrieval-v1-live-test.yml"
+      - "src/paperagent/**"
   workflow_dispatch:
 
 permissions:
