@@ -37,8 +37,17 @@ jobs:
         run: |
           mkdir -p build/baseline-comparator-role-diagnostics
           set +e
-          python scripts/apply_baseline_comparator_role_split_v1.py \
-            > build/baseline-comparator-role-diagnostics/apply.log 2>&1
+          python - <<'PY' > build/baseline-comparator-role-diagnostics/apply.log 2>&1
+          import runpy
+          namespace = runpy.run_path(
+              "scripts/apply_baseline_comparator_role_split_v1.py",
+              run_name="baseline_comparator_role_patch",
+          )
+          namespace["patch_adapter"]()
+          namespace["patch_method"]()
+          namespace["patch_planning"]()
+          namespace["patch_tests"]()
+          PY
           status=$?
           echo "status=$status" >> "$GITHUB_OUTPUT"
           exit 0
