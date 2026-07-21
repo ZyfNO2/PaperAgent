@@ -229,7 +229,6 @@ def test_flat_draft_builds_aligned_canonical_method_proposal() -> None:
         ExperimentArmType.BASELINE,
         ExperimentArmType.SINGLE_MODULE,
         ExperimentArmType.FULL,
-        ExperimentArmType.STRONG_COMPARISON,
     }
     audit = audit_method_plan(proposal.methodology_plan)
     assert audit.verdict is AuditVerdict.REVISE
@@ -395,3 +394,76 @@ def test_unqualified_direct_paper_does_not_become_baseline() -> None:
     assert experiments["E0-frozen-baseline"].source_evidence_id is None
     assert experiments["E1-single-module"].source_evidence_id == _EVIDENCE_ID
     assert experiments["E2-full-method"].source_evidence_id == _EVIDENCE_ID
+
+
+def test_reported_comparator_requires_independent_paper_identity() -> None:
+    state = _state()
+    proposal = build_method_proposal(
+        state,
+        _draft(comparison_readiness_confirmed=True),
+    )
+    assert all(
+        experiment.arm_type is not ExperimentArmType.STRONG_COMPARISON
+        for experiment in proposal.methodology_plan.experiments
+    )
+
+
+def test_independent_comparator_paper_creates_strong_comparison_arm() -> None:
+    state = _state()
+    evidence = state["evidence"]
+    assert evidence is not None
+    comparator_id = "ev-rt-detr-r18"
+    comparator_item = EvidenceItem(
+        evidence_id=comparator_id,
+        source_type="paper",
+        title="RT-DETR-R18",
+        locator="doi:10.1000/rt-detr-r18",
+        retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+        verification_status="accepted",
+        supports_gap_ids=["baseline_comparison"],
+        summary=(
+            "RT-DETR-R18 is a task-matched detector comparison with a documented paper identity."
+        ),
+        content_hash="sha256:rt-detr-r18",
+        provider="literature_retrieval",
+        metadata={
+            "doi": "10.1000/rt-detr-r18",
+            "comparator_candidate": "inferred",
+            "relation": "comparator_role_query",
+            "rank_score": "0.95",
+        },
+    )
+    comparator_state = cast(
+        PaperAgentState,
+        {
+            **state,
+            "evidence": evidence.model_copy(
+                update={
+                    "items": [*evidence.items, comparator_item],
+                    "accepted_ids": [*evidence.accepted_ids, comparator_id],
+                    "identity_verified_ids": [
+                        *evidence.identity_verified_ids,
+                        comparator_id,
+                    ],
+                    "coverage_by_gap": {
+                        **evidence.coverage_by_gap,
+                        "baseline_comparison": (
+                            evidence.coverage_by_gap.get("baseline_comparison", 0) + 1
+                        ),
+                    },
+                }
+            ),
+        },
+    )
+    proposal = build_method_proposal(
+        comparator_state,
+        _draft(comparison_readiness_confirmed=True),
+    )
+    strong = [
+        experiment
+        for experiment in proposal.methodology_plan.experiments
+        if experiment.arm_type is ExperimentArmType.STRONG_COMPARISON
+    ]
+    assert len(strong) == 1
+    assert strong[0].comparator == "RT-DETR-R18"
+    assert strong[0].source_evidence_id == comparator_id

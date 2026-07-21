@@ -234,3 +234,28 @@ def test_comparator_role_candidate_is_not_eligible_as_baseline() -> None:
         },
     )
     assert _select_inferred_baseline_evidence((comparator,)) is None
+
+
+def test_comparator_candidate_is_not_selected_as_module_source() -> None:
+    baseline = _item(
+        "baseline-module-source",
+        "A Task-Matched Baseline and Mechanism Paper",
+        metadata={
+            "baseline_candidate": "inferred",
+            "relation": "parallel_via_dataset",
+            "rank_score": "0.70",
+            "license": "CC BY 4.0",
+        },
+    )
+    comparator = _item(
+        "comparator-not-module",
+        "A Strong Independent Comparator",
+        metadata={
+            "comparator_candidate": "inferred",
+            "relation": "comparator_role_query",
+            "rank_score": "0.99",
+        },
+    )
+    selected = _select_module_evidence((baseline, comparator), baseline=baseline)
+    assert selected is not None
+    assert selected.evidence_id == baseline.evidence_id

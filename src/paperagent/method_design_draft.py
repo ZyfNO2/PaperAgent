@@ -247,7 +247,13 @@ def _select_module_evidence(
     *,
     baseline: EvidenceItem | None,
 ) -> EvidenceItem | None:
-    papers = tuple(item for item in candidates if item.source_type == "paper")
+    papers = tuple(
+        item
+        for item in candidates
+        if item.source_type == "paper"
+        and item.metadata.get("comparator_candidate") != "inferred"
+        and item.metadata.get("relation") != "comparator_role_query"
+    )
     if not papers:
         return None
     baseline_id = baseline.evidence_id if baseline is not None else None
@@ -340,17 +346,19 @@ def _grounded_optional(value: str | None, evidence_text: str) -> str | None:
     return normalized if normalized.casefold() in evidence_text.casefold() else None
 
 
-def _grounded_evidence_id(value: str | None, accepted: tuple[EvidenceItem, ...]) -> str | None:
-    if value is None:
-        return None
-    normalized = value.strip().casefold()
-    if not normalized:
+def _select_reported_comparator_evidence(
+    value: str | None,
+    accepted: tuple[EvidenceItem, ...],
+) -> EvidenceItem | None:
+    if value is None or not value.strip():
         return None
     for item in accepted:
-        title = getattr(item, "title", "")
-        summary = getattr(item, "summary", "")
-        if normalized in f"{title}\n{summary}".casefold():
-            return item.evidence_id
+        if (
+            item.source_type == "paper"
+            and not _is_review_evidence(item.title, item.summary)
+            and _titles_equivalent(item.title, value.strip())
+        ):
+            return item
     return None
 
 
@@ -491,8 +499,18 @@ def build_method_proposal(
     grounded_dataset = _grounded_optional(draft.reported_dataset, evidence_text)
     if grounded_dataset is None and dataset_evidence is not None:
         grounded_dataset = dataset_evidence.title
-    grounded_comparator = _grounded_optional(draft.reported_comparator, evidence_text)
-    comparator_evidence_id = _grounded_evidence_id(grounded_comparator, accepted)
+    reported_comparator_evidence = _select_reported_comparator_evidence(
+        draft.reported_comparator,
+        accepted,
+    )
+    grounded_comparator = (
+        reported_comparator_evidence.title if reported_comparator_evidence is not None else None
+    )
+    comparator_evidence_id = (
+        reported_comparator_evidence.evidence_id
+        if reported_comparator_evidence is not None
+        else None
+    )
     if draft.comparison_readiness_confirmed and (
         grounded_comparator is None or comparator_evidence_id is None
     ):
