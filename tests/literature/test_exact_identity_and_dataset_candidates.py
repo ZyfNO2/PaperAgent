@@ -206,6 +206,13 @@ def test_context_free_dataset_tokens_reject_models_and_metrics() -> None:
     )
 
 
+def test_compound_f1_variants_are_not_dataset_anchors() -> None:
+    assert _dataset_relation_names(
+        "PPI node classification Macro-F1 Weighted-F1",
+        (_paper("Inductive Representation Learning on Large Graphs"),),
+    ) == ("PPI",)
+
+
 def test_explicit_camelcase_dataset_context_remains_supported() -> None:
     assert _dataset_relation_names(
         "Evaluate on AudioSet dataset under device shift",
