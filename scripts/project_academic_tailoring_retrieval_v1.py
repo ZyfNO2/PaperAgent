@@ -138,7 +138,6 @@ def project_public_dataset(dataset: dict[str, Any]) -> dict[str, Any]:
     public = {
         "schema": PUBLIC_SCHEMA,
         "dataset_id": dataset["dataset_id"],
-        "source_authoring_sha256": _sha256(dataset),
         "candidate_contract": {
             "executor_fields": [
                 "benchmark_input.user_input",
@@ -173,8 +172,6 @@ def verify_gold_mutation_invariance(dataset: dict[str, Any]) -> str:
         case["gold"] = _replace_gold_strings(case["gold"], counter=counter)
     original_projection = project_public_dataset(dataset)
     mutated_projection = project_public_dataset(mutated)
-    original_projection.pop("source_authoring_sha256", None)
-    mutated_projection.pop("source_authoring_sha256", None)
     original_projection.pop("public_sha256", None)
     mutated_projection.pop("public_sha256", None)
     if _canonical_bytes(original_projection) != _canonical_bytes(mutated_projection):
@@ -183,7 +180,9 @@ def verify_gold_mutation_invariance(dataset: dict[str, Any]) -> str:
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Project the v1 authoring set into Gold-free inputs")
+    parser = argparse.ArgumentParser(
+        description="Project the v1 authoring set into Gold-free inputs"
+    )
     parser.add_argument("--authoring", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
