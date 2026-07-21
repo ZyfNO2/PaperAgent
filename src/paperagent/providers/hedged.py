@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Sequence
-from typing import Any, TypeVar
+from typing import TypeVar
 
 from pydantic import BaseModel
 
@@ -58,7 +58,6 @@ class HedgedLLMProvider:
     ) -> T:
         active: dict[asyncio.Task[T], LLMProvider] = {}
         failures: list[BaseException] = []
-        backups_started = False
 
         def launch(delegate: LLMProvider) -> None:
             request = delegate.generate_structured(
@@ -121,7 +120,6 @@ class HedgedLLMProvider:
 
             for delegate in self._delegates[1:]:
                 launch(delegate)
-            backups_started = True
 
             while active:
                 done, _ = await asyncio.wait(
@@ -138,7 +136,6 @@ class HedgedLLMProvider:
         finally:
             if active:
                 await cancel_active()
-            del backups_started
 
 
 __all__ = ["HedgedLLMProvider"]
