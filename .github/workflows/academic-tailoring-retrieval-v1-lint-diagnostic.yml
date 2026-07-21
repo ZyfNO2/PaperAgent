@@ -6,10 +6,6 @@ on:
       - eval/academic-tailoring-retrieval-v1-live-test
     paths:
       - ".github/workflows/academic-tailoring-retrieval-v1-lint-diagnostic.yml"
-      - "scripts/project_academic_tailoring_retrieval_v1.py"
-      - "scripts/run_academic_tailoring_retrieval_v1.py"
-      - "scripts/score_academic_tailoring_retrieval_v1.py"
-      - "tests/evals/test_academic_tailoring_retrieval_v1_boundary.py"
 
 permissions:
   contents: write
@@ -36,14 +32,18 @@ jobs:
             scripts/project_academic_tailoring_retrieval_v1.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/nodes/planning.py \
             tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
+            tests/nodes/test_intake_planning.py \
             > artifacts/evaluation/academic_tailoring_retrieval_v1/lint/format.txt 2>&1
           format_exit=$?
           ruff check \
             scripts/project_academic_tailoring_retrieval_v1.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/nodes/planning.py \
             tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
+            tests/nodes/test_intake_planning.py \
             > artifacts/evaluation/academic_tailoring_retrieval_v1/lint/check.txt 2>&1
           check_exit=$?
           printf '{"format_exit":%s,"check_exit":%s,"source_sha":"%s"}\n' \
