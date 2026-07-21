@@ -33,7 +33,7 @@ def _response(body: dict[str, Any]) -> httpx.Response:
 
 def test_accepts_fenced_json_with_surrounding_prose() -> None:
     reply = validate_structured_response(
-        _body("Result follows:\n```json\n{\"status\":\"ok\",\"count\":2}\n```\nDone."),
+        _body('Result follows:\n```json\n{"status":"ok","count":2}\n```\nDone.'),
         _Reply,
     )
     assert reply == _Reply(status="ok", count=2)
@@ -88,9 +88,7 @@ def test_accepts_legacy_choice_text_and_safe_python_literal() -> None:
 
 
 def test_uses_later_schema_valid_json_candidate() -> None:
-    body = _body(
-        'First draft: {"status": 7}. Corrected: {"status":"ok","count":6}'
-    )
+    body = _body('First draft: {"status": 7}. Corrected: {"status":"ok","count":6}')
     assert validate_structured_response(body, _Reply) == _Reply(status="ok", count=6)
 
 
