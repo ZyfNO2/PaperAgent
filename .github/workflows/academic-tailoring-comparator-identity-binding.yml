@@ -32,7 +32,25 @@ jobs:
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
       - name: Apply comparator identity binding
-        run: python scripts/apply_comparator_identity_binding_v1.py
+        id: apply_patch
+        shell: bash
+        run: |
+          mkdir -p build/comparator-identity-diagnostics
+          set +e
+          python scripts/apply_comparator_identity_binding_v1.py \
+            > build/comparator-identity-diagnostics/apply.log 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-comparator-identity-diagnostics
+          path: build/comparator-identity-diagnostics/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Enforce patch application
+        run: test "${{ steps.apply_patch.outputs.status }}" = "0"
       - name: Format and lint changed paths
         run: |
           ruff format \
