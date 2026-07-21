@@ -118,9 +118,7 @@ def _build_runtime_summary(
         "selected_case_count": len(cases),
         "attempted_case_ids": list(attempted_case_ids),
         "not_run_case_ids": [
-            str(case["case_id"])
-            for case in cases
-            if str(case["case_id"]) not in attempted
+            str(case["case_id"]) for case in cases if str(case["case_id"]) not in attempted
         ],
         "recorded_traces": len(traces),
         "completed": completed_case_count,
@@ -133,9 +131,7 @@ def _build_runtime_summary(
         "prompt_records": prompt_records,
         "gold_absent_from_candidate_workspace": not allow_gold_in_workspace,
         "passed": (
-            completed_case_count == len(cases)
-            and fatal_provider_error is None
-            and not errors
+            completed_case_count == len(cases) and fatal_provider_error is None and not errors
         ),
     }
 
@@ -149,17 +145,11 @@ def _write_runtime_outputs(
 ) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "states.jsonl").write_text(
-        "".join(
-            json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n"
-            for item in states
-        ),
+        "".join(json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n" for item in states),
         encoding="utf-8",
     )
     (output_dir / "run-traces.jsonl").write_text(
-        "".join(
-            json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n"
-            for item in traces
-        ),
+        "".join(json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n" for item in traces),
         encoding="utf-8",
     )
     _write_json(output_dir / "execution-summary.json", summary)
@@ -326,9 +316,7 @@ async def _run(args: argparse.Namespace) -> int:
         return summary
 
     persist_checkpoint()
-    for index, (case, search_budget) in enumerate(
-        zip(cases, budgets, strict=True), start=1
-    ):
+    for index, (case, search_budget) in enumerate(zip(cases, budgets, strict=True), start=1):
         case_id = str(case["case_id"])
         attempted_case_ids.append(case_id)
         persist_checkpoint()
