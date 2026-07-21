@@ -101,6 +101,22 @@ _RESULT_CUES = (
     "提升",
     "下降",
 )
+_COMPARATIVE_EXPERIMENT_CUES = (
+    "experimental results",
+    "experiments demonstrate",
+    "experiments show",
+    "extensive experiments",
+    "evaluation demonstrates",
+    "outperforms",
+    "outperformed",
+    "superiority",
+    "competitive performance",
+    "实验结果",
+    "实验证明",
+    "大量实验",
+    "优于",
+    "具有竞争力",
+)
 _LIMITATION_CUES = (
     "limitation",
     "fails",
@@ -252,10 +268,17 @@ def _has_concrete_method_identity(item: EvidenceItem) -> bool:
 def _baseline_role_support(item: EvidenceItem, text: str) -> bool:
     concrete_method = _has_concrete_method_identity(item)
     evaluation_setting = any(cue in text for cue in _EVALUATION_CUES)
-    measured_result = bool(_METRIC_PATTERN.search(text)) and (
+    explicit_metric_result = bool(_METRIC_PATTERN.search(text)) and (
         bool(_NUMBER_PATTERN.search(text)) or any(cue in text for cue in _RESULT_CUES)
     )
-    return concrete_method and evaluation_setting and measured_result
+    comparative_experiment = evaluation_setting and any(
+        cue in text for cue in _COMPARATIVE_EXPERIMENT_CUES
+    )
+    return (
+        concrete_method
+        and evaluation_setting
+        and (explicit_metric_result or comparative_experiment)
+    )
 
 
 def _mechanism_role_support(text: str) -> bool:

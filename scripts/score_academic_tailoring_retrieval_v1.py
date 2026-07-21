@@ -92,6 +92,110 @@ def _asset_matches(asset: dict[str, Any], state_text: str) -> bool:
     return False
 
 
+def _titles_related(left: str, right: str) -> bool:
+    left_normalized = _normalize(left)
+    right_normalized = _normalize(right)
+    if not left_normalized or not right_normalized:
+        return False
+    if left_normalized in right_normalized or right_normalized in left_normalized:
+        return True
+    left_tokens = set(left_normalized.split())
+    right_tokens = set(right_normalized.split())
+    smaller = min(len(left_tokens), len(right_tokens))
+    if smaller < 3:
+        return False
+    overlap = len(left_tokens & right_tokens)
+    return overlap / smaller >= 0.8
+
+
+def _state_evidence_items(state: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    evidence = state.get("evidence", {})
+    raw_items = evidence.get("items", []) if isinstance(evidence, dict) else []
+    return {
+        str(item["evidence_id"]): item
+        for item in raw_items
+        if isinstance(item, dict) and item.get("evidence_id")
+    }
+
+
+def _accepted_verified_items(
+    state: dict[str, Any], trace: AcademicTailoringRunTrace
+) -> list[dict[str, Any]]:
+    items_by_id = _state_evidence_items(state)
+    accepted_review_ids = {
+        item.evidence_id
+        for item in trace.evidence_reviews
+        if item.accepted and item.identity_verified and item.relevance_passed
+    }
+    state_evidence = state.get("evidence", {})
+    state_accepted_ids = {
+        str(value)
+        for value in (
+            state_evidence.get("accepted_ids", []) if isinstance(state_evidence, dict) else []
+        )
+    }
+    valid_ids = accepted_review_ids & state_accepted_ids
+    return [items_by_id[evidence_id] for evidence_id in valid_ids if evidence_id in items_by_id]
+
+
+def _accepted_asset_matches(assets: list[dict[str, Any]], items: list[dict[str, Any]]) -> int:
+    accepted_text = _normalize("\n".join(_flatten_strings(items)))
+    return sum(_asset_matches(asset, accepted_text) for asset in assets)
+
+
+def _declared_baseline_titles(case: dict[str, Any]) -> list[str]:
+    supplied = case.get("public_input", {}).get("supplied_materials", [])
+    titles: list[str] = []
+    for item in supplied:
+        if not isinstance(item, dict):
+            continue
+        role = str(item.get("declared_role", "")).casefold()
+        title = item.get("title")
+        if "baseline" in role and isinstance(title, str) and title.strip():
+            titles.append(title)
+    return titles
+
+
+def _gold_baseline_titles(case: dict[str, Any]) -> list[str]:
+    gold = case.get("gold", {})
+    titles: list[str] = []
+    baseline_decision = gold.get("baseline_decision", {})
+    if isinstance(baseline_decision, dict):
+        canonical = baseline_decision.get("canonical")
+        if isinstance(canonical, str) and canonical.strip():
+            titles.append(canonical)
+    for item in gold.get("expected_assets", []):
+        if not isinstance(item, dict) or item.get("kind") != "paper":
+            continue
+        role = str(item.get("role", "")).casefold()
+        title = item.get("title")
+        if "baseline" in role and isinstance(title, str) and title.strip():
+            titles.append(title)
+    return list(dict.fromkeys(titles))
+
+
+def _baseline_target_titles(case: dict[str, Any]) -> list[str]:
+    declared = _declared_baseline_titles(case)
+    return declared if declared else _gold_baseline_titles(case)
+
+
+def _specific_protocol_text(value: str | None) -> bool:
+    if not isinstance(value, str) or not value.strip():
+        return False
+    folded = value.casefold()
+    unresolved = (
+        "unresolved",
+        "not yet",
+        "unknown",
+        "select and freeze",
+        "preserve the documented",
+        "待确定",
+        "未确定",
+        "未知",
+    )
+    return not any(marker in folded for marker in unresolved)
+
+
 def _gold_only_phrases(case: dict[str, Any]) -> list[str]:
     gold = case.get("gold", {})
     phrases: list[str] = []
@@ -170,25 +274,43 @@ def _score_case(
         }
 
     gold = case["gold"]
-    state_text = _normalize("\n".join(_flatten_strings(state)))
     expected_assets = [item for item in gold.get("expected_assets", []) if isinstance(item, dict)]
     paper_assets = [item for item in expected_assets if item.get("kind") == "paper"]
     repo_assets = [item for item in expected_assets if item.get("kind") == "repository"]
     dataset_assets = [item for item in expected_assets if item.get("kind") == "dataset"]
-    matched_papers = sum(_asset_matches(item, state_text) for item in paper_assets)
-    matched_repos = sum(_asset_matches(item, state_text) for item in repo_assets)
-    matched_datasets = sum(_asset_matches(item, state_text) for item in dataset_assets)
 
-    accepted_verified = [
-        item
-        for item in trace.evidence_reviews
-        if item.accepted and item.identity_verified and item.relevance_passed
-    ]
-    accepted_repos = [item for item in accepted_verified if item.source_type == "repository"]
+    accepted_items = _accepted_verified_items(state, trace)
+    accepted_items_by_id = {
+        str(item["evidence_id"]): item for item in accepted_items if item.get("evidence_id")
+    }
+    accepted_papers = [item for item in accepted_items if item.get("source_type") == "paper"]
+    accepted_repos = [item for item in accepted_items if item.get("source_type") == "repository"]
+    accepted_datasets = [item for item in accepted_items if item.get("source_type") == "dataset"]
+    matched_papers = _accepted_asset_matches(paper_assets, accepted_papers)
+    matched_repos = _accepted_asset_matches(repo_assets, accepted_repos)
+    matched_datasets = _accepted_asset_matches(dataset_assets, accepted_datasets)
+
     baseline = trace.baseline
+    baseline_targets = _baseline_target_titles(case)
+    baseline_source_item = (
+        accepted_items_by_id.get(baseline.source_evidence_id)
+        if baseline is not None and baseline.source_evidence_id
+        else None
+    )
+    baseline_source_title = (
+        str(baseline_source_item.get("title", "")) if baseline_source_item is not None else ""
+    )
+    baseline_target_match = bool(
+        baseline is not None
+        and baseline_targets
+        and any(
+            _titles_related(baseline.name, target) or _titles_related(baseline_source_title, target)
+            for target in baseline_targets
+        )
+    )
 
     identity_score = 0
-    if accepted_verified:
+    if accepted_papers:
         identity_score += 5
     if paper_assets:
         identity_score += round(10 * matched_papers / len(paper_assets))
@@ -197,43 +319,25 @@ def _score_case(
     identity_score = min(15, identity_score)
 
     baseline_score = 0
-    if baseline is not None:
+    if baseline is not None and baseline_source_item is not None:
         baseline_score += 5
-        baseline_decision = gold.get("baseline_decision", {})
-        canonical = (
-            baseline_decision.get("canonical") if isinstance(baseline_decision, dict) else None
-        )
-        supplied_titles = case.get("public_input", {}).get("supplied_materials", [])
-        baseline_targets = [canonical] + [item.get("title") for item in supplied_titles]
-        if any(
-            isinstance(target, str) and _title_matches(target, _normalize(baseline.name))
-            for target in baseline_targets
-        ):
+        if baseline_target_match:
             baseline_score += 5
         if baseline.source_evidence_id:
             baseline_score += 2
         if baseline.version_or_commit:
             baseline_score += 3
-        elif not baseline.reproduced:
-            baseline_score += 1
     baseline_score = min(15, baseline_score)
 
     dataset_score = 0
     if dataset_assets:
-        dataset_score += round(5 * matched_datasets / len(dataset_assets))
-    elif baseline is not None and baseline.dataset:
-        dataset_score += 5
-    fact_count = sum(
-        len(values)
-        for values in (
-            trace.fact_partitions.verified,
-            trace.fact_partitions.inferred,
-            trace.fact_partitions.proposed,
-            trace.fact_partitions.unknown,
-        )
-    )
-    if fact_count >= 3:
-        dataset_score += 5
+        dataset_score += round(7 * matched_datasets / len(dataset_assets))
+    elif accepted_datasets:
+        dataset_score += 7
+    if baseline is not None and _specific_protocol_text(baseline.dataset):
+        dataset_score += 2
+    if baseline is not None and _specific_protocol_text(baseline.split):
+        dataset_score += 1
     dataset_score = min(10, dataset_score)
 
     repository_score = 0
@@ -245,21 +349,33 @@ def _score_case(
         repository_score += 3
     repository_score = min(10, repository_score)
 
+    accepted_review_by_id = {
+        item.evidence_id: item for item in trace.evidence_reviews if item.accepted
+    }
+    gap_evidence_count = sum(
+        item.role in {"gap", "negative_result", "risk"} for item in accepted_review_by_id.values()
+    )
     gap_score = 0
-    if "gap" in trace.retrieval_roles:
-        gap_score += 3
-    if trace.fact_partitions.inferred or trace.fact_partitions.proposed:
-        gap_score += 3
-    if trace.stop_conditions:
+    if gap_evidence_count:
+        gap_score += 4
+    if trace.fact_partitions.verified and (
+        trace.fact_partitions.inferred or trace.fact_partitions.proposed
+    ):
+        gap_score += 2
+    if len(trace.stop_conditions) >= 2:
         gap_score += 4
     gap_score = min(10, gap_score)
 
+    valid_evidence_ids = set(accepted_items_by_id)
     module_score = 0
+    evidence_backed_modules = 0
     if trace.modules:
         module_score += 3
-        provenance_count = sum(bool(item.evidence_id) for item in trace.modules)
+        evidence_backed_modules = sum(
+            item.evidence_id in valid_evidence_ids for item in trace.modules
+        )
         role_count = sum(bool(item.original_role and item.proposed_role) for item in trace.modules)
-        module_score += round(4 * provenance_count / len(trace.modules))
+        module_score += round(4 * evidence_backed_modules / len(trace.modules))
         module_score += round(3 * role_count / len(trace.modules))
     elif trace.module_design_deferred and trace.module_defer_reason:
         module_score = 4
@@ -272,15 +388,20 @@ def _score_case(
             for item in trace.modules
         )
         switch_count = sum(bool(item.implementation_switch) for item in trace.modules)
-        compatible_count = sum(item.role_compatible is not False for item in trace.modules)
-        compatibility_score += round(9 * semantic_count / len(trace.modules))
-        compatibility_score += round(3 * switch_count / len(trace.modules))
-        compatibility_score += round(3 * compatible_count / len(trace.modules))
+        explicitly_compatible_count = sum(item.role_compatible is True for item in trace.modules)
+        compatibility_score += round(6 * semantic_count / len(trace.modules))
+        compatibility_score += round(2 * switch_count / len(trace.modules))
+        compatibility_score += round(4 * explicitly_compatible_count / len(trace.modules))
+        compatibility_score += round(3 * evidence_backed_modules / len(trace.modules))
     elif trace.module_design_deferred:
-        compatibility_score = 5
+        compatibility_score = 3
     compatibility_score = min(15, compatibility_score)
 
-    hypothesis_score = 5 if _complete_hypothesis(trace) else 0
+    hypothesis_score = 0
+    if _complete_hypothesis(trace):
+        hypothesis_score += 3
+        if baseline_target_match and accepted_items:
+            hypothesis_score += 2
 
     experiment_score = 0
     arm_types = {item.arm_type for item in trace.experiments}
@@ -289,12 +410,17 @@ def _score_case(
     if arm_types & {"full", "single_module", "interaction"}:
         experiment_score += 2
     if "strong_comparison" in arm_types:
-        experiment_score += 2
+        experiment_score += 1
     if any(item.metrics for item in trace.experiments):
         experiment_score += 1
     if any(len(item.seeds) >= 3 or item.uncertainty_reporting for item in trace.experiments):
         experiment_score += 1
     if trace.stop_conditions or any(item.stopping_criteria for item in trace.experiments):
+        experiment_score += 1
+    if trace.experiments and all(
+        _specific_protocol_text(item.dataset) and _specific_protocol_text(item.split)
+        for item in trace.experiments
+    ):
         experiment_score += 2
     experiment_score = min(10, experiment_score)
 
@@ -316,8 +442,14 @@ def _score_case(
         hard_failures.append("benchmark_leakage")
     if trace.fabricated_items:
         hard_failures.append("fabricated_item")
-    if not accepted_verified:
+    if not accepted_items:
         hard_failures.append("no_real_retrieval")
+    if baseline is not None and baseline_source_item is None:
+        hard_failures.append("baseline_not_bound_to_accepted_evidence")
+    if baseline is not None and baseline_targets and not baseline_target_match:
+        hard_failures.append("wrong_paper_identity")
+    if baseline is None and baseline_targets:
+        hard_failures.append("missing_required_baseline")
     if (
         baseline is not None
         and baseline.reproduced
@@ -333,11 +465,17 @@ def _score_case(
         hard_failures.append("repository_exists_claimed_as_reproduced")
     if any(item.role_compatible is False for item in trace.modules):
         hard_failures.append("unsupported_compatibility")
+    if any(item.evidence_id not in valid_evidence_ids for item in trace.modules):
+        hard_failures.append("module_not_bound_to_accepted_evidence")
     if any(
         item.accepted and item.core_evidence and item.role in (None, "other")
         for item in trace.evidence_reviews
     ):
         hard_failures.append("evidence_role_mismatch")
+    if trace.decision == "ACCEPT" and (
+        hard_failures or not baseline_target_match or dataset_score < 5 or repository_score < 3
+    ):
+        hard_failures.append("unsupported_acceptance")
 
     return {
         "case_id": case["case_id"],
@@ -354,6 +492,16 @@ def _score_case(
         },
         "observed_decision": trace.decision,
         "hard_failures": sorted(set(hard_failures)),
+        "scoring_audit": {
+            "accepted_verified_evidence_count": len(accepted_items),
+            "accepted_repository_count": len(accepted_repos),
+            "accepted_dataset_count": len(accepted_datasets),
+            "baseline_name": baseline.name if baseline is not None else None,
+            "baseline_source_title": baseline_source_title or None,
+            "baseline_targets": baseline_targets,
+            "baseline_target_match": baseline_target_match,
+            "evidence_backed_module_count": evidence_backed_modules,
+        },
     }
 
 

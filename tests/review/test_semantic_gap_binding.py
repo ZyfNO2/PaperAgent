@@ -183,3 +183,74 @@ def test_relevant_paper_does_not_bind_without_any_initial_gap_provenance() -> No
     assert binding.decision == "reject"
     assert binding.checklist_results["query_provenance_match"] is False
     assert binding.checklist_results["cross_gap_reuse"] is False
+
+
+def _cold_start_plan() -> ResearchPlan:
+    gap = EvidenceGap(
+        gap_id="cold_start_baseline",
+        description="寻找冷启动序列推荐的具体基线、公开数据集、实验设置和对比证据。",
+    )
+    return ResearchPlan(
+        status="ready",
+        problem_statement="带内容信息的冷启动序列推荐",
+        scope="新物品与短历史用户的序列推荐",
+        evidence_gaps=[gap],
+        search_queries=[
+            SearchQuery(
+                query_id="q_cold_start",
+                gap_id=gap.gap_id,
+                query=(
+                    "cold-start sequential recommendation content features "
+                    "public dataset baseline comparison"
+                ),
+                source_types=["paper"],
+            )
+        ],
+        success_criteria=["找到有公开实验设置的具体方法"],
+        risks=["摘要可能不包含具体数值"],
+    )
+
+
+def test_comparative_experiment_without_numeric_metric_supports_baseline_role() -> None:
+    plan = _cold_start_plan()
+    gap_id = plan.evidence_gaps[0].gap_id
+    _, _, _, support, ledger = build_evidence_ledger(
+        request=ResearchRequest(question="带内容信息的冷启动序列推荐"),
+        plan=plan,
+        evidence=_bundle(
+            title="Recformer: Text Representations for Sequential Recommendation",
+            summary=(
+                "We introduce a content-aware sequential recommendation architecture. "
+                "Extensive experiments on six public datasets demonstrate superiority "
+                "for cold-start sequential recommendation with item content features."
+            ),
+            candidate_gap_id=gap_id,
+        ),
+    )
+
+    assert ledger.accepted_ids == ["ev-paper"]
+    binding = next(item for item in support if item.gap_id == gap_id)
+    assert binding.decision == "accept"
+    assert binding.checklist_results["role_evidence_present"] is True
+
+
+def test_generic_survey_without_method_identity_remains_rejected() -> None:
+    plan = _cold_start_plan()
+    gap_id = plan.evidence_gaps[0].gap_id
+    _, _, _, support, ledger = build_evidence_ledger(
+        request=ResearchRequest(question="带内容信息的冷启动序列推荐"),
+        plan=plan,
+        evidence=_bundle(
+            title="A Survey on Sequential Recommendation",
+            summary=(
+                "This survey reviews cold-start sequential recommendation, public datasets, "
+                "content features, and common experimental comparisons."
+            ),
+            candidate_gap_id=gap_id,
+        ),
+    )
+
+    assert ledger.accepted_ids == []
+    binding = next(item for item in support if item.gap_id == gap_id)
+    assert binding.decision == "reject"
+    assert binding.checklist_results["role_evidence_present"] is False

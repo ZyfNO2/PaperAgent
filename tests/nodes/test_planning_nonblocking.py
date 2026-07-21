@@ -75,13 +75,20 @@ def test_public_supplied_title_adds_prioritized_identity_query() -> None:
 
     assert normalized.status == "ready"
     assert len(normalized.evidence_gaps) == 2
-    assert len(normalized.search_queries) == 2
+    assert len(normalized.search_queries) == 3
     assert normalized.evidence_gaps[0].gap_id == "user-material-01-identity"
     assert normalized.evidence_gaps[0].minimum_accepted_items == 1
     assert normalized.search_queries[0].query == (
-        "LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation"
+        '"LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation"'
     )
+    assert normalized.search_queries[0].source_types == ["paper", "web"]
+    assert normalized.search_queries[1].query == (
+        '"LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation" '
+        "official implementation code repository"
+    )
+    assert normalized.search_queries[1].source_types == ["repository", "web"]
     assert normalized.search_queries[0].gap_id == normalized.evidence_gaps[0].gap_id
+    assert normalized.search_queries[1].gap_id == normalized.evidence_gaps[0].gap_id
 
 
 def test_opaque_upload_placeholder_does_not_create_identity_query() -> None:

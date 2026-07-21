@@ -206,5 +206,68 @@ def test_plan_normalization__repository_or_dataset_query__adds_web_lane() -> Non
     assert normalized.search_queries[0].source_types == [
         "paper",
         "repository",
+        "dataset",
+        "web",
+    ]
+
+
+def test_user_material_identity_queries_add_exact_paper_and_repository_lanes() -> None:
+    from paperagent.nodes.planning import _ensure_user_material_identity_queries
+    from paperagent.schemas import EvidenceGap, ResearchPlan, ResearchRequest, SearchQuery
+
+    plan = ResearchPlan(
+        status="ready",
+        problem_statement="verify supplied baseline",
+        scope="test",
+        evidence_gaps=[EvidenceGap(gap_id="g1", description="baseline evidence")],
+        search_queries=[SearchQuery(query_id="q1", gap_id="g1", query="task evidence")],
+    )
+    request = ResearchRequest(
+        question="verify supplied baseline",
+        user_material_refs=["A Concrete Method [declared role: baseline]"],
+    )
+
+    updated = _ensure_user_material_identity_queries(plan, request, query_budget=10)
+    identity_gap_ids = {
+        gap.gap_id for gap in updated.evidence_gaps if gap.gap_id.startswith("user-material")
+    }
+    identity_queries = [
+        query for query in updated.search_queries if query.gap_id in identity_gap_ids
+    ]
+
+    assert [query.query for query in identity_queries] == [
+        '"A Concrete Method"',
+        '"A Concrete Method" official implementation code repository',
+    ]
+    assert identity_queries[0].source_types == ["paper", "web"]
+    assert identity_queries[1].source_types == ["repository", "web"]
+
+
+def test_plan_normalization__baseline_query_adds_asset_lanes_without_extra_query() -> None:
+    from paperagent.nodes.planning import _normalize_plan_to_query_budget
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    plan = ResearchPlan(
+        status="ready",
+        problem_statement="few-shot scientific classification",
+        scope="test",
+        evidence_gaps=[EvidenceGap(gap_id="baseline", description="find a baseline")],
+        search_queries=[
+            SearchQuery(
+                query_id="q1",
+                gap_id="baseline",
+                query="reproducible classification baseline",
+                source_types=["paper"],
+            )
+        ],
+    )
+
+    normalized = _normalize_plan_to_query_budget(plan, query_budget=10)
+
+    assert len(normalized.search_queries) == 1
+    assert normalized.search_queries[0].source_types == [
+        "paper",
+        "repository",
+        "dataset",
         "web",
     ]

@@ -32,14 +32,31 @@ def _normalize_nonblocking_clarification(plan: ResearchPlan) -> ResearchPlan:
     return plan.model_copy(update={"status": "ready"})
 
 
-def _runtime_source_types(query: SearchQuery) -> SearchQuery:
-    """Add the configured public-web lane for repository and dataset discovery.
+_PUBLIC_ASSET_QUERY_HINTS = (
+    "baseline",
+    "reproducible",
+    "reproduction",
+    "implementation",
+    "repository",
+    "code",
+    "dataset",
+    "基线",
+    "复现",
+    "实现",
+    "代码",
+    "数据集",
+)
 
-    Scholarly metadata APIs do not index arbitrary repository or dataset landing pages. The
-    Web lane remains supplemental and is still subject to source-policy precision checks.
-    """
+
+def _runtime_source_types(query: SearchQuery) -> SearchQuery:
+    """Extend an existing baseline query with public code/data lanes without adding queries."""
 
     source_types = list(query.source_types)
+    query_text = f"{query.gap_id} {query.query}".casefold()
+    if any(hint in query_text for hint in _PUBLIC_ASSET_QUERY_HINTS):
+        for source_type in ("repository", "dataset"):
+            if source_type not in source_types:
+                source_types.append(source_type)
     if {"repository", "dataset"}.intersection(source_types) and "web" not in source_types:
         source_types.append("web")
     if source_types == query.source_types:
@@ -132,6 +149,7 @@ def _ensure_user_material_identity_queries(
             continue
         gap_id = _unique_identifier(identity.gap_id, existing_gap_ids)
         query_id = _unique_identifier(identity.query_id, existing_query_ids)
+        exact_title = identity.title.replace('"', " ").strip()
         identity_gaps.append(
             EvidenceGap(
                 gap_id=gap_id,
@@ -147,8 +165,22 @@ def _ensure_user_material_identity_queries(
             SearchQuery(
                 query_id=query_id,
                 gap_id=gap_id,
-                query=identity.title,
-                source_types=["paper", "repository", "web"],
+                query=f'"{exact_title}"',
+                source_types=["paper", "web"],
+            )
+        )
+        available_slots -= 1
+        if available_slots <= 0:
+            continue
+        repository_query_id = _unique_identifier(
+            f"{identity.query_id}-implementation", existing_query_ids
+        )
+        identity_queries.append(
+            SearchQuery(
+                query_id=repository_query_id,
+                gap_id=gap_id,
+                query=f'"{exact_title}" official implementation code repository',
+                source_types=["repository", "web"],
             )
         )
         available_slots -= 1
