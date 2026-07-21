@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 import json
 import re
+from contextlib import suppress
 from dataclasses import dataclass
 from typing import Any, TypeVar
 
@@ -42,11 +43,34 @@ def _append_unique(values: list[Any], value: Any) -> None:
     values.append(value)
 
 
+def _flatten_block(block: dict[str, Any]) -> tuple[list[object], list[str]]:
+    values: list[object] = []
+    text_parts: list[str] = []
+    for key in ("parsed", "json", "arguments"):
+        candidate = block.get(key)
+        if isinstance(candidate, str | dict | list):
+            values.append(candidate)
+    for key in ("text", "content", "value"):
+        candidate = block.get(key)
+        if isinstance(candidate, str):
+            text_parts.append(candidate)
+        elif isinstance(candidate, dict):
+            nested = candidate.get("value") or candidate.get("text")
+            if isinstance(nested, str):
+                text_parts.append(nested)
+    return values, text_parts
+
+
 def _flatten_content(value: object) -> list[object]:
     if value is None:
         return []
-    if isinstance(value, (str, dict)):
+    if isinstance(value, str):
         return [value]
+    if isinstance(value, dict):
+        flattened, text_parts = _flatten_block(value)
+        if text_parts:
+            flattened.append("".join(text_parts))
+        return flattened or [value]
     if not isinstance(value, list):
         return []
 
@@ -58,18 +82,9 @@ def _flatten_content(value: object) -> list[object]:
             continue
         if not isinstance(block, dict):
             continue
-        for key in ("parsed", "json", "arguments"):
-            candidate = block.get(key)
-            if isinstance(candidate, (str, dict, list)):
-                flattened.append(candidate)
-        for key in ("text", "content", "value"):
-            candidate = block.get(key)
-            if isinstance(candidate, str):
-                text_parts.append(candidate)
-            elif isinstance(candidate, dict):
-                nested = candidate.get("value") or candidate.get("text")
-                if isinstance(nested, str):
-                    text_parts.append(nested)
+        block_values, block_text = _flatten_block(block)
+        flattened.extend(block_values)
+        text_parts.extend(block_text)
     if text_parts:
         flattened.append("".join(text_parts))
     return flattened
@@ -88,14 +103,14 @@ def response_payloads(body: object) -> list[object]:
             message = choice.get("message")
             if isinstance(message, dict):
                 parsed = message.get("parsed")
-                if isinstance(parsed, (dict, list, str)):
+                if isinstance(parsed, dict | list | str):
                     payloads.append(parsed)
                 payloads.extend(_flatten_content(message.get("content")))
 
                 function_call = message.get("function_call")
                 if isinstance(function_call, dict):
                     arguments = function_call.get("arguments")
-                    if isinstance(arguments, (str, dict, list)):
+                    if isinstance(arguments, str | dict | list):
                         payloads.append(arguments)
 
                 tool_calls = message.get("tool_calls")
@@ -106,7 +121,7 @@ def response_payloads(body: object) -> list[object]:
                         function = tool_call.get("function")
                         if isinstance(function, dict):
                             arguments = function.get("arguments")
-                            if isinstance(arguments, (str, dict, list)):
+                            if isinstance(arguments, str | dict | list):
                                 payloads.append(arguments)
             text = choice.get("text")
             if isinstance(text, str):
@@ -147,17 +162,15 @@ def _decode_direct(value: str) -> list[Any]:
                 parsed = None
             if parsed is not None:
                 if isinstance(parsed, str):
-                    try:
+                    with suppress(json.JSONDecodeError):
                         parsed = json.loads(parsed)
-                    except json.JSONDecodeError:
-                        pass
                 _append_unique(decoded, parsed)
 
         try:
             literal = ast.literal_eval(candidate)
         except (ValueError, SyntaxError):
             literal = None
-        if isinstance(literal, (dict, list)):
+        if isinstance(literal, dict | list):
             _append_unique(decoded, literal)
     return decoded
 
@@ -180,7 +193,7 @@ def _decode_embedded(value: str) -> list[Any]:
 def decoded_candidates(payloads: list[object]) -> list[Any]:
     decoded: list[Any] = []
     for payload in payloads:
-        if isinstance(payload, (dict, list)):
+        if isinstance(payload, dict | list):
             _append_unique(decoded, payload)
             continue
         if not isinstance(payload, str):
@@ -194,7 +207,7 @@ def repair_source(payloads: list[object]) -> str | None:
     for payload in payloads:
         if isinstance(payload, str) and payload.strip():
             return payload[:_MAX_REPAIR_SOURCE_CHARS]
-        if isinstance(payload, (dict, list)):
+        if isinstance(payload, dict | list):
             return json.dumps(payload, ensure_ascii=False)[:_MAX_REPAIR_SOURCE_CHARS]
     return None
 
