@@ -125,7 +125,10 @@ def test_independent_comparator_paper_creates_strong_comparison_arm() -> None:
         retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
         verification_status="accepted",
         supports_gap_ids=["baseline_comparison"],
-        summary="RT-DETR-R18 is a task-matched detector comparison with a documented paper identity.",
+        summary=(
+            "RT-DETR-R18 is a task-matched detector comparison with a documented "
+            "paper identity."
+        ),
         content_hash="sha256:rt-detr-r18",
         provider="literature_retrieval",
         metadata={
