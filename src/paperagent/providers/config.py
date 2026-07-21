@@ -91,6 +91,7 @@ def load_provider_config(
             "PAPERAGENT_LLM_ALLOW_SCHEMA_REPAIR",
             default=True,
         ),
+        # Provider workflows may override this after an endpoint-level capability probe.
         native_json_schema=_env_bool(
             values,
             "PAPERAGENT_LLM_NATIVE_JSON_SCHEMA",
