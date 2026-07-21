@@ -1,0 +1,205 @@
+{
+  "endpoint_host": "integrate.api.nvidia.com",
+  "model": "z-ai/glm-5.2",
+  "modes": [
+    {
+      "body_json": true,
+      "headers": {
+        "content-type": "application/json",
+        "date": "Tue, 21 Jul 2026 16:06:08 GMT",
+        "nvcf-reqid": "d95e0c70-f694-4a88-9eab-d23d04310b18"
+      },
+      "http_status": 200,
+      "latency_ms": 21325,
+      "mode": "json_schema",
+      "shape": {
+        "choice_keys": [
+          "finish_reason",
+          "index",
+          "logprobs",
+          "message"
+        ],
+        "content": {
+          "chars": 2043,
+          "preview": "{\n  \"gap_assessments\": [\n    {\n      \"gap_id\": \"gap-baseline\",\n      \"status\": \"supported\",\n      \"evidence_ids\": [\"ev-baseline\"],\n      \"summary\": \"The ResNet family and residual network architecture are defined in the supplied evidence, establishing the baseline model for the study.\"\n    },\n    {\n      \"gap_id\": \"gap-dataset\",\n      \"status\": \"supported\",\n      \"evidence_ids\": [\"ev-dataset\"],\n      \"summary\": \"A public ten-class image-classification benchmark (CIFAR-10) is available as the evaluation dataset.\"\n    },\n    {\n      \"gap_id\": \"gap-module\",\n      \"status\": \"supported\",\n      \"evidence_ids\": [\"ev-module\"],\n      \"summary\": \"A low-overhead channel-attention component is described in the supplied evidence, providing the lightweight attention module for integration.\"\n    }\n  ],\n  \"verified_findings\": [\n    {\n      \"claim_id\": \"vf-baseline-defined\",\n      \"text\": \"Residual networks and the ResNet family are defined, enabling a ResNet-18 baseline for CIFAR-10 evaluation.\",\n      \"evidence_ids\": [\"ev-baseline\"]\n    },\n    {\n      \"claim_id\": \"vf-dataset-available\",\n      \"text\": \"CIFAR-10 is available as a public ten-class image-classification benchmark for model evaluation.",
+          "type": "str"
+        },
+        "finish_reason": "stop",
+        "message_keys": [
+          "content",
+          "reasoning_content",
+          "role"
+        ],
+        "parser": {
+          "model": "ConstrainedEvidenceSynthesis",
+          "success": true
+        },
+        "reasoning_fields": {
+          "reasoning_content": {
+            "contains_schema_valid_payload": false,
+            "parse_code": "LLM_RESPONSE_JSON_INVALID",
+            "type": "NoneType"
+          }
+        },
+        "top_level_keys": [
+          "choices",
+          "created",
+          "id",
+          "model",
+          "object",
+          "service_tier",
+          "system_fingerprint",
+          "usage"
+        ],
+        "usage": {
+          "keys": [
+            "completion_tokens",
+            "prompt_tokens",
+            "total_tokens"
+          ],
+          "values": {
+            "completion_tokens": 473,
+            "prompt_tokens": 472,
+            "total_tokens": 945
+          }
+        }
+      }
+    },
+    {
+      "body_json": true,
+      "headers": {
+        "content-type": "application/json",
+        "date": "Tue, 21 Jul 2026 16:06:45 GMT",
+        "nvcf-reqid": "f12f4483-9689-4bbb-89f9-6273788e6271"
+      },
+      "http_status": 200,
+      "latency_ms": 34524,
+      "mode": "json_object",
+      "shape": {
+        "choice_keys": [
+          "finish_reason",
+          "index",
+          "logprobs",
+          "message"
+        ],
+        "content": {
+          "chars": 2020,
+          "preview": "{\n  \"gap_assessments\": [\n    {\n      \"gap_id\": \"gap-baseline\",\n      \"status\": \"supported\",\n      \"evidence_ids\": [\"ev-baseline\"],\n      \"summary\": \"ResNet and the ResNet family are defined as the baseline architecture for the planned evaluation.\",\n      \"limitations\": []\n    },\n    {\n      \"gap_id\": \"gap-dataset\",\n      \"status\": \"supported\",\n      \"evidence_ids\": [\"ev-dataset\"],\n      \"summary\": \"CIFAR-10 is available as a public ten-class image-classification benchmark for the experiment.\",\n      \"limitations\": []\n    },\n    {\n      \"gap_id\": \"gap-module\",\n      \"status\": \"supported\",\n      \"evidence_ids\": [\"ev-module\"],\n      \"summary\": \"A low-overhead channel-attention component is described and can serve as the lightweight attention module under evaluation.\",\n      \"limitations\": []\n    }\n  ],\n  \"verified_findings\": [\n    {\n      \"claim_id\": \"finding-baseline-defined\",\n      \"text\": \"The ResNet family is established as the baseline architecture for image recognition.\",\n      \"evidence_ids\": [\"ev-baseline\"]\n    },\n    {\n      \"claim_id\": \"finding-dataset-available\",\n      \"text\": \"CIFAR-10 provides a public ten-class image-classification benchmark suitable for evaluation.\",\n  ",
+          "type": "str"
+        },
+        "finish_reason": "stop",
+        "message_keys": [
+          "content",
+          "reasoning_content",
+          "role"
+        ],
+        "parser": {
+          "model": "ConstrainedEvidenceSynthesis",
+          "success": true
+        },
+        "reasoning_fields": {
+          "reasoning_content": {
+            "contains_schema_valid_payload": false,
+            "parse_code": "LLM_RESPONSE_JSON_INVALID",
+            "type": "NoneType"
+          }
+        },
+        "top_level_keys": [
+          "choices",
+          "created",
+          "id",
+          "model",
+          "object",
+          "service_tier",
+          "system_fingerprint",
+          "usage"
+        ],
+        "usage": {
+          "keys": [
+            "completion_tokens",
+            "prompt_tokens",
+            "total_tokens"
+          ],
+          "values": {
+            "completion_tokens": 459,
+            "prompt_tokens": 1184,
+            "total_tokens": 1643
+          }
+        }
+      }
+    },
+    {
+      "body_json": true,
+      "headers": {
+        "content-type": "application/json",
+        "date": "Tue, 21 Jul 2026 16:07:03 GMT",
+        "nvcf-reqid": "d199605d-466c-4a79-af35-03df75105535"
+      },
+      "http_status": 200,
+      "latency_ms": 16758,
+      "mode": "plain_schema_hint",
+      "shape": {
+        "choice_keys": [
+          "finish_reason",
+          "index",
+          "logprobs",
+          "message"
+        ],
+        "content": {
+          "chars": 2891,
+          "preview": "```json\n{\n  \"gap_assessments\": [\n    {\n      \"gap_id\": \"gap-baseline\",\n      \"status\": \"supported\",\n      \"evidence_ids\": [\"ev-baseline\"],\n      \"summary\": \"The ResNet family and residual network architecture are defined in the supplied evidence, establishing a viable baseline architecture for the planned evaluation.\",\n      \"limitations\": []\n    },\n    {\n      \"gap_id\": \"gap-dataset\",\n      \"status\": \"supported\",\n      \"evidence_ids\": [\"ev-dataset\"],\n      \"summary\": \"CIFAR-10 is identified as a public ten-class image-classification benchmark, providing a suitable evaluation dataset for the planned experiment.\",\n      \"limitations\": []\n    },\n    {\n      \"gap_id\": \"gap-module\",\n      \"status\": \"supported\",\n      \"evidence_ids\": [\"ev-module\"],\n      \"summary\": \"A lightweight channel-attention component with low overhead is described in the supplied evidence, supporting the feasibility of integrating such a module into the ResNet baseline.\",\n      \"limitations\": []\n    }\n  ],\n  \"verified_findings\": [\n    {\n      \"claim_id\": \"claim-1\",\n      \"text\": \"ResNet-18 is a member of the ResNet family defined by residual learning, making it a suitable baseline architecture for image recogniti",
+          "type": "str"
+        },
+        "finish_reason": "stop",
+        "message_keys": [
+          "content",
+          "reasoning_content",
+          "role"
+        ],
+        "parser": {
+          "model": "ConstrainedEvidenceSynthesis",
+          "success": true
+        },
+        "reasoning_fields": {
+          "reasoning_content": {
+            "contains_schema_valid_payload": false,
+            "parse_code": "LLM_RESPONSE_JSON_INVALID",
+            "type": "NoneType"
+          }
+        },
+        "top_level_keys": [
+          "choices",
+          "created",
+          "id",
+          "model",
+          "object",
+          "service_tier",
+          "system_fingerprint",
+          "usage"
+        ],
+        "usage": {
+          "keys": [
+            "completion_tokens",
+            "prompt_tokens",
+            "prompt_tokens_details",
+            "total_tokens"
+          ],
+          "values": {
+            "completion_tokens": 633,
+            "prompt_tokens": 1184,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 448
+            },
+            "total_tokens": 1817
+          }
+        }
+      }
+    }
+  ],
+  "node": "evidence_synthesis",
+  "output_schema": "ConstrainedEvidenceSynthesis",
+  "provider": "nvidia-nim",
+  "schema": "paperagent.nvidia-node-output-probe.v1",
+  "task": "evidence_synthesis"
+}

@@ -1,0 +1,200 @@
+{
+  "endpoint_host": "integrate.api.nvidia.com",
+  "model": "z-ai/glm-5.2",
+  "modes": [
+    {
+      "body_json": true,
+      "headers": {
+        "content-type": "application/json",
+        "date": "Tue, 21 Jul 2026 16:10:16 GMT",
+        "nvcf-reqid": "6830624e-b3a0-47a3-83b3-ea47d36a1e3e"
+      },
+      "http_status": 200,
+      "latency_ms": 40510,
+      "mode": "json_schema",
+      "shape": {
+        "choice_keys": [
+          "finish_reason",
+          "index",
+          "logprobs",
+          "message"
+        ],
+        "content": {
+          "chars": 2638,
+          "preview": "{\n  \"schema_version\": \"0.1\",\n  \"status\": \"completed\",\n  \"executive_summary\": \"The pipeline reports a completed run with a 'GO' scientific verdict and a 'pass' quality verdict. However, the supplied accepted evidence consists only of baseline, dataset, and module identifiers, with no experimental results, confidence intervals, or seed-run outcomes. The recommended next action confirms that the preregistered three-seed experiment has not yet been executed. Consequently, the 'GO' verdict is not substantiated by the provided evidence and should be treated as provisional pending the recommended experimental run.\",\n  \"verified_findings\": [\n    {\n      \"text\": \"Accepted evidence includes a baseline (ev-baseline), a dataset (ev-dataset), and a module (ev-module), indicating that foundational components for an experiment are in place.\",\n      \"evidence_ids\": [\"ev-baseline\", \"ev-dataset\", \"ev-module\"]\n    },\n    {\n      \"text\": \"The method status is reported as 'ready', indicating that the experimental pipeline is prepared for execution.\",\n      \"evidence_ids\": [\"ev-module\"]\n    }\n  ],\n  \"inferred_findings\": [\n    {\n      \"text\": \"The 'GO' scientific verdict appears to be based on pipeline r",
+          "type": "str"
+        },
+        "finish_reason": "stop",
+        "message_keys": [
+          "content",
+          "reasoning_content",
+          "role"
+        ],
+        "parser": {
+          "model": "FinalReport",
+          "success": true
+        },
+        "reasoning_fields": {
+          "reasoning_content": {
+            "contains_schema_valid_payload": false,
+            "parse_code": "LLM_RESPONSE_JSON_INVALID",
+            "type": "NoneType"
+          }
+        },
+        "top_level_keys": [
+          "choices",
+          "created",
+          "id",
+          "model",
+          "object",
+          "service_tier",
+          "system_fingerprint",
+          "usage"
+        ],
+        "usage": {
+          "keys": [
+            "completion_tokens",
+            "prompt_tokens",
+            "total_tokens"
+          ],
+          "values": {
+            "completion_tokens": 569,
+            "prompt_tokens": 217,
+            "total_tokens": 786
+          }
+        }
+      }
+    },
+    {
+      "body_json": true,
+      "headers": {
+        "content-type": "application/json",
+        "date": "Tue, 21 Jul 2026 16:10:52 GMT",
+        "nvcf-reqid": "8bcb9e28-df3a-4a72-9f76-a7bb938a84b1"
+      },
+      "http_status": 200,
+      "latency_ms": 34690,
+      "mode": "json_object",
+      "shape": {
+        "choice_keys": [
+          "finish_reason",
+          "index",
+          "logprobs",
+          "message"
+        ],
+        "content": {
+          "chars": 2106,
+          "preview": "{\n  \"schema_version\": \"0.1\",\n  \"status\": \"completed\",\n  \"executive_summary\": \"The method is assessed as ready and the final outcome is GO. Accepted evidence comprises a baseline result, a dataset, and a module, all of which support proceeding to the preregistered three-seed experiment. No blocking issues or quality concerns were raised.\",\n  \"verified_findings\": [\n    {\n      \"text\": \"A baseline result has been accepted as evidence, establishing a reference point for subsequent experiments.\",\n      \"evidence_ids\": [\"ev-baseline\"]\n    },\n    {\n      \"text\": \"A dataset has been accepted as evidence, providing the data foundation for the planned experiment.\",\n      \"evidence_ids\": [\"ev-dataset\"]\n    },\n    {\n      \"text\": \"A module has been accepted as evidence, indicating the method component under evaluation is available for integration.\",\n      \"evidence_ids\": [\"ev-module\"]\n    }\n  ],\n  \"inferred_findings\": [\n    {\n      \"text\": \"The method status is ready and the final outcome is GO, indicating that all accepted evidence collectively supports proceeding to the next experimental phase without blocking issues.\",\n      \"evidence_ids\": [\"ev-baseline\", \"ev-dataset\", \"ev-module\"]\n    },\n",
+          "type": "str"
+        },
+        "finish_reason": "stop",
+        "message_keys": [
+          "content",
+          "reasoning_content",
+          "role"
+        ],
+        "parser": {
+          "model": "FinalReport",
+          "success": true
+        },
+        "reasoning_fields": {
+          "reasoning_content": {
+            "contains_schema_valid_payload": false,
+            "parse_code": "LLM_RESPONSE_JSON_INVALID",
+            "type": "NoneType"
+          }
+        },
+        "top_level_keys": [
+          "choices",
+          "created",
+          "id",
+          "model",
+          "object",
+          "service_tier",
+          "system_fingerprint",
+          "usage"
+        ],
+        "usage": {
+          "keys": [
+            "completion_tokens",
+            "prompt_tokens",
+            "total_tokens"
+          ],
+          "values": {
+            "completion_tokens": 447,
+            "prompt_tokens": 654,
+            "total_tokens": 1101
+          }
+        }
+      }
+    },
+    {
+      "body_json": true,
+      "headers": {
+        "content-type": "application/json",
+        "date": "Tue, 21 Jul 2026 16:11:04 GMT",
+        "nvcf-reqid": "596bc3ef-aa21-490a-bb87-5a29365c822d"
+      },
+      "http_status": 200,
+      "latency_ms": 10152,
+      "mode": "plain_schema_hint",
+      "shape": {
+        "choice_keys": [
+          "finish_reason",
+          "index",
+          "logprobs",
+          "message"
+        ],
+        "content": {
+          "chars": 1849,
+          "preview": "```json\n{\n  \"schema_version\": \"0.1\",\n  \"status\": \"completed\",\n  \"executive_summary\": \"The method is assessed as ready for the preregistered three-seed experiment. Accepted evidence covers the baseline, dataset, and module components, supporting a GO scientific verdict. No blocking issues were identified in the quality review. The primary limitation is that the full multi-seed experimental run with confidence intervals has not yet been executed and reported.\",\n  \"verified_findings\": [\n    {\n      \"text\": \"A baseline has been established and accepted as evidence for the current study.\",\n      \"evidence_ids\": [\"ev-baseline\"]\n    },\n    {\n      \"text\": \"The dataset used for evaluation has been accepted as evidence.\",\n      \"evidence_ids\": [\"ev-dataset\"]\n    },\n    {\n      \"text\": \"The proposed module has been accepted as evidence, indicating the method component is in place.\",\n      \"evidence_ids\": [\"ev-module\"]\n    }\n  ],\n  \"inferred_findings\": [\n    {\n      \"text\": \"With baseline, dataset, and module evidence accepted and no quality or method blockers, the method is sufficiently prepared to proceed to the preregistered multi-seed experimental run.\",\n      \"evidence_ids\": [\"ev-baselin",
+          "type": "str"
+        },
+        "finish_reason": "stop",
+        "message_keys": [
+          "content",
+          "reasoning_content",
+          "role"
+        ],
+        "parser": {
+          "model": "FinalReport",
+          "success": true
+        },
+        "reasoning_fields": {
+          "reasoning_content": {
+            "contains_schema_valid_payload": false,
+            "parse_code": "LLM_RESPONSE_JSON_INVALID",
+            "type": "NoneType"
+          }
+        },
+        "top_level_keys": [
+          "choices",
+          "created",
+          "id",
+          "model",
+          "object",
+          "service_tier",
+          "system_fingerprint",
+          "usage"
+        ],
+        "usage": {
+          "keys": [
+            "completion_tokens",
+            "prompt_tokens",
+            "total_tokens"
+          ],
+          "values": {
+            "completion_tokens": 412,
+            "prompt_tokens": 654,
+            "total_tokens": 1066
+          }
+        }
+      }
+    }
+  ],
+  "node": "report",
+  "output_schema": "FinalReport",
+  "provider": "nvidia-nim",
+  "schema": "paperagent.nvidia-node-output-probe.v1",
+  "task": "report"
+}
