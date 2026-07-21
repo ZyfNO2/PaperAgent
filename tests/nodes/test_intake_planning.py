@@ -146,8 +146,7 @@ def test_plan_normalization__oversized_plan__keeps_one_query_per_gap_then_fills(
         problem_statement="bounded retrieval",
         scope="test",
         evidence_gaps=[
-            EvidenceGap(gap_id=f"g{index}", description=f"gap {index}")
-            for index in range(1, 7)
+            EvidenceGap(gap_id=f"g{index}", description=f"gap {index}") for index in range(1, 7)
         ],
         search_queries=[
             SearchQuery(
