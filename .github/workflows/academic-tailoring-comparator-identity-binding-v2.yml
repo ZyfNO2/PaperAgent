@@ -45,7 +45,10 @@ jobs:
           python scripts/apply_comparator_identity_policy_fixture_v1.py \
             >> build/comparator-identity-v2/apply.log 2>&1
           fixture_status=$?
-          status=$((fix_status || binding_status || fixture_status))
+          python scripts/apply_module_source_role_exclusion_v1.py \
+            >> build/comparator-identity-v2/apply.log 2>&1
+          module_status=$?
+          status=$((fix_status || binding_status || fixture_status || module_status))
           echo "status=$status" >> "$GITHUB_OUTPUT"
           exit 0
       - name: Format and lint changed paths
@@ -56,18 +59,21 @@ jobs:
             src/paperagent/method_design_draft.py \
             tests/methodology/test_method_design_draft.py \
             tests/methodology/test_scientific_decision_policy.py \
+            tests/nodes/test_method_design_baseline_anchor.py \
             > build/comparator-identity-v2/format.log 2>&1
           format_status=$?
           ruff check --fix \
             src/paperagent/method_design_draft.py \
             tests/methodology/test_method_design_draft.py \
             tests/methodology/test_scientific_decision_policy.py \
+            tests/nodes/test_method_design_baseline_anchor.py \
             > build/comparator-identity-v2/ruff-fix.log 2>&1
           fix_status=$?
           ruff check \
             src/paperagent/method_design_draft.py \
             tests/methodology/test_method_design_draft.py \
             tests/methodology/test_scientific_decision_policy.py \
+            tests/nodes/test_method_design_baseline_anchor.py \
             > build/comparator-identity-v2/ruff-check.log 2>&1
           check_status=$?
           printf '{"apply":%s,"format":%s,"fix":%s,"check":%s}\n' \
@@ -113,6 +119,7 @@ jobs:
           rm -f \
             scripts/apply_comparator_identity_binding_v1.py \
             scripts/apply_comparator_identity_policy_fixture_v1.py \
+            scripts/apply_module_source_role_exclusion_v1.py \
             scripts/fix_comparator_identity_patch_escape_v1.py
       - name: Capture full regression
         id: full
