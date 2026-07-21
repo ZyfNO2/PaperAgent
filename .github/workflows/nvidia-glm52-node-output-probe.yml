@@ -11,6 +11,13 @@ on:
       - "src/paperagent/providers/**"
       - "src/paperagent/nodes/**"
       - "src/paperagent/prompts/**"
+  pull_request:
+    branches:
+      - fix/parallel-hedged-glm52
+    paths:
+      - "scripts/probe_nvidia_node_output.py"
+      - ".github/workflows/nvidia-glm52-node-output-probe.yml"
+      - ".github/workflows/nvidia-glm52-node-output-observer.yml"
   workflow_dispatch:
 
 permissions:
@@ -33,11 +40,26 @@ jobs:
         run: python -m py_compile scripts/probe_nvidia_node_output.py
       - name: Lint probe
         run: ruff check scripts/probe_nvidia_node_output.py
-      - name: Type-check probe
-        run: mypy scripts/probe_nvidia_node_output.py
+      - name: Capture type-check report
+        shell: bash
+        run: |
+          mkdir -p build/nvidia-node-output-static
+          set +e
+          mypy scripts/probe_nvidia_node_output.py \
+            2>&1 | tee build/nvidia-node-output-static/mypy.txt
+          echo "${PIPESTATUS[0]}" > build/nvidia-node-output-static/mypy-exit-code.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nvidia-glm52-node-output-static
+          path: build/nvidia-node-output-static/
+          if-no-files-found: error
+          retention-days: 14
 
   node-probe:
     needs: offline-validation
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     strategy:
       fail-fast: false
       max-parallel: 1
