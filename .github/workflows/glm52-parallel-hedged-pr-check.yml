@@ -36,6 +36,7 @@ jobs:
           pytest -q \
             tests/providers/test_hedged_llm_provider.py \
             tests/providers/test_openai_compatible_structured_output.py \
+            tests/providers/test_provider_compat_config.py \
             tests/providers/test_openai_llm_runtime_limits.py \
             tests/evals/test_academic_tailoring_runtime_checkpoint.py \
             tests/evals/test_academic_tailoring_runtime_fail_fast.py
@@ -45,6 +46,7 @@ jobs:
           mkdir -p build/glm52-parallel-hedged-pr-check
           set +e
           ruff check \
+            src/paperagent/providers/config.py \
             src/paperagent/providers/hedged.py \
             src/paperagent/providers/openai_llm.py \
             src/paperagent/providers/structured_output.py \
@@ -52,6 +54,7 @@ jobs:
             scripts/run_academic_tailoring_retrieval_v1_parallel.py \
             tests/providers/test_hedged_llm_provider.py \
             tests/providers/test_openai_compatible_structured_output.py \
+            tests/providers/test_provider_compat_config.py \
             2>&1 | tee build/glm52-parallel-hedged-pr-check/ruff.txt
           echo "${PIPESTATUS[0]}" > build/glm52-parallel-hedged-pr-check/ruff-exit-code.txt
           exit 0
