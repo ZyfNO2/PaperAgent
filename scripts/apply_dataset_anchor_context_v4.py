@@ -41,8 +41,10 @@ _DATASET_MODEL_TOKENS = frozenset(
         "fps",
         "hr",
         "iou",
+        "macro-f1",
         "mae",
         "map",
+        "micro-f1",
         "mrr",
         "mse",
         "ndcg",
@@ -50,6 +52,7 @@ _DATASET_MODEL_TOKENS = frozenset(
         "rmse",
         "snr",
         "sota",
+        "weighted-f1",
     }
 )
 _DATASET_MODEL_TOKENS = frozenset(
