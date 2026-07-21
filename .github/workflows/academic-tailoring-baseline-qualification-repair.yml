@@ -62,12 +62,40 @@ jobs:
             tests/review/test_semantic_gap_binding.py
       - name: Remove one-shot patch script
         run: rm -f scripts/apply_baseline_candidate_qualification_v1.py
-      - name: Run full final-tree regression
+      - name: Capture full final-tree regression
+        shell: bash
         run: |
-          pytest -q
-          mypy --config-file pyproject.toml
-          ruff check src tests scripts
-          ruff format --check src tests scripts
+          mkdir -p build/baseline-qualification-diagnostics
+          set +e
+          pytest -q > build/baseline-qualification-diagnostics/pytest.log 2>&1
+          pytest_status=$?
+          mypy --config-file pyproject.toml > build/baseline-qualification-diagnostics/mypy.log 2>&1
+          mypy_status=$?
+          ruff check src tests scripts > build/baseline-qualification-diagnostics/ruff-check.log 2>&1
+          ruff_status=$?
+          ruff format --check src tests scripts > build/baseline-qualification-diagnostics/ruff-format.log 2>&1
+          format_status=$?
+          printf '{"pytest":%s,"mypy":%s,"ruff":%s,"format":%s}\n' \
+            "$pytest_status" "$mypy_status" "$ruff_status" "$format_status" \
+            > build/baseline-qualification-diagnostics/status.json
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-baseline-qualification-diagnostics
+          path: build/baseline-qualification-diagnostics/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Enforce full final-tree regression
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(Path("build/baseline-qualification-diagnostics/status.json").read_text())
+          print(status)
+          if any(status.values()):
+              raise SystemExit(status)
+          PY
       - name: Commit production repair
         shell: bash
         run: |
