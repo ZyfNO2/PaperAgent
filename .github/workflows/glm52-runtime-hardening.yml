@@ -77,6 +77,7 @@ jobs:
     env:
       NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
       PAPERAGENT_OPENAI_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+      PAPERAGENT_SOURCE_SHA: ${{ github.sha }}
       PAPERAGENT_LLM_PROVIDER: openai
       PAPERAGENT_LLM_MODEL: z-ai/glm-5.2
       PAPERAGENT_LLM_BASE_URL: https://integrate.api.nvidia.com/v1
