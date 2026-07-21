@@ -6,6 +6,7 @@ on:
       - eval/academic-tailoring-retrieval-v1-live-test
     paths:
       - "evals/academic_tailoring_retrieval_v1/**"
+      - "scripts/check_llm_provider_health.py"
       - "scripts/project_academic_tailoring_retrieval_v1.py"
       - "scripts/run_academic_tailoring_retrieval_v1.py"
       - "scripts/score_academic_tailoring_retrieval_v1.py"
@@ -18,6 +19,7 @@ on:
       - eval/academic-tailoring-retrieval-v1-authoring
     paths:
       - "evals/academic_tailoring_retrieval_v1/**"
+      - "scripts/check_llm_provider_health.py"
       - "scripts/project_academic_tailoring_retrieval_v1.py"
       - "scripts/run_academic_tailoring_retrieval_v1.py"
       - "scripts/score_academic_tailoring_retrieval_v1.py"
@@ -63,6 +65,7 @@ jobs:
       - name: Format and lint changed files
         run: |
           ruff format --check \
+            scripts/check_llm_provider_health.py \
             scripts/project_academic_tailoring_retrieval_v1.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/score_academic_tailoring_retrieval_v1.py \
@@ -70,6 +73,7 @@ jobs:
             tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
             tests/nodes/test_intake_planning.py
           ruff check \
+            scripts/check_llm_provider_health.py \
             scripts/project_academic_tailoring_retrieval_v1.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/score_academic_tailoring_retrieval_v1.py \
@@ -131,8 +135,30 @@ jobs:
         with:
           name: academic-tailoring-retrieval-v1-public-inputs
           path: downloaded-public
-      - name: Require real LLM credential
+      - name: Require non-empty real LLM credential
         run: test -n "$MISTRAL_API_KEY"
+      - name: Probe real LLM credential and model access
+        id: llm_health
+        shell: bash
+        run: |
+          set +e
+          python scripts/check_llm_provider_health.py \
+            --provider mistral \
+            --model mistral-small-latest \
+            --base-url https://api.mistral.ai/v1 \
+            --output build/academic-tailoring-retrieval-v1/llm-health.json
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-retrieval-v1-llm-health
+          path: build/academic-tailoring-retrieval-v1/llm-health.json
+          if-no-files-found: error
+          retention-days: 7
+      - name: Enforce real LLM health
+        run: test "${{ steps.llm_health.outputs.status }}" = "0"
       - name: Build isolated candidate workspace
         run: |
           rm -rf candidate-workspace
@@ -181,7 +207,7 @@ jobs:
 
   score-and-audit:
     needs: candidate-live-run
-    if: always()
+    if: needs.candidate-live-run.result == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
