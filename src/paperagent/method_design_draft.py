@@ -349,12 +349,15 @@ def _grounded_optional(value: str | None, evidence_text: str) -> str | None:
 def _select_reported_comparator_evidence(
     value: str | None,
     accepted: tuple[EvidenceItem, ...],
+    *,
+    excluded_ids: set[str],
 ) -> EvidenceItem | None:
     if value is None or not value.strip():
         return None
     for item in accepted:
         if (
             item.source_type == "paper"
+            and item.evidence_id not in excluded_ids
             and not _is_review_evidence(item.title, item.summary)
             and _titles_equivalent(item.title, value.strip())
         ):
@@ -499,9 +502,13 @@ def build_method_proposal(
     grounded_dataset = _grounded_optional(draft.reported_dataset, evidence_text)
     if grounded_dataset is None and dataset_evidence is not None:
         grounded_dataset = dataset_evidence.title
+    excluded_comparator_ids = {module_primary.evidence_id}
+    if baseline_evidence is not None:
+        excluded_comparator_ids.add(baseline_evidence.evidence_id)
     reported_comparator_evidence = _select_reported_comparator_evidence(
         draft.reported_comparator,
         accepted,
+        excluded_ids=excluded_comparator_ids,
     )
     grounded_comparator = (
         reported_comparator_evidence.title if reported_comparator_evidence is not None else None
@@ -514,23 +521,13 @@ def build_method_proposal(
     if draft.comparison_readiness_confirmed and (
         grounded_comparator is None or comparator_evidence_id is None
     ):
-        excluded_ids = {module_primary.evidence_id}
-        if baseline_evidence is not None:
-            excluded_ids.add(baseline_evidence.evidence_id)
         comparator_evidence = _select_inferred_comparator_evidence(
             attributed,
-            excluded_ids=excluded_ids,
+            excluded_ids=excluded_comparator_ids,
         )
         if comparator_evidence is not None:
             grounded_comparator = comparator_evidence.title
             comparator_evidence_id = comparator_evidence.evidence_id
-        else:
-            for item in attributed:
-                if item.evidence_id in excluded_ids:
-                    continue
-                grounded_comparator = item.title
-                comparator_evidence_id = item.evidence_id
-                break
 
     baseline_identity_resolved = baseline_evidence is not None
     effective_baseline_readiness = draft.baseline_readiness_confirmed and baseline_identity_resolved

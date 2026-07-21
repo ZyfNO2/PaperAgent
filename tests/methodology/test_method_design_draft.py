@@ -467,3 +467,74 @@ def test_independent_comparator_paper_creates_strong_comparison_arm() -> None:
     assert len(strong) == 1
     assert strong[0].comparator == "RT-DETR-R18"
     assert strong[0].source_evidence_id == comparator_id
+
+
+def test_baseline_or_module_evidence_cannot_be_reused_as_comparator() -> None:
+    state = _state()
+    proposal = build_method_proposal(
+        state,
+        _draft(
+            comparison_readiness_confirmed=True,
+            reported_comparator=(
+                "Drone-DETR: Efficient Small Object Detection for Remote Sensing Image"
+            ),
+        ),
+    )
+    assert all(
+        experiment.arm_type is not ExperimentArmType.STRONG_COMPARISON
+        for experiment in proposal.methodology_plan.experiments
+    )
+
+
+def test_unmarked_neighbor_paper_is_not_used_as_comparator_fallback() -> None:
+    state = _state()
+    evidence = state["evidence"]
+    assert evidence is not None
+    neighbor_id = "ev-unmarked-neighbor"
+    neighbor = EvidenceItem(
+        evidence_id=neighbor_id,
+        source_type="paper",
+        title="A Related Detection Study",
+        locator="doi:10.1000/related-detection",
+        retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+        verification_status="accepted",
+        supports_gap_ids=["baseline_comparison"],
+        summary="A related study without an explicit comparator retrieval role.",
+        content_hash="sha256:related-detection",
+        provider="literature_retrieval",
+        metadata={
+            "doi": "10.1000/related-detection",
+            "relation": "direct_query",
+            "rank_score": "0.99",
+        },
+    )
+    neighbor_state = cast(
+        PaperAgentState,
+        {
+            **state,
+            "evidence": evidence.model_copy(
+                update={
+                    "items": [*evidence.items, neighbor],
+                    "accepted_ids": [*evidence.accepted_ids, neighbor_id],
+                    "identity_verified_ids": [
+                        *evidence.identity_verified_ids,
+                        neighbor_id,
+                    ],
+                    "coverage_by_gap": {
+                        **evidence.coverage_by_gap,
+                        "baseline_comparison": (
+                            evidence.coverage_by_gap.get("baseline_comparison", 0) + 1
+                        ),
+                    },
+                }
+            ),
+        },
+    )
+    proposal = build_method_proposal(
+        neighbor_state,
+        _draft(comparison_readiness_confirmed=True),
+    )
+    assert all(
+        experiment.arm_type is not ExperimentArmType.STRONG_COMPARISON
+        for experiment in proposal.methodology_plan.experiments
+    )
