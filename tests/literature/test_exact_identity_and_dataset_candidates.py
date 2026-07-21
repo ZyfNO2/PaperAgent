@@ -166,3 +166,15 @@ def test_dataset_relation_relevance_accepts_verified_dataset_title() -> None:
         paper,
         dataset_name="MIMII",
     )
+
+
+def test_relation_providers_defer_rate_limited_source() -> None:
+    providers = LiteratureSearchAdapter._relation_providers(
+        ("semantic_scholar", "openalex", "arxiv")
+    )
+    assert providers == ("openalex", "arxiv", "semantic_scholar")
+
+
+def test_relation_provider_order_respects_configured_availability() -> None:
+    providers = LiteratureSearchAdapter._relation_providers(("arxiv", "semantic_scholar"))
+    assert providers == ("arxiv", "semantic_scholar")

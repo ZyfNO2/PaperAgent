@@ -322,25 +322,34 @@ class LiteratureSearchAdapter:
         )
         if relation_names and len(attempted) < policy.maximum_provider_calls:
             dataset_name = relation_names[0]
-            relation_provider = self._relation_provider(academic_order)
             relation_query = f'"{dataset_name}" dataset benchmark baseline method comparison'
-            bundle = await self._service.retrieve(
-                self._build_plan(
-                    query,
-                    [relation_provider],
-                    lane_suffix=f"dataset-{dataset_name.casefold()}",
-                    query_text=relation_query,
-                    purpose="benchmark_dataset",
-                    priority=75,
+            for relation_provider in self._relation_providers(academic_order):
+                if len(attempted) >= policy.maximum_provider_calls:
+                    break
+                bundle = await self._service.retrieve(
+                    self._build_plan(
+                        query,
+                        [relation_provider],
+                        lane_suffix=(f"dataset-{dataset_name.casefold()}-{relation_provider}"),
+                        query_text=relation_query,
+                        purpose="benchmark_dataset",
+                        priority=75,
+                    )
                 )
-            )
-            attempted.append(f"{relation_provider}:dataset_relation")
-            provider_results.extend(bundle.provider_results)
-            for paper in bundle.papers:
-                if self._passes_relation_relevance(paper, dataset_name=dataset_name):
-                    relation_paper_ids.add(paper.paper_id)
-                    dataset_links.setdefault(paper.paper_id, set()).add(dataset_name)
-            self._merge_papers(papers_by_id, bundle.papers)
+                attempted.append(f"{relation_provider}:dataset_relation")
+                provider_results.extend(bundle.provider_results)
+                relation_found = False
+                for paper in bundle.papers:
+                    if self._passes_relation_relevance(
+                        paper,
+                        dataset_name=dataset_name,
+                    ):
+                        relation_found = True
+                        relation_paper_ids.add(paper.paper_id)
+                        dataset_links.setdefault(paper.paper_id, set()).add(dataset_name)
+                self._merge_papers(papers_by_id, bundle.papers)
+                if relation_found:
+                    break
 
         fallback_used = False
         if (
@@ -457,11 +466,9 @@ class LiteratureSearchAdapter:
         )
 
     @staticmethod
-    def _relation_provider(academic_order: tuple[str, ...]) -> str:
-        for preferred in ("semantic_scholar", "openalex", "arxiv"):
-            if preferred in academic_order:
-                return preferred
-        return academic_order[0]
+    def _relation_providers(academic_order: tuple[str, ...]) -> tuple[str, ...]:
+        preferred_order = ("openalex", "arxiv", "semantic_scholar")
+        return tuple(provider for provider in preferred_order if provider in academic_order)
 
     @staticmethod
     def _has_sufficient_academic_evidence(
