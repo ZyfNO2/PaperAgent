@@ -60,20 +60,11 @@ jobs:
   node-probe:
     needs: offline-validation
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        node:
-          - planning
-          - evidence_synthesis
-          - method_design
-          - report
     concurrency:
       group: paperagent-nvidia-glm52
       cancel-in-progress: false
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 120
     env:
       NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
     steps:
@@ -87,28 +78,35 @@ jobs:
         run: python -m pip install -q -e '.[dev]'
       - name: Require NVIDIA credential
         run: test -n "$NVIDIA_API_KEY"
-      - name: Probe ${{ matrix.node }} output modes
+      - name: Probe all production LLM nodes sequentially
         id: probe
         shell: bash
         run: |
           mkdir -p build/nvidia-node-output
-          set +e
-          python scripts/probe_nvidia_node_output.py \
-            --node "${{ matrix.node }}" \
-            --model z-ai/glm-5.2 \
-            --base-url https://integrate.api.nvidia.com/v1 \
-            --api-key-env NVIDIA_API_KEY \
-            --output "build/nvidia-node-output/${{ matrix.node }}.json"
-          status=$?
-          echo "$status" > "build/nvidia-node-output/${{ matrix.node }}-exit-code.txt"
-          exit 0
+          overall=0
+          for node in planning evidence_synthesis method_design report; do
+            set +e
+            python scripts/probe_nvidia_node_output.py \
+              --node "$node" \
+              --model z-ai/glm-5.2 \
+              --base-url https://integrate.api.nvidia.com/v1 \
+              --api-key-env NVIDIA_API_KEY \
+              --output "build/nvidia-node-output/${node}.json"
+            status=$?
+            set -e
+            echo "$status" > "build/nvidia-node-output/${node}-exit-code.txt"
+            if [ "$status" -ne 0 ]; then
+              overall=1
+            fi
+          done
+          echo "$overall" > build/nvidia-node-output/overall-exit-code.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: nvidia-glm52-node-output-${{ matrix.node }}
+          name: nvidia-glm52-node-output-all
           path: build/nvidia-node-output/
           if-no-files-found: error
           retention-days: 14
-      - name: Enforce at least one compatible mode
+      - name: Enforce at least one compatible mode per node
         if: always()
-        run: test "$(cat build/nvidia-node-output/${{ matrix.node }}-exit-code.txt)" = "0"
+        run: test "$(cat build/nvidia-node-output/overall-exit-code.txt)" = "0"
