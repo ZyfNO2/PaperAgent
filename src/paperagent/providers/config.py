@@ -65,6 +65,11 @@ def load_provider_config(
         read_timeout_seconds=float(values.get("PAPERAGENT_LLM_READ_TIMEOUT", "60")),
         total_timeout_seconds=float(values.get("PAPERAGENT_LLM_TOTAL_TIMEOUT", "90")),
         max_attempts=int(values.get("PAPERAGENT_LLM_MAX_ATTEMPTS", "2")),
+        max_requests_per_minute=(
+            int(values["PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE"])
+            if values.get("PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE")
+            else None
+        ),
         max_input_tokens_per_task=int(
             values.get("PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK", "32000")
         ),

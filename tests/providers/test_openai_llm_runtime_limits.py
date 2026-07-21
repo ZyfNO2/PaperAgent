@@ -11,6 +11,7 @@ from pydantic import BaseModel, SecretStr
 from paperagent.errors import ProviderError
 from paperagent.providers.config import load_provider_config
 from paperagent.providers.openai_llm import OpenAILLMProvider
+from paperagent.providers.request_rate_limit import AsyncRequestRateLimiter
 from paperagent.providers.runtime import LLMProviderName, ProviderRuntimeConfig
 from paperagent.providers.runtime_factory import build_llm_provider
 from paperagent.schemas import Message
@@ -101,12 +102,14 @@ def test_runtime_factory_enforces_token_and_timeout_limits(
         read_timeout_seconds=7,
         total_timeout_seconds=11,
         max_attempts=1,
+        max_requests_per_minute=40,
         max_output_tokens_per_call=123,
         native_json_schema=True,
     )
 
     provider = build_llm_provider(config)
     assert isinstance(provider, OpenAILLMProvider)
+    assert provider._max_requests_per_minute == 40
     reply = _generate(provider)
 
     assert reply.status == "ok"
@@ -217,10 +220,12 @@ def test_config_parses_native_schema_switch() -> None:
             "PAPERAGENT_LLM_MODEL": "z-ai/glm-5.2",
             "PAPERAGENT_OPENAI_API_KEY": "test-key",
             "PAPERAGENT_LLM_NATIVE_JSON_SCHEMA": "off",
+            "PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE": "40",
         }
     )
 
     assert config.native_json_schema is False
+    assert config.max_requests_per_minute == 40
 
 
 def test_retry_after_header_controls_rate_limit_backoff(
@@ -270,3 +275,25 @@ def test_rate_limit_without_header_uses_long_backoff() -> None:
     assert OpenAILLMProvider._http_retry_delay(response, 0) == 15.0
     assert OpenAILLMProvider._http_retry_delay(response, 1) == 30.0
     assert OpenAILLMProvider._http_retry_delay(response, 9) == 60.0
+
+
+def test_request_rate_limiter_smooths_forty_requests_per_minute() -> None:
+    now = [0.0]
+    sleeps: list[float] = []
+
+    def clock() -> float:
+        return now[0]
+
+    async def sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+        now[0] += seconds
+
+    async def scenario() -> None:
+        limiter = AsyncRequestRateLimiter(40, clock=clock, sleep=sleep)
+        await limiter.acquire()
+        await limiter.acquire()
+        await limiter.acquire()
+
+    asyncio.run(scenario())
+
+    assert sleeps == [1.5, 1.5]

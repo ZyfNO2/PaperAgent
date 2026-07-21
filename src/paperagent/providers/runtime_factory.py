@@ -26,6 +26,7 @@ def build_llm_provider(
             connect_timeout_seconds=config.connect_timeout_seconds,
             read_timeout_seconds=config.read_timeout_seconds,
             max_retries=config.max_attempts - 1,
+            max_requests_per_minute=config.max_requests_per_minute,
             max_output_tokens=config.max_output_tokens_per_call,
             native_json_schema=config.native_json_schema,
             budget=TaskBudget(config),

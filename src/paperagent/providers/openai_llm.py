@@ -22,6 +22,7 @@ from pydantic import BaseModel, ValidationError
 
 from paperagent.errors import ProviderError, ProviderTimeoutError
 from paperagent.pricing import PriceTable
+from paperagent.providers.request_rate_limit import shared_request_rate_limiter
 from paperagent.providers.runtime import TaskBudget, UsageRecord
 from paperagent.schemas import Message, TokenUsage
 
@@ -47,6 +48,7 @@ class OpenAILLMProvider:
         connect_timeout_seconds: float | None = None,
         read_timeout_seconds: float | None = None,
         max_retries: int = 2,
+        max_requests_per_minute: int | None = None,
         temperature: float = 0.0,
         max_output_tokens: int | None = None,
         native_json_schema: bool = True,
@@ -63,6 +65,8 @@ class OpenAILLMProvider:
             raise ValueError("read_timeout_seconds must be positive")
         if max_output_tokens is not None and max_output_tokens <= 0:
             raise ValueError("max_output_tokens must be positive")
+        if max_requests_per_minute is not None and max_requests_per_minute <= 0:
+            raise ValueError("max_requests_per_minute must be positive")
 
         connect_timeout = connect_timeout_seconds or timeout_seconds
         read_timeout = read_timeout_seconds or timeout_seconds
@@ -79,6 +83,7 @@ class OpenAILLMProvider:
             pool=connect_timeout,
         )
         self._max_retries = max_retries
+        self._max_requests_per_minute = max_requests_per_minute
         self._temperature = temperature
         self._max_output_tokens = max_output_tokens
         self._native_json_schema = native_json_schema
@@ -263,6 +268,12 @@ class OpenAILLMProvider:
         for attempt in range(attempts):
             if self._budget is not None:
                 self._budget.reserve_call(task=task)
+            if self._max_requests_per_minute is not None:
+                limiter = shared_request_rate_limiter(
+                    namespace=f"{self._base_url}|{self._model}",
+                    requests_per_minute=self._max_requests_per_minute,
+                )
+                await limiter.acquire()
             started = time.perf_counter()
             try:
                 async with asyncio.timeout(self._total_timeout_seconds):
