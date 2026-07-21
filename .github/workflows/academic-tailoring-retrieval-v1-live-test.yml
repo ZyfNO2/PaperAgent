@@ -107,6 +107,9 @@ jobs:
 
   candidate-live-run:
     needs: prepare-public-inputs
+    concurrency:
+      group: paperagent-nvidia-glm52
+      cancel-in-progress: false
     runs-on: ubuntu-24.04
     timeout-minutes: 300
     env:
@@ -121,7 +124,7 @@ jobs:
       PAPERAGENT_LLM_CONNECT_TIMEOUT: "15"
       PAPERAGENT_LLM_READ_TIMEOUT: "300"
       PAPERAGENT_LLM_TOTAL_TIMEOUT: "360"
-      PAPERAGENT_LLM_MAX_ATTEMPTS: "2"
+      PAPERAGENT_LLM_MAX_ATTEMPTS: "4"
       PAPERAGENT_LLM_MAX_CALLS: "100"
       PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "32000"
       PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "4096"
