@@ -67,10 +67,10 @@ def _flatten_content(value: object) -> list[object]:
     if isinstance(value, str):
         return [value]
     if isinstance(value, dict):
-        flattened, text_parts = _flatten_block(value)
-        if text_parts:
-            flattened.append("".join(text_parts))
-        return flattened or [value]
+        block_values, block_text_parts = _flatten_block(value)
+        if block_text_parts:
+            block_values.append("".join(block_text_parts))
+        return block_values or [value]
     if not isinstance(value, list):
         return []
 
