@@ -8,6 +8,18 @@ from pydantic import SecretStr
 from paperagent.providers.runtime import LLMProviderName, ProviderRuntimeConfig
 
 
+def _env_bool(values: Mapping[str, str], name: str, *, default: bool) -> bool:
+    raw = values.get(name)
+    if raw is None:
+        return default
+    normalized = raw.strip().casefold()
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    raise ValueError(f"{name} must be one of 1/0, true/false, yes/no, or on/off")
+
+
 def load_provider_config(
     *,
     environ: Mapping[str, str] | None = None,
@@ -68,5 +80,10 @@ def load_provider_config(
             float(values["PAPERAGENT_LLM_MAX_COST_USD"])
             if values.get("PAPERAGENT_LLM_MAX_COST_USD")
             else None
+        ),
+        native_json_schema=_env_bool(
+            values,
+            "PAPERAGENT_LLM_NATIVE_JSON_SCHEMA",
+            default=True,
         ),
     )
