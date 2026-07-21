@@ -1,16 +1,6 @@
 name: NVIDIA GLM-5.2 Node Output Probe
 
 on:
-  push:
-    branches:
-      - diag/nvidia-glm52-node-shapes
-    paths:
-      - "scripts/probe_nvidia_node_output.py"
-      - ".github/workflows/nvidia-glm52-node-output-probe.yml"
-      - ".github/workflows/nvidia-glm52-node-output-observer.yml"
-      - "src/paperagent/providers/**"
-      - "src/paperagent/nodes/**"
-      - "src/paperagent/prompts/**"
   pull_request:
     branches:
       - fix/parallel-hedged-glm52
@@ -18,6 +8,9 @@ on:
       - "scripts/probe_nvidia_node_output.py"
       - ".github/workflows/nvidia-glm52-node-output-probe.yml"
       - ".github/workflows/nvidia-glm52-node-output-observer.yml"
+      - "src/paperagent/providers/**"
+      - "src/paperagent/nodes/**"
+      - "src/paperagent/prompts/**"
   workflow_dispatch:
 
 permissions:
@@ -64,7 +57,7 @@ jobs:
       group: paperagent-nvidia-glm52
       cancel-in-progress: false
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     env:
       NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
     steps:
@@ -100,6 +93,7 @@ jobs:
             fi
           done
           echo "$overall" > build/nvidia-node-output/overall-exit-code.txt
+          exit 0
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -107,6 +101,6 @@ jobs:
           path: build/nvidia-node-output/
           if-no-files-found: error
           retention-days: 14
-      - name: Enforce at least one compatible mode per node
+      - name: Enforce every node has at least one compatible mode
         if: always()
         run: test "$(cat build/nvidia-node-output/overall-exit-code.txt)" = "0"
