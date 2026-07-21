@@ -79,18 +79,18 @@ jobs:
             tests/nodes/test_method_design_baseline_anchor.py \
             tests/nodes/test_planning_nonblocking.py \
             tests/review/test_semantic_gap_binding.py
-      - name: Run full offline regression
-        run: |
-          pytest -q
-          mypy --config-file pyproject.toml
-          ruff check src tests scripts
-          ruff format --check src tests scripts
       - name: Remove one-shot development controls
         run: |
           rm -f \
             scripts/apply_evidence_graph_expansion_v1.py \
             scripts/fix_evidence_graph_expansion_v1_generated.py \
             .github/workflows/academic-tailoring-evidence-expansion-repair.yml
+      - name: Run full offline regression
+        run: |
+          pytest -q
+          mypy --config-file pyproject.toml
+          ruff check src tests scripts
+          ruff format --check src tests scripts
       - name: Commit production implementation
         shell: bash
         run: |
