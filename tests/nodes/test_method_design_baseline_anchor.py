@@ -126,3 +126,44 @@ def test_explicit_dataset_request_remains_a_verification_gate() -> None:
         readiness_confirmed=False,
     )
     assert "declared dataset identity unresolved" in value
+
+
+def test_dataset_selection_prefers_explicit_question_anchor() -> None:
+    audio_set = _item(
+        "audioset",
+        "AudioSet",
+        metadata={
+            "relation": "dataset_named_in_verified_paper",
+            "rank_score": "0.95",
+        },
+    ).model_copy(update={"source_type": "dataset"})
+    mimii = _item(
+        "mimii",
+        "MIMII",
+        metadata={
+            "relation": "dataset_linked_by_focused_retrieval",
+            "rank_score": "0.60",
+        },
+    ).model_copy(update={"source_type": "dataset"})
+    selected = _select_dataset_evidence(
+        "Evaluate the method on MIMII under low SNR",
+        (audio_set, mimii),
+    )
+    assert selected is not None
+    assert selected.title == "MIMII"
+
+
+def test_dataset_selection_does_not_promote_arbitrary_paper_mention() -> None:
+    audio_set = _item(
+        "audioset",
+        "AudioSet",
+        metadata={
+            "relation": "dataset_named_in_verified_paper",
+            "rank_score": "0.95",
+        },
+    ).model_copy(update={"source_type": "dataset"})
+    selected = _select_dataset_evidence(
+        "Design a method for a proprietary rare sensor task",
+        (audio_set,),
+    )
+    assert selected is None

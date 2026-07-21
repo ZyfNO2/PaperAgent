@@ -75,6 +75,35 @@ _DATASET_GENERIC = frozenset(
         "dataset",
         "benchmark",
         "corpus",
+        "available",
+        "specific",
+        "large-scale",
+        "self-built",
+        "latest",
+        "this",
+        "that",
+        "image",
+        "images",
+        "challenge",
+    }
+)
+_DATASET_MODEL_TOKENS = frozenset(
+    {
+        "bert",
+        "cnn",
+        "detr",
+        "gat",
+        "gcn",
+        "gnn",
+        "gru",
+        "llm",
+        "lora",
+        "lstm",
+        "mlp",
+        "rnn",
+        "transformer",
+        "vit",
+        "yolo",
     }
 )
 
@@ -110,7 +139,25 @@ def _exact_title_match(left: str, right: str) -> bool:
     return len(overlap) >= 4 and len(overlap) / len(union) >= 0.9 and length_ratio >= 0.8
 
 
-def _dataset_names_from_text(text: str) -> tuple[str, ...]:
+def _looks_like_dataset_name(value: str) -> bool:
+    name = value.strip(".,;:()[]{}")
+    normalized = name.casefold()
+    compact = re.sub(r"[^A-Za-z0-9]", "", name)
+    if (
+        len(compact) < 3
+        or len(compact) > 40
+        or normalized in _DATASET_GENERIC
+        or normalized in _DATASET_MODEL_TOKENS
+    ):
+        return False
+    if any(char.isdigit() for char in compact):
+        return True
+    if compact.isupper():
+        return True
+    return any(char.isupper() for char in compact[1:]) and any(char.islower() for char in compact)
+
+
+def _explicit_dataset_names_from_text(text: str) -> tuple[str, ...]:
     names: list[str] = []
     context = re.compile(
         r"(?P<names>[A-Za-z][A-Za-z0-9._-]*(?:\s*(?:/|,|and)\s*"
@@ -120,20 +167,37 @@ def _dataset_names_from_text(text: str) -> tuple[str, ...]:
     for match in context.finditer(text):
         for raw_name in re.split(r"\s*(?:/|,|and)\s*", match.group("names")):
             name = raw_name.strip(".,;:()[]{}")
-            if name.casefold() not in _DATASET_GENERIC and name not in names:
+            if _looks_like_dataset_name(name) and name not in names:
                 names.append(name)
     return tuple(names)
 
 
+def _distinctive_dataset_tokens(text: str) -> tuple[str, ...]:
+    names: list[str] = []
+    for token in re.findall(r"\b[A-Za-z][A-Za-z0-9._-]{2,}\b", text):
+        name = token.strip(".,;:()[]{}")
+        if _looks_like_dataset_name(name) and name not in names:
+            names.append(name)
+    return tuple(names)
+
+
+def _dataset_names_from_text(text: str) -> tuple[str, ...]:
+    return _explicit_dataset_names_from_text(text)
+
+
 def _dataset_names_from_query(query: str) -> tuple[str, ...]:
-    return _dataset_names_from_text(query)
+    names = list(_explicit_dataset_names_from_text(query))
+    for name in _distinctive_dataset_tokens(query):
+        if name not in names:
+            names.append(name)
+    return tuple(names)
 
 
 def _paper_dataset_mentions(query: str, paper: PaperRecord) -> tuple[str, ...]:
     paper_text = f"{paper.canonical_title}\n{paper.abstract or ''}"
     normalized = paper_text.casefold()
-    names = list(_dataset_names_from_text(paper_text))
-    for name in _dataset_names_from_query(query):
+    names = list(_explicit_dataset_names_from_text(paper_text))
+    for name in _explicit_dataset_names_from_text(query):
         if name.casefold() in normalized and name not in names:
             names.append(name)
     return tuple(names)
@@ -143,9 +207,17 @@ def _dataset_relation_names(
     query: str,
     papers: Iterable[PaperRecord],
 ) -> tuple[str, ...]:
-    names = list(_dataset_names_from_query(query))
-    for paper in papers:
-        for name in _dataset_names_from_text(f"{paper.canonical_title}\n{paper.abstract or ''}"):
+    paper_list = tuple(papers)
+    blocked = {
+        token.casefold()
+        for paper in paper_list
+        for token in _distinctive_dataset_tokens(paper.canonical_title)
+    }
+    names = [name for name in _dataset_names_from_query(query) if name.casefold() not in blocked]
+    for paper in paper_list:
+        for name in _explicit_dataset_names_from_text(
+            f"{paper.canonical_title}\n{paper.abstract or ''}"
+        ):
             if name not in names:
                 names.append(name)
     return tuple(names)
@@ -243,8 +315,12 @@ class LiteratureSearchAdapter:
                 stop_reason = "sufficient_academic_evidence"
                 break
 
-        relation_names = _dataset_relation_names(query.query, papers_by_id.values())
-        if relation_names:
+        relation_names = (
+            _dataset_relation_names(query.query, papers_by_id.values())
+            if "dataset" in query.source_types
+            else ()
+        )
+        if relation_names and len(attempted) < policy.maximum_provider_calls:
             dataset_name = relation_names[0]
             relation_provider = self._relation_provider(academic_order)
             relation_query = f'"{dataset_name}" dataset benchmark baseline method comparison'
@@ -261,7 +337,7 @@ class LiteratureSearchAdapter:
             attempted.append(f"{relation_provider}:dataset_relation")
             provider_results.extend(bundle.provider_results)
             for paper in bundle.papers:
-                if self._passes_relation_relevance(paper):
+                if self._passes_relation_relevance(paper, dataset_name=dataset_name):
                     relation_paper_ids.add(paper.paper_id)
                     dataset_links.setdefault(paper.paper_id, set()).add(dataset_name)
             self._merge_papers(papers_by_id, bundle.papers)
@@ -432,14 +508,18 @@ class LiteratureSearchAdapter:
         return features.relevance >= relevance_floor and features.score >= score_floor
 
     @staticmethod
-    def _passes_relation_relevance(paper: PaperRecord) -> bool:
+    def _passes_relation_relevance(
+        paper: PaperRecord,
+        *,
+        dataset_name: str,
+    ) -> bool:
+        if paper.verification_status != "verified":
+            return False
+        text = f"{paper.canonical_title}\n{paper.abstract or ''}".casefold()
+        if dataset_name.casefold() in text:
+            return True
         features = paper.rank_features
-        return (
-            paper.verification_status == "verified"
-            and features is not None
-            and features.relevance >= 0.20
-            and features.score >= 0.40
-        )
+        return features is not None and features.relevance >= 0.32 and features.score >= 0.55
 
     def _candidates(
         self,

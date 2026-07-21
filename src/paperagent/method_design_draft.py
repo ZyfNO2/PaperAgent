@@ -207,14 +207,42 @@ def _dataset_plan_value(
     )
 
 
+def _dataset_evidence_rank(item: EvidenceItem) -> tuple[int, float, str]:
+    relation = item.metadata.get("relation", "")
+    relation_rank = {
+        "dataset_linked_by_focused_retrieval": 2,
+        "dataset_named_in_verified_paper": 1,
+    }.get(relation, 0)
+    try:
+        rank_score = float(item.metadata.get("rank_score", "0"))
+    except ValueError:
+        rank_score = 0.0
+    return (relation_rank, rank_score, item.evidence_id)
+
+
 def _select_dataset_evidence(
     question: str, candidates: tuple[EvidenceItem, ...]
 ) -> EvidenceItem | None:
     datasets = tuple(item for item in candidates if item.source_type == "dataset")
-    for item in datasets:
-        if item.title.casefold() in question.casefold():
-            return item
-    return datasets[0] if datasets else None
+    normalized_question = question.casefold()
+    explicit = tuple(
+        item
+        for item in datasets
+        if re.search(
+            rf"(?<![a-z0-9]){re.escape(item.title.casefold())}(?![a-z0-9])",
+            normalized_question,
+        )
+    )
+    if explicit:
+        return max(explicit, key=_dataset_evidence_rank)
+    linked = tuple(
+        item
+        for item in datasets
+        if item.metadata.get("relation") == "dataset_linked_by_focused_retrieval"
+    )
+    if linked:
+        return max(linked, key=_dataset_evidence_rank)
+    return None
 
 
 def _evidence_text(state: PaperAgentState) -> str:

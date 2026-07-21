@@ -4,8 +4,10 @@ from types import SimpleNamespace
 
 from paperagent.literature.adapter import (
     LiteratureSearchAdapter,
+    _dataset_names_from_text,
     _dataset_relation_names,
     _exact_title_match,
+    _looks_like_dataset_name,
     _quoted_title,
 )
 from paperagent.schemas import SearchQuery
@@ -118,3 +120,38 @@ def test_dataset_relation_candidate_survives_missing_provider_abstract() -> None
     assert datasets[0].title == "MIMII"
     assert datasets[0].metadata["relation"] == "dataset_linked_by_focused_retrieval"
     assert datasets[0].metadata["verification_scope"] == "retrieval_relation"
+
+
+def test_dataset_entity_precision_rejects_descriptive_words() -> None:
+    text = (
+        "We use a specific dataset, a large-scale dataset, and this dataset for evaluation. "
+        "Results are also reported on the AudioSet dataset and MIMII benchmark."
+    )
+    assert _dataset_names_from_text(text) == ("AudioSet", "MIMII")
+    assert not _looks_like_dataset_name("specific")
+    assert not _looks_like_dataset_name("large-scale")
+    assert _looks_like_dataset_name("CLINC150")
+    assert _looks_like_dataset_name("SWaT")
+
+
+def test_dataset_relation_query_keeps_dataset_anchor_not_model_title() -> None:
+    names = _dataset_relation_names(
+        "PANNs pretrained audio baseline performance MIMII dataset",
+        (_paper("PANNs: Large-Scale Pretrained Audio Neural Networks"),),
+    )
+    assert names == ("MIMII",)
+
+
+def test_dataset_relation_relevance_accepts_verified_dataset_title() -> None:
+    paper = _paper("MIMII Dataset: Sound Dataset for Machine Investigation")
+    paper = paper.model_copy(
+        update={
+            "rank_features": paper.rank_features.model_copy(
+                update={"relevance": 0.01, "score": 0.01}
+            )
+        }
+    )
+    assert LiteratureSearchAdapter._passes_relation_relevance(
+        paper,
+        dataset_name="MIMII",
+    )
