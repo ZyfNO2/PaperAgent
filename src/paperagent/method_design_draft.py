@@ -85,6 +85,67 @@ def _slug(value: str) -> str:
     return normalized[:48] or "candidate_module"
 
 
+_DECLARED_ROLE_SUFFIX = re.compile(r"\s*\[declared role:(?P<role>[^\]]+)\]\s*$", re.IGNORECASE)
+
+
+def _title_tokens(value: str) -> tuple[str, ...]:
+    return tuple(re.findall(r"[a-z0-9]+", value.casefold()))
+
+
+def _is_exact_acronym_alias(alias: str, full_title: str) -> bool:
+    compact = re.sub(r"[^A-Za-z0-9]+", "", alias)
+    full_tokens = _title_tokens(full_title)
+    return (
+        len(compact) >= 3
+        and compact.isupper()
+        and bool(full_tokens)
+        and compact.casefold() == full_tokens[0]
+    )
+
+
+def _titles_equivalent(left: str, right: str) -> bool:
+    left_tokens = _title_tokens(left)
+    right_tokens = _title_tokens(right)
+    if not left_tokens or not right_tokens:
+        return False
+    if left_tokens == right_tokens:
+        return True
+    if _is_exact_acronym_alias(left, right) or _is_exact_acronym_alias(right, left):
+        return True
+    left_set = set(left_tokens)
+    right_set = set(right_tokens)
+    union = left_set | right_set
+    overlap = left_set & right_set
+    length_ratio = min(len(left_set), len(right_set)) / max(len(left_set), len(right_set))
+    return len(overlap) >= 4 and len(overlap) / len(union) >= 0.85 and length_ratio >= 0.75
+
+
+def _declared_baseline_titles(references: list[str]) -> tuple[str, ...]:
+    titles: list[str] = []
+    for reference in references:
+        match = _DECLARED_ROLE_SUFFIX.search(reference)
+        if match is None or "baseline" not in match.group("role").casefold():
+            continue
+        title = _DECLARED_ROLE_SUFFIX.sub("", reference).strip()
+        if title and title not in titles:
+            titles.append(title)
+    return tuple(titles)
+
+
+def _select_primary_evidence(
+    references: list[str],
+    candidates: tuple[EvidenceItem, ...],
+) -> EvidenceItem:
+    if not candidates:
+        raise ValueError("primary evidence selection requires candidates")
+    declared_titles = _declared_baseline_titles(references)
+    for declared_title in declared_titles:
+        for item in candidates:
+            if item.source_type == "paper" and _titles_equivalent(item.title, declared_title):
+                return item
+    return candidates[0]
+
+
 def _evidence_text(state: PaperAgentState) -> str:
     evidence = state.get("evidence")
     if evidence is None:
@@ -239,7 +300,10 @@ def build_method_proposal(
     attributed = tuple(
         item for item in accepted if not _is_review_evidence(item.title, item.summary)
     )
-    primary = attributed[0] if attributed else accepted[0]
+    primary = _select_primary_evidence(
+        list(request.user_material_refs),
+        attributed if attributed else accepted,
+    )
     evidence_text = _evidence_text(state)
     grounded_dataset = _grounded_optional(draft.reported_dataset, evidence_text)
     grounded_comparator = _grounded_optional(draft.reported_comparator, evidence_text)

@@ -86,3 +86,14 @@ def test_only_accepted_verified_relevant_evidence_can_score() -> None:
     items = _accepted_verified_items(state, trace)
 
     assert [item["evidence_id"] for item in items] == ["good"]
+
+
+def test_title_identity_is_symmetric_and_rejects_prefixed_neighbor_paper() -> None:
+    assert _titles_related(
+        "Oriented R-CNN for Object Detection",
+        "Oriented R-CNN for Object Detection",
+    )
+    assert not _titles_related(
+        "Multispectral-oriented R-CNN for object detection in remote sensing images",
+        "Oriented R-CNN for Object Detection",
+    )

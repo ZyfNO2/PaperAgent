@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable
+from hashlib import sha256
 
 from paperagent.errors import ProviderError
 from paperagent.literature.service import LiteratureRetrievalService
@@ -15,6 +17,42 @@ from paperagent.schemas.literature import (
 
 _ACADEMIC_PROVIDERS = frozenset({"openalex", "semantic_scholar", "arxiv"})
 _WEB_PROVIDERS = frozenset({"tavily", "duckduckgo"})
+
+
+_GITHUB_REPOSITORY_URL = re.compile(
+    r"https?://github\.com/(?P<owner>[A-Za-z0-9_.-]+)/(?P<repo>[A-Za-z0-9_.-]+)",
+    re.IGNORECASE,
+)
+_REPOSITORY_RELATION_CUES = (
+    "code",
+    "implementation",
+    "repository",
+    "source",
+    "available at",
+    "released at",
+    "github",
+)
+
+
+def _normalized_github_repository_urls(paper: PaperRecord) -> list[tuple[str, str]]:
+    text = "\n".join([paper.abstract or "", *paper.urls])
+    repositories: dict[str, str] = {}
+    for match in _GITHUB_REPOSITORY_URL.finditer(text):
+        owner = match.group("owner")
+        repo = match.group("repo").rstrip(".,;:)]}")
+        if repo.casefold().endswith(".git"):
+            repo = repo[:-4]
+        if not owner or not repo:
+            continue
+        title = f"{owner}/{repo}"
+        url = f"https://github.com/{title}"
+        context_start = max(0, match.start() - 100)
+        context_end = min(len(text), match.end() + 100)
+        context = text[context_start:context_end].casefold()
+        if not any(cue in context for cue in _REPOSITORY_RELATION_CUES):
+            continue
+        repositories[url.casefold()] = title
+    return [(url, title) for url, title in sorted(repositories.items())]
 
 
 class LiteratureSearchAdapter:
@@ -165,7 +203,10 @@ class LiteratureSearchAdapter:
             stop_reason=stop_reason,
             fallback_used=fallback_used,
         )
-        return [self._candidate(query, paper, fallback_used) for paper in selected]
+        candidates: list[SearchCandidate] = []
+        for paper in selected:
+            candidates.extend(self._candidates(query, paper, fallback_used))
+        return candidates
 
     def _academic_order(self, policy: SearchSourcePolicy, available: set[str]) -> tuple[str, ...]:
         policy_order = (policy.primary_provider, *policy.escalation_providers)
@@ -210,6 +251,55 @@ class LiteratureSearchAdapter:
         relevance_floor = max(0.25, policy.minimum_relevance * 0.8)
         score_floor = max(0.50, policy.minimum_rank_score * 0.85)
         return features.relevance >= relevance_floor and features.score >= score_floor
+
+    def _candidates(
+        self,
+        query: SearchQuery,
+        paper: PaperRecord,
+        fallback_used: bool,
+    ) -> list[SearchCandidate]:
+        candidates = [self._candidate(query, paper, fallback_used)]
+        if paper.verification_status != "verified":
+            return candidates
+        if not {"repository", "web"}.intersection(query.source_types):
+            return candidates
+        providers = sorted({record.provider for record in paper.source_records})
+        score = paper.rank_features.score if paper.rank_features else 0.0
+        relevance = paper.rank_features.relevance if paper.rank_features else 0.0
+        for url, title in _normalized_github_repository_urls(paper):
+            digest = sha256(url.casefold().encode("utf-8")).hexdigest()[:20]
+            candidates.append(
+                SearchCandidate(
+                    candidate_id=f"repository-{digest}",
+                    query_id=query.query_id,
+                    gap_id=query.gap_id,
+                    source_type="repository",
+                    title=title,
+                    locator=url,
+                    snippet=(
+                        f"Repository explicitly linked from the verified paper "
+                        f"{paper.canonical_title!r}. The paper text or provider metadata "
+                        f"contains the repository URL {url}."
+                    ),
+                    provider=self.provider_name,
+                    metadata={
+                        "query_text": query.query,
+                        "verification_status": "verified",
+                        "providers": ",".join(providers),
+                        "provider_classes": "academic-linked-repository",
+                        "source_kind": "repository",
+                        "rank_score": f"{score:.6f}",
+                        "relevance_score": f"{relevance:.6f}",
+                        "relation": "author_linked_from_verified_paper",
+                        "parent_paper_id": paper.paper_id,
+                        "parent_paper_title": paper.canonical_title,
+                        "repository_ref": url,
+                        "fallback_used": "true" if fallback_used else "false",
+                        "web_supplement": "false",
+                    },
+                )
+            )
+        return candidates
 
     def _candidate(
         self,

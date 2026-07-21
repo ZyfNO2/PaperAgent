@@ -92,20 +92,32 @@ def _asset_matches(asset: dict[str, Any], state_text: str) -> bool:
     return False
 
 
+def _is_exact_acronym_alias(alias: str, full_title: str) -> bool:
+    compact = re.sub(r"[^A-Za-z0-9]+", "", alias)
+    full_tokens = _normalize(full_title).split()
+    return (
+        len(compact) >= 3
+        and compact.isupper()
+        and bool(full_tokens)
+        and compact.casefold() == full_tokens[0]
+    )
+
+
 def _titles_related(left: str, right: str) -> bool:
-    left_normalized = _normalize(left)
-    right_normalized = _normalize(right)
-    if not left_normalized or not right_normalized:
+    left_tokens = set(_normalize(left).split())
+    right_tokens = set(_normalize(right).split())
+    if not left_tokens or not right_tokens:
         return False
-    if left_normalized in right_normalized or right_normalized in left_normalized:
+    if left_tokens == right_tokens:
         return True
-    left_tokens = set(left_normalized.split())
-    right_tokens = set(right_normalized.split())
-    smaller = min(len(left_tokens), len(right_tokens))
-    if smaller < 3:
-        return False
-    overlap = len(left_tokens & right_tokens)
-    return overlap / smaller >= 0.8
+    if _is_exact_acronym_alias(left, right) or _is_exact_acronym_alias(right, left):
+        return True
+    overlap = left_tokens & right_tokens
+    union = left_tokens | right_tokens
+    length_ratio = min(len(left_tokens), len(right_tokens)) / max(
+        len(left_tokens), len(right_tokens)
+    )
+    return len(overlap) >= 4 and len(overlap) / len(union) >= 0.85 and length_ratio >= 0.75
 
 
 def _state_evidence_items(state: dict[str, Any]) -> dict[str, dict[str, Any]]:
