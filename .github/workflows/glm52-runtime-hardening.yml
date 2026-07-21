@@ -70,8 +70,11 @@ jobs:
   live-structured-smoke:
     needs: offline-runtime-contract
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    concurrency:
+      group: paperagent-nvidia-glm52
+      cancel-in-progress: false
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
       NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
       PAPERAGENT_OPENAI_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
@@ -82,10 +85,10 @@ jobs:
       PAPERAGENT_LLM_CONNECT_TIMEOUT: "15"
       PAPERAGENT_LLM_READ_TIMEOUT: "120"
       PAPERAGENT_LLM_TOTAL_TIMEOUT: "150"
-      PAPERAGENT_LLM_MAX_ATTEMPTS: "1"
-      PAPERAGENT_LLM_MAX_CALLS: "2"
-      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "64"
-      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "128"
+      PAPERAGENT_LLM_MAX_ATTEMPTS: "4"
+      PAPERAGENT_LLM_MAX_CALLS: "4"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "512"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "1024"
       PAPERAGENT_LLM_NATIVE_JSON_SCHEMA: "1"
     steps:
       - uses: actions/checkout@v4
