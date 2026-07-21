@@ -33,6 +33,18 @@ jobs:
         run: python -m pip install -q -e '.[dev]'
       - name: Apply LLM fail-fast repair
         run: python scripts/apply_llm_fail_fast_v1.py
+      - name: Repair generated health-check newline literal
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("scripts/check_llm_provider_health.py")
+          source = path.read_text(encoding="utf-8")
+          source = source.replace(
+              'sort_keys=True) + "\n"\n',
+              'sort_keys=True) + "\\n"\n',
+          )
+          path.write_text(source, encoding="utf-8")
+          PY
       - name: Format and capture lint diagnostics
         shell: bash
         run: |
