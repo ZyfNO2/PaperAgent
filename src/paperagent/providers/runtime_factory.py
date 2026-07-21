@@ -31,7 +31,13 @@ def build_llm_provider(
         LLMProviderName.DEEPSEEK,
         LLMProviderName.OLLAMA,
     }:
-        budget = TaskBudget(config)
+        maximum, delay = _hedging_settings()
+        budget_config = config.model_copy(
+            update={
+                "max_llm_calls_per_task": config.max_llm_calls_per_task * maximum,
+            }
+        )
+        budget = TaskBudget(budget_config)
 
         def build_delegate() -> OpenAILLMProvider:
             return OpenAILLMProvider(
@@ -49,7 +55,6 @@ def build_llm_provider(
                 price_table=price_table,
             )
 
-        maximum, delay = _hedging_settings()
         primary = build_delegate()
         if maximum == 1:
             return primary
