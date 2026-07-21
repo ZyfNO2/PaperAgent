@@ -7,7 +7,7 @@ on:
     paths:
       - "src/paperagent/providers/**"
       - "scripts/run_academic_tailoring_retrieval_v1_parallel.py"
-      - "tests/providers/test_hedged_llm_provider.py"
+      - "tests/providers/**"
       - ".github/workflows/glm52-parallel-hedged-live-test.yml"
   workflow_dispatch:
 
@@ -31,20 +31,27 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Test hedging and existing OpenAI runtime controls
+      - name: Test hedging and OpenAI-compatible structured output controls
         run: |
           pytest -q \
             tests/providers/test_hedged_llm_provider.py \
+            tests/providers/test_openai_compatible_structured_output.py \
+            tests/providers/test_provider_compat_config.py \
             tests/providers/test_openai_llm_runtime_limits.py \
             tests/evals/test_academic_tailoring_runtime_checkpoint.py \
             tests/evals/test_academic_tailoring_runtime_fail_fast.py
       - name: Lint changed Python files
         run: |
           ruff check \
+            src/paperagent/providers/config.py \
             src/paperagent/providers/hedged.py \
+            src/paperagent/providers/openai_llm.py \
+            src/paperagent/providers/structured_output.py \
             src/paperagent/providers/runtime_factory.py \
             scripts/run_academic_tailoring_retrieval_v1_parallel.py \
-            tests/providers/test_hedged_llm_provider.py
+            tests/providers/test_hedged_llm_provider.py \
+            tests/providers/test_openai_compatible_structured_output.py \
+            tests/providers/test_provider_compat_config.py
       - name: Type-check provider package
         run: mypy src/paperagent/providers
 
@@ -97,6 +104,7 @@ jobs:
       PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "65536"
       PAPERAGENT_LLM_TASK_TIMEOUT: "900"
       PAPERAGENT_LLM_NATIVE_JSON_SCHEMA: "1"
+      PAPERAGENT_LLM_ALLOW_SCHEMA_REPAIR: "1"
       PAPERAGENT_RUN_REAL_LLM: "1"
       PAPERAGENT_RUN_REAL_PROVIDER: "1"
       PAPERAGENT_ENABLE_WEB_SEARCH: "1"
