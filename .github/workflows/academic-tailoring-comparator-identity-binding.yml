@@ -31,6 +31,8 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
+      - name: Repair comparator patch template
+        run: python scripts/fix_comparator_identity_patch_escape_v1.py
       - name: Apply comparator identity binding
         id: apply_patch
         shell: bash
@@ -68,8 +70,11 @@ jobs:
             tests/methodology/test_method_design_draft.py \
             tests/nodes/test_method_design_baseline_anchor.py \
             tests/literature/test_exact_identity_and_dataset_candidates.py
-      - name: Remove one-shot patch script
-        run: rm -f scripts/apply_comparator_identity_binding_v1.py
+      - name: Remove one-shot patch scripts
+        run: |
+          rm -f \
+            scripts/apply_comparator_identity_binding_v1.py \
+            scripts/fix_comparator_identity_patch_escape_v1.py
       - name: Run full final-tree regression
         run: |
           pytest -q
