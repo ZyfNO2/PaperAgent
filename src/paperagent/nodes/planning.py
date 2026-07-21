@@ -14,6 +14,19 @@ _BUDGET_NORMALIZATION_RISK = (
     "Planner output exceeded the runtime query budget; excess evidence gaps and queries were "
     "deterministically removed before retrieval."
 )
+_BASELINE_QUERY_ABSENT_RISK = (
+    "No explicit baseline/comparator evidence gap was declared; baseline discovery remains "
+    "available through dataset-linked parallel papers and later evidence review."
+)
+_BASELINE_ROLE_HINTS = (
+    "baseline",
+    "comparator",
+    "comparison",
+    "基线",
+    "对照",
+    "比较",
+    "对比",
+)
 
 
 def _normalize_nonblocking_clarification(plan: ResearchPlan) -> ResearchPlan:
@@ -122,6 +135,47 @@ def _unique_identifier(base: str, existing: set[str]) -> str:
         suffix += 1
     existing.add(candidate)
     return candidate
+
+
+def _contains_baseline_role(value: str) -> bool:
+    normalized = value.casefold()
+    return any(hint in normalized for hint in _BASELINE_ROLE_HINTS)
+
+
+def _ensure_baseline_role_query(
+    plan: ResearchPlan,
+    *,
+    query_budget: int,
+) -> ResearchPlan:
+    """Guarantee an explicit baseline retrieval role without displacing identity queries."""
+
+    if plan.status == "blocked" or not plan.search_queries:
+        return plan
+    if any(_contains_baseline_role(query.query) for query in plan.search_queries):
+        return plan
+
+    baseline_gap_ids = {
+        gap.gap_id
+        for gap in plan.evidence_gaps
+        if _contains_baseline_role(f"{gap.gap_id} {gap.description}")
+    }
+    for index, query in enumerate(plan.search_queries):
+        if query.gap_id not in baseline_gap_ids:
+            continue
+        rewritten = query.model_copy(
+            update={
+                "query": f"{query.query} reproducible baseline comparator implementation",
+            }
+        )
+        queries = list(plan.search_queries)
+        queries[index] = _runtime_source_types(rewritten)
+        return plan.model_copy(update={"search_queries": queries})
+
+    del query_budget
+    risks = list(plan.risks)
+    if _BASELINE_QUERY_ABSENT_RISK not in risks:
+        risks.append(_BASELINE_QUERY_ABSENT_RISK)
+    return plan.model_copy(update={"risks": risks})
 
 
 def _ensure_user_material_identity_queries(
@@ -238,7 +292,11 @@ async def planning_node(state: PaperAgentState, config: RunnableConfig) -> State
             request,
             query_budget=query_budget,
         )
-        patch["plan"] = _normalize_nonblocking_clarification(with_materials)
+        with_baseline_query = _ensure_baseline_role_query(
+            with_materials,
+            query_budget=query_budget,
+        )
+        patch["plan"] = _normalize_nonblocking_clarification(with_baseline_query)
     return patch
 
 

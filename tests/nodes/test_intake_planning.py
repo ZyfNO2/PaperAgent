@@ -271,3 +271,106 @@ def test_plan_normalization__baseline_query_adds_asset_lanes_without_extra_query
         "dataset",
         "web",
     ]
+
+
+def test_baseline_query_completion_reuses_existing_gap_without_extra_query() -> None:
+    from paperagent.nodes.planning import _ensure_baseline_role_query
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    plan = ResearchPlan(
+        status="ready",
+        problem_statement="industrial anomaly detection",
+        scope="test",
+        evidence_gaps=[EvidenceGap(gap_id="baseline", description="baseline evidence")],
+        search_queries=[
+            SearchQuery(
+                query_id="q1",
+                gap_id="baseline",
+                query="industrial anomaly detection methods",
+                source_types=["paper"],
+            )
+        ],
+    )
+    updated = _ensure_baseline_role_query(plan, query_budget=10)
+    assert len(updated.search_queries) == 1
+    assert "baseline comparator" in updated.search_queries[0].query
+    assert updated.search_queries[0].source_types == [
+        "paper",
+        "repository",
+        "dataset",
+        "web",
+    ]
+
+
+def test_baseline_query_completion_does_not_add_gap_without_role_contract() -> None:
+    from paperagent.nodes.planning import (
+        _BASELINE_QUERY_ABSENT_RISK,
+        _ensure_baseline_role_query,
+    )
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    plan = ResearchPlan(
+        status="ready",
+        problem_statement="rare sensor failure classification",
+        scope="test",
+        evidence_gaps=[EvidenceGap(gap_id="mechanism", description="failure mechanism")],
+        search_queries=[
+            SearchQuery(
+                query_id="q1",
+                gap_id="mechanism",
+                query="rare sensor failure mechanism",
+                source_types=["paper"],
+            )
+        ],
+    )
+    updated = _ensure_baseline_role_query(plan, query_budget=2)
+    assert updated.search_queries == plan.search_queries
+    assert updated.evidence_gaps == plan.evidence_gaps
+    assert _BASELINE_QUERY_ABSENT_RISK in updated.risks
+
+
+def test_baseline_query_completion_records_budget_risk_without_eviction() -> None:
+    from paperagent.nodes.planning import (
+        _BASELINE_QUERY_ABSENT_RISK,
+        _ensure_baseline_role_query,
+    )
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    plan = ResearchPlan(
+        status="ready",
+        problem_statement="bounded task",
+        scope="test",
+        evidence_gaps=[EvidenceGap(gap_id="mechanism", description="mechanism")],
+        search_queries=[
+            SearchQuery(
+                query_id="q1",
+                gap_id="mechanism",
+                query="bounded mechanism evidence",
+                source_types=["paper"],
+            )
+        ],
+    )
+    updated = _ensure_baseline_role_query(plan, query_budget=1)
+    assert updated.search_queries == plan.search_queries
+    assert _BASELINE_QUERY_ABSENT_RISK in updated.risks
+
+
+def test_existing_baseline_role_query_is_not_rewritten() -> None:
+    from paperagent.nodes.planning import _ensure_baseline_role_query
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    query = SearchQuery(
+        query_id="q1",
+        gap_id="g1",
+        query="reproducible baseline implementation",
+        source_types=["paper", "repository"],
+    )
+    plan = ResearchPlan(
+        status="ready",
+        problem_statement="task",
+        scope="test",
+        evidence_gaps=[EvidenceGap(gap_id="g1", description="task evidence")],
+        search_queries=[query],
+    )
+    updated = _ensure_baseline_role_query(plan, query_budget=10)
+    assert updated.search_queries == [query]
