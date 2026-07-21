@@ -86,6 +86,11 @@ def load_provider_config(
             if values.get("PAPERAGENT_LLM_MAX_COST_USD")
             else None
         ),
+        allow_schema_repair=_env_bool(
+            values,
+            "PAPERAGENT_LLM_ALLOW_SCHEMA_REPAIR",
+            default=True,
+        ),
         native_json_schema=_env_bool(
             values,
             "PAPERAGENT_LLM_NATIVE_JSON_SCHEMA",
