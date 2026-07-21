@@ -47,6 +47,15 @@ _FATAL_PROVIDER_ERROR_CODES = frozenset(
         "LLM_AUTHENTICATION",
         "LLM_CONFIGURATION",
         "LLM_PERMISSION",
+        "LLM_RATE_LIMITED",
+        "LLM_PROVIDER_HTTP_ERROR",
+        "LLM_PROVIDER_5XX",
+        "LLM_CONNECT",
+        "LLM_TIMEOUT",
+        "LLM_INVALID_REQUEST",
+        "LLM_RESPONSE_FORMAT_UNSUPPORTED",
+        "LLM_RESPONSE_JSON_INVALID",
+        "LLM_RESPONSE_SCHEMA_INVALID",
     }
 )
 
@@ -93,6 +102,66 @@ def _append_jsonl(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(value, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def _build_runtime_summary(
+    *,
+    cases: list[dict[str, object]],
+    dataset: dict[str, Any],
+    attempted_case_ids: list[str],
+    completed_case_count: int,
+    traces: list[dict[str, object]],
+    errors: list[dict[str, str]],
+    fatal_provider_error: dict[str, str] | None,
+    prompt_records: int,
+    leakage_passed: bool,
+    leakage_findings: list[str],
+    allow_gold_in_workspace: bool,
+) -> dict[str, object]:
+    attempted = set(attempted_case_ids)
+    return {
+        "schema": "paperagent.academic-tailoring-retrieval.runtime-summary.v1",
+        "source_sha": os.getenv("PAPERAGENT_SOURCE_SHA") or os.getenv("GITHUB_SHA"),
+        "public_dataset_sha256": dataset.get("public_sha256"),
+        "selected_case_ids": [str(case["case_id"]) for case in cases],
+        "selected_case_count": len(cases),
+        "attempted_case_ids": list(attempted_case_ids),
+        "not_run_case_ids": [
+            str(case["case_id"]) for case in cases if str(case["case_id"]) not in attempted
+        ],
+        "recorded_traces": len(traces),
+        "completed": completed_case_count,
+        "fatal_provider_error": fatal_provider_error,
+        "errors": list(errors),
+        "static_leakage_audit": {
+            "passed": leakage_passed,
+            "findings": list(leakage_findings),
+        },
+        "prompt_records": prompt_records,
+        "gold_absent_from_candidate_workspace": not allow_gold_in_workspace,
+        "passed": (
+            completed_case_count == len(cases) and fatal_provider_error is None and not errors
+        ),
+    }
+
+
+def _write_runtime_outputs(
+    *,
+    output_dir: Path,
+    states: list[dict[str, object]],
+    traces: list[dict[str, object]],
+    summary: dict[str, object],
+) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / "states.jsonl").write_text(
+        "".join(json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n" for item in states),
+        encoding="utf-8",
+    )
+    (output_dir / "run-traces.jsonl").write_text(
+        "".join(json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n" for item in traces),
+        encoding="utf-8",
+    )
+    _write_json(output_dir / "execution-summary.json", summary)
 
 
 def _assert_no_forbidden_keys(value: object, *, path: str = "$") -> None:
@@ -230,9 +299,36 @@ async def _run(args: argparse.Namespace) -> int:
     attempted_case_ids: list[str] = []
     completed_case_count = 0
     fatal_provider_error: dict[str, str] | None = None
+
+    def persist_checkpoint() -> dict[str, object]:
+        summary = _build_runtime_summary(
+            cases=cases,
+            dataset=dataset,
+            attempted_case_ids=attempted_case_ids,
+            completed_case_count=completed_case_count,
+            traces=traces,
+            errors=errors,
+            fatal_provider_error=fatal_provider_error,
+            prompt_records=sum(
+                1 for line in prompt_log.read_text(encoding="utf-8").splitlines() if line
+            ),
+            leakage_passed=leakage_audit.passed,
+            leakage_findings=list(leakage_audit.findings),
+            allow_gold_in_workspace=args.allow_gold_in_workspace,
+        )
+        _write_runtime_outputs(
+            output_dir=output_dir,
+            states=states,
+            traces=traces,
+            summary=summary,
+        )
+        return summary
+
+    persist_checkpoint()
     for index, (case, search_budget) in enumerate(zip(cases, budgets, strict=True), start=1):
         case_id = str(case["case_id"])
         attempted_case_ids.append(case_id)
+        persist_checkpoint()
         search_runtime = build_benchmark_search_runtime(
             "literature",
             settings=LiteratureProviderSettings(
@@ -276,6 +372,17 @@ async def _run(args: argparse.Namespace) -> int:
                     }
                 )
                 break
+            execution = state.get("execution")
+            execution_status = execution.get("status") if isinstance(execution, dict) else None
+            if execution_status != "completed":
+                errors.append(
+                    {
+                        "case_id": case_id,
+                        "error_type": "CaseExecutionIncomplete",
+                        "message": f"execution status was {execution_status!r}",
+                    }
+                )
+                continue
             completed_case_count += 1
         except ProviderError as exc:
             normalized = _normalize_provider_error_code(exc.error_code) or exc.code
@@ -311,46 +418,24 @@ async def _run(args: argparse.Namespace) -> int:
                 break
         finally:
             await search_runtime.aclose()
+            checkpoint = persist_checkpoint()
+            print(
+                json.dumps(
+                    {
+                        "case_id": case_id,
+                        "attempted": len(attempted_case_ids),
+                        "completed": completed_case_count,
+                        "errors": len(errors),
+                        "fatal_provider_error": fatal_provider_error,
+                        "passed_so_far": checkpoint["passed"],
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                ),
+                flush=True,
+            )
 
-    states_path = output_dir / "states.jsonl"
-    traces_path = output_dir / "run-traces.jsonl"
-    states_path.write_text(
-        "".join(json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n" for item in states),
-        encoding="utf-8",
-    )
-    traces_path.write_text(
-        "".join(json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n" for item in traces),
-        encoding="utf-8",
-    )
-    summary = {
-        "schema": "paperagent.academic-tailoring-retrieval.runtime-summary.v1",
-        "source_sha": os.getenv("PAPERAGENT_SOURCE_SHA") or os.getenv("GITHUB_SHA"),
-        "public_dataset_sha256": dataset.get("public_sha256"),
-        "selected_case_ids": [str(case["case_id"]) for case in cases],
-        "selected_case_count": len(cases),
-        "attempted_case_ids": attempted_case_ids,
-        "not_run_case_ids": [
-            str(case["case_id"])
-            for case in cases
-            if str(case["case_id"]) not in set(attempted_case_ids)
-        ],
-        "recorded_traces": len(traces),
-        "completed": completed_case_count,
-        "fatal_provider_error": fatal_provider_error,
-        "errors": errors,
-        "static_leakage_audit": {
-            "passed": leakage_audit.passed,
-            "findings": list(leakage_audit.findings),
-        },
-        "prompt_records": sum(
-            1 for line in prompt_log.read_text(encoding="utf-8").splitlines() if line
-        ),
-        "gold_absent_from_candidate_workspace": not args.allow_gold_in_workspace,
-        "passed": (
-            completed_case_count == len(cases) and fatal_provider_error is None and not errors
-        ),
-    }
-    _write_json(output_dir / "execution-summary.json", summary)
+    summary = persist_checkpoint()
     print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
     return 0 if summary["passed"] else 1
 

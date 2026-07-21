@@ -47,6 +47,7 @@ class ProviderRuntimeConfig(BaseModel):
     read_timeout_seconds: float = Field(default=60.0, gt=0)
     total_timeout_seconds: float = Field(default=90.0, gt=0)
     max_attempts: int = Field(default=2, ge=1, le=4)
+    max_requests_per_minute: int | None = Field(default=None, ge=1)
     max_input_tokens_per_task: int = Field(default=32_000, ge=1)
     max_output_tokens_per_call: int = Field(default=4_096, ge=1)
     max_output_tokens_per_task: int = Field(default=16_384, ge=1)
