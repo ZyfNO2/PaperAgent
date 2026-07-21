@@ -23,6 +23,7 @@ from paperagent.literature.factory import LiteratureProviderSettings
 from paperagent.pricing import load_price_table
 from paperagent.providers.base import LLMProvider
 from paperagent.providers.config import load_provider_config
+from paperagent.providers.runtime import ProviderError, ProviderErrorCode
 from paperagent.providers.runtime_factory import build_llm_provider
 from paperagent.schemas import Message
 
@@ -41,6 +42,43 @@ FORBIDDEN_KEYS = {
     "cases_sha256",
 }
 T = TypeVar("T", bound=BaseModel)
+_FATAL_PROVIDER_ERROR_CODES = frozenset(
+    {
+        "LLM_AUTHENTICATION",
+        "LLM_CONFIGURATION",
+        "LLM_PERMISSION",
+    }
+)
+
+
+def _normalize_provider_error_code(value: object) -> str | None:
+    if isinstance(value, ProviderErrorCode):
+        return f"LLM_{value.value.upper()}"
+    if not isinstance(value, str):
+        return None
+    normalized = value.strip()
+    if not normalized:
+        return None
+    upper = normalized.upper()
+    if upper.startswith("LLM_"):
+        return upper
+    try:
+        code = ProviderErrorCode(normalized.casefold())
+    except ValueError:
+        return None
+    return f"LLM_{code.value.upper()}"
+
+
+def _fatal_provider_error_code_from_trace(trace_payload: dict[str, object]) -> str | None:
+    candidates: list[object] = [trace_payload.get("module_defer_reason")]
+    trace_codes = trace_payload.get("trace_error_codes")
+    if isinstance(trace_codes, list):
+        candidates.extend(trace_codes)
+    for candidate in candidates:
+        normalized = _normalize_provider_error_code(candidate)
+        if normalized in _FATAL_PROVIDER_ERROR_CODES:
+            return normalized
+    return None
 
 
 def _write_json(path: Path, value: object) -> None:
@@ -189,8 +227,12 @@ async def _run(args: argparse.Namespace) -> int:
     states: list[dict[str, object]] = []
     traces: list[dict[str, object]] = []
     errors: list[dict[str, str]] = []
+    attempted_case_ids: list[str] = []
+    completed_case_count = 0
+    fatal_provider_error: dict[str, str] | None = None
     for index, (case, search_budget) in enumerate(zip(cases, budgets, strict=True), start=1):
         case_id = str(case["case_id"])
+        attempted_case_ids.append(case_id)
         search_runtime = build_benchmark_search_runtime(
             "literature",
             settings=LiteratureProviderSettings(
@@ -201,12 +243,12 @@ async def _run(args: argparse.Namespace) -> int:
                 max_provider_calls_total=search_budget,
             ),
         )
-        llm = AuditedLLMProvider(
-            build_llm_provider(case_provider_config, price_table),
-            prompt_log=prompt_log,
-            case_id=case_id,
-        )
         try:
+            llm = AuditedLLMProvider(
+                build_llm_provider(case_provider_config, price_table),
+                prompt_log=prompt_log,
+                case_id=case_id,
+            )
             benchmark_input = BenchmarkInput.model_validate(case["benchmark_input"])
             state, trace = await execute_benchmark_case(
                 benchmark_input=benchmark_input,
@@ -216,9 +258,27 @@ async def _run(args: argparse.Namespace) -> int:
                 max_llm_calls=args.max_llm_calls,
                 task_id=f"atr-v1-{index:02d}",
             )
+            trace_payload = trace.model_dump(mode="json", by_alias=True)
             states.append({"case_id": case_id, "state": state})
-            traces.append(trace.model_dump(mode="json", by_alias=True))
-        except Exception as exc:
+            traces.append(trace_payload)
+            fatal_code = _fatal_provider_error_code_from_trace(trace_payload)
+            if fatal_code is not None:
+                fatal_provider_error = {
+                    "case_id": case_id,
+                    "code": fatal_code,
+                    "message": "fatal LLM provider failure surfaced in the case trace",
+                }
+                errors.append(
+                    {
+                        "case_id": case_id,
+                        "error_type": "FatalLLMProviderError",
+                        "message": fatal_code,
+                    }
+                )
+                break
+            completed_case_count += 1
+        except ProviderError as exc:
+            normalized = _normalize_provider_error_code(exc.error_code) or exc.code
             errors.append(
                 {
                     "case_id": case_id,
@@ -226,6 +286,29 @@ async def _run(args: argparse.Namespace) -> int:
                     "message": str(exc),
                 }
             )
+            if normalized in _FATAL_PROVIDER_ERROR_CODES:
+                fatal_provider_error = {
+                    "case_id": case_id,
+                    "code": normalized,
+                    "message": "fatal LLM provider failure raised before case completion",
+                }
+                break
+        except Exception as exc:
+            normalized = _normalize_provider_error_code(getattr(exc, "code", None))
+            errors.append(
+                {
+                    "case_id": case_id,
+                    "error_type": type(exc).__name__,
+                    "message": str(exc),
+                }
+            )
+            if normalized in _FATAL_PROVIDER_ERROR_CODES:
+                fatal_provider_error = {
+                    "case_id": case_id,
+                    "code": normalized,
+                    "message": "fatal LLM provider failure raised before case completion",
+                }
+                break
         finally:
             await search_runtime.aclose()
 
@@ -245,7 +328,15 @@ async def _run(args: argparse.Namespace) -> int:
         "public_dataset_sha256": dataset.get("public_sha256"),
         "selected_case_ids": [str(case["case_id"]) for case in cases],
         "selected_case_count": len(cases),
-        "completed": len(traces),
+        "attempted_case_ids": attempted_case_ids,
+        "not_run_case_ids": [
+            str(case["case_id"])
+            for case in cases
+            if str(case["case_id"]) not in set(attempted_case_ids)
+        ],
+        "recorded_traces": len(traces),
+        "completed": completed_case_count,
+        "fatal_provider_error": fatal_provider_error,
         "errors": errors,
         "static_leakage_audit": {
             "passed": leakage_audit.passed,
@@ -255,7 +346,9 @@ async def _run(args: argparse.Namespace) -> int:
             1 for line in prompt_log.read_text(encoding="utf-8").splitlines() if line
         ),
         "gold_absent_from_candidate_workspace": not args.allow_gold_in_workspace,
-        "passed": len(traces) == len(cases) and not errors,
+        "passed": (
+            completed_case_count == len(cases) and fatal_provider_error is None and not errors
+        ),
     }
     _write_json(output_dir / "execution-summary.json", summary)
     print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
