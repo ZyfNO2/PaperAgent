@@ -69,25 +69,58 @@ def _normalize(value: str) -> str:
     return " ".join(TOKEN_RE.findall(value.casefold()))
 
 
-def _title_matches(title: str, haystack: str) -> bool:
-    normalized = _normalize(title)
-    if normalized and normalized in haystack:
+def _identity_values(item: dict[str, Any]) -> tuple[str, ...]:
+    metadata = item.get("metadata", {})
+    values = [item.get("title"), item.get("locator")]
+    if isinstance(metadata, dict):
+        values.extend(
+            metadata.get(key)
+            for key in (
+                "doi",
+                "arxiv_id",
+                "repository_ref",
+                "dataset_ref",
+                "canonical_url",
+            )
+        )
+    return tuple(value for value in values if isinstance(value, str) and value.strip())
+
+
+def _strong_dataset_identifiers(value: str) -> set[str]:
+    identifiers: set[str] = set()
+    for token in re.findall(r"[A-Za-z][A-Za-z0-9._-]{2,}", value):
+        compact = re.sub(r"[^A-Za-z0-9]+", "", token)
+        if (
+            any(char.isdigit() for char in compact)
+            or token.isupper()
+            or (any(char.isupper() for char in token[1:]) and any(char.islower() for char in token))
+        ):
+            identifiers.add(compact.casefold())
+    return identifiers
+
+
+def _dataset_titles_related(left: str, right: str) -> bool:
+    if _titles_related(left, right):
         return True
-    tokens = set(normalized.split())
-    if len(tokens) < 3:
-        return False
-    return len(tokens & set(haystack.split())) / len(tokens) >= 0.8
+    return bool(_strong_dataset_identifiers(left) & _strong_dataset_identifiers(right))
 
 
-def _asset_matches(asset: dict[str, Any], state_text: str) -> bool:
+def _asset_matches_item(asset: dict[str, Any], item: dict[str, Any]) -> bool:
     title = asset.get("title")
-    if isinstance(title, str) and title.strip() and _title_matches(title, state_text):
-        return True
+    item_title = item.get("title")
+    kind = str(asset.get("kind", ""))
+    if isinstance(title, str) and title.strip() and isinstance(item_title, str):
+        if kind == "dataset":
+            if _dataset_titles_related(title, item_title):
+                return True
+        elif _titles_related(title, item_title):
+            return True
+    identity_text = _normalize("\n".join(_identity_values(item)))
     for key in ("doi", "arxiv", "url"):
         value = asset.get(key)
         if isinstance(value, str) and value.strip():
             normalized = _normalize(value)
-            if normalized and normalized in state_text:
+            if normalized and normalized in identity_text:
                 return True
     return False
 
@@ -151,8 +184,24 @@ def _accepted_verified_items(
 
 
 def _accepted_asset_matches(assets: list[dict[str, Any]], items: list[dict[str, Any]]) -> int:
-    accepted_text = _normalize("\n".join(_flatten_strings(items)))
-    return sum(_asset_matches(asset, accepted_text) for asset in assets)
+    return sum(any(_asset_matches_item(asset, item) for item in items) for asset in assets)
+
+
+def _dataset_asset_score(assets: list[dict[str, Any]], items: list[dict[str, Any]]) -> int:
+    if not assets:
+        return 7 if items else 0
+    total = 0
+    for asset in assets:
+        matching = [item for item in items if _asset_matches_item(asset, item)]
+        if not matching:
+            continue
+        quality = 0
+        for item in matching:
+            metadata = item.get("metadata", {})
+            relation = metadata.get("relation") if isinstance(metadata, dict) else None
+            quality = max(quality, 4 if relation == "dataset_named_in_verified_paper" else 7)
+        total += quality
+    return round(total / len(assets))
 
 
 def _declared_baseline_titles(case: dict[str, Any]) -> list[str]:
@@ -341,11 +390,7 @@ def _score_case(
             baseline_score += 3
     baseline_score = min(15, baseline_score)
 
-    dataset_score = 0
-    if dataset_assets:
-        dataset_score += round(7 * matched_datasets / len(dataset_assets))
-    elif accepted_datasets:
-        dataset_score += 7
+    dataset_score = _dataset_asset_score(dataset_assets, accepted_datasets)
     if baseline is not None and _specific_protocol_text(baseline.dataset):
         dataset_score += 2
     if baseline is not None and _specific_protocol_text(baseline.split):

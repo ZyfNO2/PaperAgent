@@ -55,6 +55,80 @@ def _normalized_github_repository_urls(paper: PaperRecord) -> list[tuple[str, st
     return [(url, title) for url, title in sorted(repositories.items())]
 
 
+_QUOTED_TITLE = re.compile(r'["“](?P<title>[^"”]{8,})["”]')
+_DATASET_CONTEXT = re.compile(
+    r"\b(?P<name>[A-Za-z][A-Za-z0-9._-]{2,})\s+(?:dataset|benchmark|corpus)\b",
+    re.IGNORECASE,
+)
+_DATASET_GENERIC = frozenset(
+    {
+        "audio",
+        "public",
+        "training",
+        "test",
+        "evaluation",
+        "forecasting",
+        "anomaly",
+        "detection",
+        "classification",
+        "dataset",
+        "benchmark",
+        "corpus",
+    }
+)
+
+
+def _quoted_title(query: str) -> str | None:
+    match = _QUOTED_TITLE.search(query)
+    if match is None:
+        return None
+    title = match.group("title").strip()
+    return title or None
+
+
+def _identity_tokens(value: str) -> tuple[str, ...]:
+    return tuple(re.findall(r"[a-z0-9]+", value.casefold()))
+
+
+def _exact_title_match(left: str, right: str) -> bool:
+    left_tokens = _identity_tokens(left)
+    right_tokens = _identity_tokens(right)
+    if not left_tokens or not right_tokens:
+        return False
+    if left_tokens == right_tokens:
+        return True
+    if len(left_tokens) == 1 and len(left_tokens[0]) >= 3 and left_tokens[0] == right_tokens[0]:
+        return True
+    if len(right_tokens) == 1 and len(right_tokens[0]) >= 3 and right_tokens[0] == left_tokens[0]:
+        return True
+    left_set = set(left_tokens)
+    right_set = set(right_tokens)
+    overlap = left_set & right_set
+    union = left_set | right_set
+    length_ratio = min(len(left_set), len(right_set)) / max(len(left_set), len(right_set))
+    return len(overlap) >= 4 and len(overlap) / len(union) >= 0.9 and length_ratio >= 0.8
+
+
+def _dataset_names_from_query(query: str) -> tuple[str, ...]:
+    names: list[str] = []
+    context = re.compile(
+        r"(?P<names>[A-Za-z][A-Za-z0-9._-]*(?:\s*(?:/|,|and)\s*"
+        r"[A-Za-z][A-Za-z0-9._-]*)*)\s+(?:datasets?|benchmarks?|corpus|corpora)\b",
+        re.IGNORECASE,
+    )
+    for match in context.finditer(query):
+        for raw_name in re.split(r"\s*(?:/|,|and)\s*", match.group("names")):
+            name = raw_name.strip(".,;:()[]{}")
+            if name.casefold() not in _DATASET_GENERIC and name not in names:
+                names.append(name)
+    return tuple(names)
+
+
+def _paper_dataset_mentions(query: str, paper: PaperRecord) -> tuple[str, ...]:
+    text = f"{paper.canonical_title}\n{paper.abstract or ''}".casefold()
+    return tuple(name for name in _dataset_names_from_query(query) if name.casefold() in text)
+
+
 class LiteratureSearchAdapter:
     provider_name = "literature_retrieval"
 
@@ -67,7 +141,7 @@ class LiteratureSearchAdapter:
         fallback_source_preferences: list[str] | None = None,
     ) -> None:
         self._service = service
-        academic = [*(source_preferences or ["openalex", "semantic_scholar"])]
+        academic = [*(source_preferences or ["openalex", "semantic_scholar", "arxiv"])]
         academic.extend(supplement_source_preferences or [])
         self._academic_sources = tuple(dict.fromkeys(academic))
         self._web_sources = tuple(dict.fromkeys(fallback_source_preferences or []))
@@ -87,6 +161,7 @@ class LiteratureSearchAdapter:
         del scenario, call_index, fixture_version
 
         policy = review_search_query(query)
+        required_title = _quoted_title(query.query)
         if not policy.approved:
             self._last_results[query.query_id] = []
             self._last_fallback_used[query.query_id] = False
@@ -131,7 +206,9 @@ class LiteratureSearchAdapter:
             attempted.append(provider_name)
             provider_results.extend(bundle.provider_results)
             self._merge_papers(papers_by_id, bundle.papers)
-            if self._has_sufficient_academic_evidence(papers_by_id.values(), policy):
+            if self._has_sufficient_academic_evidence(
+                papers_by_id.values(), policy, required_title=required_title
+            ):
                 stop_reason = "sufficient_academic_evidence"
                 break
 
@@ -186,6 +263,12 @@ class LiteratureSearchAdapter:
         filtered = [
             paper for paper in papers_by_id.values() if self._passes_return_relevance(paper, policy)
         ]
+        if required_title is not None:
+            filtered = [
+                paper
+                for paper in filtered
+                if _exact_title_match(paper.canonical_title, required_title)
+            ]
         filtered.sort(
             key=lambda paper: (
                 paper.rank_features.score if paper.rank_features else 0.0,
@@ -221,13 +304,22 @@ class LiteratureSearchAdapter:
     def _has_sufficient_academic_evidence(
         papers: Iterable[PaperRecord],
         policy: SearchSourcePolicy,
+        *,
+        required_title: str | None = None,
     ) -> bool:
+        paper_list = list(papers)
+        if required_title is not None:
+            return any(
+                paper.verification_status == "verified"
+                and _exact_title_match(paper.canonical_title, required_title)
+                for paper in paper_list
+            )
         relevant = sum(
             paper.verification_status == "verified"
             and paper.rank_features is not None
             and paper.rank_features.relevance >= policy.minimum_relevance
             and paper.rank_features.score >= policy.minimum_rank_score
-            for paper in papers
+            for paper in paper_list
         )
         return relevant >= policy.minimum_relevant_results
 
@@ -261,44 +353,80 @@ class LiteratureSearchAdapter:
         candidates = [self._candidate(query, paper, fallback_used)]
         if paper.verification_status != "verified":
             return candidates
-        if not {"repository", "web"}.intersection(query.source_types):
-            return candidates
         providers = sorted({record.provider for record in paper.source_records})
         score = paper.rank_features.score if paper.rank_features else 0.0
         relevance = paper.rank_features.relevance if paper.rank_features else 0.0
-        for url, title in _normalized_github_repository_urls(paper):
-            digest = sha256(url.casefold().encode("utf-8")).hexdigest()[:20]
-            candidates.append(
-                SearchCandidate(
-                    candidate_id=f"repository-{digest}",
-                    query_id=query.query_id,
-                    gap_id=query.gap_id,
-                    source_type="repository",
-                    title=title,
-                    locator=url,
-                    snippet=(
-                        f"Repository explicitly linked from the verified paper "
-                        f"{paper.canonical_title!r}. The paper text or provider metadata "
-                        f"contains the repository URL {url}."
-                    ),
-                    provider=self.provider_name,
-                    metadata={
-                        "query_text": query.query,
-                        "verification_status": "verified",
-                        "providers": ",".join(providers),
-                        "provider_classes": "academic-linked-repository",
-                        "source_kind": "repository",
-                        "rank_score": f"{score:.6f}",
-                        "relevance_score": f"{relevance:.6f}",
-                        "relation": "author_linked_from_verified_paper",
-                        "parent_paper_id": paper.paper_id,
-                        "parent_paper_title": paper.canonical_title,
-                        "repository_ref": url,
-                        "fallback_used": "true" if fallback_used else "false",
-                        "web_supplement": "false",
-                    },
+        if {"repository", "web"}.intersection(query.source_types):
+            for url, title in _normalized_github_repository_urls(paper):
+                digest = sha256(url.casefold().encode("utf-8")).hexdigest()[:20]
+                candidates.append(
+                    SearchCandidate(
+                        candidate_id=f"repository-{digest}",
+                        query_id=query.query_id,
+                        gap_id=query.gap_id,
+                        source_type="repository",
+                        title=title,
+                        locator=url,
+                        snippet=(
+                            f"Repository explicitly linked from the verified paper "
+                            f"{paper.canonical_title!r}. The paper text or provider metadata "
+                            f"contains the repository URL {url}."
+                        ),
+                        provider=self.provider_name,
+                        metadata={
+                            "query_text": query.query,
+                            "verification_status": "verified",
+                            "providers": ",".join(providers),
+                            "provider_classes": "academic-linked-repository",
+                            "source_kind": "repository",
+                            "rank_score": f"{score:.6f}",
+                            "relevance_score": f"{relevance:.6f}",
+                            "relation": "author_linked_from_verified_paper",
+                            "parent_paper_id": paper.paper_id,
+                            "parent_paper_title": paper.canonical_title,
+                            "repository_ref": url,
+                            "fallback_used": "true" if fallback_used else "false",
+                            "web_supplement": "false",
+                        },
+                    )
                 )
-            )
+        if "dataset" in query.source_types:
+            parent_locator = self._locator(paper.doi, paper.arxiv_id, paper.urls)
+            for dataset_name in _paper_dataset_mentions(query.query, paper):
+                identity = f"{dataset_name.casefold()}|{paper.paper_id}"
+                digest = sha256(identity.encode("utf-8")).hexdigest()[:20]
+                candidates.append(
+                    SearchCandidate(
+                        candidate_id=f"dataset-{digest}",
+                        query_id=query.query_id,
+                        gap_id=query.gap_id,
+                        source_type="dataset",
+                        title=dataset_name,
+                        locator=parent_locator,
+                        snippet=(
+                            f"Dataset {dataset_name!r} is explicitly named in the title "
+                            "or abstract "
+                            f"of the verified paper {paper.canonical_title!r}. This verifies the "
+                            "dataset mention, not an official download page or split manifest."
+                        ),
+                        provider=self.provider_name,
+                        metadata={
+                            "query_text": query.query,
+                            "verification_status": "verified",
+                            "providers": ",".join(providers),
+                            "provider_classes": "academic-linked-dataset-mention",
+                            "source_kind": "dataset",
+                            "rank_score": f"{score:.6f}",
+                            "relevance_score": f"{relevance:.6f}",
+                            "relation": "dataset_named_in_verified_paper",
+                            "parent_paper_id": paper.paper_id,
+                            "parent_paper_title": paper.canonical_title,
+                            "dataset_ref": dataset_name,
+                            "fallback_used": "true" if fallback_used else "false",
+                            "web_supplement": "false",
+                        },
+                    )
+                )
         return candidates
 
     def _candidate(

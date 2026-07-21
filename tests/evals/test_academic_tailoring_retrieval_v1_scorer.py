@@ -14,7 +14,9 @@ assert _SPEC is not None and _SPEC.loader is not None
 _SCORER = importlib.util.module_from_spec(_SPEC)
 _SPEC.loader.exec_module(_SCORER)
 
+_accepted_asset_matches = _SCORER._accepted_asset_matches
 _accepted_verified_items = _SCORER._accepted_verified_items
+_dataset_asset_score = _SCORER._dataset_asset_score
 _baseline_target_titles = _SCORER._baseline_target_titles
 _titles_related = _SCORER._titles_related
 
@@ -97,3 +99,37 @@ def test_title_identity_is_symmetric_and_rejects_prefixed_neighbor_paper() -> No
         "Multispectral-oriented R-CNN for object detection in remote sensing images",
         "Oriented R-CNN for Object Detection",
     )
+
+
+def test_query_text_cannot_impersonate_missing_paper_identity() -> None:
+    assets = [
+        {
+            "kind": "paper",
+            "title": "USAD: UnSupervised Anomaly Detection on Multivariate Time Series",
+        }
+    ]
+    items = [
+        {
+            "source_type": "paper",
+            "title": "An Efficient Method for Detecting Abnormal Electricity Behavior",
+            "locator": "doi:10.1000/wrong",
+            "metadata": {
+                "query_text": '"USAD: UnSupervised Anomaly Detection on Multivariate Time Series"'
+            },
+        }
+    ]
+    assert _accepted_asset_matches(assets, items) == 0
+
+
+def test_dataset_mention_scores_partial_not_official_identity_credit() -> None:
+    assets = [{"kind": "dataset", "title": "MIMII dataset"}]
+    items = [
+        {
+            "source_type": "dataset",
+            "title": "MIMII",
+            "locator": "doi:10.1000/paper",
+            "metadata": {"relation": "dataset_named_in_verified_paper", "dataset_ref": "MIMII"},
+        }
+    ]
+    assert _accepted_asset_matches(assets, items) == 1
+    assert _dataset_asset_score(assets, items) == 4

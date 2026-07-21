@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from paperagent.method_design_draft import _select_primary_evidence
+from paperagent.method_design_draft import (
+    _select_dataset_evidence,
+    _select_declared_baseline_evidence,
+    _select_primary_evidence,
+)
 from paperagent.schemas import EvidenceItem
 
 
@@ -51,3 +55,27 @@ def test_similar_prefixed_paper_does_not_replace_declared_baseline() -> None:
     )
 
     assert selected.evidence_id == "exact"
+
+
+def test_missing_declared_baseline_does_not_substitute_neighbor_paper() -> None:
+    neighbor = _item("neighbor", "A Different Paper About the Same Task")
+    selected = _select_declared_baseline_evidence(
+        [
+            "PANNs: Large-Scale Pretrained Audio Neural Networks for Audio Pattern "
+            "Recognition [declared role: baseline]"
+        ],
+        (neighbor,),
+    )
+    assert selected is None
+
+
+def test_dataset_evidence_prefers_name_present_in_user_question() -> None:
+    unrelated = _item("other", "OtherData")
+    target = unrelated.model_copy(
+        update={"evidence_id": "mimii", "source_type": "dataset", "title": "MIMII"}
+    )
+    selected = _select_dataset_evidence(
+        "Evaluate PANNs on MIMII under low SNR", (unrelated, target)
+    )
+    assert selected is not None
+    assert selected.evidence_id == "mimii"

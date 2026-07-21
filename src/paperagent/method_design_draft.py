@@ -132,18 +132,35 @@ def _declared_baseline_titles(references: list[str]) -> tuple[str, ...]:
     return tuple(titles)
 
 
+def _select_declared_baseline_evidence(
+    references: list[str],
+    candidates: tuple[EvidenceItem, ...],
+) -> EvidenceItem | None:
+    declared_titles = _declared_baseline_titles(references)
+    for declared_title in declared_titles:
+        for item in candidates:
+            if item.source_type == "paper" and _titles_equivalent(item.title, declared_title):
+                return item
+    return None
+
+
 def _select_primary_evidence(
     references: list[str],
     candidates: tuple[EvidenceItem, ...],
 ) -> EvidenceItem:
     if not candidates:
         raise ValueError("primary evidence selection requires candidates")
-    declared_titles = _declared_baseline_titles(references)
-    for declared_title in declared_titles:
-        for item in candidates:
-            if item.source_type == "paper" and _titles_equivalent(item.title, declared_title):
-                return item
-    return candidates[0]
+    return _select_declared_baseline_evidence(references, candidates) or candidates[0]
+
+
+def _select_dataset_evidence(
+    question: str, candidates: tuple[EvidenceItem, ...]
+) -> EvidenceItem | None:
+    datasets = tuple(item for item in candidates if item.source_type == "dataset")
+    for item in datasets:
+        if item.title.casefold() in question.casefold():
+            return item
+    return datasets[0] if datasets else None
 
 
 def _evidence_text(state: PaperAgentState) -> str:
@@ -223,7 +240,7 @@ def _experiment(
     name: str,
     arm_type: ExperimentArmType,
     included_modules: tuple[str, ...],
-    source_evidence_id: str,
+    source_evidence_id: str | None,
     comparator: str,
     purpose: str,
     contrast: str,
@@ -300,12 +317,17 @@ def build_method_proposal(
     attributed = tuple(
         item for item in accepted if not _is_review_evidence(item.title, item.summary)
     )
-    primary = _select_primary_evidence(
-        list(request.user_material_refs),
-        attributed if attributed else accepted,
+    method_evidence = attributed if attributed else accepted
+    declared_baseline_titles = _declared_baseline_titles(list(request.user_material_refs))
+    baseline_evidence = _select_declared_baseline_evidence(
+        list(request.user_material_refs), method_evidence
     )
+    primary = baseline_evidence or method_evidence[0]
+    dataset_evidence = _select_dataset_evidence(request.question, accepted)
     evidence_text = _evidence_text(state)
     grounded_dataset = _grounded_optional(draft.reported_dataset, evidence_text)
+    if grounded_dataset is None and dataset_evidence is not None:
+        grounded_dataset = dataset_evidence.title
     grounded_comparator = _grounded_optional(draft.reported_comparator, evidence_text)
     comparator_evidence_id = _grounded_evidence_id(grounded_comparator, accepted)
     if draft.comparison_readiness_confirmed and (
@@ -332,10 +354,20 @@ def build_method_proposal(
         )
     )
     review_primary = _is_review_evidence(primary.title, primary.summary)
+    baseline_unresolved = bool(declared_baseline_titles and baseline_evidence is None)
     baseline_name = (
-        "unresolved task-matched baseline selected from accepted review evidence"
-        if review_primary
-        else primary.title
+        declared_baseline_titles[0]
+        if baseline_unresolved
+        else (
+            "unresolved task-matched baseline selected from accepted review evidence"
+            if review_primary
+            else primary.title
+        )
+    )
+    baseline_source_evidence_id = (
+        baseline_evidence.evidence_id
+        if baseline_evidence is not None
+        else (None if baseline_unresolved else primary.evidence_id)
     )
     comparator = grounded_comparator if comparator_evidence_id is not None else None
     module_name = draft.module_name.strip()
@@ -360,18 +392,25 @@ def build_method_proposal(
     baseline = BaselineCard(
         name=baseline_name,
         version_or_commit=(
-            "user-declared frozen implementation; preserve the exact version or commit"
-            if readiness_confirmed
+            (
+                "declared baseline identity unresolved; do not implement until the exact "
+                "paper is verified"
+            )
+            if baseline_unresolved
             else (
-                f"review source {primary.stable_identifier}; implementation baseline unresolved"
-                if review_primary
+                "user-declared frozen implementation; preserve the exact version or commit"
+                if readiness_confirmed
                 else (
-                    f"published source {primary.stable_identifier}; "
-                    "implementation commit unresolved"
+                    f"review source {primary.stable_identifier}; implementation baseline unresolved"
+                    if review_primary
+                    else (
+                        f"published source {primary.stable_identifier}; "
+                        "implementation commit unresolved"
+                    )
                 )
             )
         ),
-        source_evidence_id=primary.evidence_id,
+        source_evidence_id=baseline_source_evidence_id,
         license=_metadata_text(primary.metadata, "license"),
         dataset=dataset,
         split=(
@@ -463,7 +502,7 @@ def build_method_proposal(
             name="E0-frozen-baseline",
             arm_type=ExperimentArmType.BASELINE,
             included_modules=(),
-            source_evidence_id=primary.evidence_id,
+            source_evidence_id=baseline_source_evidence_id,
             comparator=baseline_name,
             purpose="establish a reproducible task-matched baseline under frozen settings",
             contrast="baseline only",
