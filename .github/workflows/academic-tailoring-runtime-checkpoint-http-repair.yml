@@ -44,13 +44,6 @@ jobs:
           status=$?
           echo "status=$status" >> "$GITHUB_OUTPUT"
           exit 0
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: academic-tailoring-runtime-checkpoint-http-diagnostics
-          path: build/runtime-checkpoint-http/
-          if-no-files-found: error
-          retention-days: 7
       - name: Enforce patch application
         run: test "${{ steps.apply_patch.outputs.status }}" = "0"
       - name: Format and lint changed paths
@@ -82,12 +75,34 @@ jobs:
           rm -f \
             scripts/apply_runtime_checkpoint_http_errors_v1.py \
             scripts/fix_runtime_checkpoint_http_patch_v1.py
-      - name: Run full final-tree regression
+      - name: Capture full final-tree regression
+        id: full
+        shell: bash
         run: |
-          pytest -q
-          mypy --config-file pyproject.toml
-          ruff check src tests scripts
-          ruff format --check src tests scripts
+          set +e
+          pytest -q > build/runtime-checkpoint-http/pytest.log 2>&1
+          pytest_status=$?
+          mypy --config-file pyproject.toml > build/runtime-checkpoint-http/mypy.log 2>&1
+          mypy_status=$?
+          ruff check src tests scripts > build/runtime-checkpoint-http/ruff-check.log 2>&1
+          ruff_status=$?
+          ruff format --check src tests scripts > build/runtime-checkpoint-http/ruff-format.log 2>&1
+          format_status=$?
+          printf '{"pytest":%s,"mypy":%s,"ruff":%s,"format":%s}\n' \
+            "$pytest_status" "$mypy_status" "$ruff_status" "$format_status" \
+            > build/runtime-checkpoint-http/full-status.json
+          echo "status=$((pytest_status || mypy_status || ruff_status || format_status))" \
+            >> "$GITHUB_OUTPUT"
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-runtime-checkpoint-http-diagnostics
+          path: build/runtime-checkpoint-http/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Enforce full final-tree regression
+        run: test "${{ steps.full.outputs.status }}" = "0"
       - name: Rebase and commit production repair
         shell: bash
         run: |
