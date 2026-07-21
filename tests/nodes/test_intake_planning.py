@@ -128,8 +128,71 @@ def test_planning_route__headless_policy_blocks_human_interrupt() -> None:
         scope="s",
         clarification_question="Which corpus should be used?",
     )
-
     assert (
         planning_route({"plan": plan}, {"configurable": {"human_review_policy": "block"}})
         == "blocked"
     )
+
+
+def test_plan_normalization__oversized_plan__keeps_one_query_per_gap_then_fills() -> None:
+    from paperagent.nodes.planning import (
+        _BUDGET_NORMALIZATION_RISK,
+        _normalize_plan_to_query_budget,
+    )
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    plan = ResearchPlan(
+        status="ready",
+        problem_statement="bounded retrieval",
+        scope="test",
+        evidence_gaps=[
+            EvidenceGap(gap_id=f"g{index}", description=f"gap {index}")
+            for index in range(1, 7)
+        ],
+        search_queries=[
+            SearchQuery(
+                query_id=f"q{index}",
+                gap_id=f"g{((index - 1) % 6) + 1}",
+                query=f"protein function evidence query {index}",
+            )
+            for index in range(1, 13)
+        ],
+    )
+
+    normalized = _normalize_plan_to_query_budget(plan, query_budget=10)
+
+    assert len(normalized.search_queries) == 10
+    assert {query.gap_id for query in normalized.search_queries} == {
+        "g1",
+        "g2",
+        "g3",
+        "g4",
+        "g5",
+        "g6",
+    }
+    assert _BUDGET_NORMALIZATION_RISK in normalized.risks
+    normalized.validate_query_budget(10)
+
+
+def test_plan_normalization__repository_or_dataset_query__adds_web_lane() -> None:
+    from paperagent.nodes.planning import _normalize_plan_to_query_budget
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    plan = ResearchPlan(
+        status="ready",
+        problem_statement="asset discovery",
+        scope="test",
+        evidence_gaps=[EvidenceGap(gap_id="g1", description="find implementation")],
+        search_queries=[
+            SearchQuery(
+                query_id="q1",
+                gap_id="g1",
+                query="GraphSAGE official implementation repository",
+                source_types=["paper", "repository"],
+            )
+        ],
+    )
+
+    normalized = _normalize_plan_to_query_budget(plan, query_budget=10)
+
+    assert normalized.search_queries[0].source_types == ["paper", "repository", "web"]
