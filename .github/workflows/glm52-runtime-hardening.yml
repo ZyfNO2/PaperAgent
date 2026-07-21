@@ -53,27 +53,24 @@ jobs:
       - name: Type-check changed provider modules
         run: mypy --config-file pyproject.toml src/paperagent/providers
       - name: Format and lint changed paths
+        shell: bash
         run: |
-          ruff format --check \
-            src/paperagent/providers/config.py \
-            src/paperagent/providers/openai_llm.py \
-            src/paperagent/providers/structured_output.py \
-            src/paperagent/providers/runtime_factory.py \
-            scripts/run_academic_tailoring_retrieval_v1.py \
-            tests/providers/test_openai_llm_runtime_limits.py \
-            tests/providers/test_openai_compatible_structured_output.py \
-            tests/providers/test_provider_compat_config.py \
+          format_paths=(
+            src/paperagent/providers/config.py
+            src/paperagent/providers/openai_llm.py
+            src/paperagent/providers/structured_output.py
+            src/paperagent/providers/runtime_factory.py
+            tests/providers/test_openai_llm_runtime_limits.py
+            tests/providers/test_openai_compatible_structured_output.py
+            tests/providers/test_provider_compat_config.py
             tests/evals/test_academic_tailoring_runtime_checkpoint.py
-          ruff check \
-            src/paperagent/providers/config.py \
-            src/paperagent/providers/openai_llm.py \
-            src/paperagent/providers/structured_output.py \
-            src/paperagent/providers/runtime_factory.py \
-            scripts/run_academic_tailoring_retrieval_v1.py \
-            tests/providers/test_openai_llm_runtime_limits.py \
-            tests/providers/test_openai_compatible_structured_output.py \
-            tests/providers/test_provider_compat_config.py \
-            tests/evals/test_academic_tailoring_runtime_checkpoint.py
+          )
+          lint_paths=(
+            "${format_paths[@]}"
+            scripts/run_academic_tailoring_retrieval_v1.py
+          )
+          ruff format --check "${format_paths[@]}"
+          ruff check "${lint_paths[@]}"
 
   live-structured-smoke:
     needs: offline-runtime-contract
