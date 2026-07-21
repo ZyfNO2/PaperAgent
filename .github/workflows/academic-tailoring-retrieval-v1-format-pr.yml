@@ -1,0 +1,107 @@
+name: Academic Tailoring Retrieval v1 Evidence Chain Diagnostics
+
+on:
+  pull_request:
+    branches:
+      - eval/academic-tailoring-retrieval-v1-authoring
+    types: [opened, reopened, synchronize]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: academic-tailoring-retrieval-v1-evidence-chain-diagnostics-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Apply repair and capture diagnostics
+        shell: bash
+        run: |
+          mkdir -p build/evidence-chain-diagnostics
+          set +e
+          {
+            python scripts/apply_academic_tailoring_retrieval_v1_evidence_chain_v3.py
+            python scripts/apply_academic_tailoring_retrieval_v1_evidence_chain_v3_followup.py
+          } > build/evidence-chain-diagnostics/apply.log 2>&1
+          apply_status=$?
+          ruff format \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/literature/adapter.py \
+            src/paperagent/method_design_draft.py \
+            tests/literature/test_linked_repository_candidates.py \
+            tests/nodes/test_method_design_baseline_anchor.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_scorer.py \
+            > build/evidence-chain-diagnostics/format.log 2>&1
+          format_status=$?
+          ruff check \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/literature/adapter.py \
+            src/paperagent/method_design_draft.py \
+            tests/literature/test_linked_repository_candidates.py \
+            tests/nodes/test_method_design_baseline_anchor.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_scorer.py \
+            > build/evidence-chain-diagnostics/ruff.log 2>&1
+          ruff_status=$?
+          pytest -q tests/literature/test_linked_repository_candidates.py \
+            > build/evidence-chain-diagnostics/pytest-repository.log 2>&1
+          repository_status=$?
+          pytest -q tests/nodes/test_method_design_baseline_anchor.py \
+            > build/evidence-chain-diagnostics/pytest-baseline.log 2>&1
+          baseline_status=$?
+          pytest -q tests/evals/test_academic_tailoring_retrieval_v1_scorer.py \
+            > build/evidence-chain-diagnostics/pytest-scorer.log 2>&1
+          scorer_status=$?
+          pytest -q \
+            tests/evals/test_benchmark_leakage_audit.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
+            tests/nodes/test_planning_nonblocking.py \
+            tests/review/test_semantic_gap_binding.py \
+            > build/evidence-chain-diagnostics/pytest-existing.log 2>&1
+          existing_status=$?
+          python - <<'PY' > build/evidence-chain-diagnostics/leakage.log 2>&1
+          from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
+          result = audit_benchmark_execution_boundary()
+          print(result.model_dump_json(indent=2))
+          if not result.passed:
+              raise SystemExit(result.findings)
+          PY
+          leakage_status=$?
+          printf '{"apply":%s,"format":%s,"ruff":%s,"repository":%s,"baseline":%s,"scorer":%s,"existing":%s,"leakage":%s}\n' \
+            "$apply_status" "$format_status" "$ruff_status" "$repository_status" \
+            "$baseline_status" "$scorer_status" "$existing_status" "$leakage_status" \
+            > build/evidence-chain-diagnostics/status.json
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-retrieval-v1-evidence-chain-diagnostics
+          path: build/evidence-chain-diagnostics/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Enforce diagnostics
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(Path("build/evidence-chain-diagnostics/status.json").read_text())
+          print(status)
+          if any(status.values()):
+              raise SystemExit(status)
+          PY
