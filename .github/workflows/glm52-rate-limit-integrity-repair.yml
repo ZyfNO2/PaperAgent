@@ -59,11 +59,8 @@ jobs:
             tests/evals/test_academic_tailoring_runtime_fail_fast.py
           mypy --config-file pyproject.toml src/paperagent/providers
           git diff --check
-      - name: Commit repaired runtime and remove repair machinery
+      - name: Commit production repair
         run: |
-          rm -f \
-            scripts/apply_glm52_rate_limit_and_runtime_integrity_v1.py \
-            .github/workflows/glm52-rate-limit-integrity-repair.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
