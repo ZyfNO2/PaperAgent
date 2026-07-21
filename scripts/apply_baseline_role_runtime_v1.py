@@ -21,7 +21,7 @@ def main() -> int:
         "_QUOTED_TITLE = re.compile(r'[\"“](?P<title>[^\"”]{8,})[\"”]')\n",
         "_QUOTED_TITLE = re.compile(r'[\"“](?P<title>[^\"”]{8,})[\"”]')\n"
         "_BASELINE_ROLE_QUERY = re.compile(\n"
-        "    r\"(?:\\\\bbaselines?\\\\b|\\\\bcomparators?\\\\b|\\\\bcomparison\\\\b|基线|对照|比较|对比)\",\n"
+        "    r\"(?:\\bbaselines?\\b|\\bcomparators?\\b|\\bcomparison\\b|基线|对照|比较|对比)\",\n"
         "    re.IGNORECASE,\n"
         ")\n",
         "baseline role pattern",
