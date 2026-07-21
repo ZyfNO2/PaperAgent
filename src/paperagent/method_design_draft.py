@@ -177,6 +177,35 @@ def _select_inferred_baseline_evidence(
     return max(papers, key=_baseline_evidence_rank)
 
 
+def _comparator_evidence_rank(item: EvidenceItem) -> tuple[int, float, str]:
+    if item.source_type != "paper":
+        return (-1, -1.0, item.evidence_id)
+    marker_rank = int(item.metadata.get("comparator_candidate") == "inferred")
+    try:
+        rank_score = float(item.metadata.get("rank_score", "0"))
+    except ValueError:
+        rank_score = 0.0
+    return (marker_rank, rank_score, item.evidence_id)
+
+
+def _select_inferred_comparator_evidence(
+    candidates: tuple[EvidenceItem, ...],
+    *,
+    excluded_ids: set[str],
+) -> EvidenceItem | None:
+    papers = tuple(
+        item
+        for item in candidates
+        if item.source_type == "paper"
+        and item.evidence_id not in excluded_ids
+        and item.metadata.get("comparator_candidate") == "inferred"
+        and item.metadata.get("relation") == "comparator_role_query"
+    )
+    if not papers:
+        return None
+    return max(papers, key=_comparator_evidence_rank)
+
+
 def _select_primary_evidence(
     references: list[str],
     candidates: tuple[EvidenceItem, ...],
@@ -470,12 +499,20 @@ def build_method_proposal(
         excluded_ids = {module_primary.evidence_id}
         if baseline_evidence is not None:
             excluded_ids.add(baseline_evidence.evidence_id)
-        for item in attributed:
-            if item.evidence_id in excluded_ids:
-                continue
-            grounded_comparator = item.title
-            comparator_evidence_id = item.evidence_id
-            break
+        comparator_evidence = _select_inferred_comparator_evidence(
+            attributed,
+            excluded_ids=excluded_ids,
+        )
+        if comparator_evidence is not None:
+            grounded_comparator = comparator_evidence.title
+            comparator_evidence_id = comparator_evidence.evidence_id
+        else:
+            for item in attributed:
+                if item.evidence_id in excluded_ids:
+                    continue
+                grounded_comparator = item.title
+                comparator_evidence_id = item.evidence_id
+                break
 
     baseline_identity_resolved = baseline_evidence is not None
     effective_baseline_readiness = draft.baseline_readiness_confirmed and baseline_identity_resolved

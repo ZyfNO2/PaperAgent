@@ -8,7 +8,9 @@ from paperagent.literature.adapter import (
     _dataset_relation_names,
     _exact_title_match,
     _looks_like_dataset_name,
+    _query_candidate_role,
     _query_seeks_baseline_role,
+    _query_seeks_comparator_role,
     _quoted_title,
 )
 from paperagent.schemas import SearchQuery
@@ -270,8 +272,8 @@ def test_declared_identity_remains_a_declared_baseline_candidate() -> None:
 
 def test_explicit_baseline_role_queries_are_propagated() -> None:
     assert _query_seeks_baseline_role("task-matched baseline implementation")
-    assert _query_seeks_baseline_role("strong comparator under matched compute")
-    assert _query_seeks_baseline_role("retrieve a reproducible comparison method")
+    assert not _query_seeks_baseline_role("strong comparator under matched compute")
+    assert not _query_seeks_baseline_role("retrieve a reproducible comparison method")
     assert not _query_seeks_baseline_role("analyze the failure mechanism")
 
     adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
@@ -289,3 +291,28 @@ def test_explicit_baseline_role_queries_are_propagated() -> None:
     )
     assert candidate.metadata["relation"] == "baseline_role_query"
     assert candidate.metadata["baseline_candidate"] == "inferred"
+
+
+def test_baseline_and_comparator_queries_have_distinct_roles() -> None:
+    assert _query_candidate_role("reproducible development baseline") == "baseline"
+    assert _query_candidate_role("strong comparator under matched compute") == "comparator"
+    assert _query_candidate_role("comparison against recent methods") == "comparator"
+    assert _query_candidate_role("failure mechanism analysis") is None
+    assert _query_seeks_baseline_role("基线复现")
+    assert _query_seeks_comparator_role("强模型对比")
+
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q-comparator-role",
+        gap_id="g-comparator-role",
+        query="strong comparator under matched compute",
+        source_types=["paper"],
+    )
+    candidate = adapter._candidate(
+        query,
+        _paper("A Strong Matched Comparator"),
+        False,
+        relation="comparator_role_query",
+    )
+    assert candidate.metadata["comparator_candidate"] == "inferred"
+    assert "baseline_candidate" not in candidate.metadata

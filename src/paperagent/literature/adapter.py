@@ -57,8 +57,9 @@ def _normalized_github_repository_urls(paper: PaperRecord) -> list[tuple[str, st
 
 
 _QUOTED_TITLE = re.compile(r'["“](?P<title>[^"”]{8,})["”]')
-_BASELINE_ROLE_QUERY = re.compile(
-    r"(?:\bbaselines?\b|\bcomparators?\b|\bcomparison\b|基线|对照|比较|对比)",
+_BASELINE_ROLE_QUERY = re.compile(r"(?:\bbaselines?\b|基线)", re.IGNORECASE)
+_COMPARATOR_ROLE_QUERY = re.compile(
+    r"(?:\bcomparators?\b|\bcomparison\b|对照|比较|对比)",
     re.IGNORECASE,
 )
 _DATASET_CONTEXT = re.compile(
@@ -143,6 +144,18 @@ def _quoted_title(query: str) -> str | None:
 
 def _query_seeks_baseline_role(query: str) -> bool:
     return bool(_BASELINE_ROLE_QUERY.search(query))
+
+
+def _query_seeks_comparator_role(query: str) -> bool:
+    return not _query_seeks_baseline_role(query) and bool(_COMPARATOR_ROLE_QUERY.search(query))
+
+
+def _query_candidate_role(query: str) -> str | None:
+    if _query_seeks_baseline_role(query):
+        return "baseline"
+    if _query_seeks_comparator_role(query):
+        return "comparator"
+    return None
 
 
 def _identity_tokens(value: str) -> tuple[str, ...]:
@@ -475,8 +488,12 @@ class LiteratureSearchAdapter:
                     if paper.paper_id in relation_paper_ids
                     else (
                         "baseline_role_query"
-                        if _query_seeks_baseline_role(query.query)
-                        else "direct_query"
+                        if _query_candidate_role(query.query) == "baseline"
+                        else (
+                            "comparator_role_query"
+                            if _query_candidate_role(query.query) == "comparator"
+                            else "direct_query"
+                        )
                     )
                 )
             )
@@ -708,7 +725,11 @@ class LiteratureSearchAdapter:
                     else (
                         {"baseline_candidate": "inferred"}
                         if relation in {"parallel_via_dataset", "baseline_role_query"}
-                        else {}
+                        else (
+                            {"comparator_candidate": "inferred"}
+                            if relation == "comparator_role_query"
+                            else {}
+                        )
                     )
                 ),
                 "rank_score": f"{score:.6f}",

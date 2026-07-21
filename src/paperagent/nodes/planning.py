@@ -15,17 +15,12 @@ _BUDGET_NORMALIZATION_RISK = (
     "deterministically removed before retrieval."
 )
 _BASELINE_QUERY_ABSENT_RISK = (
-    "No explicit baseline/comparator evidence gap was declared; baseline discovery remains "
+    "No explicit development-baseline evidence gap was declared; baseline discovery remains "
     "available through dataset-linked parallel papers and later evidence review."
 )
 _BASELINE_ROLE_HINTS = (
     "baseline",
-    "comparator",
-    "comparison",
     "基线",
-    "对照",
-    "比较",
-    "对比",
 )
 
 

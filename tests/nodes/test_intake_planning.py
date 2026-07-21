@@ -374,3 +374,30 @@ def test_existing_baseline_role_query_is_not_rewritten() -> None:
     )
     updated = _ensure_baseline_role_query(plan, query_budget=10)
     assert updated.search_queries == [query]
+
+
+def test_comparator_only_gap_does_not_become_development_baseline_query() -> None:
+    from paperagent.nodes.planning import (
+        _BASELINE_QUERY_ABSENT_RISK,
+        _ensure_baseline_role_query,
+    )
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    query = SearchQuery(
+        query_id="q-comparator",
+        gap_id="strong-comparator",
+        query="strong comparator comparison under matched compute",
+        source_types=["paper"],
+    )
+    plan = ResearchPlan(
+        status="ready",
+        problem_statement="task",
+        scope="test",
+        evidence_gaps=[
+            EvidenceGap(gap_id="strong-comparator", description="strong comparison evidence")
+        ],
+        search_queries=[query],
+    )
+    updated = _ensure_baseline_role_query(plan, query_budget=10)
+    assert updated.search_queries == [query]
+    assert _BASELINE_QUERY_ABSENT_RISK in updated.risks

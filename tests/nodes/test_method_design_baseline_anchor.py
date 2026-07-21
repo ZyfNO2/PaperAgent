@@ -221,3 +221,16 @@ def test_explicit_baseline_role_query_outranks_dataset_parallel_candidate() -> N
     selected = _select_inferred_baseline_evidence((dataset_parallel, role_query))
     assert selected is not None
     assert selected.evidence_id == "role-query"
+
+
+def test_comparator_role_candidate_is_not_eligible_as_baseline() -> None:
+    comparator = _item(
+        "strong-comparator",
+        "A Strong Comparator",
+        metadata={
+            "comparator_candidate": "inferred",
+            "relation": "comparator_role_query",
+            "rank_score": "0.99",
+        },
+    )
+    assert _select_inferred_baseline_evidence((comparator,)) is None
