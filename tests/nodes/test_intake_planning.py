@@ -28,7 +28,9 @@ def _services(fixed_time, *, scenario="happy_path", failures=None):
 
 
 @pytest.mark.asyncio
-async def test_intake_node__valid_request__initializes_bounded_state(fixed_time) -> None:
+async def test_intake_node__valid_request__initializes_bounded_state(
+    fixed_time,
+) -> None:
     from paperagent.nodes.intake import intake_node
     from paperagent.schemas import ResearchRequest
 
@@ -45,11 +47,16 @@ async def test_intake_node__valid_request__initializes_bounded_state(fixed_time)
     assert patch["run"].budgets.max_retrieval_rounds == 2
     assert patch["execution"].status == "running"
     assert state == before
-    assert [event.event_type for event in patch["trace"]] == ["node.started", "node.completed"]
+    assert [event.event_type for event in patch["trace"]] == [
+        "node.started",
+        "node.completed",
+    ]
 
 
 @pytest.mark.asyncio
-async def test_planning_node__happy_fixture__returns_plan_and_usage_trace(fixed_time) -> None:
+async def test_planning_node__happy_fixture__returns_plan_and_usage_trace(
+    fixed_time,
+) -> None:
     from paperagent.nodes.intake import intake_node
     from paperagent.nodes.planning import planning_node
     from paperagent.schemas import ResearchRequest
@@ -70,7 +77,9 @@ async def test_planning_node__happy_fixture__returns_plan_and_usage_trace(fixed_
 
 
 @pytest.mark.asyncio
-async def test_planning_node__provider_timeout__returns_typed_failure(fixed_time) -> None:
+async def test_planning_node__provider_timeout__returns_typed_failure(
+    fixed_time,
+) -> None:
     from paperagent.errors import ProviderTimeoutError
     from paperagent.nodes.intake import intake_node
     from paperagent.nodes.planning import planning_node
@@ -114,7 +123,9 @@ def test_planning_route__status__maps_to_expected_edge() -> None:
         if status == "ready":
             kwargs["research_questions"] = ["q"]
             kwargs["evidence_gaps"] = [{"gap_id": "g", "description": "d"}]
-            kwargs["search_queries"] = [{"query_id": "q", "gap_id": "g", "query": "search"}]
+            kwargs["search_queries"] = [
+                {"query_id": "q", "gap_id": "g", "query": "search"}
+            ]
         assert planning_route({"plan": ResearchPlan(**kwargs)}, {}) == status
 
 
@@ -134,7 +145,8 @@ def test_planning_route__headless_policy_blocks_human_interrupt() -> None:
     )
 
 
-def test_plan_normalization__oversized_plan__keeps_one_query_per_gap_then_fills() -> None:
+def test_plan_normalization__oversized_plan__keeps_one_query_per_gap_then_fills(
+) -> None:
     from paperagent.nodes.planning import (
         _BUDGET_NORMALIZATION_RISK,
         _normalize_plan_to_query_budget,
@@ -146,7 +158,8 @@ def test_plan_normalization__oversized_plan__keeps_one_query_per_gap_then_fills(
         problem_statement="bounded retrieval",
         scope="test",
         evidence_gaps=[
-            EvidenceGap(gap_id=f"g{index}", description=f"gap {index}") for index in range(1, 7)
+            EvidenceGap(gap_id=f"g{index}", description=f"gap {index}")
+            for index in range(1, 7)
         ],
         search_queries=[
             SearchQuery(
@@ -194,4 +207,8 @@ def test_plan_normalization__repository_or_dataset_query__adds_web_lane() -> Non
 
     normalized = _normalize_plan_to_query_budget(plan, query_budget=10)
 
-    assert normalized.search_queries[0].source_types == ["paper", "repository", "web"]
+    assert normalized.search_queries[0].source_types == [
+        "paper",
+        "repository",
+        "web",
+    ]
