@@ -11,8 +11,14 @@ from pydantic import BaseModel
 
 from paperagent.benchmark_input import BenchmarkInput
 from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
-from paperagent.claw_benchmark_runtime import build_benchmark_search_runtime, execute_benchmark_case
-from paperagent.claw_runtime_evidence import allocate_case_budgets
+from paperagent.claw_benchmark_runtime import (
+    build_benchmark_search_runtime,
+    execute_benchmark_case,
+)
+from paperagent.claw_runtime_evidence import (
+    allocate_case_budgets,
+    provider_config_for_case,
+)
 from paperagent.literature.factory import LiteratureProviderSettings
 from paperagent.pricing import load_price_table
 from paperagent.providers.base import LLMProvider
@@ -121,7 +127,9 @@ class AuditedLLMProvider:
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Run the Gold-free academic tailoring retrieval set")
+    parser = argparse.ArgumentParser(
+        description="Run the Gold-free academic tailoring retrieval set"
+    )
     parser.add_argument("--dataset", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--case-id", action="append", default=[])
@@ -173,6 +181,10 @@ async def _run(args: argparse.Namespace) -> int:
         price_table_path = Path(os.environ["PAPERAGENT_LLM_PRICE_TABLE"])
     price_table = load_price_table(price_table_path) if price_table_path else None
     budgets = allocate_case_budgets(args.provider_call_budget, len(cases))
+    case_provider_config = provider_config_for_case(
+        provider_config,
+        selected_case_count=len(cases),
+    )
 
     states: list[dict[str, object]] = []
     traces: list[dict[str, object]] = []
@@ -190,7 +202,7 @@ async def _run(args: argparse.Namespace) -> int:
             ),
         )
         llm = AuditedLLMProvider(
-            build_llm_provider(provider_config, price_table),
+            build_llm_provider(case_provider_config, price_table),
             prompt_log=prompt_log,
             case_id=case_id,
         )
