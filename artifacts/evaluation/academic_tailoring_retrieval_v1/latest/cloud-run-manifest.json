@@ -6,21 +6,52 @@
     "run-traces.jsonl",
     "public-dataset.json"
   ],
-  "jobs": [],
-  "observer_source_sha": "8c39f0aa7f14b22a54d0fc4aa0f5c405cfd716b5",
-  "safe_files": [],
+  "jobs": [
+    {
+      "completed_at": "2026-07-21T01:25:28Z",
+      "conclusion": "failure",
+      "name": "offline-boundary-gate",
+      "started_at": "2026-07-21T01:25:04Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-07-21T01:25:54Z",
+      "conclusion": "failure",
+      "name": "score-and-audit",
+      "started_at": "2026-07-21T01:25:31Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-07-21T01:25:29Z",
+      "conclusion": "skipped",
+      "name": "candidate-live-run",
+      "started_at": "2026-07-21T01:25:29Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-07-21T01:25:29Z",
+      "conclusion": "skipped",
+      "name": "prepare-public-inputs",
+      "started_at": "2026-07-21T01:25:29Z",
+      "status": "completed"
+    }
+  ],
+  "observer_source_sha": "7b069c2f2f20753e4f1aa5fa0171df83e7964c2e",
+  "safe_files": [
+    "cloud-run-manifest.json"
+  ],
   "schema": "paperagent.academic-tailoring-retrieval.cloud-run-manifest.v1",
   "target_exit": 1,
   "target_run": {
-    "conclusion": "cancelled",
-    "createdAt": "2026-07-21T01:23:50Z",
-    "databaseId": 29793003623,
-    "displayTitle": "test(eval): trigger isolated retrieval v1 live run",
+    "conclusion": "failure",
+    "createdAt": "2026-07-21T01:25:00Z",
+    "databaseId": 29793056431,
+    "displayTitle": "fix(ci): isolate push and PR concurrency groups",
     "event": "push",
     "headBranch": "eval/academic-tailoring-retrieval-v1-live-test",
-    "headSha": "8c39f0aa7f14b22a54d0fc4aa0f5c405cfd716b5",
+    "headSha": "7b069c2f2f20753e4f1aa5fa0171df83e7964c2e",
     "status": "completed",
-    "updatedAt": "2026-07-21T01:23:54Z",
-    "url": "https://github.com/ZyfNO2/PaperAgent/actions/runs/29793003623"
+    "updatedAt": "2026-07-21T01:25:55Z",
+    "url": "https://github.com/ZyfNO2/PaperAgent/actions/runs/29793056431"
   }
 }
