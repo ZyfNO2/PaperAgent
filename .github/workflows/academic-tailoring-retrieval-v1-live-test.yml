@@ -10,6 +10,7 @@ on:
       - "scripts/run_academic_tailoring_retrieval_v1.py"
       - "scripts/score_academic_tailoring_retrieval_v1.py"
       - "tests/evals/test_academic_tailoring_retrieval_v1_boundary.py"
+      - "tests/nodes/test_intake_planning.py"
       - ".github/workflows/academic-tailoring-retrieval-v1-live-test.yml"
       - "src/paperagent/**"
   pull_request:
@@ -21,6 +22,7 @@ on:
       - "scripts/run_academic_tailoring_retrieval_v1.py"
       - "scripts/score_academic_tailoring_retrieval_v1.py"
       - "tests/evals/test_academic_tailoring_retrieval_v1_boundary.py"
+      - "tests/nodes/test_intake_planning.py"
       - ".github/workflows/academic-tailoring-retrieval-v1-live-test.yml"
       - "src/paperagent/**"
   workflow_dispatch:
@@ -45,9 +47,11 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Validate Gold boundary and production leakage audit
+      - name: Validate Gold boundary, planning repair, and production leakage audit
         run: |
-          pytest -q tests/evals/test_academic_tailoring_retrieval_v1_boundary.py
+          pytest -q \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
+            tests/nodes/test_intake_planning.py
           python - <<'PY'
           from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
 
@@ -56,18 +60,22 @@ jobs:
           if not result.passed:
               raise SystemExit(result.findings)
           PY
-      - name: Format and lint new evaluation files
+      - name: Format and lint changed files
         run: |
-          ruff format \
+          ruff format --check \
             scripts/project_academic_tailoring_retrieval_v1.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/score_academic_tailoring_retrieval_v1.py \
-            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py
+            src/paperagent/nodes/planning.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
+            tests/nodes/test_intake_planning.py
           ruff check \
             scripts/project_academic_tailoring_retrieval_v1.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/score_academic_tailoring_retrieval_v1.py \
-            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py
+            src/paperagent/nodes/planning.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
+            tests/nodes/test_intake_planning.py
 
   prepare-public-inputs:
     needs: offline-boundary-gate
@@ -111,7 +119,7 @@ jobs:
       PAPERAGENT_LLM_TASK_TIMEOUT: "900"
       PAPERAGENT_RUN_REAL_LLM: "1"
       PAPERAGENT_RUN_REAL_PROVIDER: "1"
-      PAPERAGENT_ENABLE_WEB_SEARCH: "0"
+      PAPERAGENT_ENABLE_WEB_SEARCH: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -139,7 +147,7 @@ jobs:
       - name: Install isolated candidate
         working-directory: candidate-workspace
         run: python -m pip install -q -e '.[dev]'
-      - name: Execute 10 real-LLM, real-literature cases
+      - name: Execute 10 real-LLM, real-literature cases with bounded Web supplementation
         id: runtime
         working-directory: candidate-workspace
         shell: bash
@@ -150,7 +158,8 @@ jobs:
             --output-dir build/academic-tailoring-retrieval-v1/candidate \
             --max-cases 10 \
             --max-llm-calls 10 \
-            --provider-call-budget 80 \
+            --provider-call-budget 240 \
+            --enable-web-search \
             --llm-provider mistral \
             --llm-model mistral-small-latest \
             --llm-base-url https://api.mistral.ai/v1 \
