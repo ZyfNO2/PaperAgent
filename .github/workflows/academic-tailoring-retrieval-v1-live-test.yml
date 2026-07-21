@@ -194,14 +194,14 @@ jobs:
           echo "$status" > build/academic-tailoring-retrieval-v1/candidate/runtime-exit-code.txt
           exit 0
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ always() && steps.runtime.outcome != 'skipped' }}
         with:
           name: academic-tailoring-retrieval-v1-candidate-run
           path: candidate-workspace/build/academic-tailoring-retrieval-v1/candidate/
           if-no-files-found: error
           retention-days: 14
       - name: Enforce candidate runtime status
-        if: always()
+        if: ${{ always() && steps.runtime.outcome != 'skipped' }}
         run: |
           test "$(cat candidate-workspace/build/academic-tailoring-retrieval-v1/candidate/runtime-exit-code.txt)" = "0"
 
