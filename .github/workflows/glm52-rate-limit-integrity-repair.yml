@@ -7,17 +7,24 @@ on:
     paths:
       - "scripts/apply_glm52_rate_limit_and_runtime_integrity_v1.py"
       - ".github/workflows/glm52-rate-limit-integrity-repair.yml"
+  pull_request:
+    branches:
+      - eval/academic-tailoring-retrieval-v1-live-test
+    paths:
+      - "scripts/apply_glm52_rate_limit_and_runtime_integrity_v1.py"
+      - ".github/workflows/glm52-rate-limit-integrity-repair.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: glm52-rate-limit-integrity-repair-${{ github.ref }}
+  group: glm52-rate-limit-integrity-repair-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   repair:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
