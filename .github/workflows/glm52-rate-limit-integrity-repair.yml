@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: glm52-rate-limit-integrity-repair-${{ github.event_name }}-${{ github.ref }}
@@ -31,6 +31,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: fix/glm52-runtime-hardening-v2
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -58,22 +59,17 @@ jobs:
             tests/evals/test_academic_tailoring_runtime_fail_fast.py
           mypy --config-file pyproject.toml src/paperagent/providers
           git diff --check
-      - name: Prepare verified repair bundle
+      - name: Commit verified non-workflow repair files
         run: |
-          mkdir -p build/glm52-repair
-          cp --parents \
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
             src/paperagent/providers/openai_llm.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             tests/providers/test_openai_llm_runtime_limits.py \
-            tests/evals/test_academic_tailoring_runtime_fail_fast.py \
-            .github/workflows/academic-tailoring-retrieval-v1-live-test.yml \
-            .github/workflows/glm52-runtime-hardening.yml \
-            build/glm52-repair/
-          printf '%s\n' '.github/workflows/glm52-smoke-diagnostic.yml' \
-            > build/glm52-repair/delete-paths.txt
-      - uses: actions/upload-artifact@v4
-        with:
-          name: glm52-rate-limit-integrity-repair
-          path: build/glm52-repair/
-          if-no-files-found: error
-          retention-days: 7
+            tests/evals/test_academic_tailoring_runtime_fail_fast.py
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "fix(llm): harden GLM-5.2 rate-limit handling"
+          git push origin HEAD:fix/glm52-runtime-hardening-v2
