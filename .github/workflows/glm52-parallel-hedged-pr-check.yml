@@ -38,12 +38,36 @@ jobs:
             tests/providers/test_openai_llm_runtime_limits.py \
             tests/evals/test_academic_tailoring_runtime_checkpoint.py \
             tests/evals/test_academic_tailoring_runtime_fail_fast.py
-      - name: Lint changed Python files
+      - name: Capture lint report
+        shell: bash
         run: |
+          mkdir -p build/glm52-parallel-hedged-pr-check
+          set +e
           ruff check \
             src/paperagent/providers/hedged.py \
             src/paperagent/providers/runtime_factory.py \
             scripts/run_academic_tailoring_retrieval_v1_parallel.py \
-            tests/providers/test_hedged_llm_provider.py
-      - name: Type-check provider package
-        run: mypy src/paperagent/providers
+            tests/providers/test_hedged_llm_provider.py \
+            2>&1 | tee build/glm52-parallel-hedged-pr-check/ruff.txt
+          echo "${PIPESTATUS[0]}" > build/glm52-parallel-hedged-pr-check/ruff-exit-code.txt
+          exit 0
+      - name: Capture type-check report
+        shell: bash
+        run: |
+          set +e
+          mypy src/paperagent/providers \
+            2>&1 | tee build/glm52-parallel-hedged-pr-check/mypy.txt
+          echo "${PIPESTATUS[0]}" > build/glm52-parallel-hedged-pr-check/mypy-exit-code.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: glm52-parallel-hedged-pr-check-report
+          path: build/glm52-parallel-hedged-pr-check/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Enforce lint and type checks
+        if: always()
+        run: |
+          test "$(cat build/glm52-parallel-hedged-pr-check/ruff-exit-code.txt)" = "0"
+          test "$(cat build/glm52-parallel-hedged-pr-check/mypy-exit-code.txt)" = "0"
