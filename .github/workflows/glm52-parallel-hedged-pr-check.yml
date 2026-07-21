@@ -40,21 +40,26 @@ jobs:
             tests/providers/test_openai_llm_runtime_limits.py \
             tests/evals/test_academic_tailoring_runtime_checkpoint.py \
             tests/evals/test_academic_tailoring_runtime_fail_fast.py
-      - name: Capture lint report
+      - name: Capture format and lint reports
         shell: bash
         run: |
           mkdir -p build/glm52-parallel-hedged-pr-check
+          paths=(
+            src/paperagent/providers/config.py
+            src/paperagent/providers/hedged.py
+            src/paperagent/providers/openai_llm.py
+            src/paperagent/providers/structured_output.py
+            src/paperagent/providers/runtime_factory.py
+            scripts/run_academic_tailoring_retrieval_v1_parallel.py
+            tests/providers/test_hedged_llm_provider.py
+            tests/providers/test_openai_compatible_structured_output.py
+            tests/providers/test_provider_compat_config.py
+          )
           set +e
-          ruff check \
-            src/paperagent/providers/config.py \
-            src/paperagent/providers/hedged.py \
-            src/paperagent/providers/openai_llm.py \
-            src/paperagent/providers/structured_output.py \
-            src/paperagent/providers/runtime_factory.py \
-            scripts/run_academic_tailoring_retrieval_v1_parallel.py \
-            tests/providers/test_hedged_llm_provider.py \
-            tests/providers/test_openai_compatible_structured_output.py \
-            tests/providers/test_provider_compat_config.py \
+          ruff format --check --diff "${paths[@]}" \
+            2>&1 | tee build/glm52-parallel-hedged-pr-check/ruff-format.txt
+          echo "${PIPESTATUS[0]}" > build/glm52-parallel-hedged-pr-check/ruff-format-exit-code.txt
+          ruff check "${paths[@]}" \
             2>&1 | tee build/glm52-parallel-hedged-pr-check/ruff.txt
           echo "${PIPESTATUS[0]}" > build/glm52-parallel-hedged-pr-check/ruff-exit-code.txt
           exit 0
@@ -73,8 +78,9 @@ jobs:
           path: build/glm52-parallel-hedged-pr-check/
           if-no-files-found: error
           retention-days: 7
-      - name: Enforce lint and type checks
+      - name: Enforce format, lint, and type checks
         if: always()
         run: |
+          test "$(cat build/glm52-parallel-hedged-pr-check/ruff-format-exit-code.txt)" = "0"
           test "$(cat build/glm52-parallel-hedged-pr-check/ruff-exit-code.txt)" = "0"
           test "$(cat build/glm52-parallel-hedged-pr-check/mypy-exit-code.txt)" = "0"
