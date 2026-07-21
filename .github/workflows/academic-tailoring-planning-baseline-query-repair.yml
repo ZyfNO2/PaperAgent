@@ -53,12 +53,40 @@ jobs:
             tests/nodes/test_method_design_baseline_anchor.py
       - name: Remove one-shot patch script
         run: rm -f scripts/apply_planning_baseline_query_v1.py
-      - name: Run full final-tree regression
+      - name: Capture full final-tree regression
+        shell: bash
         run: |
-          pytest -q
-          mypy --config-file pyproject.toml
-          ruff check src tests scripts
-          ruff format --check src tests scripts
+          mkdir -p build/planning-baseline-query-diagnostics
+          set +e
+          pytest -q > build/planning-baseline-query-diagnostics/pytest.log 2>&1
+          pytest_status=$?
+          mypy --config-file pyproject.toml > build/planning-baseline-query-diagnostics/mypy.log 2>&1
+          mypy_status=$?
+          ruff check src tests scripts > build/planning-baseline-query-diagnostics/ruff-check.log 2>&1
+          ruff_status=$?
+          ruff format --check src tests scripts > build/planning-baseline-query-diagnostics/ruff-format.log 2>&1
+          format_status=$?
+          printf '{"pytest":%s,"mypy":%s,"ruff":%s,"format":%s}\n' \
+            "$pytest_status" "$mypy_status" "$ruff_status" "$format_status" \
+            > build/planning-baseline-query-diagnostics/status.json
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-planning-baseline-query-diagnostics
+          path: build/planning-baseline-query-diagnostics/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Enforce full final-tree regression
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(Path("build/planning-baseline-query-diagnostics/status.json").read_text())
+          print(status)
+          if any(status.values()):
+              raise SystemExit(status)
+          PY
       - name: Commit production repair
         shell: bash
         run: |
