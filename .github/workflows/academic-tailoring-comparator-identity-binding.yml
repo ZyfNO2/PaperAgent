@@ -41,7 +41,15 @@ jobs:
           set +e
           python scripts/apply_comparator_identity_binding_v1.py \
             > build/comparator-identity-diagnostics/apply.log 2>&1
-          status=$?
+          first_status=$?
+          if [ "$first_status" = "0" ]; then
+            python scripts/apply_comparator_identity_policy_fixture_v1.py \
+              >> build/comparator-identity-diagnostics/apply.log 2>&1
+            second_status=$?
+          else
+            second_status=0
+          fi
+          status=$((first_status || second_status))
           echo "status=$status" >> "$GITHUB_OUTPUT"
           exit 0
       - name: Format and capture lint diagnostics
@@ -51,16 +59,19 @@ jobs:
           ruff format \
             src/paperagent/method_design_draft.py \
             tests/methodology/test_method_design_draft.py \
+            tests/methodology/test_scientific_decision_policy.py \
             > build/comparator-identity-diagnostics/format.log 2>&1
           format_status=$?
           ruff check --fix \
             src/paperagent/method_design_draft.py \
             tests/methodology/test_method_design_draft.py \
+            tests/methodology/test_scientific_decision_policy.py \
             > build/comparator-identity-diagnostics/ruff-fix.log 2>&1
           fix_status=$?
           ruff check \
             src/paperagent/method_design_draft.py \
             tests/methodology/test_method_design_draft.py \
+            tests/methodology/test_scientific_decision_policy.py \
             > build/comparator-identity-diagnostics/ruff-check.log 2>&1
           check_status=$?
           printf '{"apply":%s,"format":%s,"fix":%s,"check":%s}\n' \
@@ -84,12 +95,14 @@ jobs:
         run: |
           pytest -q \
             tests/methodology/test_method_design_draft.py \
+            tests/methodology/test_scientific_decision_policy.py \
             tests/nodes/test_method_design_baseline_anchor.py \
             tests/literature/test_exact_identity_and_dataset_candidates.py
       - name: Remove one-shot patch scripts
         run: |
           rm -f \
             scripts/apply_comparator_identity_binding_v1.py \
+            scripts/apply_comparator_identity_policy_fixture_v1.py \
             scripts/fix_comparator_identity_patch_escape_v1.py
       - name: Capture full final-tree regression
         shell: bash
