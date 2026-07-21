@@ -10,6 +10,10 @@ from paperagent.state import PaperAgentState, StatePatch
 from paperagent.user_materials import user_material_identities
 
 NODE = "planning_node"
+_BUDGET_NORMALIZATION_RISK = (
+    "Planner output exceeded the runtime query budget; excess evidence gaps and queries were "
+    "deterministically removed before retrieval."
+)
 
 
 def _normalize_nonblocking_clarification(plan: ResearchPlan) -> ResearchPlan:
@@ -26,6 +30,71 @@ def _normalize_nonblocking_clarification(plan: ResearchPlan) -> ResearchPlan:
     if any(query.gap_id not in known_gaps for query in plan.search_queries):
         return plan
     return plan.model_copy(update={"status": "ready"})
+
+
+def _runtime_source_types(query: SearchQuery) -> SearchQuery:
+    """Add the configured public-web lane for repository and dataset discovery.
+
+    Scholarly metadata APIs do not index arbitrary repository or dataset landing pages. The
+    Web lane remains supplemental and is still subject to source-policy precision checks.
+    """
+
+    source_types = list(query.source_types)
+    if {"repository", "dataset"}.intersection(source_types) and "web" not in source_types:
+        source_types.append("web")
+    if source_types == query.source_types:
+        return query
+    return query.model_copy(update={"source_types": source_types})
+
+
+def _normalize_plan_to_query_budget(plan: ResearchPlan, *, query_budget: int) -> ResearchPlan:
+    """Bound an otherwise valid LLM plan instead of failing the entire research run.
+
+    We keep one query for each declared gap in plan order before allocating remaining slots to
+    additional queries. If the planner declared more gaps than the runtime can search, only the
+    earliest budget-coverable gaps remain and the loss of scope is recorded as a risk.
+    """
+
+    normalized_queries = [_runtime_source_types(query) for query in plan.search_queries]
+    if plan.status == "blocked" or len(normalized_queries) <= query_budget:
+        if normalized_queries == plan.search_queries:
+            return plan
+        return plan.model_copy(update={"search_queries": normalized_queries})
+
+    queries_by_gap: dict[str, list[SearchQuery]] = {}
+    for query in normalized_queries:
+        queries_by_gap.setdefault(query.gap_id, []).append(query)
+
+    selected: list[SearchQuery] = []
+    selected_ids: set[str] = set()
+    for gap in plan.evidence_gaps:
+        candidates = queries_by_gap.get(gap.gap_id, [])
+        if not candidates or len(selected) >= query_budget:
+            continue
+        query = candidates[0]
+        selected.append(query)
+        selected_ids.add(query.query_id)
+
+    for query in normalized_queries:
+        if len(selected) >= query_budget:
+            break
+        if query.query_id in selected_ids:
+            continue
+        selected.append(query)
+        selected_ids.add(query.query_id)
+
+    selected_gap_ids = {query.gap_id for query in selected}
+    selected_gaps = [gap for gap in plan.evidence_gaps if gap.gap_id in selected_gap_ids]
+    risks = list(plan.risks)
+    if _BUDGET_NORMALIZATION_RISK not in risks:
+        risks.append(_BUDGET_NORMALIZATION_RISK)
+    return plan.model_copy(
+        update={
+            "evidence_gaps": selected_gaps,
+            "search_queries": selected,
+            "risks": risks,
+        }
+    )
 
 
 def _unique_identifier(base: str, existing: set[str]) -> str:
@@ -79,7 +148,7 @@ def _ensure_user_material_identity_queries(
                 query_id=query_id,
                 gap_id=gap_id,
                 query=identity.title,
-                source_types=["paper", "repository"],
+                source_types=["paper", "repository", "web"],
             )
         )
         available_slots -= 1
@@ -102,6 +171,9 @@ async def planning_node(state: PaperAgentState, config: RunnableConfig) -> State
         raise ValueError("request and run are required")
     query_budget = run.budgets.max_queries_per_round * run.budgets.max_retrieval_rounds
 
+    def normalize(plan: ResearchPlan) -> ResearchPlan:
+        return _normalize_plan_to_query_budget(plan, query_budget=query_budget)
+
     def validate(plan: ResearchPlan) -> None:
         try:
             plan.validate_query_budget(query_budget)
@@ -119,6 +191,7 @@ async def planning_node(state: PaperAgentState, config: RunnableConfig) -> State
             "budgets": run.budgets.model_dump(mode="json"),
             "available_source_types": ["paper", "dataset", "repository", "web", "user_material"],
         },
+        transform=normalize,
         semantic_validate=validate,
     )
     if result is not None:
