@@ -44,6 +44,30 @@ jobs:
           status=$?
           echo "status=$status" >> "$GITHUB_OUTPUT"
           exit 0
+      - name: Format and capture lint diagnostics
+        shell: bash
+        run: |
+          set +e
+          ruff format \
+            src/paperagent/method_design_draft.py \
+            tests/methodology/test_method_design_draft.py \
+            > build/comparator-identity-diagnostics/format.log 2>&1
+          format_status=$?
+          ruff check --fix \
+            src/paperagent/method_design_draft.py \
+            tests/methodology/test_method_design_draft.py \
+            > build/comparator-identity-diagnostics/ruff-fix.log 2>&1
+          fix_status=$?
+          ruff check \
+            src/paperagent/method_design_draft.py \
+            tests/methodology/test_method_design_draft.py \
+            > build/comparator-identity-diagnostics/ruff-check.log 2>&1
+          check_status=$?
+          printf '{"apply":%s,"format":%s,"fix":%s,"check":%s}\n' \
+            "${{ steps.apply_patch.outputs.status }}" \
+            "$format_status" "$fix_status" "$check_status" \
+            > build/comparator-identity-diagnostics/status.json
+          exit 0
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -51,19 +75,16 @@ jobs:
           path: build/comparator-identity-diagnostics/
           if-no-files-found: error
           retention-days: 7
-      - name: Enforce patch application
-        run: test "${{ steps.apply_patch.outputs.status }}" = "0"
-      - name: Format and lint changed paths
+      - name: Enforce patch and changed-path lint
         run: |
-          ruff format \
-            src/paperagent/method_design_draft.py \
-            tests/methodology/test_method_design_draft.py
-          ruff check --fix \
-            src/paperagent/method_design_draft.py \
-            tests/methodology/test_method_design_draft.py
-          ruff check \
-            src/paperagent/method_design_draft.py \
-            tests/methodology/test_method_design_draft.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(Path("build/comparator-identity-diagnostics/status.json").read_text())
+          print(status)
+          if any(status.values()):
+              raise SystemExit(status)
+          PY
       - name: Run focused comparator and method tests
         run: |
           pytest -q \
