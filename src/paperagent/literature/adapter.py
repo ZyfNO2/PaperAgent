@@ -13,6 +13,7 @@ from paperagent.schemas.literature import (
     PaperRecord,
     ProviderResult,
     QueryLane,
+    QueryPurpose,
 )
 
 _ACADEMIC_PROVIDERS = frozenset({"openalex", "semantic_scholar", "arxiv"})
@@ -109,14 +110,14 @@ def _exact_title_match(left: str, right: str) -> bool:
     return len(overlap) >= 4 and len(overlap) / len(union) >= 0.9 and length_ratio >= 0.8
 
 
-def _dataset_names_from_query(query: str) -> tuple[str, ...]:
+def _dataset_names_from_text(text: str) -> tuple[str, ...]:
     names: list[str] = []
     context = re.compile(
         r"(?P<names>[A-Za-z][A-Za-z0-9._-]*(?:\s*(?:/|,|and)\s*"
         r"[A-Za-z][A-Za-z0-9._-]*)*)\s+(?:datasets?|benchmarks?|corpus|corpora)\b",
         re.IGNORECASE,
     )
-    for match in context.finditer(query):
+    for match in context.finditer(text):
         for raw_name in re.split(r"\s*(?:/|,|and)\s*", match.group("names")):
             name = raw_name.strip(".,;:()[]{}")
             if name.casefold() not in _DATASET_GENERIC and name not in names:
@@ -124,9 +125,30 @@ def _dataset_names_from_query(query: str) -> tuple[str, ...]:
     return tuple(names)
 
 
+def _dataset_names_from_query(query: str) -> tuple[str, ...]:
+    return _dataset_names_from_text(query)
+
+
 def _paper_dataset_mentions(query: str, paper: PaperRecord) -> tuple[str, ...]:
-    text = f"{paper.canonical_title}\n{paper.abstract or ''}".casefold()
-    return tuple(name for name in _dataset_names_from_query(query) if name.casefold() in text)
+    paper_text = f"{paper.canonical_title}\n{paper.abstract or ''}"
+    normalized = paper_text.casefold()
+    names = list(_dataset_names_from_text(paper_text))
+    for name in _dataset_names_from_query(query):
+        if name.casefold() in normalized and name not in names:
+            names.append(name)
+    return tuple(names)
+
+
+def _dataset_relation_names(
+    query: str,
+    papers: Iterable[PaperRecord],
+) -> tuple[str, ...]:
+    names = list(_dataset_names_from_query(query))
+    for paper in papers:
+        for name in _dataset_names_from_text(f"{paper.canonical_title}\n{paper.abstract or ''}"):
+            if name not in names:
+                names.append(name)
+    return tuple(names)
 
 
 class LiteratureSearchAdapter:
@@ -196,12 +218,21 @@ class LiteratureSearchAdapter:
         papers_by_id: dict[str, PaperRecord] = {}
         attempted: list[str] = []
         stop_reason = "academic_budget_exhausted"
+        relation_paper_ids: set[str] = set()
+        dataset_links: dict[str, set[str]] = {}
 
         for provider_name in academic_order:
             if len(attempted) >= policy.maximum_provider_calls:
                 break
             bundle = await self._service.retrieve(
-                self._build_plan(query, [provider_name], lane_suffix=provider_name)
+                self._build_plan(
+                    query,
+                    [provider_name],
+                    lane_suffix=provider_name,
+                    query_text=required_title or query.query,
+                    purpose="baseline" if required_title is not None else "method",
+                    priority=95 if required_title is not None else 80,
+                )
             )
             attempted.append(provider_name)
             provider_results.extend(bundle.provider_results)
@@ -211,6 +242,29 @@ class LiteratureSearchAdapter:
             ):
                 stop_reason = "sufficient_academic_evidence"
                 break
+
+        relation_names = _dataset_relation_names(query.query, papers_by_id.values())
+        if relation_names:
+            dataset_name = relation_names[0]
+            relation_provider = self._relation_provider(academic_order)
+            relation_query = f'"{dataset_name}" dataset benchmark baseline method comparison'
+            bundle = await self._service.retrieve(
+                self._build_plan(
+                    query,
+                    [relation_provider],
+                    lane_suffix=f"dataset-{dataset_name.casefold()}",
+                    query_text=relation_query,
+                    purpose="benchmark_dataset",
+                    priority=75,
+                )
+            )
+            attempted.append(f"{relation_provider}:dataset_relation")
+            provider_results.extend(bundle.provider_results)
+            for paper in bundle.papers:
+                if self._passes_relation_relevance(paper):
+                    relation_paper_ids.add(paper.paper_id)
+                    dataset_links.setdefault(paper.paper_id, set()).add(dataset_name)
+            self._merge_papers(papers_by_id, bundle.papers)
 
         fallback_used = False
         if (
@@ -261,16 +315,24 @@ class LiteratureSearchAdapter:
             )
 
         filtered = [
-            paper for paper in papers_by_id.values() if self._passes_return_relevance(paper, policy)
+            paper
+            for paper in papers_by_id.values()
+            if self._passes_return_relevance(paper, policy) or paper.paper_id in relation_paper_ids
         ]
         if required_title is not None:
             filtered = [
                 paper
                 for paper in filtered
                 if _exact_title_match(paper.canonical_title, required_title)
+                or paper.paper_id in relation_paper_ids
             ]
         filtered.sort(
             key=lambda paper: (
+                int(
+                    required_title is not None
+                    and _exact_title_match(paper.canonical_title, required_title)
+                ),
+                int(paper.paper_id in relation_paper_ids),
                 paper.rank_features.score if paper.rank_features else 0.0,
                 paper.paper_id,
             ),
@@ -288,7 +350,25 @@ class LiteratureSearchAdapter:
         )
         candidates: list[SearchCandidate] = []
         for paper in selected:
-            candidates.extend(self._candidates(query, paper, fallback_used))
+            relation = (
+                "declared_identity"
+                if required_title is not None
+                and _exact_title_match(paper.canonical_title, required_title)
+                else (
+                    "parallel_via_dataset"
+                    if paper.paper_id in relation_paper_ids
+                    else "direct_query"
+                )
+            )
+            candidates.extend(
+                self._candidates(
+                    query,
+                    paper,
+                    fallback_used,
+                    relation=relation,
+                    linked_dataset_names=tuple(sorted(dataset_links.get(paper.paper_id, set()))),
+                )
+            )
         return candidates
 
     def _academic_order(self, policy: SearchSourcePolicy, available: set[str]) -> tuple[str, ...]:
@@ -299,6 +379,13 @@ class LiteratureSearchAdapter:
             for provider in dict.fromkeys(policy_order)
             if provider in available and provider in allowed
         )
+
+    @staticmethod
+    def _relation_provider(academic_order: tuple[str, ...]) -> str:
+        for preferred in ("semantic_scholar", "openalex", "arxiv"):
+            if preferred in academic_order:
+                return preferred
+        return academic_order[0]
 
     @staticmethod
     def _has_sufficient_academic_evidence(
@@ -344,13 +431,26 @@ class LiteratureSearchAdapter:
         score_floor = max(0.50, policy.minimum_rank_score * 0.85)
         return features.relevance >= relevance_floor and features.score >= score_floor
 
+    @staticmethod
+    def _passes_relation_relevance(paper: PaperRecord) -> bool:
+        features = paper.rank_features
+        return (
+            paper.verification_status == "verified"
+            and features is not None
+            and features.relevance >= 0.20
+            and features.score >= 0.40
+        )
+
     def _candidates(
         self,
         query: SearchQuery,
         paper: PaperRecord,
         fallback_used: bool,
+        *,
+        relation: str = "direct_query",
+        linked_dataset_names: tuple[str, ...] = (),
     ) -> list[SearchCandidate]:
-        candidates = [self._candidate(query, paper, fallback_used)]
+        candidates = [self._candidate(query, paper, fallback_used, relation=relation)]
         if paper.verification_status != "verified":
             return candidates
         providers = sorted({record.provider for record in paper.source_records})
@@ -392,9 +492,32 @@ class LiteratureSearchAdapter:
                 )
         if "dataset" in query.source_types:
             parent_locator = self._locator(paper.doi, paper.arxiv_id, paper.urls)
-            for dataset_name in _paper_dataset_mentions(query.query, paper):
+            explicit_mentions = _paper_dataset_mentions(query.query, paper)
+            dataset_names = list(explicit_mentions)
+            for linked_name in linked_dataset_names:
+                if linked_name not in dataset_names:
+                    dataset_names.append(linked_name)
+            for dataset_name in dataset_names:
                 identity = f"{dataset_name.casefold()}|{paper.paper_id}"
                 digest = sha256(identity.encode("utf-8")).hexdigest()[:20]
+                explicitly_named = dataset_name in explicit_mentions
+                dataset_relation = (
+                    "dataset_named_in_verified_paper"
+                    if explicitly_named
+                    else "dataset_linked_by_focused_retrieval"
+                )
+                snippet = (
+                    f"Dataset {dataset_name!r} is explicitly named in the title or abstract "
+                    f"of the verified paper {paper.canonical_title!r}. This verifies the "
+                    "dataset mention, not an official download page or split manifest."
+                    if explicitly_named
+                    else (
+                        f"Dataset {dataset_name!r} was the explicit anchor of a focused academic "
+                        f"retrieval that returned verified paper {paper.canonical_title!r}. "
+                        "This is a paper-dataset relation for discovery, not verification of an "
+                        "official download page, license, or split manifest."
+                    )
+                )
                 candidates.append(
                     SearchCandidate(
                         candidate_id=f"dataset-{digest}",
@@ -403,22 +526,20 @@ class LiteratureSearchAdapter:
                         source_type="dataset",
                         title=dataset_name,
                         locator=parent_locator,
-                        snippet=(
-                            f"Dataset {dataset_name!r} is explicitly named in the title "
-                            "or abstract "
-                            f"of the verified paper {paper.canonical_title!r}. This verifies the "
-                            "dataset mention, not an official download page or split manifest."
-                        ),
+                        snippet=snippet,
                         provider=self.provider_name,
                         metadata={
                             "query_text": query.query,
                             "verification_status": "verified",
+                            "verification_scope": (
+                                "paper_mention" if explicitly_named else "retrieval_relation"
+                            ),
                             "providers": ",".join(providers),
-                            "provider_classes": "academic-linked-dataset-mention",
+                            "provider_classes": "academic-linked-dataset-relation",
                             "source_kind": "dataset",
                             "rank_score": f"{score:.6f}",
                             "relevance_score": f"{relevance:.6f}",
-                            "relation": "dataset_named_in_verified_paper",
+                            "relation": dataset_relation,
                             "parent_paper_id": paper.paper_id,
                             "parent_paper_title": paper.canonical_title,
                             "dataset_ref": dataset_name,
@@ -434,6 +555,8 @@ class LiteratureSearchAdapter:
         query: SearchQuery,
         paper: PaperRecord,
         fallback_used: bool,
+        *,
+        relation: str = "direct_query",
     ) -> SearchCandidate:
         locator = self._locator(paper.doi, paper.arxiv_id, paper.urls)
         providers = sorted({record.provider for record in paper.source_records})
@@ -456,6 +579,10 @@ class LiteratureSearchAdapter:
                 "providers": ",".join(providers),
                 "provider_classes": source_kind,
                 "source_kind": source_kind,
+                "relation": relation,
+                "baseline_candidate": (
+                    "declared" if relation == "declared_identity" else "inferred"
+                ),
                 "rank_score": f"{score:.6f}",
                 "relevance_score": f"{relevance:.6f}",
                 "doi": paper.doi or "",
@@ -562,18 +689,22 @@ class LiteratureSearchAdapter:
         source_preferences: list[str],
         *,
         lane_suffix: str,
+        query_text: str | None = None,
+        purpose: QueryPurpose = "method",
+        priority: int = 80,
     ) -> LiteratureQueryPlan:
+        effective_query = query_text or query.query
         lane = QueryLane(
             lane_id=f"{query.query_id}-{lane_suffix}",
-            purpose="method",
-            query=query.query,
+            purpose=purpose,
+            query=effective_query,
             source_preferences=list(source_preferences),
             gap_ids=[query.gap_id],
-            priority=80,
+            priority=priority,
         )
         return LiteratureQueryPlan(
-            question=query.query,
-            scope="literature retrieval",
+            question=effective_query,
+            scope="literature retrieval and bounded evidence relation expansion",
             query_lanes=[lane],
             required_gap_ids=[query.gap_id],
             max_rounds=1,

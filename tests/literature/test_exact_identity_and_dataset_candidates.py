@@ -4,6 +4,7 @@ from types import SimpleNamespace
 
 from paperagent.literature.adapter import (
     LiteratureSearchAdapter,
+    _dataset_relation_names,
     _exact_title_match,
     _quoted_title,
 )
@@ -82,3 +83,38 @@ def test_model_name_is_not_promoted_to_dataset_without_dataset_context() -> None
     )
     dataset_titles = [item.title for item in candidates if item.source_type == "dataset"]
     assert dataset_titles == ["MIMII"]
+
+
+def test_dataset_can_be_discovered_from_parallel_paper_text() -> None:
+    names = _dataset_relation_names(
+        "compare robust anomaly detection methods",
+        (
+            _paper(
+                "A Parallel Industrial Anomaly Method",
+                "We evaluate the method on the MIMII dataset and report low-SNR results.",
+            ),
+        ),
+    )
+    assert names == ("MIMII",)
+
+
+def test_dataset_relation_candidate_survives_missing_provider_abstract() -> None:
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q-linked-dataset",
+        gap_id="g-linked-dataset",
+        query="Evaluate PANNs on the MIMII dataset under low SNR",
+        source_types=["paper", "dataset"],
+    )
+    candidates = adapter._candidates(
+        query,
+        _paper("A verified industrial evaluation paper"),
+        False,
+        relation="parallel_via_dataset",
+        linked_dataset_names=("MIMII",),
+    )
+    datasets = [item for item in candidates if item.source_type == "dataset"]
+    assert len(datasets) == 1
+    assert datasets[0].title == "MIMII"
+    assert datasets[0].metadata["relation"] == "dataset_linked_by_focused_retrieval"
+    assert datasets[0].metadata["verification_scope"] == "retrieval_relation"

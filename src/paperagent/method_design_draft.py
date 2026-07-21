@@ -144,13 +144,67 @@ def _select_declared_baseline_evidence(
     return None
 
 
+def _baseline_evidence_rank(item: EvidenceItem) -> tuple[int, int, float, str]:
+    if item.source_type != "paper":
+        return (-1, -1, -1.0, item.evidence_id)
+    marker = item.metadata.get("baseline_candidate", "")
+    relation = item.metadata.get("relation", "")
+    marker_rank = {"declared": 3, "inferred": 2}.get(marker, 1)
+    relation_rank = {
+        "declared_identity": 3,
+        "parallel_via_dataset": 2,
+        "direct_query": 1,
+    }.get(relation, 0)
+    try:
+        rank_score = float(item.metadata.get("rank_score", "0"))
+    except ValueError:
+        rank_score = 0.0
+    return (marker_rank, relation_rank, rank_score, item.evidence_id)
+
+
+def _select_inferred_baseline_evidence(
+    candidates: tuple[EvidenceItem, ...],
+) -> EvidenceItem | None:
+    papers = tuple(item for item in candidates if item.source_type == "paper")
+    if not papers:
+        return None
+    return max(papers, key=_baseline_evidence_rank)
+
+
 def _select_primary_evidence(
     references: list[str],
     candidates: tuple[EvidenceItem, ...],
 ) -> EvidenceItem:
     if not candidates:
         raise ValueError("primary evidence selection requires candidates")
-    return _select_declared_baseline_evidence(references, candidates) or candidates[0]
+    declared = _select_declared_baseline_evidence(references, candidates)
+    return declared or _select_inferred_baseline_evidence(candidates) or candidates[0]
+
+
+def _question_declares_dataset(question: str) -> bool:
+    return bool(
+        re.search(r"\b(?:datasets?|benchmarks?|corpus|corpora|data[ -]?set)\b", question, re.I)
+    )
+
+
+def _dataset_plan_value(
+    question: str,
+    *,
+    readiness_confirmed: bool,
+) -> str:
+    if readiness_confirmed:
+        return "user-declared frozen dataset; preserve the exact identifier and fingerprint"
+    if _question_declares_dataset(question):
+        return (
+            "declared dataset identity unresolved; verify the exact dataset, split, license, "
+            "and fingerprint before the pilot"
+        )
+    return (
+        "unresolved task-matched data source; no public dataset is required at "
+        "discovery time; use task-appropriate user-owned, "
+        "synthetic, simulated, or newly collected data and freeze provenance, split, license, "
+        "and fingerprint before execution"
+    )
 
 
 def _select_dataset_evidence(
@@ -322,7 +376,9 @@ def build_method_proposal(
     baseline_evidence = _select_declared_baseline_evidence(
         list(request.user_material_refs), method_evidence
     )
-    primary = baseline_evidence or method_evidence[0]
+    primary = baseline_evidence or _select_inferred_baseline_evidence(method_evidence)
+    if primary is None:
+        raise ValueError("method canonicalization requires accepted paper evidence")
     dataset_evidence = _select_dataset_evidence(request.question, accepted)
     evidence_text = _evidence_text(state)
     grounded_dataset = _grounded_optional(draft.reported_dataset, evidence_text)
@@ -345,13 +401,9 @@ def build_method_proposal(
         and draft.evaluation_protocol_validated
         and not draft.explicit_evaluation_protocol_invalid
     )
-    dataset = grounded_dataset or (
-        "user-declared frozen dataset; preserve the exact identifier and fingerprint"
-        if readiness_confirmed
-        else (
-            "unresolved task-matched public dataset; select and freeze the dataset, split, "
-            "and data fingerprint before the pilot"
-        )
+    dataset = grounded_dataset or _dataset_plan_value(
+        request.question,
+        readiness_confirmed=readiness_confirmed,
     )
     review_primary = _is_review_evidence(primary.title, primary.summary)
     baseline_unresolved = bool(declared_baseline_titles and baseline_evidence is None)
@@ -369,6 +421,7 @@ def build_method_proposal(
         if baseline_evidence is not None
         else (None if baseline_unresolved else primary.evidence_id)
     )
+    baseline_inferred = not declared_baseline_titles and baseline_evidence is None
     comparator = grounded_comparator if comparator_evidence_id is not None else None
     module_name = draft.module_name.strip()
     module_switch = f"enable_{_slug(module_name)}"
@@ -401,11 +454,21 @@ def build_method_proposal(
                 "user-declared frozen implementation; preserve the exact version or commit"
                 if readiness_confirmed
                 else (
-                    f"review source {primary.stable_identifier}; implementation baseline unresolved"
-                    if review_primary
+                    (
+                        f"inferred from evidence relation at {primary.stable_identifier}; "
+                        "reproduce and freeze an implementation before module integration"
+                    )
+                    if baseline_inferred
                     else (
-                        f"published source {primary.stable_identifier}; "
-                        "implementation commit unresolved"
+                        (
+                            f"review source {primary.stable_identifier}; "
+                            "implementation baseline unresolved"
+                        )
+                        if review_primary
+                        else (
+                            f"published source {primary.stable_identifier}; "
+                            "implementation commit unresolved"
+                        )
                     )
                 )
             )
@@ -577,6 +640,10 @@ def build_method_proposal(
             plan.clarification_question or "",
             "baseline reproduction and disabled-module parity are not yet verified",
             "implementation and evidence licenses must be resolved before code reuse",
+            (
+                "a public dataset is optional for niche tasks, but any user-owned, synthetic, "
+                "simulated, or newly collected data must be frozen with provenance before execution"
+            ),
         )
     )
     hypothesis_text = _hypothesis_sentence(draft)
