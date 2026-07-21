@@ -3,13 +3,62 @@
     "atr-v1-001-cv-crack-fewshot",
     "atr-v1-002-timeseries-patchtst-missing",
     "atr-v1-003-nlp-bert-lora-clinc",
-    "atr-v1-004-medical-ham10000-small"
+    "atr-v1-004-medical-ham10000-small",
+    "atr-v1-005-remote-oriented-small-edge",
+    "atr-v1-006-industrial-usad-anomaly-transformer",
+    "atr-v1-007-graph-graphsage-gat-ppi",
+    "atr-v1-008-bio-protein-function-lowlabel"
   ],
   "case_concurrency": 4,
   "completed": 0,
-  "elapsed_seconds": 0.001,
-  "errors": [],
-  "fatal_provider_error": null,
+  "elapsed_seconds": 694.851,
+  "errors": [
+    {
+      "case_id": "atr-v1-003-nlp-bert-lora-clinc",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'failed'"
+    },
+    {
+      "case_id": "atr-v1-002-timeseries-patchtst-missing",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'failed'"
+    },
+    {
+      "case_id": "atr-v1-004-medical-ham10000-small",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'failed'"
+    },
+    {
+      "case_id": "atr-v1-001-cv-crack-fewshot",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'failed'"
+    },
+    {
+      "case_id": "atr-v1-005-remote-oriented-small-edge",
+      "error_type": "FatalLLMProviderError",
+      "message": "LLM_RATE_LIMITED"
+    },
+    {
+      "case_id": "atr-v1-006-industrial-usad-anomaly-transformer",
+      "error_type": "CancelledAfterFatalProviderError",
+      "message": "cancelled after another concurrent case hit a fatal provider error"
+    },
+    {
+      "case_id": "atr-v1-007-graph-graphsage-gat-ppi",
+      "error_type": "CancelledAfterFatalProviderError",
+      "message": "cancelled after another concurrent case hit a fatal provider error"
+    },
+    {
+      "case_id": "atr-v1-008-bio-protein-function-lowlabel",
+      "error_type": "CancelledAfterFatalProviderError",
+      "message": "cancelled after another concurrent case hit a fatal provider error"
+    }
+  ],
+  "fatal_provider_error": {
+    "case_id": "atr-v1-005-remote-oriented-small-edge",
+    "code": "LLM_RATE_LIMITED",
+    "message": "fatal LLM provider failure surfaced in the case trace"
+  },
   "gold_absent_from_candidate_workspace": true,
   "hedging": {
     "cancellation": "best_effort",
@@ -17,17 +66,13 @@
     "max_requests": 2
   },
   "not_run_case_ids": [
-    "atr-v1-005-remote-oriented-small-edge",
-    "atr-v1-006-industrial-usad-anomaly-transformer",
-    "atr-v1-007-graph-graphsage-gat-ppi",
-    "atr-v1-008-bio-protein-function-lowlabel",
     "atr-v1-009-audio-panns-mimii-domain",
     "atr-v1-010-rec-coldstart-sequential"
   ],
   "passed": false,
-  "prompt_records": 0,
+  "prompt_records": 30,
   "public_dataset_sha256": "7e5d67536ca139bb935b8a80c69671f9a4c3c1c483e85ae05eccfbd0edde89ec",
-  "recorded_traces": 0,
+  "recorded_traces": 5,
   "schema": "paperagent.academic-tailoring-retrieval.runtime-summary.v1",
   "selected_case_count": 10,
   "selected_case_ids": [
@@ -42,7 +87,7 @@
     "atr-v1-009-audio-panns-mimii-domain",
     "atr-v1-010-rec-coldstart-sequential"
   ],
-  "source_sha": "e408b8f8b0168a6b25e20b69b780a2e45025a0c5",
+  "source_sha": "b14c818f5756fb821d86d57323ba97202ff3b6a1",
   "static_leakage_audit": {
     "findings": [],
     "passed": true
