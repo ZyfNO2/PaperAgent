@@ -142,6 +142,17 @@ def test_dataset_relation_query_keeps_dataset_anchor_not_model_title() -> None:
     assert names == ("MIMII",)
 
 
+def test_dataset_relation_query_rejects_model_only_anchors() -> None:
+    names = _dataset_relation_names(
+        "BERT LoRA text classification compatibility",
+        (
+            _paper("BERT: Pre-training of Deep Bidirectional Transformers"),
+            _paper("LoRA: Low-Rank Adaptation of Large Language Models"),
+        ),
+    )
+    assert names == ()
+
+
 def test_dataset_relation_relevance_accepts_verified_dataset_title() -> None:
     paper = _paper("MIMII Dataset: Sound Dataset for Machine Investigation")
     paper = paper.model_copy(
