@@ -690,8 +690,14 @@ class LiteratureSearchAdapter:
                 "provider_classes": source_kind,
                 "source_kind": source_kind,
                 "relation": relation,
-                "baseline_candidate": (
-                    "declared" if relation == "declared_identity" else "inferred"
+                **(
+                    {"baseline_candidate": "declared"}
+                    if relation == "declared_identity"
+                    else (
+                        {"baseline_candidate": "inferred"}
+                        if relation == "parallel_via_dataset"
+                        else {}
+                    )
                 ),
                 "rank_score": f"{score:.6f}",
                 "relevance_score": f"{relevance:.6f}",

@@ -96,6 +96,9 @@ def _state() -> PaperAgentState:
             "doi": "10.3390/s24175496",
             "candidate_gap_ids": "baseline_comparison,failure_mechanism",
             "license": "CC BY 4.0",
+            "baseline_candidate": "inferred",
+            "relation": "parallel_via_dataset",
+            "rank_score": "0.90",
         },
     )
     support = (
@@ -350,3 +353,45 @@ def test_explicitly_incompatible_license_remains_no_go() -> None:
     assert audit.verdict is AuditVerdict.NO_GO
     assert failed["baseline-license"].severity.value == "critical"
     assert failed["module-license:shallow_feature_fusion"].severity.value == "critical"
+
+
+def test_unqualified_direct_paper_does_not_become_baseline() -> None:
+    state = _state()
+    evidence = state["evidence"]
+    assert evidence is not None
+    direct_item = evidence.items[0].model_copy(
+        update={
+            "metadata": {
+                "doi": "10.3390/s24175496",
+                "relation": "direct_query",
+                "rank_score": "0.99",
+                "license": "CC BY 4.0",
+            }
+        }
+    )
+    direct_state = cast(
+        PaperAgentState,
+        {
+            **state,
+            "evidence": evidence.model_copy(update={"items": [direct_item]}),
+        },
+    )
+    proposal = build_method_proposal(
+        direct_state,
+        _draft(
+            baseline_readiness_confirmed=True,
+            evaluation_protocol_validated=True,
+            module_validation_confirmed=True,
+        ),
+    )
+    plan = proposal.methodology_plan
+    assert plan.baseline.source_evidence_id is None
+    assert plan.baseline.reproduced is False
+    assert plan.baseline.baseline_parity_verified is False
+    assert "unresolved task-matched baseline" in plan.baseline.name
+    assert plan.research.baseline_readiness_confirmed is False
+    assert plan.modules[0].evidence_id == _EVIDENCE_ID
+    experiments = {experiment.name: experiment for experiment in plan.experiments}
+    assert experiments["E0-frozen-baseline"].source_evidence_id is None
+    assert experiments["E1-single-module"].source_evidence_id == _EVIDENCE_ID
+    assert experiments["E2-full-method"].source_evidence_id == _EVIDENCE_ID

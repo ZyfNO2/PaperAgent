@@ -6,6 +6,8 @@ from paperagent.method_design_draft import (
     _dataset_plan_value,
     _select_dataset_evidence,
     _select_declared_baseline_evidence,
+    _select_inferred_baseline_evidence,
+    _select_module_evidence,
     _select_primary_evidence,
 )
 from paperagent.schemas import EvidenceItem
@@ -167,3 +169,31 @@ def test_dataset_selection_does_not_promote_arbitrary_paper_mention() -> None:
         (audio_set,),
     )
     assert selected is None
+
+
+def test_direct_query_neighbor_is_module_evidence_not_baseline() -> None:
+    direct = _item(
+        "direct-only",
+        "A Relevant Mechanism Paper",
+        metadata={
+            "relation": "direct_query",
+            "rank_score": "0.95",
+        },
+    )
+    assert _select_inferred_baseline_evidence((direct,)) is None
+    module = _select_module_evidence((direct,), baseline=None)
+    assert module is not None
+    assert module.evidence_id == "direct-only"
+
+
+def test_direct_query_cannot_self_declare_inferred_baseline() -> None:
+    direct = _item(
+        "direct-marker",
+        "A Direct Query Paper",
+        metadata={
+            "baseline_candidate": "inferred",
+            "relation": "direct_query",
+            "rank_score": "0.99",
+        },
+    )
+    assert _select_inferred_baseline_evidence((direct,)) is None

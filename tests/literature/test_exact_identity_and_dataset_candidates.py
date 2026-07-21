@@ -218,3 +218,50 @@ def test_explicit_camelcase_dataset_context_remains_supported() -> None:
         "Evaluate on AudioSet dataset under device shift",
         (),
     ) == ("AudioSet",)
+
+
+def test_direct_query_paper_is_not_a_baseline_candidate() -> None:
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q-direct",
+        gap_id="g-direct",
+        query="few-shot industrial anomaly method",
+        source_types=["paper"],
+    )
+    candidate = adapter._candidate(query, _paper("A Relevant Neighbor Method"), False)
+    assert candidate.metadata["relation"] == "direct_query"
+    assert "baseline_candidate" not in candidate.metadata
+
+
+def test_dataset_parallel_paper_is_an_inferred_baseline_candidate() -> None:
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q-parallel",
+        gap_id="g-parallel",
+        query="MIMII dataset baseline comparison",
+        source_types=["paper", "dataset"],
+    )
+    candidate = adapter._candidate(
+        query,
+        _paper("A Task-Matched MIMII Comparator"),
+        False,
+        relation="parallel_via_dataset",
+    )
+    assert candidate.metadata["baseline_candidate"] == "inferred"
+
+
+def test_declared_identity_remains_a_declared_baseline_candidate() -> None:
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q-declared",
+        gap_id="g-declared",
+        query='"Exact Baseline Paper"',
+        source_types=["paper"],
+    )
+    candidate = adapter._candidate(
+        query,
+        _paper("Exact Baseline Paper"),
+        False,
+        relation="declared_identity",
+    )
+    assert candidate.metadata["baseline_candidate"] == "declared"
