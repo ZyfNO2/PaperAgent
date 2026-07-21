@@ -47,9 +47,7 @@ def _runtime_source_types(query: SearchQuery) -> SearchQuery:
     return query.model_copy(update={"source_types": source_types})
 
 
-def _normalize_plan_to_query_budget(
-    plan: ResearchPlan, *, query_budget: int
-) -> ResearchPlan:
+def _normalize_plan_to_query_budget(plan: ResearchPlan, *, query_budget: int) -> ResearchPlan:
     """Bound an otherwise valid LLM plan instead of failing the entire research run.
 
     We keep one query for each declared gap in plan order before allocating remaining slots to
@@ -57,9 +55,7 @@ def _normalize_plan_to_query_budget(
     earliest budget-coverable gaps remain and the loss of scope is recorded as a risk.
     """
 
-    normalized_queries = [
-        _runtime_source_types(query) for query in plan.search_queries
-    ]
+    normalized_queries = [_runtime_source_types(query) for query in plan.search_queries]
     if plan.status == "blocked" or len(normalized_queries) <= query_budget:
         if normalized_queries == plan.search_queries:
             return plan
@@ -88,9 +84,7 @@ def _normalize_plan_to_query_budget(
         selected_ids.add(query.query_id)
 
     selected_gap_ids = {query.gap_id for query in selected}
-    selected_gaps = [
-        gap for gap in plan.evidence_gaps if gap.gap_id in selected_gap_ids
-    ]
+    selected_gaps = [gap for gap in plan.evidence_gaps if gap.gap_id in selected_gap_ids]
     risks = list(plan.risks)
     if _BUDGET_NORMALIZATION_RISK not in risks:
         risks.append(_BUDGET_NORMALIZATION_RISK)

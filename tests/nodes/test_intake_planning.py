@@ -123,9 +123,7 @@ def test_planning_route__status__maps_to_expected_edge() -> None:
         if status == "ready":
             kwargs["research_questions"] = ["q"]
             kwargs["evidence_gaps"] = [{"gap_id": "g", "description": "d"}]
-            kwargs["search_queries"] = [
-                {"query_id": "q", "gap_id": "g", "query": "search"}
-            ]
+            kwargs["search_queries"] = [{"query_id": "q", "gap_id": "g", "query": "search"}]
         assert planning_route({"plan": ResearchPlan(**kwargs)}, {}) == status
 
 
@@ -145,8 +143,7 @@ def test_planning_route__headless_policy_blocks_human_interrupt() -> None:
     )
 
 
-def test_plan_normalization__oversized_plan__keeps_one_query_per_gap_then_fills(
-) -> None:
+def test_plan_normalization__oversized_plan__keeps_one_query_per_gap_then_fills() -> None:
     from paperagent.nodes.planning import (
         _BUDGET_NORMALIZATION_RISK,
         _normalize_plan_to_query_budget,
@@ -158,8 +155,7 @@ def test_plan_normalization__oversized_plan__keeps_one_query_per_gap_then_fills(
         problem_statement="bounded retrieval",
         scope="test",
         evidence_gaps=[
-            EvidenceGap(gap_id=f"g{index}", description=f"gap {index}")
-            for index in range(1, 7)
+            EvidenceGap(gap_id=f"g{index}", description=f"gap {index}") for index in range(1, 7)
         ],
         search_queries=[
             SearchQuery(
