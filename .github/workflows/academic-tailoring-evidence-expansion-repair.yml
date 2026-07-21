@@ -34,21 +34,40 @@ jobs:
       - name: Apply evidence graph expansion repair
         run: python scripts/apply_evidence_graph_expansion_v1.py
       - name: Format and lint changed production paths
+        shell: bash
         run: |
+          mkdir -p build/evidence-expansion-diagnostics
           ruff format \
             src/paperagent/literature/adapter.py \
             src/paperagent/literature/providers/arxiv.py \
             src/paperagent/method_design_draft.py \
             tests/literature/test_exact_identity_and_dataset_candidates.py \
             tests/literature/test_arxiv_title_query.py \
-            tests/nodes/test_method_design_baseline_anchor.py
+            tests/nodes/test_method_design_baseline_anchor.py \
+            > build/evidence-expansion-diagnostics/format.log 2>&1
+          ruff check --fix \
+            src/paperagent/literature/adapter.py \
+            src/paperagent/literature/providers/arxiv.py \
+            src/paperagent/method_design_draft.py \
+            tests/literature/test_exact_identity_and_dataset_candidates.py \
+            tests/literature/test_arxiv_title_query.py \
+            tests/nodes/test_method_design_baseline_anchor.py \
+            > build/evidence-expansion-diagnostics/ruff-fix.log 2>&1
           ruff check \
             src/paperagent/literature/adapter.py \
             src/paperagent/literature/providers/arxiv.py \
             src/paperagent/method_design_draft.py \
             tests/literature/test_exact_identity_and_dataset_candidates.py \
             tests/literature/test_arxiv_title_query.py \
-            tests/nodes/test_method_design_baseline_anchor.py
+            tests/nodes/test_method_design_baseline_anchor.py \
+            > build/evidence-expansion-diagnostics/ruff-check.log 2>&1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-evidence-expansion-diagnostics
+          path: build/evidence-expansion-diagnostics/
+          if-no-files-found: warn
+          retention-days: 14
       - name: Run focused production behavior tests
         run: |
           pytest -q \
