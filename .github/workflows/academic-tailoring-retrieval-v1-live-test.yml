@@ -1,0 +1,207 @@
+name: Academic Tailoring Retrieval v1 Live Test
+
+on:
+  push:
+    branches:
+      - eval/academic-tailoring-retrieval-v1-live-test
+    paths:
+      - "evals/academic_tailoring_retrieval_v1/**"
+      - "scripts/project_academic_tailoring_retrieval_v1.py"
+      - "scripts/run_academic_tailoring_retrieval_v1.py"
+      - "scripts/score_academic_tailoring_retrieval_v1.py"
+      - "tests/evals/test_academic_tailoring_retrieval_v1_boundary.py"
+      - ".github/workflows/academic-tailoring-retrieval-v1-live-test.yml"
+      - "src/paperagent/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: academic-tailoring-retrieval-v1-live-test
+  cancel-in-progress: false
+
+jobs:
+  offline-boundary-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Validate Gold boundary and production leakage audit
+        run: |
+          pytest -q tests/evals/test_academic_tailoring_retrieval_v1_boundary.py
+          python - <<'PY'
+          from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
+
+          result = audit_benchmark_execution_boundary()
+          print(result.model_dump_json(indent=2))
+          if not result.passed:
+              raise SystemExit(result.findings)
+          PY
+      - name: Lint new evaluation files
+        run: |
+          ruff check \
+            scripts/project_academic_tailoring_retrieval_v1.py \
+            scripts/run_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py
+          ruff format --check \
+            scripts/project_academic_tailoring_retrieval_v1.py \
+            scripts/run_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py
+
+  prepare-public-inputs:
+    needs: offline-boundary-gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create Gold-free candidate input
+        run: |
+          python scripts/project_academic_tailoring_retrieval_v1.py \
+            --authoring evals/academic_tailoring_retrieval_v1/dataset-authoring.json \
+            --output build/academic-tailoring-retrieval-v1/public-dataset.json \
+            --report build/academic-tailoring-retrieval-v1/boundary-report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: academic-tailoring-retrieval-v1-public-inputs
+          path: build/academic-tailoring-retrieval-v1/
+          if-no-files-found: error
+          retention-days: 14
+
+  candidate-live-run:
+    needs: prepare-public-inputs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    env:
+      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+      PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL || 'Z1015558261@outlook.com' }}
+      SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+      TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+      PAPERAGENT_LLM_PROVIDER: mistral
+      PAPERAGENT_LLM_MODEL: mistral-small-latest
+      PAPERAGENT_MISTRAL_MODEL: mistral-small-latest
+      PAPERAGENT_LLM_BASE_URL: https://api.mistral.ai/v1
+      PAPERAGENT_LLM_PRICE_TABLE: config/llm-prices/mistral-small-latest.json
+      PAPERAGENT_LLM_MAX_COST_USD: "2.00"
+      PAPERAGENT_LLM_MAX_ATTEMPTS: "2"
+      PAPERAGENT_LLM_MAX_CALLS: "100"
+      PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "32000"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "4096"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "16384"
+      PAPERAGENT_LLM_TASK_TIMEOUT: "900"
+      PAPERAGENT_RUN_REAL_LLM: "1"
+      PAPERAGENT_RUN_REAL_PROVIDER: "1"
+      PAPERAGENT_ENABLE_WEB_SEARCH: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - uses: actions/download-artifact@v4
+        with:
+          name: academic-tailoring-retrieval-v1-public-inputs
+          path: downloaded-public
+      - name: Require real LLM credential
+        run: test -n "$MISTRAL_API_KEY"
+      - name: Build isolated candidate workspace
+        run: |
+          rm -rf candidate-workspace
+          mkdir -p candidate-workspace/scripts candidate-workspace/input
+          cp -R src candidate-workspace/src
+          cp -R config candidate-workspace/config
+          cp pyproject.toml README.md candidate-workspace/
+          cp scripts/run_academic_tailoring_retrieval_v1.py candidate-workspace/scripts/
+          cp downloaded-public/public-dataset.json candidate-workspace/input/
+          test ! -e candidate-workspace/evals/academic_tailoring_retrieval_v1/dataset-authoring.json
+          ! find candidate-workspace -name dataset-authoring.json -print -quit | grep -q .
+      - name: Install isolated candidate
+        working-directory: candidate-workspace
+        run: python -m pip install -q -e '.[dev]'
+      - name: Execute 10 real-LLM, real-literature cases
+        id: runtime
+        working-directory: candidate-workspace
+        shell: bash
+        run: |
+          set +e
+          python scripts/run_academic_tailoring_retrieval_v1.py \
+            --dataset input/public-dataset.json \
+            --output-dir build/academic-tailoring-retrieval-v1/candidate \
+            --max-cases 10 \
+            --max-llm-calls 10 \
+            --provider-call-budget 80 \
+            --llm-provider mistral \
+            --llm-model mistral-small-latest \
+            --llm-base-url https://api.mistral.ai/v1 \
+            --llm-price-table config/llm-prices/mistral-small-latest.json
+          status=$?
+          echo "$status" > build/academic-tailoring-retrieval-v1/candidate/runtime-exit-code.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-retrieval-v1-candidate-run
+          path: candidate-workspace/build/academic-tailoring-retrieval-v1/candidate/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Enforce candidate runtime status
+        if: always()
+        run: |
+          test "$(cat candidate-workspace/build/academic-tailoring-retrieval-v1/candidate/runtime-exit-code.txt)" = "0"
+
+  score-and-audit:
+    needs: candidate-live-run
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          name: academic-tailoring-retrieval-v1-candidate-run
+          path: candidate-run
+      - name: Score outside candidate boundary
+        id: score
+        shell: bash
+        run: |
+          set +e
+          python scripts/score_academic_tailoring_retrieval_v1.py \
+            --authoring evals/academic_tailoring_retrieval_v1/dataset-authoring.json \
+            --states candidate-run/states.jsonl \
+            --traces candidate-run/run-traces.jsonl \
+            --prompts candidate-run/prompt-log.jsonl \
+            --runtime-summary candidate-run/execution-summary.json \
+            --output build/academic-tailoring-retrieval-v1/diagnostic-report.json \
+            --minimum-score 80 \
+            --require-pass
+          status=$?
+          echo "$status" > build/academic-tailoring-retrieval-v1/score-exit-code.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-retrieval-v1-diagnostic-report
+          path: build/academic-tailoring-retrieval-v1/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce diagnostic gate
+        if: always()
+        run: |
+          test "$(cat build/academic-tailoring-retrieval-v1/score-exit-code.txt)" = "0"
