@@ -99,11 +99,10 @@ jobs:
             tests/scripts/test_check_llm_provider_health.py \
             tests/providers/test_mistral.py \
             tests/evals/test_academic_tailoring_retrieval_v1_boundary.py
-      - name: Remove one-shot controls
+      - name: Prepare non-workflow production tree
         run: |
-          rm -f \
-            scripts/apply_llm_fail_fast_v1.py \
-            .github/workflows/academic-tailoring-llm-fail-fast-repair.yml
+          git checkout -- .github/workflows/academic-tailoring-retrieval-v1-live-test.yml
+          rm -f scripts/apply_llm_fail_fast_v1.py
       - name: Run full final-tree regression
         run: |
           pytest -q
