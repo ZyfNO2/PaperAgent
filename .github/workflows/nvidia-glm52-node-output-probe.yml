@@ -1,0 +1,91 @@
+name: NVIDIA GLM-5.2 Node Output Probe
+
+on:
+  push:
+    branches:
+      - diag/nvidia-glm52-node-shapes
+    paths:
+      - "scripts/probe_nvidia_node_output.py"
+      - ".github/workflows/nvidia-glm52-node-output-probe.yml"
+      - "src/paperagent/providers/**"
+      - "src/paperagent/nodes/**"
+      - "src/paperagent/prompts/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Compile probe
+        run: python -m py_compile scripts/probe_nvidia_node_output.py
+      - name: Lint probe
+        run: ruff check scripts/probe_nvidia_node_output.py
+      - name: Type-check probe
+        run: mypy scripts/probe_nvidia_node_output.py
+
+  node-probe:
+    needs: offline-validation
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        node:
+          - planning
+          - evidence_synthesis
+          - method_design
+          - report
+    concurrency:
+      group: paperagent-nvidia-glm52
+      cancel-in-progress: false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Require NVIDIA credential
+        run: test -n "$NVIDIA_API_KEY"
+      - name: Probe ${{ matrix.node }} output modes
+        id: probe
+        shell: bash
+        run: |
+          mkdir -p build/nvidia-node-output
+          set +e
+          python scripts/probe_nvidia_node_output.py \
+            --node "${{ matrix.node }}" \
+            --model z-ai/glm-5.2 \
+            --base-url https://integrate.api.nvidia.com/v1 \
+            --api-key-env NVIDIA_API_KEY \
+            --output "build/nvidia-node-output/${{ matrix.node }}.json"
+          status=$?
+          echo "$status" > "build/nvidia-node-output/${{ matrix.node }}-exit-code.txt"
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nvidia-glm52-node-output-${{ matrix.node }}
+          path: build/nvidia-node-output/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Enforce at least one compatible mode
+        if: always()
+        run: test "$(cat build/nvidia-node-output/${{ matrix.node }}-exit-code.txt)" = "0"
