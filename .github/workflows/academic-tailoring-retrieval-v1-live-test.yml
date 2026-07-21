@@ -12,6 +12,7 @@ on:
       - "scripts/score_academic_tailoring_retrieval_v1.py"
       - "tests/evals/test_academic_tailoring_retrieval_v1_boundary.py"
       - "tests/nodes/test_intake_planning.py"
+      - "tests/scripts/test_check_llm_provider_health.py"
       - ".github/workflows/academic-tailoring-retrieval-v1-live-test.yml"
       - "src/paperagent/**"
   pull_request:
@@ -25,6 +26,7 @@ on:
       - "scripts/score_academic_tailoring_retrieval_v1.py"
       - "tests/evals/test_academic_tailoring_retrieval_v1_boundary.py"
       - "tests/nodes/test_intake_planning.py"
+      - "tests/scripts/test_check_llm_provider_health.py"
       - ".github/workflows/academic-tailoring-retrieval-v1-live-test.yml"
       - "src/paperagent/**"
   workflow_dispatch:
@@ -49,11 +51,12 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Validate Gold boundary, planning repair, and production leakage audit
+      - name: Validate Gold boundary, provider probe, planning repair, and production leakage audit
         run: |
           pytest -q \
             tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
-            tests/nodes/test_intake_planning.py
+            tests/nodes/test_intake_planning.py \
+            tests/scripts/test_check_llm_provider_health.py
           python - <<'PY'
           from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
 
@@ -71,7 +74,8 @@ jobs:
             scripts/score_academic_tailoring_retrieval_v1.py \
             src/paperagent/nodes/planning.py \
             tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
-            tests/nodes/test_intake_planning.py
+            tests/nodes/test_intake_planning.py \
+            tests/scripts/test_check_llm_provider_health.py
           ruff check \
             scripts/check_llm_provider_health.py \
             scripts/project_academic_tailoring_retrieval_v1.py \
@@ -79,7 +83,8 @@ jobs:
             scripts/score_academic_tailoring_retrieval_v1.py \
             src/paperagent/nodes/planning.py \
             tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
-            tests/nodes/test_intake_planning.py
+            tests/nodes/test_intake_planning.py \
+            tests/scripts/test_check_llm_provider_health.py
 
   prepare-public-inputs:
     needs: offline-boundary-gate
@@ -105,16 +110,17 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 300
     env:
-      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+      NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+      PAPERAGENT_OPENAI_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
       PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL || 'Z1015558261@outlook.com' }}
       SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
       TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
-      PAPERAGENT_LLM_PROVIDER: mistral
-      PAPERAGENT_LLM_MODEL: mistral-small-latest
-      PAPERAGENT_MISTRAL_MODEL: mistral-small-latest
-      PAPERAGENT_LLM_BASE_URL: https://api.mistral.ai/v1
-      PAPERAGENT_LLM_PRICE_TABLE: config/llm-prices/mistral-small-latest.json
-      PAPERAGENT_LLM_MAX_COST_USD: "2.00"
+      PAPERAGENT_LLM_PROVIDER: openai
+      PAPERAGENT_LLM_MODEL: z-ai/glm-5.2
+      PAPERAGENT_LLM_BASE_URL: https://integrate.api.nvidia.com/v1
+      PAPERAGENT_LLM_CONNECT_TIMEOUT: "15"
+      PAPERAGENT_LLM_READ_TIMEOUT: "300"
+      PAPERAGENT_LLM_TOTAL_TIMEOUT: "360"
       PAPERAGENT_LLM_MAX_ATTEMPTS: "2"
       PAPERAGENT_LLM_MAX_CALLS: "100"
       PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "32000"
@@ -135,17 +141,20 @@ jobs:
         with:
           name: academic-tailoring-retrieval-v1-public-inputs
           path: downloaded-public
-      - name: Require non-empty real LLM credential
-        run: test -n "$MISTRAL_API_KEY"
-      - name: Probe real LLM credential and model access
+      - name: Require non-empty NVIDIA credential
+        run: test -n "$NVIDIA_API_KEY"
+      - name: Probe NVIDIA GLM-5.2 model access
         id: llm_health
         shell: bash
         run: |
           set +e
           python scripts/check_llm_provider_health.py \
-            --provider mistral \
-            --model mistral-small-latest \
-            --base-url https://api.mistral.ai/v1 \
+            --provider openai \
+            --model z-ai/glm-5.2 \
+            --base-url https://integrate.api.nvidia.com/v1 \
+            --api-key-env NVIDIA_API_KEY \
+            --probe-mode chat \
+            --timeout-seconds 120 \
             --output build/academic-tailoring-retrieval-v1/llm-health.json
           status=$?
           echo "status=$status" >> "$GITHUB_OUTPUT"
@@ -157,7 +166,7 @@ jobs:
           path: build/academic-tailoring-retrieval-v1/llm-health.json
           if-no-files-found: error
           retention-days: 7
-      - name: Enforce real LLM health
+      - name: Enforce NVIDIA GLM-5.2 health
         run: test "${{ steps.llm_health.outputs.status }}" = "0"
       - name: Build isolated candidate workspace
         run: |
@@ -173,7 +182,7 @@ jobs:
       - name: Install isolated candidate
         working-directory: candidate-workspace
         run: python -m pip install -q -e '.[dev]'
-      - name: Execute 10 real-LLM, real-literature cases with bounded Web supplementation
+      - name: Execute 10 GLM-5.2, real-literature cases with bounded Web supplementation
         id: runtime
         working-directory: candidate-workspace
         shell: bash
@@ -186,10 +195,9 @@ jobs:
             --max-llm-calls 10 \
             --provider-call-budget 240 \
             --enable-web-search \
-            --llm-provider mistral \
-            --llm-model mistral-small-latest \
-            --llm-base-url https://api.mistral.ai/v1 \
-            --llm-price-table config/llm-prices/mistral-small-latest.json
+            --llm-provider openai \
+            --llm-model z-ai/glm-5.2 \
+            --llm-base-url https://integrate.api.nvidia.com/v1
           status=$?
           echo "$status" > build/academic-tailoring-retrieval-v1/candidate/runtime-exit-code.txt
           exit 0
