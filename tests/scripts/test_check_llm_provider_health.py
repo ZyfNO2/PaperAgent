@@ -32,15 +32,24 @@ def test_model_ids_ignore_malformed_entries() -> None:
     ) == {"mistral-small-latest"}
 
 
+def test_chat_probe_requires_a_choice_object() -> None:
+    module = _load_script()
+    assert module._chat_completion_accessible({"choices": [{"message": {"content": "OK"}}]})
+    assert not module._chat_completion_accessible({"choices": []})
+    assert not module._chat_completion_accessible({"choices": ["bad"]})
+
+
 def test_redacted_result_never_contains_credential_material() -> None:
     module = _load_script()
     result = module._result(
-        provider="mistral",
-        model="mistral-small-latest",
-        base_url="https://api.mistral.ai/v1",
+        provider="openai",
+        model="z-ai/glm-5.2",
+        base_url="https://integrate.api.nvidia.com/v1",
+        probe_mode="chat",
         status="authentication",
         http_status=401,
     )
-    assert result["base_url_host"] == "api.mistral.ai"
+    assert result["base_url_host"] == "integrate.api.nvidia.com"
+    assert result["probe_mode"] == "chat"
     assert "api_key" not in result
     assert "authorization" not in result
