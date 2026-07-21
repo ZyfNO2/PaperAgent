@@ -91,9 +91,11 @@ def main() -> int:
     )
     replace_once(
         METHOD_TEST,
-        '            "PANNs: Large-Scale Pretrained Audio Neural Networks for Audio Pattern Recognition [declared role: baseline]"\n',
+        '        ["PANNs: Large-Scale Pretrained Audio Neural Networks for Audio Pattern Recognition [declared role: baseline]"],\n',
+        '        [\n'
         '            "PANNs: Large-Scale Pretrained Audio Neural Networks for Audio Pattern "\n'
-        '            "Recognition [declared role: baseline]"\n',
+        '            "Recognition [declared role: baseline]"\n'
+        '        ],\n',
         "method test title wrapping",
     )
     append_once(
