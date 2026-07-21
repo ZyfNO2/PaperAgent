@@ -33,23 +33,53 @@ jobs:
         run: python -m pip install -q -e '.[dev]'
       - name: Apply LLM fail-fast repair
         run: python scripts/apply_llm_fail_fast_v1.py
-      - name: Format and lint changed paths
+      - name: Format and capture lint diagnostics
+        shell: bash
         run: |
+          mkdir -p build/llm-fail-fast-diagnostics
+          set +e
           ruff format \
             scripts/check_llm_provider_health.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             tests/evals/test_academic_tailoring_runtime_fail_fast.py \
-            tests/scripts/test_check_llm_provider_health.py
+            tests/scripts/test_check_llm_provider_health.py \
+            > build/llm-fail-fast-diagnostics/format.log 2>&1
+          format_status=$?
           ruff check --fix \
             scripts/check_llm_provider_health.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             tests/evals/test_academic_tailoring_runtime_fail_fast.py \
-            tests/scripts/test_check_llm_provider_health.py
+            tests/scripts/test_check_llm_provider_health.py \
+            > build/llm-fail-fast-diagnostics/ruff-fix.log 2>&1
+          fix_status=$?
           ruff check \
             scripts/check_llm_provider_health.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             tests/evals/test_academic_tailoring_runtime_fail_fast.py \
-            tests/scripts/test_check_llm_provider_health.py
+            tests/scripts/test_check_llm_provider_health.py \
+            > build/llm-fail-fast-diagnostics/ruff-check.log 2>&1
+          check_status=$?
+          printf '{"format":%s,"fix":%s,"check":%s}\n' \
+            "$format_status" "$fix_status" "$check_status" \
+            > build/llm-fail-fast-diagnostics/status.json
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-llm-fail-fast-diagnostics
+          path: build/llm-fail-fast-diagnostics/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Enforce changed-path lint
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(Path("build/llm-fail-fast-diagnostics/status.json").read_text())
+          print(status)
+          if any(status.values()):
+              raise SystemExit(status)
+          PY
       - name: Run focused fail-fast tests
         run: |
           pytest -q \
