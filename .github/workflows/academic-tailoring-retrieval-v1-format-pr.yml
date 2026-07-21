@@ -70,7 +70,7 @@ jobs:
           if not result.passed:
               raise SystemExit(result.findings)
           PY
-      - name: Shadow-rescore latest strict candidate output
+      - name: Generate shadow-rescore report
         run: |
           rm -rf build/strict-shadow-latest
           mkdir -p build/strict-shadow-latest
@@ -86,6 +86,15 @@ jobs:
             --runtime-summary build/strict-shadow-latest/execution-summary.json \
             --output build/evidence-chain-shadow-report.json \
             --minimum-score 80
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-retrieval-v1-evidence-chain-shadow-report
+          path: build/evidence-chain-shadow-report.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce shadow semantics
+        run: |
           python - <<'PY'
           import json
           from pathlib import Path
@@ -100,12 +109,6 @@ jobs:
           assert report["prompt_leakage_findings"] == [], report
           print(json.dumps(report, ensure_ascii=False, indent=2))
           PY
-      - uses: actions/upload-artifact@v4
-        with:
-          name: academic-tailoring-retrieval-v1-evidence-chain-shadow-report
-          path: build/evidence-chain-shadow-report.json
-          if-no-files-found: error
-          retention-days: 30
       - name: Remove one-shot controls
         run: |
           rm -f \
