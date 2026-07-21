@@ -29,8 +29,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: academic-tailoring-retrieval-v1-live-test
-  cancel-in-progress: false
+  group: academic-tailoring-retrieval-v1-live-test-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   offline-boundary-gate:
@@ -56,14 +56,14 @@ jobs:
           if not result.passed:
               raise SystemExit(result.findings)
           PY
-      - name: Lint new evaluation files
+      - name: Format and lint new evaluation files
         run: |
-          ruff check \
+          ruff format \
             scripts/project_academic_tailoring_retrieval_v1.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/score_academic_tailoring_retrieval_v1.py \
             tests/evals/test_academic_tailoring_retrieval_v1_boundary.py
-          ruff format --check \
+          ruff check \
             scripts/project_academic_tailoring_retrieval_v1.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/score_academic_tailoring_retrieval_v1.py \
