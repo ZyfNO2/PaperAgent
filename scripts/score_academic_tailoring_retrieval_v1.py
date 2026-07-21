@@ -4,8 +4,9 @@ import argparse
 import hashlib
 import json
 import re
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from paperagent.claw_academic_benchmark import AcademicTailoringRunTrace
 
@@ -109,7 +110,9 @@ def _gold_only_phrases(case: dict[str, Any]) -> list[str]:
     return phrases
 
 
-def _scan_prompts(cases_by_id: dict[str, dict[str, Any]], prompts: list[dict[str, Any]]) -> list[str]:
+def _scan_prompts(
+    cases_by_id: dict[str, dict[str, Any]], prompts: list[dict[str, Any]]
+) -> list[str]:
     findings: list[str] = []
     for record in prompts:
         case_id = str(record.get("case_id", ""))
@@ -118,7 +121,9 @@ def _scan_prompts(cases_by_id: dict[str, dict[str, Any]], prompts: list[dict[str
         folded = prompt_text.casefold()
         for term in sorted(FORBIDDEN_PROMPT_TERMS):
             if term.casefold() in folded:
-                findings.append(f"{case_id}: forbidden evaluator term appeared in LLM prompt: {term}")
+                findings.append(
+                    f"{case_id}: forbidden evaluator term appeared in LLM prompt: {term}"
+                )
         case = cases_by_id.get(case_id)
         if case is None:
             continue
@@ -195,7 +200,9 @@ def _score_case(
     if baseline is not None:
         baseline_score += 5
         baseline_decision = gold.get("baseline_decision", {})
-        canonical = baseline_decision.get("canonical") if isinstance(baseline_decision, dict) else None
+        canonical = (
+            baseline_decision.get("canonical") if isinstance(baseline_decision, dict) else None
+        )
         supplied_titles = case.get("public_input", {}).get("supplied_materials", [])
         baseline_targets = [canonical] + [item.get("title") for item in supplied_titles]
         if any(
@@ -311,8 +318,17 @@ def _score_case(
         hard_failures.append("fabricated_item")
     if not accepted_verified:
         hard_failures.append("no_real_retrieval")
-    if baseline is not None and baseline.reproduced and not all(
-        (baseline.version_or_commit, baseline.environment, baseline.split, baseline.reproduced_metric)
+    if (
+        baseline is not None
+        and baseline.reproduced
+        and not all(
+            (
+                baseline.version_or_commit,
+                baseline.environment,
+                baseline.split,
+                baseline.reproduced_metric,
+            )
+        )
     ):
         hard_failures.append("repository_exists_claimed_as_reproduced")
     if any(item.role_compatible is False for item in trace.modules):
@@ -413,7 +429,9 @@ def main() -> int:
         encoding="utf-8",
     )
     print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
-    failed = report["failed"] or hard_failure_count or prompt_findings or runtime_summary.get("errors")
+    failed = (
+        report["failed"] or hard_failure_count or prompt_findings or runtime_summary.get("errors")
+    )
     return 1 if args.require_pass and failed else 0
 
 
