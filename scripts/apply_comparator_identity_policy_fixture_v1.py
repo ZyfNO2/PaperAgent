@@ -44,13 +44,15 @@ def _proposal(**updates: object):
 ''',
         '''from paperagent.method_design_draft import build_method_proposal
 from paperagent.method_evidence import bind_method_evidence
-from paperagent.schemas import EvidenceItem
+from paperagent.schemas import Claim, EvidenceItem
 from paperagent.state import PaperAgentState
 
 
 def _with_independent_comparator(state: PaperAgentState) -> PaperAgentState:
     evidence = state["evidence"]
+    synthesis = state["synthesis"]
     assert evidence is not None
+    assert synthesis is not None
     comparator_id = "ev-policy-rt-detr-r18"
     comparator = EvidenceItem(
         evidence_id=comparator_id,
@@ -73,6 +75,14 @@ def _with_independent_comparator(state: PaperAgentState) -> PaperAgentState:
             "rank_score": "0.95",
         },
     )
+    comparator_claim = Claim(
+        claim_id="claim-policy-rt-detr-r18",
+        text=(
+            "RT-DETR-R18 provides an independently identified strong-comparison paper "
+            "for the matched detector evaluation."
+        ),
+        evidence_ids=[comparator_id],
+    )
     return cast(
         PaperAgentState,
         {
@@ -91,6 +101,14 @@ def _with_independent_comparator(state: PaperAgentState) -> PaperAgentState:
                             evidence.coverage_by_gap.get("baseline_comparison", 0) + 1
                         ),
                     },
+                }
+            ),
+            "synthesis": synthesis.model_copy(
+                update={
+                    "verified_findings": [
+                        *synthesis.verified_findings,
+                        comparator_claim,
+                    ]
                 }
             ),
         },
