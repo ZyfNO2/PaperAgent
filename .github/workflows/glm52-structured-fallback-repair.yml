@@ -39,14 +39,15 @@ jobs:
           provider_path = Path("src/paperagent/providers/openai_llm.py")
           provider = provider_path.read_text(encoding="utf-8")
           retry_marker = '_RETRY_BACKOFF_SECONDS: tuple[float, ...] = (0.5, 1.0, 2.0)\n'
-          fallback_constant = '''_NATIVE_SCHEMA_FALLBACK_CODES = frozenset(
-              {
-                  "LLM_RESPONSE_FORMAT_UNSUPPORTED",
-                  "LLM_RESPONSE_JSON_INVALID",
-                  "LLM_RESPONSE_SCHEMA_INVALID",
-              }
+          fallback_constant = (
+              '_NATIVE_SCHEMA_FALLBACK_CODES = frozenset(\n'
+              '    {\n'
+              '        "LLM_RESPONSE_FORMAT_UNSUPPORTED",\n'
+              '        "LLM_RESPONSE_JSON_INVALID",\n'
+              '        "LLM_RESPONSE_SCHEMA_INVALID",\n'
+              '    }\n'
+              ')\n'
           )
-          '''
           if "_NATIVE_SCHEMA_FALLBACK_CODES" not in provider:
               if retry_marker not in provider:
                   raise SystemExit("retry marker not found")
@@ -55,14 +56,16 @@ jobs:
                   retry_marker + "\n" + fallback_constant,
                   1,
               )
-          old_catch = '''            except ProviderError as exc:
-                          if exc.code != "LLM_RESPONSE_FORMAT_UNSUPPORTED":
-                              raise
-          '''
-          new_catch = '''            except ProviderError as exc:
-                          if exc.code not in _NATIVE_SCHEMA_FALLBACK_CODES:
-                              raise
-          '''
+          old_catch = (
+              '            except ProviderError as exc:\n'
+              '                if exc.code != "LLM_RESPONSE_FORMAT_UNSUPPORTED":\n'
+              '                    raise\n'
+          )
+          new_catch = (
+              '            except ProviderError as exc:\n'
+              '                if exc.code not in _NATIVE_SCHEMA_FALLBACK_CODES:\n'
+              '                    raise\n'
+          )
           if old_catch in provider:
               provider = provider.replace(old_catch, new_catch, 1)
           elif new_catch not in provider:
@@ -126,67 +129,7 @@ jobs:
               'PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "128"',
               'PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "1024"',
           )
-          marker = "      - name: Execute one structured GLM-5.2 call\n"
-          if marker not in workflow:
-              raise SystemExit("smoke step marker not found")
-          prefix = workflow.split(marker, 1)[0]
-          tail = '''      - name: Execute one structured GLM-5.2 call
-              id: smoke
-              shell: bash
-              run: |
-                mkdir -p build/glm52-smoke
-                set +e
-                python - <<'PY' > build/glm52-smoke/smoke.log 2>&1
-                import asyncio
-                import json
-                from typing import Literal
-
-                from pydantic import BaseModel
-
-                from paperagent.providers.config import load_provider_config
-                from paperagent.providers.runtime_factory import build_llm_provider
-                from paperagent.schemas import Message
-
-
-                class SmokeReply(BaseModel):
-                    status: Literal["ok"]
-
-
-                async def main() -> None:
-                    provider = build_llm_provider(load_provider_config())
-                    result = await provider.generate_structured(
-                        task="glm52-structured-smoke",
-                        scenario="ci",
-                        call_index=1,
-                        fixture_version="v1",
-                        schema=SmokeReply,
-                        messages=[
-                            Message(
-                                role="user",
-                                content='Return exactly one JSON object: {"status":"ok"}',
-                            )
-                        ],
-                    )
-                    print(json.dumps({"status": result.status, "model": provider.model_name}))
-
-
-                asyncio.run(main())
-                PY
-                status=$?
-                cat build/glm52-smoke/smoke.log
-                echo "status=$status" >> "$GITHUB_OUTPUT"
-                exit 0
-              - uses: actions/upload-artifact@v4
-                if: always()
-                with:
-                  name: glm52-structured-smoke-diagnostics
-                  path: build/glm52-smoke/
-                  if-no-files-found: error
-                  retention-days: 7
-              - name: Enforce structured smoke
-                run: test "${{ steps.smoke.outputs.status }}" = "0"
-          '''
-          workflow_path.write_text(prefix + tail, encoding="utf-8")
+          workflow_path.write_text(workflow, encoding="utf-8")
           PY
       - name: Format, lint, and test repaired runtime
         run: |
