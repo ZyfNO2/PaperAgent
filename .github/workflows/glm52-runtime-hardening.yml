@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - fix/glm52-runtime-hardening
+      - fix/glm52-runtime-hardening-v2
     paths:
       - "src/paperagent/providers/**"
       - "scripts/run_academic_tailoring_retrieval_v1.py"
@@ -47,11 +48,8 @@ jobs:
             tests/providers/test_openai_llm_runtime_limits.py \
             tests/evals/test_academic_tailoring_runtime_checkpoint.py \
             tests/evals/test_academic_tailoring_runtime_fail_fast.py
-      - name: Type-check changed runtime modules
-        run: |
-          mypy --config-file pyproject.toml \
-            src/paperagent/providers \
-            scripts/run_academic_tailoring_retrieval_v1.py
+      - name: Type-check changed provider modules
+        run: mypy --config-file pyproject.toml src/paperagent/providers
       - name: Format and lint changed paths
         run: |
           ruff format --check \
