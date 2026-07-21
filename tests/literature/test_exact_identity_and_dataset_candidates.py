@@ -178,3 +178,8 @@ def test_relation_providers_defer_rate_limited_source() -> None:
 def test_relation_provider_order_respects_configured_availability() -> None:
     providers = LiteratureSearchAdapter._relation_providers(("arxiv", "semantic_scholar"))
     assert providers == ("arxiv", "semantic_scholar")
+
+
+def test_relation_provider_order_supports_openalex_only_configuration() -> None:
+    providers = LiteratureSearchAdapter._relation_providers(("openalex",))
+    assert providers == ("openalex",)
