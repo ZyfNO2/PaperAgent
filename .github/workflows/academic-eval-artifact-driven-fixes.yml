@@ -6,7 +6,7 @@ on:
       - fix/academic-eval-diagnostics-baseline-binding
     paths:
       - ".github/workflows/academic-eval-artifact-driven-fixes.yml"
-      - ".github/scripts/apply_artifact_driven_fixes.py"
+      - ".github/scripts/apply_artifact_driven_fixes_v2.py"
   workflow_dispatch:
 
 permissions:
@@ -35,7 +35,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Apply exact patches
-        run: python .github/scripts/apply_artifact_driven_fixes.py
+        run: python .github/scripts/apply_artifact_driven_fixes_v2.py
 
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
