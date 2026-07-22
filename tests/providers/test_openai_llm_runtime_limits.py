@@ -104,6 +104,7 @@ def test_runtime_factory_enforces_token_and_timeout_limits(
         max_attempts=1,
         max_requests_per_minute=40,
         max_output_tokens_per_call=123,
+        reasoning_effort="low",
         native_json_schema=True,
     )
 
@@ -115,6 +116,7 @@ def test_runtime_factory_enforces_token_and_timeout_limits(
     assert reply.status == "ok"
     request = captured["requests"][0]
     assert request["json"]["max_tokens"] == 123
+    assert request["json"]["reasoning_effort"] == "low"
     assert request["json"]["response_format"]["type"] == "json_schema"
     timeout = captured["timeout"]
     assert isinstance(timeout, httpx.Timeout)
@@ -221,11 +223,13 @@ def test_config_parses_native_schema_switch() -> None:
             "PAPERAGENT_OPENAI_API_KEY": "test-key",
             "PAPERAGENT_LLM_NATIVE_JSON_SCHEMA": "off",
             "PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE": "40",
+            "PAPERAGENT_LLM_REASONING_EFFORT": "LOW",
         }
     )
 
     assert config.native_json_schema is False
     assert config.max_requests_per_minute == 40
+    assert config.reasoning_effort == "low"
 
 
 def test_retry_after_header_controls_rate_limit_backoff(

@@ -97,4 +97,9 @@ def load_provider_config(
             "PAPERAGENT_LLM_NATIVE_JSON_SCHEMA",
             default=True,
         ),
+        reasoning_effort=(
+            values["PAPERAGENT_LLM_REASONING_EFFORT"].strip().casefold()
+            if values.get("PAPERAGENT_LLM_REASONING_EFFORT")
+            else None
+        ),
     )

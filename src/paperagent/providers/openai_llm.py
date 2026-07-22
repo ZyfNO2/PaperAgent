@@ -11,7 +11,7 @@ from __future__ import annotations
 import asyncio
 import json
 import time
-from typing import Any, TypeVar
+from typing import Any, Literal, TypeVar
 
 import httpx
 from pydantic import BaseModel
@@ -70,6 +70,8 @@ class OpenAILLMProvider:
         max_output_tokens: int | None = None,
         native_json_schema: bool = True,
         allow_schema_repair: bool = True,
+        reasoning_effort: Literal["none", "minimal", "low", "medium", "high", "xhigh"]
+        | None = None,
         budget: TaskBudget | None = None,
         price_table: PriceTable | None = None,
     ) -> None:
@@ -106,6 +108,7 @@ class OpenAILLMProvider:
         self._max_output_tokens = max_output_tokens
         self._native_json_schema = native_json_schema
         self._allow_schema_repair = allow_schema_repair
+        self._reasoning_effort = reasoning_effort
         self._budget = budget
         self._price_table = price_table
         self.last_usage: TokenUsage = TokenUsage(input_tokens=0, output_tokens=0)
@@ -137,6 +140,8 @@ class OpenAILLMProvider:
         }
         if self._max_output_tokens is not None:
             payload["max_tokens"] = self._max_output_tokens
+        if self._reasoning_effort is not None:
+            payload["reasoning_effort"] = self._reasoning_effort
         return payload
 
     def _record_usage(self, response: httpx.Response) -> None:

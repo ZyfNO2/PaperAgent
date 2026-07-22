@@ -4,6 +4,8 @@ import importlib.util
 from pathlib import Path
 from types import ModuleType
 
+import pytest
+
 SCRIPT = Path(__file__).parents[2] / "scripts" / "run_academic_tailoring_retrieval_v1.py"
 
 
@@ -56,6 +58,44 @@ def test_scientific_trace_codes_do_not_abort_the_suite() -> None:
                 "module_defer_reason": None,
                 "trace_error_codes": ["NOT_EVALUATED", "FINAL_OUTCOME_AND_REPORT_PRESENT"],
             }
+        )
+        is None
+    )
+
+
+@pytest.mark.parametrize(
+    "code",
+    [
+        "LLM_READ_TIMEOUT",
+    ],
+)
+def test_runtime_provider_errors_abort_the_suite(code: str) -> None:
+    module = _load_script()
+    assert module._fatal_provider_error_code_from_trace(
+        {"module_defer_reason": code, "trace_error_codes": []}
+    ) == (code if code.startswith("LLM_") else f"LLM_{code.upper()}")
+
+
+@pytest.mark.parametrize(
+    "code",
+    [
+        "LLM_PROVIDER_5XX",
+        "provider_5xx",
+        "LLM_CONNECT",
+        "connect",
+        "LLM_BUDGET_EXHAUSTED",
+        "budget_exhausted",
+        "LLM_RESPONSE_JSON_INVALID",
+        "LLM_RESPONSE_SCHEMA_INVALID",
+        "LLM_MALFORMED_RESPONSE",
+        "LLM_SCHEMA_VALIDATION",
+    ],
+)
+def test_case_local_provider_errors_do_not_abort_the_suite(code: str) -> None:
+    module = _load_script()
+    assert (
+        module._fatal_provider_error_code_from_trace(
+            {"module_defer_reason": code, "trace_error_codes": []}
         )
         is None
     )

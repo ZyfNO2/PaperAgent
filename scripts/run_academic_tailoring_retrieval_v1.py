@@ -44,18 +44,22 @@ FORBIDDEN_KEYS = {
 T = TypeVar("T", bound=BaseModel)
 _FATAL_PROVIDER_ERROR_CODES = frozenset(
     {
-        "LLM_AUTHENTICATION",
-        "LLM_CONFIGURATION",
-        "LLM_PERMISSION",
-        "LLM_RATE_LIMITED",
+        *(
+            f"LLM_{code.value.upper()}"
+            for code in (
+                ProviderErrorCode.CONFIGURATION,
+                ProviderErrorCode.AUTHENTICATION,
+                ProviderErrorCode.PERMISSION,
+                ProviderErrorCode.RATE_LIMITED,
+                ProviderErrorCode.READ_TIMEOUT,
+                ProviderErrorCode.CANCELLED,
+                ProviderErrorCode.UNKNOWN,
+            )
+        ),
         "LLM_PROVIDER_HTTP_ERROR",
-        "LLM_PROVIDER_5XX",
-        "LLM_CONNECT",
         "LLM_TIMEOUT",
         "LLM_INVALID_REQUEST",
         "LLM_RESPONSE_FORMAT_UNSUPPORTED",
-        "LLM_RESPONSE_JSON_INVALID",
-        "LLM_RESPONSE_SCHEMA_INVALID",
     }
 )
 

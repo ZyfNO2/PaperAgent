@@ -52,6 +52,7 @@ def build_llm_provider(
                 max_output_tokens=config.max_output_tokens_per_call,
                 native_json_schema=config.native_json_schema,
                 allow_schema_repair=config.allow_schema_repair,
+                reasoning_effort=config.reasoning_effort,
                 budget=budget,
                 price_table=price_table,
             )
