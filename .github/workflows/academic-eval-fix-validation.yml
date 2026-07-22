@@ -29,7 +29,7 @@ concurrency:
 jobs:
   case006-baseline-fallback:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -59,6 +59,18 @@ jobs:
           pytest -q \
             tests/methodology/test_declared_baseline_repository_fallback.py \
             tests/methodology/test_method_design_draft.py
+      - name: Run full offline regression
+        run: pytest -q -m 'not real_provider and not network and not browser and not llm'
+      - name: Production leakage audit for fallback
+        run: |
+          python - <<'PY'
+          from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
+
+          result = audit_benchmark_execution_boundary()
+          print(result.model_dump_json(indent=2))
+          if not result.passed:
+              raise SystemExit(result.findings)
+          PY
 
   offline-validation:
     runs-on: ubuntu-24.04
