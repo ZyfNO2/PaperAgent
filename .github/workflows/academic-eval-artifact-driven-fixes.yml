@@ -21,7 +21,7 @@ concurrency:
 jobs:
   patch-test-commit:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
@@ -120,4 +120,4 @@ jobs:
         run: |
           run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body \
-            "Artifact-driven fix workflow finished with job status \`${{ job.status }}\`: [open run]($run_url)."
+            "Artifact-driven v2 fix workflow finished with job status \`${{ job.status }}\`: [open run]($run_url)."
