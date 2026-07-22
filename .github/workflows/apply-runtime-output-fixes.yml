@@ -1,0 +1,119 @@
+name: Apply Runtime Output Fixes
+
+on:
+  push:
+    branches:
+      - fix/semantic-tailoring-role-bound-scoring
+    paths:
+      - "scripts/apply_runtime_output_fixes.py"
+      - ".github/workflows/apply-runtime-output-fixes.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-runtime-output-fixes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply-validate-commit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/semantic-tailoring-role-bound-scoring
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Apply production and regression patches
+        run: python scripts/apply_runtime_output_fixes.py
+      - name: Normalize changed Python files
+        run: |
+          ruff check --fix \
+            src/paperagent/providers/runtime.py \
+            src/paperagent/nodes/planning.py \
+            src/paperagent/nodes/report.py \
+            src/paperagent/method_design_draft.py \
+            src/paperagent/strict_method_design.py \
+            tests/providers/test_runtime.py \
+            tests/nodes/test_planning_identity_priority.py \
+            tests/nodes/test_method_design_baseline_anchor.py \
+            tests/nodes/test_report_fallback.py \
+            tests/methodology/test_strict_method_design.py \
+            tests/methodology/test_method_design_draft.py
+          ruff format \
+            src/paperagent/providers/runtime.py \
+            src/paperagent/nodes/planning.py \
+            src/paperagent/nodes/report.py \
+            src/paperagent/method_design_draft.py \
+            src/paperagent/strict_method_design.py \
+            tests/providers/test_runtime.py \
+            tests/nodes/test_planning_identity_priority.py \
+            tests/nodes/test_method_design_baseline_anchor.py \
+            tests/nodes/test_report_fallback.py \
+            tests/methodology/test_strict_method_design.py \
+            tests/methodology/test_method_design_draft.py
+      - name: Enforce lint and compilation
+        run: |
+          ruff check \
+            src/paperagent/providers/runtime.py \
+            src/paperagent/nodes/planning.py \
+            src/paperagent/nodes/report.py \
+            src/paperagent/method_design_draft.py \
+            src/paperagent/strict_method_design.py \
+            tests/providers/test_runtime.py \
+            tests/nodes/test_planning_identity_priority.py \
+            tests/nodes/test_method_design_baseline_anchor.py \
+            tests/nodes/test_report_fallback.py \
+            tests/methodology/test_strict_method_design.py \
+            tests/methodology/test_method_design_draft.py
+          python -m compileall -q \
+            src/paperagent/providers/runtime.py \
+            src/paperagent/nodes/planning.py \
+            src/paperagent/nodes/report.py \
+            src/paperagent/method_design_draft.py \
+            src/paperagent/strict_method_design.py
+      - name: Enforce strict types
+        run: |
+          mypy --strict \
+            src/paperagent/providers/runtime.py \
+            src/paperagent/nodes/planning.py \
+            src/paperagent/nodes/report.py \
+            src/paperagent/method_design_draft.py \
+            src/paperagent/strict_method_design.py
+      - name: Run focused regressions
+        run: |
+          pytest -q \
+            tests/providers/test_runtime.py \
+            tests/providers/test_openai_llm_runtime_limits.py \
+            tests/nodes/test_planning_identity_priority.py \
+            tests/nodes/test_method_design_baseline_anchor.py \
+            tests/nodes/test_report_fallback.py \
+            tests/methodology/test_strict_method_design.py \
+            tests/methodology/test_method_design_draft.py \
+            tests/evals/test_academic_tailoring_retrieval_v2_scorer.py
+      - name: Remove one-shot diagnostics and applicators
+        run: |
+          rm -f scripts/apply_runtime_output_fixes.py
+          rm -f .github/workflows/apply-runtime-output-fixes.yml
+          rm -f .github/workflows/paperagent-source-snapshot.yml
+      - name: Validate final tree
+        run: |
+          git diff --check
+          test ! -e scripts/apply_runtime_output_fixes.py
+          test ! -e .github/workflows/apply-runtime-output-fixes.yml
+          test ! -e .github/workflows/paperagent-source-snapshot.yml
+      - name: Commit validated repair
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(runtime): recover role-bound LLM outputs"
+          git push origin HEAD:fix/semantic-tailoring-role-bound-scoring
