@@ -14,6 +14,10 @@ permissions:
   issues: write
   pull-requests: write
 
+concurrency:
+  group: academic-eval-fix-observer
+  cancel-in-progress: true
+
 jobs:
   observe:
     runs-on: ubuntu-24.04
