@@ -4,6 +4,8 @@ import argparse
 import copy
 import hashlib
 import json
+import os
+import re
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +24,7 @@ FORBIDDEN_PUBLIC_KEYS = {
     "hard_failures",
     "cases_sha256",
 }
+_COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 
 
 def _canonical_bytes(value: object) -> bytes:
@@ -55,6 +58,21 @@ def _assert_no_forbidden_keys(value: object, *, path: str = "$") -> None:
             _assert_no_forbidden_keys(child, path=f"{path}[{index}]")
 
 
+def _require_authoring_commit(dataset: dict[str, Any], explicit: str | None) -> str:
+    candidate = (
+        explicit
+        or dataset.get("authoring_commit")
+        or os.getenv("PAPERAGENT_AUTHORING_COMMIT")
+        or os.getenv("GITHUB_SHA")
+    )
+    if not isinstance(candidate, str) or not _COMMIT_RE.fullmatch(candidate.strip().lower()):
+        raise ValueError(
+            "authoring commit is required; pass --authoring-commit or set "
+            "PAPERAGENT_AUTHORING_COMMIT/GITHUB_SHA"
+        )
+    return candidate.strip().lower()
+
+
 def _validate_authoring(dataset: dict[str, Any]) -> None:
     if dataset.get("schema") != AUTHORING_SCHEMA:
         raise ValueError("unexpected authoring schema")
@@ -78,10 +96,24 @@ def _validate_authoring(dataset: dict[str, Any]) -> None:
             raise ValueError(f"{case_id}: public_input and gold must be objects")
         user_input = public_input.get("user_input")
         materials = public_input.get("supplied_materials", [])
+        constraints = public_input.get("declared_constraints", [])
         if not isinstance(user_input, str) or not user_input.strip():
             raise ValueError(f"{case_id}: user_input must be non-empty")
         if not isinstance(materials, list) or len(materials) > 2:
             raise ValueError(f"{case_id}: supplied_materials must be a list of at most two items")
+        if not isinstance(constraints, list) or any(
+            not isinstance(item, str) or not item.strip() for item in constraints
+        ):
+            raise ValueError(f"{case_id}: declared_constraints must contain non-empty strings")
+        for material in materials:
+            if not isinstance(material, dict):
+                raise ValueError(f"{case_id}: supplied material must be an object")
+            title = material.get("title")
+            role = material.get("declared_role")
+            if not isinstance(title, str) or not title.strip():
+                raise ValueError(f"{case_id}: supplied title must be non-empty")
+            if not isinstance(role, str) or not role.strip():
+                raise ValueError(f"{case_id}: supplied role must be non-empty")
         case_ids.append(case_id)
         domains.append(domain)
         counts[case_type] = counts.get(case_type, 0) + 1
@@ -103,25 +135,35 @@ def _validate_authoring(dataset: dict[str, Any]) -> None:
         raise ValueError("rubric weights must total 100")
 
 
-def project_public_dataset(dataset: dict[str, Any]) -> dict[str, Any]:
+def verify_public_dataset_digest(dataset: dict[str, Any]) -> str:
+    declared = dataset.get("public_sha256")
+    if not isinstance(declared, str) or len(declared) != 64:
+        raise ValueError("public dataset must include a 64-character public_sha256")
+    payload = dict(dataset)
+    payload.pop("public_sha256", None)
+    actual = _sha256(payload)
+    if actual != declared:
+        raise ValueError("public dataset public_sha256 does not match canonical payload")
+    return actual
+
+
+def project_public_dataset(
+    dataset: dict[str, Any],
+    *,
+    authoring_commit: str | None = None,
+) -> dict[str, Any]:
     _validate_authoring(dataset)
+    resolved_authoring_commit = _require_authoring_commit(dataset, authoring_commit)
     cases: list[dict[str, Any]] = []
     for case in dataset["cases"]:
         public_input = case["public_input"]
         materials = public_input.get("supplied_materials", [])
-        titles: list[str] = []
-        roles: list[str] = []
-        for material in materials:
-            if not isinstance(material, dict):
-                raise ValueError(f"{case['case_id']}: supplied material must be an object")
-            title = material.get("title")
-            role = material.get("declared_role")
-            if not isinstance(title, str) or not title.strip():
-                raise ValueError(f"{case['case_id']}: supplied title must be non-empty")
-            if not isinstance(role, str) or not role.strip():
-                raise ValueError(f"{case['case_id']}: supplied role must be non-empty")
-            titles.append(title)
-            roles.append(role)
+        titles = [str(material["title"]).strip() for material in materials]
+        roles = [str(material["declared_role"]).strip() for material in materials]
+        constraints = [
+            str(constraint).strip()
+            for constraint in public_input.get("declared_constraints", [])
+        ]
         cases.append(
             {
                 "case_id": case["case_id"],
@@ -131,13 +173,19 @@ def project_public_dataset(dataset: dict[str, Any]) -> dict[str, Any]:
                     "user_input": public_input["user_input"],
                     "supplied_material_titles": titles,
                     "user_declared_roles": roles,
-                    "declared_constraints": [],
+                    "declared_constraints": constraints,
                 },
             }
         )
-    public = {
+    public: dict[str, Any] = {
         "schema": PUBLIC_SCHEMA,
         "dataset_id": dataset["dataset_id"],
+        "status": "public_execution_set",
+        "generated_from": {
+            "authoring_sha256": _sha256(dataset),
+            "authoring_commit": resolved_authoring_commit,
+            "case_count": len(cases),
+        },
         "candidate_contract": {
             "executor_fields": [
                 "benchmark_input.user_input",
@@ -151,6 +199,7 @@ def project_public_dataset(dataset: dict[str, Any]) -> dict[str, Any]:
     }
     _assert_no_forbidden_keys(public)
     public["public_sha256"] = _sha256(public)
+    verify_public_dataset_digest(public)
     return public
 
 
@@ -165,15 +214,21 @@ def _replace_gold_strings(value: object, *, counter: list[int]) -> object:
     return value
 
 
-def verify_gold_mutation_invariance(dataset: dict[str, Any]) -> str:
+def verify_gold_mutation_invariance(
+    dataset: dict[str, Any],
+    *,
+    authoring_commit: str | None = None,
+) -> str:
     mutated = copy.deepcopy(dataset)
     counter = [0]
     for case in mutated["cases"]:
         case["gold"] = _replace_gold_strings(case["gold"], counter=counter)
-    original_projection = project_public_dataset(dataset)
-    mutated_projection = project_public_dataset(mutated)
+    original_projection = project_public_dataset(dataset, authoring_commit=authoring_commit)
+    mutated_projection = project_public_dataset(mutated, authoring_commit=authoring_commit)
     original_projection.pop("public_sha256", None)
     mutated_projection.pop("public_sha256", None)
+    original_projection["generated_from"].pop("authoring_sha256", None)
+    mutated_projection["generated_from"].pop("authoring_sha256", None)
     if _canonical_bytes(original_projection) != _canonical_bytes(mutated_projection):
         raise RuntimeError("Gold mutation changed the candidate-visible projection")
     return f"LEAK_CANARY_00001..LEAK_CANARY_{counter[0]:05d}"
@@ -184,6 +239,7 @@ def _parser() -> argparse.ArgumentParser:
         description="Project the v1 authoring set into Gold-free inputs"
     )
     parser.add_argument("--authoring", type=Path, required=True)
+    parser.add_argument("--authoring-commit", default=None)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     return parser
@@ -192,8 +248,12 @@ def _parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = _parser().parse_args()
     dataset = _load_json(args.authoring)
-    canary_range = verify_gold_mutation_invariance(dataset)
-    public = project_public_dataset(dataset)
+    authoring_commit = _require_authoring_commit(dataset, args.authoring_commit)
+    canary_range = verify_gold_mutation_invariance(
+        dataset,
+        authoring_commit=authoring_commit,
+    )
+    public = project_public_dataset(dataset, authoring_commit=authoring_commit)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
         json.dumps(public, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
@@ -201,7 +261,8 @@ def main() -> int:
     )
     report = {
         "schema": "paperagent.academic-tailoring-retrieval.boundary-report.v1",
-        "authoring_sha256": _sha256(dataset),
+        "authoring_sha256": public["generated_from"]["authoring_sha256"],
+        "authoring_commit": authoring_commit,
         "public_sha256": public["public_sha256"],
         "case_count": len(public["cases"]),
         "gold_mutation_invariant": True,
