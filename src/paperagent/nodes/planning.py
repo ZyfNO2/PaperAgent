@@ -186,6 +186,20 @@ def _query_contains_material_title(query: SearchQuery, title: str) -> bool:
     return bool(normalized_title and normalized_title in normalized_query)
 
 
+def _query_is_exact_material_lookup(query: SearchQuery, title: str) -> bool:
+    """Return whether a paper query is the dedicated exact-title identity lane.
+
+    A broad mechanism query can contain a supplied title while appending task terms. Treating
+    that as identity verification allowed the planner to crowd out a declared module paper.
+    """
+
+    normalized_title = " ".join(title.replace('"', " ").split()).casefold()
+    normalized_query = " ".join(query.query.replace('"', " ").split()).casefold()
+    return bool(
+        normalized_title and normalized_query == normalized_title and "paper" in query.source_types
+    )
+
+
 def _ensure_user_material_identity_queries(
     plan: ResearchPlan,
     request: ResearchRequest,
@@ -221,9 +235,7 @@ def _ensure_user_material_identity_queries(
         if len(identity_queries) >= query_budget:
             break
         if any(
-            _query_contains_material_title(query, identity.title)
-            and "paper" in query.source_types
-            for query in plan.search_queries
+            _query_is_exact_material_lookup(query, identity.title) for query in plan.search_queries
         ):
             continue
         gap_id = _unique_identifier(identity.gap_id, existing_gap_ids)

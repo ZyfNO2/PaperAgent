@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 
 from paperagent.method_design_draft import (
     _dataset_plan_value,
+    _select_baseline_evidence,
     _select_dataset_evidence,
     _select_declared_baseline_evidence,
     _select_inferred_baseline_evidence,
@@ -107,6 +108,7 @@ def test_inferred_baseline_prefers_dataset_linked_parallel_paper() -> None:
             "baseline_candidate": "inferred",
             "relation": "parallel_via_dataset",
             "rank_score": "0.72",
+            "relevance_score": "0.80",
         },
     )
     selected = _select_primary_evidence([], (direct, linked))
@@ -207,6 +209,7 @@ def test_explicit_baseline_role_query_outranks_dataset_parallel_candidate() -> N
             "baseline_candidate": "inferred",
             "relation": "baseline_role_query",
             "rank_score": "0.70",
+            "relevance_score": "0.80",
         },
     )
     dataset_parallel = _item(
@@ -216,6 +219,7 @@ def test_explicit_baseline_role_query_outranks_dataset_parallel_candidate() -> N
             "baseline_candidate": "inferred",
             "relation": "parallel_via_dataset",
             "rank_score": "0.95",
+            "relevance_score": "0.80",
         },
     )
     selected = _select_inferred_baseline_evidence((dataset_parallel, role_query))
@@ -259,3 +263,112 @@ def test_comparator_candidate_is_not_selected_as_module_source() -> None:
     selected = _select_module_evidence((baseline, comparator), baseline=baseline)
     assert selected is not None
     assert selected.evidence_id == baseline.evidence_id
+
+
+def test_zero_relevance_dataset_parallel_candidate_yields_to_repository_backed_task_paper() -> None:
+    irrelevant = _item(
+        "clinical",
+        "Missing data imputation in clinical trials",
+        metadata={
+            "baseline_candidate": "inferred",
+            "relation": "parallel_via_dataset",
+            "rank_score": "0.99",
+            "relevance_score": "0.0",
+        },
+    )
+    task_paper = _item(
+        "ev-paper-task",
+        "Adaptive Multi-Modalities Fusion in Sequential Recommendation Systems",
+        metadata={
+            "relation": "direct_query",
+            "rank_score": "0.82",
+            "relevance_score": "0.75",
+            "query_text": "content-side information fusion sequential recommendation",
+        },
+    )
+    repository = task_paper.model_copy(
+        update={
+            "evidence_id": "ev-repository-task",
+            "source_type": "repository",
+            "title": "example/task-recommender",
+            "metadata": {
+                "relation": "author_linked_from_verified_paper",
+                "parent_paper_id": "paper-task",
+            },
+        }
+    )
+
+    selected = _select_baseline_evidence([], (irrelevant, task_paper, repository))
+
+    assert selected is not None
+    assert selected.evidence_id == "ev-paper-task"
+
+
+def test_low_relevance_baseline_role_candidate_yields_to_repository_backed_task_paper() -> None:
+    irrelevant = _item(
+        "weak-role",
+        "A Weakly Matched Baseline Result",
+        metadata={
+            "baseline_candidate": "inferred",
+            "relation": "baseline_role_query",
+            "rank_score": "0.99",
+            "relevance_score": "0.12",
+        },
+    )
+    task_paper = _item(
+        "ev-paper-task-2",
+        "Contrastive Collaborative Filtering for Cold-Start Item Recommendation",
+        metadata={
+            "relation": "direct_query",
+            "rank_score": "0.82",
+            "relevance_score": "0.78",
+            "query_text": "cold-start item recommendation content features",
+        },
+    )
+    repository = task_paper.model_copy(
+        update={
+            "evidence_id": "ev-repository-task-2",
+            "source_type": "repository",
+            "title": "example/cold-start-recommender",
+            "metadata": {
+                "relation": "author_linked_from_verified_paper",
+                "parent_paper_id": "paper-task-2",
+            },
+        }
+    )
+
+    selected = _select_baseline_evidence([], (irrelevant, task_paper, repository))
+
+    assert selected is not None
+    assert selected.evidence_id == "ev-paper-task-2"
+
+
+def test_declared_baseline_miss_accepts_only_repository_backed_exact_query_fallback() -> None:
+    paper = _item(
+        "ev-paper-usad",
+        "UnSupervised Anomaly Detection on Multivariate Time Series",
+        metadata={
+            "relation": "direct_query",
+            "rank_score": "0.8",
+            "query_text": '"USAD" official implementation code repository',
+        },
+    )
+    repository = paper.model_copy(
+        update={
+            "evidence_id": "ev-repository-usad",
+            "source_type": "repository",
+            "title": "manigalati/usad",
+            "metadata": {
+                "relation": "author_linked_from_verified_paper",
+                "parent_paper_id": "paper-usad",
+            },
+        }
+    )
+
+    selected = _select_baseline_evidence(
+        ["USAD [declared role: baseline]"],
+        (paper, repository),
+    )
+
+    assert selected is not None
+    assert selected.evidence_id == "ev-paper-usad"

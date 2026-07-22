@@ -159,38 +159,55 @@ class TaskBudget:
 
     def __init__(self, config: ProviderRuntimeConfig) -> None:
         self._config = config
-        self._started_at = monotonic()
         self._calls = 0
-        self._input_tokens = 0
-        self._output_tokens = 0
+        self._started_at_by_task: dict[str, float] = {}
+        self._calls_by_task: dict[str, int] = {}
+        self._input_tokens_by_task: dict[str, int] = {}
+        self._output_tokens_by_task: dict[str, int] = {}
         self._estimated_cost_usd = 0.0
+
+    @staticmethod
+    def _task_key(task: str) -> str:
+        # Schema repair is a physical attempt for the same logical node task.
+        return task.split(":schema-repair", 1)[0]
+
+    def _start_task(self, task: str) -> str:
+        key = self._task_key(task)
+        self._started_at_by_task.setdefault(key, monotonic())
+        return key
 
     @property
     def calls(self) -> int:
         return self._calls
 
     def reserve_call(self, *, task: str = "llm") -> None:
+        key = self._start_task(task)
         self._check_time(task=task)
-        if self._calls >= self._config.max_llm_calls_per_task:
+        calls = self._calls_by_task.get(key, 0)
+        if calls >= self._config.max_llm_calls_per_task:
             raise ProviderError(
                 ProviderErrorCode.BUDGET_EXHAUSTED,
                 "maximum LLM calls per task exhausted",
                 task=task,
             )
+        self._calls_by_task[key] = calls + 1
         self._calls += 1
 
     def record_usage(self, usage: UsageRecord, *, task: str = "llm") -> None:
+        key = self._start_task(task)
         if usage.input_tokens is not None:
-            self._input_tokens += usage.input_tokens
-            if self._input_tokens > self._config.max_input_tokens_per_task:
+            total = self._input_tokens_by_task.get(key, 0) + usage.input_tokens
+            self._input_tokens_by_task[key] = total
+            if total > self._config.max_input_tokens_per_task:
                 raise ProviderError(
                     ProviderErrorCode.BUDGET_EXHAUSTED,
                     "input token budget exhausted",
                     task=task,
                 )
         if usage.output_tokens is not None:
-            self._output_tokens += usage.output_tokens
-            if self._output_tokens > self._config.max_output_tokens_per_task:
+            total = self._output_tokens_by_task.get(key, 0) + usage.output_tokens
+            self._output_tokens_by_task[key] = total
+            if total > self._config.max_output_tokens_per_task:
                 raise ProviderError(
                     ProviderErrorCode.BUDGET_EXHAUSTED,
                     "output token budget exhausted",
@@ -214,7 +231,8 @@ class TaskBudget:
         self._check_time(task=task)
 
     def _check_time(self, *, task: str) -> None:
-        elapsed = monotonic() - self._started_at
+        key = self._start_task(task)
+        elapsed = monotonic() - self._started_at_by_task[key]
         if elapsed > self._config.task_wall_clock_seconds:
             raise ProviderError(
                 ProviderErrorCode.BUDGET_EXHAUSTED,

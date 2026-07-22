@@ -132,3 +132,71 @@ def test_declared_module_miss_is_not_replaced_by_unattributed_mechanism() -> Non
 
     with pytest.raises(ValueError, match="declared parallel/module source unresolved"):
         _prepare_role_bound_state(_state(references, [bert]))  # type: ignore[arg-type]
+
+
+def test_declared_baseline_miss_uses_repository_backed_exact_query_fallback() -> None:
+    paper = _paper(
+        "ev-paper-usad",
+        "UnSupervised Anomaly Detection on Multivariate Time Series",
+        relation="direct_query",
+    ).model_copy(
+        update={
+            "metadata": {
+                "relation": "direct_query",
+                "rank_score": "0.9",
+                "query_text": '"USAD" official implementation code repository',
+            }
+        }
+    )
+    repository = paper.model_copy(
+        update={
+            "evidence_id": "ev-repository-usad",
+            "source_type": "repository",
+            "title": "manigalati/usad",
+            "metadata": {
+                "relation": "author_linked_from_verified_paper",
+                "parent_paper_id": "paper-usad",
+            },
+        }
+    )
+
+    prepared = _prepare_role_bound_state(
+        _state(["USAD [declared role: baseline]"], [paper, repository])  # type: ignore[arg-type]
+    )
+
+    assert prepared["evidence"].accepted_ids == ["ev-paper-usad", "ev-repository-usad"]
+
+
+def test_declared_baseline_miss_rejects_unrelated_repository_backed_paper() -> None:
+    unrelated = _paper(
+        "ev-paper-other",
+        "An Unrelated Repository-Backed Method",
+        relation="direct_query",
+    ).model_copy(
+        update={
+            "metadata": {
+                "relation": "direct_query",
+                "rank_score": "0.99",
+                "query_text": "generic anomaly detection implementation",
+            }
+        }
+    )
+    repository = unrelated.model_copy(
+        update={
+            "evidence_id": "ev-repository-other",
+            "source_type": "repository",
+            "title": "example/unrelated",
+            "metadata": {
+                "relation": "author_linked_from_verified_paper",
+                "parent_paper_id": "paper-other",
+            },
+        }
+    )
+
+    with pytest.raises(ValueError, match="declared baseline identity unresolved"):
+        _prepare_role_bound_state(
+            _state(
+                ["USAD [declared role: baseline]"],
+                [unrelated, repository],
+            )  # type: ignore[arg-type]
+        )

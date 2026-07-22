@@ -91,3 +91,31 @@ def test_existing_exact_title_paper_query_is_not_duplicated() -> None:
     updated = _ensure_user_material_identity_queries(plan, request, query_budget=2)
 
     assert [query.query for query in updated.search_queries] == [f'"{title}"']
+
+
+def test_broad_query_containing_title_does_not_replace_exact_identity_lane() -> None:
+    title = "Graph Attention Networks"
+    plan = ResearchPlan(
+        status="ready",
+        problem_statement="integrate attention into an inductive graph baseline",
+        scope="test",
+        evidence_gaps=[EvidenceGap(gap_id="g2", description="attention mechanism")],
+        search_queries=[
+            SearchQuery(
+                query_id="q2",
+                gap_id="g2",
+                query=f"{title} masked self-attention neighbor weighting node features",
+                source_types=["paper", "web"],
+            )
+        ],
+    )
+    request = ResearchRequest(
+        question="verify the declared module",
+        user_material_refs=[f"{title} [declared role: parallel_module_source]"],
+    )
+
+    updated = _ensure_user_material_identity_queries(plan, request, query_budget=4)
+
+    assert updated.search_queries[0].query == f'"{title}"'
+    assert updated.search_queries[0].gap_id.startswith("user-material-01-identity")
+    assert any(query.query == plan.search_queries[0].query for query in updated.search_queries)

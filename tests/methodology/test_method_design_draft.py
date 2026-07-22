@@ -99,6 +99,7 @@ def _state() -> PaperAgentState:
             "baseline_candidate": "inferred",
             "relation": "parallel_via_dataset",
             "rank_score": "0.90",
+            "relevance_score": "0.90",
         },
     )
     support = (

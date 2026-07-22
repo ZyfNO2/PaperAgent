@@ -162,6 +162,16 @@ def _baseline_evidence_rank(item: EvidenceItem) -> tuple[int, int, float, str]:
     return (marker_rank, relation_rank, rank_score, item.evidence_id)
 
 
+_MIN_DATASET_PARALLEL_BASELINE_RELEVANCE = 0.35
+
+
+def _metadata_float(item: EvidenceItem, key: str, *, default: float) -> float:
+    try:
+        return float(item.metadata.get(key, str(default)))
+    except ValueError:
+        return default
+
+
 def _select_inferred_baseline_evidence(
     candidates: tuple[EvidenceItem, ...],
 ) -> EvidenceItem | None:
@@ -171,19 +181,37 @@ def _select_inferred_baseline_evidence(
         if item.source_type == "paper"
         and item.metadata.get("baseline_candidate") == "inferred"
         and item.metadata.get("relation") in {"baseline_role_query", "parallel_via_dataset"}
+        and _metadata_float(item, "relevance_score", default=0.0)
+        >= _MIN_DATASET_PARALLEL_BASELINE_RELEVANCE
     )
     if not papers:
         return None
     return max(papers, key=_baseline_evidence_rank)
 
 
+def _matches_declared_repository_lookup(
+    item: EvidenceItem, declared_titles: tuple[str, ...]
+) -> bool:
+    if not declared_titles:
+        return True
+    query_text = " ".join(item.metadata.get("query_text", "").replace('"', " ").split())
+    normalized_query = query_text.casefold()
+    return any(
+        _titles_equivalent(item.title, title)
+        or " ".join(title.replace('"', " ").split()).casefold() in normalized_query
+        for title in declared_titles
+    )
+
+
 def _select_repository_backed_direct_baseline(
     candidates: tuple[EvidenceItem, ...],
+    *,
+    declared_titles: tuple[str, ...] = (),
 ) -> EvidenceItem | None:
     """Select a verified task paper with an accepted author-linked repository.
 
-    This is a last-resort baseline when neither a declared-title match nor
-    focused baseline retrieval produced an accepted candidate.
+    For a declared baseline miss, the fallback must originate from that exact-title lookup; an
+    arbitrary repository-backed task paper may not replace a user-declared identity.
     """
 
     repository_parent_ids: set[str] = {
@@ -201,10 +229,28 @@ def _select_repository_backed_direct_baseline(
         and item.metadata.get("relation") == "direct_query"
         and item.evidence_id.removeprefix("ev-") in repository_parent_ids
         and not _is_review_evidence(item.title, item.summary)
+        and _matches_declared_repository_lookup(item, declared_titles)
     )
     if not papers:
         return None
     return max(papers, key=_baseline_evidence_rank)
+
+
+def _select_baseline_evidence(
+    references: list[str],
+    candidates: tuple[EvidenceItem, ...],
+) -> EvidenceItem | None:
+    declared_titles = _declared_baseline_titles(references)
+    declared = _select_declared_baseline_evidence(references, candidates)
+    if declared is not None:
+        return declared
+    if declared_titles:
+        return _select_repository_backed_direct_baseline(
+            candidates, declared_titles=declared_titles
+        )
+    return _select_inferred_baseline_evidence(
+        candidates
+    ) or _select_repository_backed_direct_baseline(candidates)
 
 
 def _comparator_evidence_rank(item: EvidenceItem) -> tuple[int, float, str]:
@@ -242,9 +288,7 @@ def _select_primary_evidence(
 ) -> EvidenceItem:
     if not candidates:
         raise ValueError("primary evidence selection requires candidates")
-    selected = _select_declared_baseline_evidence(
-        references, candidates
-    ) or _select_inferred_baseline_evidence(candidates)
+    selected = _select_baseline_evidence(references, candidates)
     if selected is None:
         raise ValueError("no evidence-bound baseline candidate is available")
     return selected
@@ -521,11 +565,7 @@ def build_method_proposal(
     )
     method_evidence = attributed if attributed else accepted
     declared_baseline_titles = _declared_baseline_titles(list(request.user_material_refs))
-    baseline_evidence = _select_declared_baseline_evidence(
-        list(request.user_material_refs), method_evidence
-    ) or _select_inferred_baseline_evidence(method_evidence)
-    if baseline_evidence is None:
-        baseline_evidence = _select_repository_backed_direct_baseline(method_evidence)
+    baseline_evidence = _select_baseline_evidence(list(request.user_material_refs), method_evidence)
     module_primary = _select_module_evidence(method_evidence, baseline=baseline_evidence)
     if module_primary is None:
         raise ValueError("method canonicalization requires accepted paper evidence")

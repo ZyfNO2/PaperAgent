@@ -80,6 +80,14 @@ def test_budget_fails_closed_on_tokens_and_cost() -> None:
     assert cost_error.value.error_code is ProviderErrorCode.BUDGET_EXHAUSTED
 
 
+def test_monetary_budget_remains_global_across_logical_tasks() -> None:
+    budget = TaskBudget(make_config(max_estimated_cost_usd=0.01))
+
+    budget.record_usage(UsageRecord(estimated_cost_usd=0.006), task="planning")
+    with pytest.raises(ProviderError, match="estimated monetary budget exhausted"):
+        budget.record_usage(UsageRecord(estimated_cost_usd=0.006), task="report")
+
+
 def test_monetary_budget_fails_closed_when_usage_is_unknown() -> None:
     budget = TaskBudget(make_config(max_estimated_cost_usd=0.01))
 
@@ -101,3 +109,24 @@ def test_redaction_recurses_without_mutating_safe_values() -> None:
         "nested": {"api_key": "[REDACTED]", "model": "safe"},
         "items": [{"token": "[REDACTED]"}, {"value": 3}],
     }
+
+
+def test_budget_limits_are_isolated_per_logical_task() -> None:
+    budget = TaskBudget(
+        make_config(
+            max_llm_calls_per_task=1,
+            max_input_tokens_per_task=10,
+            max_output_tokens_per_call=10,
+            max_output_tokens_per_task=10,
+        )
+    )
+
+    budget.reserve_call(task="planning")
+    budget.record_usage(UsageRecord(input_tokens=8, output_tokens=8), task="planning")
+    budget.reserve_call(task="report")
+    budget.record_usage(UsageRecord(input_tokens=8, output_tokens=8), task="report")
+
+    with pytest.raises(ProviderError, match="maximum LLM calls per task exhausted"):
+        budget.reserve_call(task="planning:schema-repair")
+
+    assert budget.calls == 2

@@ -5,6 +5,7 @@ from collections.abc import Iterable
 
 from paperagent.method_design_draft import (
     MethodDesignDraft,
+    _select_baseline_evidence,
     _titles_equivalent,
     build_method_proposal,
 )
@@ -82,12 +83,13 @@ def _prepare_role_bound_state(state: PaperAgentState) -> PaperAgentState:
     baseline_titles = _declared_baseline_titles(references)
     module_titles = _declared_module_titles(references)
     papers = _accepted_papers(evidence)
+    accepted = tuple(evidence.accepted_items())
 
-    declared_baseline = _find_title(papers, baseline_titles)
-    if baseline_titles and declared_baseline is None:
+    selected_baseline = _select_baseline_evidence(list(references), accepted)
+    if baseline_titles and selected_baseline is None:
         raise ValueError(
-            "declared baseline identity unresolved in accepted evidence; "
-            "do not substitute an inferred or repository-backed baseline"
+            "declared baseline identity unresolved in accepted evidence and no verified "
+            "repository-backed exact-query fallback is available"
         )
 
     declared_module = _find_title(papers, module_titles)
@@ -98,9 +100,9 @@ def _prepare_role_bound_state(state: PaperAgentState) -> PaperAgentState:
         )
 
     if (
-        declared_baseline is not None
+        selected_baseline is not None
         and declared_module is not None
-        and declared_baseline.evidence_id == declared_module.evidence_id
+        and selected_baseline.evidence_id == declared_module.evidence_id
     ):
         raise ValueError("baseline and declared module source must be independent evidence items")
 
@@ -147,12 +149,18 @@ def _validate_role_bindings(state: PaperAgentState, proposal: MethodProposal) ->
     module_titles = _declared_module_titles(references)
 
     baseline = proposal.methodology_plan.baseline
-    baseline_title = _proposal_evidence_title(proposal, baseline.source_evidence_id)
-    if baseline_titles and (
-        baseline_title is None
-        or not any(_titles_equivalent(baseline_title, title) for title in baseline_titles)
-    ):
-        raise ValueError("canonical proposal baseline is not bound to the declared baseline paper")
+    if baseline_titles:
+        evidence = state.get("evidence")
+        expected = (
+            _select_baseline_evidence(list(references), tuple(evidence.accepted_items()))
+            if evidence is not None
+            else None
+        )
+        if expected is None or baseline.source_evidence_id != expected.evidence_id:
+            raise ValueError(
+                "canonical proposal baseline is not bound to the declared baseline or its "
+                "verified repository-backed exact-query fallback"
+            )
 
     if module_titles:
         if not proposal.methodology_plan.modules:
