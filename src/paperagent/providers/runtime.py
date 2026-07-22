@@ -105,7 +105,9 @@ class ProviderError(BaseProviderError):
         retryable: bool = False,
         status_code: int | None = None,
     ) -> None:
-        provider_name = provider.value if isinstance(provider, LLMProviderName) else provider
+        provider_name = (
+            provider.value if isinstance(provider, LLMProviderName) else provider
+        )
         super().__init__(
             message,
             provider=provider_name,
@@ -193,7 +195,7 @@ class TaskBudget:
                 provider=self._config.provider,
                 task=task,
             )
-        self._calls_by_task[key] = calls + 1
+        self._cals_by_task[key] = calls + 1
         self._calls += 1
 
     def record_usage(self, usage: UsageRecord, *, task: str = "llm") -> None:
