@@ -8,7 +8,7 @@ from paperagent.method_design_draft import (
     _titles_equivalent,
     build_method_proposal,
 )
-from paperagent.schemas.evidence import EvidenceItem, EvidenceSet
+from paperagent.schemas.evidence import EvidenceBundle, EvidenceItem
 from paperagent.schemas.method import MethodProposal
 from paperagent.state import PaperAgentState
 
@@ -52,7 +52,7 @@ def _declared_module_titles(references: Iterable[str]) -> tuple[str, ...]:
     return tuple(titles)
 
 
-def _accepted_papers(evidence: EvidenceSet) -> tuple[EvidenceItem, ...]:
+def _accepted_papers(evidence: EvidenceBundle) -> tuple[EvidenceItem, ...]:
     accepted_ids = set(evidence.accepted_ids)
     return tuple(
         item
