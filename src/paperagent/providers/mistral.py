@@ -83,6 +83,7 @@ class MistralLLMProvider(LLMProvider):
             )
 
         logical_call_id = uuid4().hex
+        budget_task = f"{task}:invocation-{call_index}"
         key = FixtureKey(
             task=task,
             scenario=scenario,
@@ -103,7 +104,7 @@ class MistralLLMProvider(LLMProvider):
         validation_error: ValidationError | None = None
 
         for attempt in range(1, self._config.max_attempts + 1):
-            self._budget.reserve_call(task=task)
+            self._budget.reserve_call(task=budget_task)
             invocation_id = uuid4().hex
             started = asyncio.get_running_loop().time()
             response_fingerprint: str | None = None
@@ -130,7 +131,7 @@ class MistralLLMProvider(LLMProvider):
                 response_fingerprint = _fingerprint(response_payload)
                 content, usage = _extract_content_and_usage(response_payload, task=task)
                 usage = self._with_estimated_cost(usage)
-                self._budget.record_usage(usage, task=task)
+                self._budget.record_usage(usage, task=budget_task)
                 self.last_usage = TokenUsage(
                     input_tokens=usage.input_tokens or 0,
                     output_tokens=usage.output_tokens or 0,
