@@ -97,10 +97,7 @@ def _module_contract_complete(module: Any) -> bool:
         module.failure_mode,
         module.implementation_switch,
     )
-    return all(
-        _specific_text(value, generic_cues=_GENERIC_CONTRACT_CUES)
-        for value in values
-    )
+    return all(_specific_text(value, generic_cues=_GENERIC_CONTRACT_CUES) for value in values)
 
 
 def _protocol_specific(experiment: Any) -> bool:
@@ -184,20 +181,14 @@ def _score_case(
         return result
 
     gold = case["gold"]
-    expected_assets = [
-        item for item in gold.get("expected_assets", []) if isinstance(item, dict)
-    ]
+    expected_assets = [item for item in gold.get("expected_assets", []) if isinstance(item, dict)]
     paper_assets = [item for item in expected_assets if item.get("kind") == "paper"]
 
     accepted_items = legacy._accepted_verified_items(state, trace)
     accepted_items_by_id = {
-        str(item["evidence_id"]): item
-        for item in accepted_items
-        if item.get("evidence_id")
+        str(item["evidence_id"]): item for item in accepted_items if item.get("evidence_id")
     }
-    accepted_papers = [
-        item for item in accepted_items if item.get("source_type") == "paper"
-    ]
+    accepted_papers = [item for item in accepted_items if item.get("source_type") == "paper"]
     accepted_review_by_id = {
         review.evidence_id: review
         for review in trace.evidence_reviews
@@ -264,9 +255,7 @@ def _score_case(
             verified_contract_modules.append(module)
 
     identity_score = 5 if accepted_papers else 0
-    identity_score += (
-        round(10 * matched_papers / len(paper_assets)) if paper_assets else 10
-    )
+    identity_score += round(10 * matched_papers / len(paper_assets)) if paper_assets else 10
     identity_score = min(15, identity_score)
 
     baseline_score = 0
@@ -278,14 +267,11 @@ def _score_case(
 
     if trace.modules:
         module_role_count = sum(
-            bool(module.original_role and module.proposed_role)
-            for module in role_bound_modules
+            bool(module.original_role and module.proposed_role) for module in role_bound_modules
         )
         module_score = round(7 * len(role_bound_modules) / len(trace.modules))
         module_score += round(3 * module_role_count / len(trace.modules))
-        compatibility_score = round(
-            15 * len(verified_contract_modules) / len(trace.modules)
-        )
+        compatibility_score = round(15 * len(verified_contract_modules) / len(trace.modules))
     elif trace.module_design_deferred and trace.module_defer_reason:
         module_score = 4
         compatibility_score = 3
@@ -296,11 +282,7 @@ def _score_case(
     compatibility_score = min(15, compatibility_score)
 
     hypothesis_score = 0
-    if (
-        legacy._complete_hypothesis(trace)
-        and baseline_identity_acceptable
-        and role_bound_modules
-    ):
+    if legacy._complete_hypothesis(trace) and baseline_identity_acceptable and role_bound_modules:
         hypothesis_score = 5
 
     arm_types = {item.arm_type for item in trace.experiments}
@@ -313,14 +295,9 @@ def _score_case(
         experiment_score += 1
     if any(item.metrics for item in trace.experiments):
         experiment_score += 1
-    if any(
-        len(item.seeds) >= 3 or item.uncertainty_reporting
-        for item in trace.experiments
-    ):
+    if any(len(item.seeds) >= 3 or item.uncertainty_reporting for item in trace.experiments):
         experiment_score += 1
-    if trace.stop_conditions or any(
-        item.stopping_criteria for item in trace.experiments
-    ):
+    if trace.stop_conditions or any(item.stopping_criteria for item in trace.experiments):
         experiment_score += 1
     if trace.experiments and all(_protocol_specific(item) for item in trace.experiments):
         experiment_score += 2

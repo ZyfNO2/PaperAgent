@@ -33,9 +33,7 @@ def _case() -> dict[str, Any]:
                 {"kind": "paper", "title": BERT, "role": "baseline"},
                 {"kind": "paper", "title": LORA, "role": "module source"},
             ],
-            "baseline_decision": {
-                "canonical": "BERT-base classifier with a linear intent head"
-            },
+            "baseline_decision": {"canonical": "BERT-base classifier with a linear intent head"},
         },
     }
 

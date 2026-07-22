@@ -110,9 +110,12 @@ def test_declared_parallel_module_is_re_ranked_independently_from_baseline() -> 
     assert selected.metadata["relation"] == "direct_query"
     assert selected.metadata["role_binding"] == "declared_parallel_method"
     assert selected.metadata["rank_score"] == "1000000"
-    assert next(item for item in evidence.items if item.evidence_id == "bert").metadata[
-        "baseline_candidate"
-    ] == "declared"
+    assert (
+        next(item for item in evidence.items if item.evidence_id == "bert").metadata[
+            "baseline_candidate"
+        ]
+        == "declared"
+    )
 
 
 def test_declared_module_miss_is_not_replaced_by_unattributed_mechanism() -> None:
@@ -124,8 +127,7 @@ def test_declared_module_miss_is_not_replaced_by_unattributed_mechanism() -> Non
     )
     references = [
         f"{bert.title} [declared role:baseline]",
-        "LoRA: Low-Rank Adaptation of Large Language Models "
-        "[declared role:parallel_module_source]",
+        "LoRA: Low-Rank Adaptation of Large Language Models [declared role:parallel_module_source]",
     ]
 
     with pytest.raises(ValueError, match="declared parallel/module source unresolved"):

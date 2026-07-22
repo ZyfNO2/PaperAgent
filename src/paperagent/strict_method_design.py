@@ -99,7 +99,9 @@ def _prepare_role_bound_state(state: PaperAgentState) -> PaperAgentState:
 
     if declared_baseline is not None and declared_module is not None:
         if declared_baseline.evidence_id == declared_module.evidence_id:
-            raise ValueError("baseline and declared module source must be independent evidence items")
+            raise ValueError(
+                "baseline and declared module source must be independent evidence items"
+            )
 
     if declared_module is None:
         return state
@@ -163,7 +165,9 @@ def _validate_role_bindings(state: PaperAgentState, proposal: MethodProposal) ->
                     "canonical proposal module is not bound to the declared parallel/module paper"
                 )
             if module.evidence_id == baseline.source_evidence_id:
-                raise ValueError("baseline evidence cannot be reused as independent module evidence")
+                raise ValueError(
+                    "baseline evidence cannot be reused as independent module evidence"
+                )
 
 
 def build_role_bound_method_proposal(

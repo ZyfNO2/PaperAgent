@@ -218,9 +218,7 @@ def _build_router(
     router = RoutingLLMProvider(
         pools,
         max_total_attempts=(
-            int(raw["max_total_attempts"])
-            if raw.get("max_total_attempts") is not None
-            else None
+            int(raw["max_total_attempts"]) if raw.get("max_total_attempts") is not None else None
         ),
         ewma_alpha=float(raw.get("ewma_alpha", 0.2)),
     )
@@ -339,9 +337,7 @@ async def _main_async(args: argparse.Namespace) -> int:
         if wall_seconds
         else None,
         "request_latency_ms": {
-            "mean": round(statistics.fmean(request_latencies), 2)
-            if request_latencies
-            else None,
+            "mean": round(statistics.fmean(request_latencies), 2) if request_latencies else None,
             "p50": round(_percentile(request_latencies, 0.50) or 0, 2)
             if request_latencies
             else None,
