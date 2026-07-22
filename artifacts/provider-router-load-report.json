@@ -1,0 +1,64 @@
+{
+  "concurrency": 8,
+  "endpoints": {
+    "mistral-primary": {
+      "calls": 8,
+      "error_codes": {},
+      "failures": 0,
+      "latency_ms": {
+        "mean": 9584.53,
+        "p50": 9741.91,
+        "p95": 14610.33
+      },
+      "success_rate": 1.0,
+      "successes": 8
+    },
+    "nvidia-primary": {
+      "calls": 16,
+      "error_codes": {},
+      "failures": 0,
+      "latency_ms": {
+        "mean": 9390.13,
+        "p50": 9561.09,
+        "p95": 12921.75
+      },
+      "success_rate": 1.0,
+      "successes": 16
+    }
+  },
+  "failed_samples": [],
+  "failures": 0,
+  "request_latency_ms": {
+    "mean": 26619.82,
+    "p50": 25573.32,
+    "p95": 43621.37
+  },
+  "requests": 24,
+  "router_snapshots": [
+    {
+      "consecutive_failures": 0,
+      "endpoint_id": "nvidia-primary",
+      "in_flight": 0,
+      "last_error_code": null,
+      "latency_ewma_ms": 8965.123677804253,
+      "open_until": null,
+      "pool_id": "accelerated-primary",
+      "state": "closed"
+    },
+    {
+      "consecutive_failures": 0,
+      "endpoint_id": "mistral-primary",
+      "in_flight": 0,
+      "last_error_code": null,
+      "latency_ewma_ms": 9440.943085863764,
+      "open_until": null,
+      "pool_id": "accelerated-primary",
+      "state": "closed"
+    }
+  ],
+  "status": "passed",
+  "success_rate": 1.0,
+  "successes": 24,
+  "throughput_requests_per_second": 0.499,
+  "wall_seconds": 48.083
+}

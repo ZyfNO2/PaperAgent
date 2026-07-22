@@ -1,0 +1,132 @@
+{
+  "schema": "paperagent.academic-tailoring-retrieval.public.v1",
+  "dataset_id": "academic_tailoring_retrieval_v1",
+  "status": "public_execution_set",
+  "generated_from": {
+    "source_sha256": "5fa09cb12866b14178ff801d28c316f6f69d60471e64c092a1dd30ae85c4438e",
+    "authoring_commit": null,
+    "case_count": 10
+  },
+  "cases": [
+    {
+      "case_id": "atr-v1-001-cv-crack-fewshot",
+      "benchmark_input": {
+        "user_input": "基于深度学习的室外小样本道路裂缝分割方法研究",
+        "supplied_material_titles": [],
+        "user_declared_roles": [],
+        "declared_constraints": []
+      }
+    },
+    {
+      "case_id": "atr-v1-002-timeseries-patchtst-missing",
+      "benchmark_input": {
+        "user_input": "以论文《A Time Series is Worth 64 Words: Long-term Forecasting with Transformers》为 Baseline，在历史传感器观测存在 30% 随机缺失和连续块缺失的条件下，改进多变量长时序预测能力。",
+        "supplied_material_titles": [
+          "A Time Series is Worth 64 Words: Long-term Forecasting with Transformers"
+        ],
+        "user_declared_roles": [
+          "baseline"
+        ],
+        "declared_constraints": []
+      }
+    },
+    {
+      "case_id": "atr-v1-003-nlp-bert-lora-clinc",
+      "benchmark_input": {
+        "user_input": "Baseline 是论文《BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding》。平行论文《LoRA: Low-Rank Adaptation of Large Language Models》通过低秩增量矩阵进行参数高效适配。请判断能否把 LoRA 接入 BERT，用于 CLINC150 的每类 10-shot 意图分类，并设计方法和实验。",
+        "supplied_material_titles": [
+          "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+          "LoRA: Low-Rank Adaptation of Large Language Models"
+        ],
+        "user_declared_roles": [
+          "baseline",
+          "parallel_module_source"
+        ],
+        "declared_constraints": []
+      }
+    },
+    {
+      "case_id": "atr-v1-004-medical-ham10000-small",
+      "benchmark_input": {
+        "user_input": "小样本且类别不均衡条件下的皮肤镜病变多分类与可解释性审计",
+        "supplied_material_titles": [],
+        "user_declared_roles": [],
+        "declared_constraints": []
+      }
+    },
+    {
+      "case_id": "atr-v1-005-remote-oriented-small-edge",
+      "benchmark_input": {
+        "user_input": "以论文《Oriented R-CNN for Object Detection》为 Baseline，在 DOTA 密集小目标场景中降低高分辨率推理成本，同时保持旋转框检测精度。",
+        "supplied_material_titles": [
+          "Oriented R-CNN for Object Detection"
+        ],
+        "user_declared_roles": [
+          "baseline"
+        ],
+        "declared_constraints": []
+      }
+    },
+    {
+      "case_id": "atr-v1-006-industrial-usad-anomaly-transformer",
+      "benchmark_input": {
+        "user_input": "Baseline 是论文《USAD: UnSupervised Anomaly Detection on Multivariate Time Series》。平行论文《Anomaly Transformer: Time Series Anomaly Detection with Association Discrepancy》提出 Anomaly-Attention 和 association discrepancy。请判断能否将该机制接入 USAD，用于 SWaT 工业控制系统异常检测。",
+        "supplied_material_titles": [
+          "USAD: UnSupervised Anomaly Detection on Multivariate Time Series",
+          "Anomaly Transformer: Time Series Anomaly Detection with Association Discrepancy"
+        ],
+        "user_declared_roles": [
+          "baseline",
+          "parallel_module_source"
+        ],
+        "declared_constraints": []
+      }
+    },
+    {
+      "case_id": "atr-v1-007-graph-graphsage-gat-ppi",
+      "benchmark_input": {
+        "user_input": "Baseline 是论文《Inductive Representation Learning on Large Graphs》。平行论文《Graph Attention Networks》使用 masked self-attention 为不同邻居分配不同权重。请判断能否把该注意力聚合机制接入 GraphSAGE，用于未见 PPI 图上的归纳式节点分类，并设计最小方法、接口方案和实验。",
+        "supplied_material_titles": [
+          "Inductive Representation Learning on Large Graphs",
+          "Graph Attention Networks"
+        ],
+        "user_declared_roles": [
+          "baseline",
+          "parallel_module_source"
+        ],
+        "declared_constraints": []
+      }
+    },
+    {
+      "case_id": "atr-v1-008-bio-protein-function-lowlabel",
+      "benchmark_input": {
+        "user_input": "低标注条件下基于蛋白质序列的 Gene Ontology 多标签功能预测",
+        "supplied_material_titles": [],
+        "user_declared_roles": [],
+        "declared_constraints": []
+      }
+    },
+    {
+      "case_id": "atr-v1-009-audio-panns-mimii-domain",
+      "benchmark_input": {
+        "user_input": "以论文《PANNs: Large-Scale Pretrained Audio Neural Networks for Audio Pattern Recognition》为 Baseline，在 MIMII 工业机器声音存在低信噪比和设备域偏移时，设计少样本异常声音识别方法。",
+        "supplied_material_titles": [
+          "PANNs: Large-Scale Pretrained Audio Neural Networks for Audio Pattern Recognition"
+        ],
+        "user_declared_roles": [
+          "baseline"
+        ],
+        "declared_constraints": []
+      }
+    },
+    {
+      "case_id": "atr-v1-010-rec-coldstart-sequential",
+      "benchmark_input": {
+        "user_input": "带内容侧信息的冷启动序列推荐：同时处理新物品和短历史用户",
+        "supplied_material_titles": [],
+        "user_declared_roles": [],
+        "declared_constraints": []
+      }
+    }
+  ]
+}

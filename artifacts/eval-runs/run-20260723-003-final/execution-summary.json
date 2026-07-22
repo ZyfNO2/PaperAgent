@@ -1,0 +1,101 @@
+{
+  "attempted_case_ids": [
+    "atr-v1-001-cv-crack-fewshot",
+    "atr-v1-002-timeseries-patchtst-missing",
+    "atr-v1-003-nlp-bert-lora-clinc",
+    "atr-v1-004-medical-ham10000-small",
+    "atr-v1-005-remote-oriented-small-edge",
+    "atr-v1-006-industrial-usad-anomaly-transformer",
+    "atr-v1-007-graph-graphsage-gat-ppi",
+    "atr-v1-008-bio-protein-function-lowlabel",
+    "atr-v1-009-audio-panns-mimii-domain",
+    "atr-v1-010-rec-coldstart-sequential"
+  ],
+  "budget_profile": {
+    "graph": {
+      "max_evidence_items": 120,
+      "max_llm_calls": 20,
+      "max_method_repairs": 3,
+      "max_queries_per_round": 10,
+      "max_retrieval_rounds": 4,
+      "recursion_limit": 100
+    },
+    "literature_provider_calls_by_case": [
+      48,
+      48,
+      48,
+      48,
+      48,
+      48,
+      48,
+      48,
+      48,
+      48
+    ],
+    "literature_provider_calls_total": 480,
+    "llm_provider": {
+      "allow_schema_repair": true,
+      "base_url": "https://api.mistral.ai/v1",
+      "max_attempts": 2,
+      "max_input_tokens_per_task": 32000,
+      "max_output_tokens_per_call": 4096,
+      "max_output_tokens_per_task": 16384,
+      "max_physical_requests_per_case": 40,
+      "model": "mistral-small-latest",
+      "native_json_schema": true,
+      "provider": "mistral",
+      "reasoning_effort": null,
+      "task_wall_clock_seconds": 600.0
+    },
+    "mode": "diagnostic_expanded"
+  },
+  "completed": 6,
+  "errors": [
+    {
+      "case_id": "atr-v1-003-nlp-bert-lora-clinc",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'failed'"
+    },
+    {
+      "case_id": "atr-v1-006-industrial-usad-anomaly-transformer",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'blocked'"
+    },
+    {
+      "case_id": "atr-v1-007-graph-graphsage-gat-ppi",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'failed'"
+    },
+    {
+      "case_id": "atr-v1-010-rec-coldstart-sequential",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'failed'"
+    }
+  ],
+  "fatal_provider_error": null,
+  "gold_absent_from_candidate_workspace": false,
+  "not_run_case_ids": [],
+  "passed": false,
+  "prompt_records": 56,
+  "public_dataset_sha256": null,
+  "recorded_traces": 10,
+  "schema": "paperagent.academic-tailoring-retrieval.runtime-summary.v1",
+  "selected_case_count": 10,
+  "selected_case_ids": [
+    "atr-v1-001-cv-crack-fewshot",
+    "atr-v1-002-timeseries-patchtst-missing",
+    "atr-v1-003-nlp-bert-lora-clinc",
+    "atr-v1-004-medical-ham10000-small",
+    "atr-v1-005-remote-oriented-small-edge",
+    "atr-v1-006-industrial-usad-anomaly-transformer",
+    "atr-v1-007-graph-graphsage-gat-ppi",
+    "atr-v1-008-bio-protein-function-lowlabel",
+    "atr-v1-009-audio-panns-mimii-domain",
+    "atr-v1-010-rec-coldstart-sequential"
+  ],
+  "source_sha": null,
+  "static_leakage_audit": {
+    "findings": [],
+    "passed": true
+  }
+}
