@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   actions: read
   issues: write
   pull-requests: write
@@ -19,6 +19,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/academic-eval-diagnostics-baseline-binding
+          fetch-depth: 0
+
       - name: Inspect latest artifact-driven run
         env:
           GH_TOKEN: ${{ github.token }}
@@ -33,55 +38,47 @@ jobs:
           echo "$run_json" > /tmp/run.json
           run_id="$(python -c 'import json; rows=json.load(open("/tmp/run.json")); print(rows[0]["databaseId"] if rows else "")')"
           if [ -z "$run_id" ]; then
-            gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body \
-              "Artifact-driven workflow observer found no run."
-            exit 1
+            echo '{"error":"no artifact-driven workflow run found"}' > /tmp/run-detail.json
+            : > /tmp/failed.log
+          else
+            for _ in $(seq 1 30); do
+              status="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --json status --jq .status)"
+              if [ "$status" = "completed" ]; then
+                break
+              fi
+              sleep 10
+            done
+            gh run view "$run_id" --repo "$GITHUB_REPOSITORY" \
+              --json databaseId,status,conclusion,url,headSha,jobs > /tmp/run-detail.json
+            set +e
+            gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --log-failed > /tmp/failed.log 2>&1
+            set -e
           fi
-          for _ in $(seq 1 30); do
-            status="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --json status --jq .status)"
-            if [ "$status" = "completed" ]; then
-              break
-            fi
-            sleep 10
-          done
-          gh run view "$run_id" --repo "$GITHUB_REPOSITORY" \
-            --json databaseId,status,conclusion,url,headSha,jobs > /tmp/run-detail.json
-          set +e
-          gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --log-failed > /tmp/failed.log 2>&1
-          set -e
-          python - <<'PY'
-          import json
-          from pathlib import Path
 
-          detail = json.loads(Path('/tmp/run-detail.json').read_text())
-          failed = [
-              f"{job['name']}: {job.get('conclusion')}"
-              for job in detail.get('jobs', [])
-              if job.get('conclusion') not in (None, 'success', 'skipped')
-          ]
-          log = Path('/tmp/failed.log').read_text(errors='replace').splitlines()
-          tail = '\n'.join(log[-120:])
-          body = [
-              f"Artifact-driven fix run: [{detail['databaseId']}]({detail['url']})",
-              '',
-              f"- Status: `{detail['status']}`",
-              f"- Conclusion: `{detail.get('conclusion')}`",
-              f"- Head: `{detail.get('headSha', '')[:7]}`",
-              f"- Failed jobs: `{'; '.join(failed) or 'none'}`",
-          ]
-          if tail:
-              body.extend(['', '<details><summary>Failed log tail</summary>', '', '```text', tail, '```', '</details>'])
-          Path('/tmp/comment.md').write_text('\n'.join(body))
-          PY
-          gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Persist observer output
+        shell: bash
+        run: |
+          mkdir -p cloud-status
+          cp /tmp/run.json cloud-status/artifact-driven-run-list.json
+          cp /tmp/run-detail.json cloud-status/artifact-driven-run.json
+          tail -n 160 /tmp/failed.log > cloud-status/artifact-driven-failed.log
+          git config user.name "paperagent-cloud-observer"
+          git config user.email "actions@users.noreply.github.com"
+          git add cloud-status/
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore(ci): record artifact-driven fix status"
+          git pull --rebase origin fix/academic-eval-diagnostics-baseline-binding
+          git push origin HEAD:fix/academic-eval-diagnostics-baseline-binding
 
-      - uses: actions/upload-artifact@v4
+      - name: Comment observer result
         if: always()
-        with:
-          name: academic-eval-fix-observer
-          path: |
-            /tmp/run.json
-            /tmp/run-detail.json
-            /tmp/failed.log
-          if-no-files-found: warn
-          retention-days: 7
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          run_url="$(python -c 'import json; d=json.load(open("/tmp/run-detail.json")); print(d.get("url", ""))')"
+          conclusion="$(python -c 'import json; d=json.load(open("/tmp/run-detail.json")); print(d.get("conclusion", d.get("error", "unknown")))')"
+          gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body \
+            "Artifact-driven observer persisted status \`$conclusion\` to \`cloud-status/\`. ${run_url:+Run: $run_url}"
