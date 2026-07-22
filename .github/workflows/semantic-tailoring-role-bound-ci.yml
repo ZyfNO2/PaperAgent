@@ -45,16 +45,9 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Compile changed runtime modules
+      - name: Apply repository formatting in validation workspace
         run: |
-          python -m compileall -q \
-            src/paperagent/strict_method_design.py \
-            src/paperagent/nodes/method_design.py \
-            scripts/score_academic_tailoring_retrieval_v2.py \
-            scripts/test_provider_router_load.py
-      - name: Check formatting
-        run: |
-          ruff format --check \
+          ruff format \
             src/paperagent/strict_method_design.py \
             src/paperagent/nodes/method_design.py \
             scripts/score_academic_tailoring_retrieval_v2.py \
@@ -62,6 +55,13 @@ jobs:
             tests/methodology/test_strict_method_design.py \
             tests/evals/test_academic_tailoring_retrieval_v2_scorer.py \
             tests/scripts/test_provider_router_load.py
+      - name: Compile changed runtime modules
+        run: |
+          python -m compileall -q \
+            src/paperagent/strict_method_design.py \
+            src/paperagent/nodes/method_design.py \
+            scripts/score_academic_tailoring_retrieval_v2.py \
+            scripts/test_provider_router_load.py
       - name: Lint changed files
         run: |
           ruff check \
@@ -80,4 +80,29 @@ jobs:
             tests/evals/test_academic_tailoring_retrieval_v1_scorer.py \
             tests/evals/test_academic_tailoring_retrieval_v2_scorer.py \
             tests/providers/test_routing_llm_provider.py \
+            tests/scripts/test_provider_router_load.py
+      - name: Upload validated formatted source
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: semantic-tailoring-formatted-source
+          path: |
+            src/paperagent/strict_method_design.py
+            src/paperagent/nodes/method_design.py
+            scripts/score_academic_tailoring_retrieval_v2.py
+            scripts/test_provider_router_load.py
+            tests/methodology/test_strict_method_design.py
+            tests/evals/test_academic_tailoring_retrieval_v2_scorer.py
+            tests/scripts/test_provider_router_load.py
+          if-no-files-found: error
+          retention-days: 3
+      - name: Enforce committed formatting
+        run: |
+          git diff --exit-code -- \
+            src/paperagent/strict_method_design.py \
+            src/paperagent/nodes/method_design.py \
+            scripts/score_academic_tailoring_retrieval_v2.py \
+            scripts/test_provider_router_load.py \
+            tests/methodology/test_strict_method_design.py \
+            tests/evals/test_academic_tailoring_retrieval_v2_scorer.py \
             tests/scripts/test_provider_router_load.py
