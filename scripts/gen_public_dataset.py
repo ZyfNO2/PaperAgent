@@ -1,63 +1,62 @@
-"""Generate a public-schema dataset from the authoring dataset.
+"""Generate a provenance-bound public dataset from the authoring dataset.
 
-Strips all gold-standard fields so the result can safely be passed to
-run_academic_tailoring_retrieval_v1.py without leakage risk.
+This is a compatibility wrapper around the canonical projection implementation in
+``project_academic_tailoring_retrieval_v1.py``. Gold fields never cross the output
+boundary, declared constraints are preserved, and the canonical public digest is
+embedded in the generated file.
 """
 from __future__ import annotations
 
 import argparse
 import json
-import hashlib
 from pathlib import Path
 
-PUBLIC_SCHEMA = "paperagent.academic-tailoring-retrieval.public.v1"
+from project_academic_tailoring_retrieval_v1 import (
+    _load_json,
+    _require_authoring_commit,
+    project_public_dataset,
+    verify_gold_mutation_invariance,
+)
 
 
-def main() -> int:
+def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    args = parser.parse_args()
+    parser.add_argument("--authoring-commit", default=None)
+    return parser
 
-    auth = json.loads(args.input.read_text(encoding="utf-8"))
-    if auth.get("schema") != "paperagent.academic-tailoring-retrieval.authoring.v1":
-        raise ValueError(f"unexpected input schema: {auth.get('schema')!r}")
 
-    public_cases = []
-    for case in auth.get("cases", []):
-        pi = case.get("public_input", {})
-        supplied = pi.get("supplied_materials", [])
-        public_cases.append(
-            {
-                "case_id": case["case_id"],
-                "benchmark_input": {
-                    "user_input": pi.get("user_input", ""),
-                    "supplied_material_titles": [m["title"] for m in supplied],
-                    "user_declared_roles": [m.get("declared_role", "") for m in supplied],
-                    "declared_constraints": [],
-                },
-            }
-        )
-
-    output = {
-        "schema": PUBLIC_SCHEMA,
-        "dataset_id": auth.get("dataset_id", "academic_tailoring_retrieval_v1"),
-        "status": "public_execution_set",
-        "generated_from": {
-            "source_sha256": hashlib.sha256(
-                args.input.read_bytes()
-            ).hexdigest(),
-            "authoring_commit": auth.get("authoring_commit"),
-            "case_count": len(public_cases),
-        },
-        "cases": public_cases,
-    }
+def main() -> int:
+    args = _parser().parse_args()
+    authoring = _load_json(args.input)
+    authoring_commit = _require_authoring_commit(authoring, args.authoring_commit)
+    verify_gold_mutation_invariance(
+        authoring,
+        authoring_commit=authoring_commit,
+    )
+    public = project_public_dataset(
+        authoring,
+        authoring_commit=authoring_commit,
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
-        json.dumps(output, ensure_ascii=False, indent=2) + "\n",
+        json.dumps(public, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    print(f"wrote {len(public_cases)} public cases to {args.output}")
+    print(
+        json.dumps(
+            {
+                "output": str(args.output),
+                "case_count": len(public["cases"]),
+                "authoring_commit": authoring_commit,
+                "authoring_sha256": public["generated_from"]["authoring_sha256"],
+                "public_sha256": public["public_sha256"],
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+    )
     return 0
 
 
