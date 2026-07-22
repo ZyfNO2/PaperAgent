@@ -21,7 +21,7 @@ concurrency:
 jobs:
   observe:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,7 +45,7 @@ jobs:
             echo '{"error":"no artifact-driven workflow run found"}' > /tmp/run-detail.json
             : > /tmp/failed.log
           else
-            for _ in $(seq 1 60); do
+            for _ in $(seq 1 90); do
               status="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --json status --jq .status)"
               if [ "$status" = "completed" ]; then
                 break
@@ -85,4 +85,4 @@ jobs:
           run_url="$(python -c 'import json; d=json.load(open("/tmp/run-detail.json")); print(d.get("url", ""))')"
           conclusion="$(python -c 'import json; d=json.load(open("/tmp/run-detail.json")); print(d.get("conclusion", d.get("error", "unknown")))')"
           gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body \
-            "Artifact-driven observer persisted status \`$conclusion\` to \`cloud-status/\`. ${run_url:+Run: $run_url}"
+            "Artifact-driven v2 observer persisted status \`$conclusion\` to \`cloud-status/\`. ${run_url:+Run: $run_url}"
