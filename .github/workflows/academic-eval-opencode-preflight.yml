@@ -75,61 +75,37 @@ jobs:
             tests/providers/test_openai_llm_headers.py \
             tests/scripts/test_check_llm_provider_health.py
 
-      - name: Probe Mimo with transient retries
+      - name: Probe Mimo with bounded retries
         id: mimo
         if: steps.credential.outcome == 'success' && steps.install.outcome == 'success'
         continue-on-error: true
-        shell: bash
         run: |
-          set +e
-          status=1
-          for attempt in 1 2 3; do
-            echo "Mimo probe attempt $attempt/3"
-            python scripts/check_llm_provider_health.py \
-              --provider openai \
-              --model mimo-v2.5-free \
-              --base-url https://opencode.ai/zen/v1 \
-              --api-key-env OPENCODE_API_KEY \
-              --probe-mode chat \
-              --timeout-seconds 180 \
-              --output build/opencode-preflight/mimo.json
-            status=$?
-            if [ "$status" = "0" ]; then
-              break
-            fi
-            if [ "$attempt" -lt 3 ]; then
-              sleep $((attempt * 10))
-            fi
-          done
-          exit "$status"
+          python scripts/check_llm_provider_health.py \
+            --provider openai \
+            --model mimo-v2.5-free \
+            --base-url https://opencode.ai/zen/v1 \
+            --api-key-env OPENCODE_API_KEY \
+            --probe-mode chat \
+            --timeout-seconds 180 \
+            --max-attempts 3 \
+            --retry-delay-seconds 10 \
+            --output build/opencode-preflight/mimo.json
 
-      - name: Probe Laguna with transient retry
+      - name: Probe Laguna with bounded retries
         id: laguna
         if: steps.credential.outcome == 'success' && steps.install.outcome == 'success'
         continue-on-error: true
-        shell: bash
         run: |
-          set +e
-          status=1
-          for attempt in 1 2; do
-            echo "Laguna probe attempt $attempt/2"
-            python scripts/check_llm_provider_health.py \
-              --provider openai \
-              --model laguna-s-2.1-free \
-              --base-url https://opencode.ai/zen/v1 \
-              --api-key-env OPENCODE_API_KEY \
-              --probe-mode chat \
-              --timeout-seconds 180 \
-              --output build/opencode-preflight/laguna.json
-            status=$?
-            if [ "$status" = "0" ]; then
-              break
-            fi
-            if [ "$attempt" -lt 2 ]; then
-              sleep 10
-            fi
-          done
-          exit "$status"
+          python scripts/check_llm_provider_health.py \
+            --provider openai \
+            --model laguna-s-2.1-free \
+            --base-url https://opencode.ai/zen/v1 \
+            --api-key-env OPENCODE_API_KEY \
+            --probe-mode chat \
+            --timeout-seconds 180 \
+            --max-attempts 2 \
+            --retry-delay-seconds 10 \
+            --output build/opencode-preflight/laguna.json
 
       - name: Report preflight
         if: always()
