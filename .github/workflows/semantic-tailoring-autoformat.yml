@@ -11,6 +11,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: semantic-tailoring-autoformat
+  cancel-in-progress: false
+
 jobs:
   format:
     runs-on: ubuntu-24.04
