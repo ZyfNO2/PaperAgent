@@ -8,6 +8,7 @@ from types import ModuleType
 import pytest
 
 SCRIPT = Path(__file__).parents[2] / "scripts" / "project_academic_tailoring_retrieval_v1.py"
+AUTHORING_COMMIT = "a" * 40
 
 
 def _load_script() -> ModuleType:
@@ -46,6 +47,7 @@ def _dataset() -> dict[str, object]:
                 "public_input": {
                     "user_input": f"Public request {index}",
                     "supplied_materials": materials,
+                    "declared_constraints": [f"constraint-{index}"],
                 },
                 "gold": {
                     "expected_assets": [{"kind": "paper", "title": f"Secret paper {index}"}],
@@ -81,23 +83,29 @@ def _dataset() -> dict[str, object]:
 
 def test_projection_contains_only_public_contract() -> None:
     module = _load_script()
-    public = module.project_public_dataset(_dataset())
+    public = module.project_public_dataset(_dataset(), authoring_commit=AUTHORING_COMMIT)
     serialized = json.dumps(public, ensure_ascii=False)
     assert '"gold"' not in serialized
     assert "Secret paper" not in serialized
     assert "Secret baseline" not in serialized
     assert public["cases"][4]["benchmark_input"]["supplied_material_titles"] == ["Baseline 5"]
+    assert public["cases"][4]["benchmark_input"]["declared_constraints"] == [
+        "constraint-5"
+    ]
+    assert len(public["public_sha256"]) == 64
 
 
 def test_projection_is_invariant_to_all_gold_string_mutations() -> None:
     module = _load_script()
-    canary_range = module.verify_gold_mutation_invariance(_dataset())
+    canary_range = module.verify_gold_mutation_invariance(
+        _dataset(), authoring_commit=AUTHORING_COMMIT
+    )
     assert canary_range.startswith("LEAK_CANARY_00001..")
 
 
 def test_forbidden_public_key_is_rejected() -> None:
     module = _load_script()
-    public = module.project_public_dataset(_dataset())
+    public = module.project_public_dataset(_dataset(), authoring_commit=AUTHORING_COMMIT)
     public["cases"][0]["benchmark_input"]["gold"] = {"answer": "leak"}
     with pytest.raises(ValueError, match="forbidden key"):
         module._assert_no_forbidden_keys(public)
