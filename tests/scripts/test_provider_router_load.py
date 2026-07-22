@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
 from typing import TypeVar
 
@@ -14,6 +15,7 @@ SCRIPT = Path(__file__).parents[2] / "scripts" / "test_provider_router_load.py"
 SPEC = importlib.util.spec_from_file_location("provider_router_load_test", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 load = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = load
 SPEC.loader.exec_module(load)
 
 T = TypeVar("T", bound=BaseModel)
