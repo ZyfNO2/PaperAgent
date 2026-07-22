@@ -12,6 +12,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: semantic-tailoring-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   apply-test-commit:
     runs-on: ubuntu-latest
