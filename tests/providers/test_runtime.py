@@ -50,9 +50,7 @@ def test_provider_error_is_compatible_with_existing_node_error_bridge() -> None:
 
 
 def test_budget_errors_preserve_configured_provider() -> None:
-    budget = TaskBudget(
-        make_config(provider=LLMProviderName.OPENAI, max_input_tokens_per_task=10)
-    )
+    budget = TaskBudget(make_config(provider=LLMProviderName.OPENAI, max_input_tokens_per_task=10))
 
     with pytest.raises(ProviderError) as exc_info:
         budget.record_usage(UsageRecord(input_tokens=11), task="planning")
