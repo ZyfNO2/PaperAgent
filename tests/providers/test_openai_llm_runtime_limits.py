@@ -12,7 +12,11 @@ from paperagent.errors import ProviderError
 from paperagent.providers.config import load_provider_config
 from paperagent.providers.openai_llm import OpenAILLMProvider
 from paperagent.providers.request_rate_limit import AsyncRequestRateLimiter
-from paperagent.providers.runtime import LLMProviderName, ProviderRuntimeConfig
+from paperagent.providers.runtime import (
+    LLMProviderName,
+    ProviderRuntimeConfig,
+    TaskBudget,
+)
 from paperagent.providers.runtime_factory import build_llm_provider
 from paperagent.schemas import Message
 
@@ -64,12 +68,12 @@ def _install_fake_client(
     monkeypatch.setattr(httpx, "AsyncClient", _FakeAsyncClient)
 
 
-def _generate(provider: OpenAILLMProvider) -> _Reply:
+def _generate(provider: OpenAILLMProvider, *, call_index: int = 1) -> _Reply:
     return asyncio.run(
         provider.generate_structured(
             task="runtime-hardening-test",
             scenario="unit",
-            call_index=1,
+            call_index=call_index,
             fixture_version="v1",
             schema=_Reply,
             messages=[Message(role="user", content="Return status ok")],
@@ -301,3 +305,96 @@ def test_request_rate_limiter_smooths_forty_requests_per_minute() -> None:
     asyncio.run(scenario())
 
     assert sleeps == [1.5, 1.5]
+
+
+def test_repeated_logical_invocations_receive_independent_task_budgets(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, Any] = {}
+    responses = iter(
+        [
+            _response(
+                200,
+                {
+                    "choices": [{"message": {"content": '{"status":"ok"}'}}],
+                    "usage": {"prompt_tokens": 20, "completion_tokens": 1},
+                },
+            ),
+            _response(
+                200,
+                {
+                    "choices": [{"message": {"content": '{"status":"ok"}'}}],
+                    "usage": {"prompt_tokens": 20, "completion_tokens": 1},
+                },
+            ),
+        ]
+    )
+    _install_fake_client(monkeypatch, responses, captured)
+    config = ProviderRuntimeConfig(
+        provider=LLMProviderName.OPENAI,
+        model="z-ai/glm-5.2",
+        api_key=SecretStr("test-key"),
+        base_url="https://example.test/v1",
+        max_attempts=1,
+        max_input_tokens_per_task=25,
+        max_output_tokens_per_call=8,
+        max_output_tokens_per_task=8,
+        max_llm_calls_per_task=1,
+    )
+    budget = TaskBudget(config)
+    provider = OpenAILLMProvider(
+        api_key="test-key",
+        model="z-ai/glm-5.2",
+        base_url="https://example.test/v1",
+        max_retries=0,
+        max_output_tokens=8,
+        budget=budget,
+    )
+
+    assert _generate(provider, call_index=1).status == "ok"
+    assert _generate(provider, call_index=2).status == "ok"
+    assert budget.calls == 2
+
+
+def test_physical_fallbacks_share_one_logical_invocation_budget(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, Any] = {}
+    responses = iter(
+        [
+            _response(
+                400,
+                {
+                    "error": {
+                        "type": "invalid_request_error",
+                        "message": "response_format json_schema is unsupported",
+                    }
+                },
+            )
+        ]
+    )
+    _install_fake_client(monkeypatch, responses, captured)
+    config = ProviderRuntimeConfig(
+        provider=LLMProviderName.OPENAI,
+        model="z-ai/glm-5.2",
+        api_key=SecretStr("test-key"),
+        base_url="https://example.test/v1",
+        max_attempts=1,
+        max_output_tokens_per_call=8,
+        max_output_tokens_per_task=8,
+        max_llm_calls_per_task=1,
+    )
+    provider = OpenAILLMProvider(
+        api_key="test-key",
+        model="z-ai/glm-5.2",
+        base_url="https://example.test/v1",
+        max_retries=0,
+        max_output_tokens=8,
+        budget=TaskBudget(config),
+    )
+
+    with pytest.raises(ProviderError) as error:
+        _generate(provider, call_index=7)
+
+    assert error.value.code == "LLM_BUDGET_EXHAUSTED"
+    assert len(captured["requests"]) == 1
