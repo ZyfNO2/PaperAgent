@@ -1,1 +1,24 @@
-failed to get run log: log not found
+patch-test-commit	Apply exact patches	﻿2026-07-22T14:07:05.4415343Z ##[group]Run python .github/scripts/apply_artifact_driven_fixes.py
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4415949Z ^[[36;1mpython .github/scripts/apply_artifact_driven_fixes.py^[[0m
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4507197Z shell: /usr/bin/bash -e {0}
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4507520Z env:
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4507818Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.13/x64
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4508323Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib/pkgconfig
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4508777Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4509166Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4509581Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4510278Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4510619Z ##[endgroup]
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4896940Z Traceback (most recent call last):
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4903889Z   File "/home/runner/work/PaperAgent/PaperAgent/.github/scripts/apply_artifact_driven_fixes.py", line 650, in <module>
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4904696Z patched src/paperagent/literature/adapter.py
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4905062Z patched src/paperagent/method_design_draft.py
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4905445Z     main()
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4905994Z   File "/home/runner/work/PaperAgent/PaperAgent/.github/scripts/apply_artifact_driven_fixes.py", line 642, in main
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4906574Z     patch_repository_backed_baseline()
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4907258Z   File "/home/runner/work/PaperAgent/PaperAgent/.github/scripts/apply_artifact_driven_fixes.py", line 150, in patch_repository_backed_baseline
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4907912Z     replace_once(
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4908442Z   File "/home/runner/work/PaperAgent/PaperAgent/.github/scripts/apply_artifact_driven_fixes.py", line 22, in replace_once
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4909176Z     raise RuntimeError(f"{path}: expected one match, found {count}")
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4909702Z RuntimeError: src/paperagent/method_design_draft.py: expected one match, found 0
+patch-test-commit	Apply exact patches	2026-07-22T14:07:05.4956002Z ##[error]Process completed with exit code 1.
