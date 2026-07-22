@@ -1,13 +1,6 @@
 name: Apply Eval Runner Reporting Patch
 
 on:
-  push:
-    branches:
-      - fix/semantic-tailoring-role-bound-scoring
-    paths:
-      - ".github/workflows/apply-eval-runner-reporting-patch.yml"
-      - "scripts/apply_eval_runner_reporting_patch.py"
-      - "scripts/repair_legacy_eval_snapshot.py"
   pull_request:
     branches:
       - master
