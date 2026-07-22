@@ -3,12 +3,13 @@ from __future__ import annotations
 from langchain_core.runnables import RunnableConfig
 
 from paperagent.errors import NodeError
-from paperagent.method_design_draft import MethodDesignDraft, build_method_proposal
+from paperagent.method_design_draft import MethodDesignDraft
 from paperagent.method_evidence import accepted_evidence_ledger, bind_method_evidence
 from paperagent.nodes._shared import call_structured
 from paperagent.runtime import get_services
 from paperagent.schemas import MethodProposal
 from paperagent.state import PaperAgentState, StatePatch
+from paperagent.strict_method_design import build_role_bound_method_proposal
 
 NODE = "method_design_node"
 
@@ -33,7 +34,7 @@ async def method_design_node(state: PaperAgentState, config: RunnableConfig) -> 
 
     def canonicalize(draft: MethodDesignDraft) -> MethodProposal:
         try:
-            method = build_method_proposal(state, draft)
+            method = build_role_bound_method_proposal(state, draft)
         except ValueError as exc:
             raise NodeError(
                 code="METHOD_CANONICALIZATION_FAILED",
