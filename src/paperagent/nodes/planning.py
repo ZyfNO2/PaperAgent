@@ -57,8 +57,15 @@ _PUBLIC_ASSET_QUERY_HINTS = (
 
 
 def _runtime_source_types(query: SearchQuery) -> SearchQuery:
-    """Extend an existing baseline query with public code/data lanes without adding queries."""
+    """Extend baseline discovery queries with public code/data lanes.
 
+    Exact-title user-material queries are deliberately narrow identity lanes. Expanding a
+    repository identity lookup into a dataset lookup changes its verification contract and can
+    consume provider budget on unrelated assets, so those generated queries are preserved.
+    """
+
+    if query.gap_id.startswith("user-material-"):
+        return query
     source_types = list(query.source_types)
     query_text = f"{query.gap_id} {query.query}".casefold()
     if any(hint in query_text for hint in _PUBLIC_ASSET_QUERY_HINTS):
