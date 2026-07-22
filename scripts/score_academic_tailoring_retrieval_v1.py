@@ -301,12 +301,29 @@ def _baseline_target_titles(case: dict[str, Any]) -> list[str]:
     return declared if declared else _gold_baseline_titles(case)
 
 
+def _has_author_linked_repository(
+    baseline_source_item: dict[str, Any], accepted_items: list[dict[str, Any]]
+) -> bool:
+    evidence_id = str(baseline_source_item.get("evidence_id", ""))
+    source_paper_id = evidence_id.removeprefix("ev-")
+    if not source_paper_id:
+        return False
+    return any(
+        item.get("source_type") == "repository"
+        and isinstance(item.get("metadata"), dict)
+        and item["metadata"].get("relation") == "author_linked_from_verified_paper"
+        and item["metadata"].get("parent_paper_id") == source_paper_id
+        for item in accepted_items
+    )
+
+
 def _baseline_identity_status(
     case: dict[str, Any],
     *,
     baseline_name: str | None,
     baseline_source_item: dict[str, Any] | None,
     baseline_targets: list[str],
+    accepted_items: list[dict[str, Any]],
 ) -> str:
     if baseline_name is None:
         return "missing"
@@ -323,13 +340,13 @@ def _baseline_identity_status(
     metadata = baseline_source_item.get("metadata", {})
     relation = metadata.get("relation") if isinstance(metadata, dict) else None
     baseline_candidate = metadata.get("baseline_candidate") if isinstance(metadata, dict) else None
-    if (
-        case.get("case_type") == "title_only"
-        and baseline_source_item.get("source_type") == "paper"
-        and baseline_candidate == "inferred"
-        and relation in _INFERRED_BASELINE_RELATIONS
-    ):
-        return "evidence_bound_alternative"
+    if case.get("case_type") == "title_only" and baseline_source_item.get("source_type") == "paper":
+        if baseline_candidate == "inferred" and relation in _INFERRED_BASELINE_RELATIONS:
+            return "evidence_bound_alternative"
+        if relation == "direct_query" and _has_author_linked_repository(
+            baseline_source_item, accepted_items
+        ):
+            return "evidence_bound_alternative"
     return "mismatch"
 
 
@@ -460,6 +477,7 @@ def _score_case(
         baseline_name=baseline.name if baseline is not None else None,
         baseline_source_item=baseline_source_item,
         baseline_targets=baseline_targets,
+        accepted_items=accepted_items,
     )
     baseline_target_match = baseline_identity_status == "exact_target"
     baseline_identity_acceptable = baseline_identity_status in {

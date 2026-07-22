@@ -122,6 +122,7 @@ def _build_runtime_summary(
     leakage_findings: list[str],
     allow_gold_in_workspace: bool,
     graph_budgets: RunBudgets,
+    graph_recursion_limit: int,
     provider_call_budget_total: int,
     provider_call_budgets_by_case: tuple[int, ...],
     provider_config: dict[str, object],
@@ -149,7 +150,10 @@ def _build_runtime_summary(
         "gold_absent_from_candidate_workspace": not allow_gold_in_workspace,
         "budget_profile": {
             "mode": "diagnostic_expanded",
-            "graph": graph_budgets.model_dump(mode="json"),
+            "graph": {
+                **graph_budgets.model_dump(mode="json"),
+                "recursion_limit": graph_recursion_limit,
+            },
             "literature_provider_calls_total": provider_call_budget_total,
             "literature_provider_calls_by_case": list(provider_call_budgets_by_case),
             "llm_provider": provider_config,
@@ -263,6 +267,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-queries-per-round", type=int, default=10)
     parser.add_argument("--max-method-repairs", type=int, default=3)
     parser.add_argument("--max-evidence-items", type=int, default=120)
+    parser.add_argument("--recursion-limit", type=int, default=100)
     parser.add_argument("--provider-call-budget", type=int, default=480)
     parser.add_argument("--llm-provider", default=None)
     parser.add_argument("--llm-model", default=None)
@@ -286,8 +291,8 @@ async def _run(args: argparse.Namespace) -> int:
             raise ValueError(f"unknown case IDs: {sorted(missing)}")
     if not 1 <= args.max_cases <= 10:
         raise ValueError("--max-cases must be between 1 and 10")
-    if args.max_llm_calls < 1 or args.provider_call_budget < 1:
-        raise ValueError("LLM and provider budgets must be positive")
+    if args.max_llm_calls < 1 or args.provider_call_budget < 1 or args.recursion_limit < 1:
+        raise ValueError("LLM, provider, and recursion budgets must be positive")
     cases = cases[: args.max_cases]
 
     graph_budgets = RunBudgets(
@@ -360,6 +365,7 @@ async def _run(args: argparse.Namespace) -> int:
             leakage_findings=list(leakage_audit.findings),
             allow_gold_in_workspace=args.allow_gold_in_workspace,
             graph_budgets=graph_budgets,
+            graph_recursion_limit=args.recursion_limit,
             provider_call_budget_total=args.provider_call_budget,
             provider_call_budgets_by_case=budgets,
             provider_config=safe_provider_config,
@@ -404,6 +410,7 @@ async def _run(args: argparse.Namespace) -> int:
                 max_queries_per_round=graph_budgets.max_queries_per_round,
                 max_method_repairs=graph_budgets.max_method_repairs,
                 max_evidence_items=graph_budgets.max_evidence_items,
+                recursion_limit=args.recursion_limit,
                 task_id=f"atr-v1-{index:02d}",
             )
             trace_payload = trace.model_dump(mode="json", by_alias=True)

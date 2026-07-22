@@ -177,6 +177,36 @@ def _select_inferred_baseline_evidence(
     return max(papers, key=_baseline_evidence_rank)
 
 
+def _select_repository_backed_direct_baseline(
+    candidates: tuple[EvidenceItem, ...],
+) -> EvidenceItem | None:
+    """Select a verified task paper with an accepted author-linked repository.
+
+    This is a last-resort baseline only when the user did not declare one and
+    focused baseline retrieval produced no accepted candidate.
+    """
+
+    repository_parent_ids: set[str] = {
+        parent_id
+        for item in candidates
+        if item.source_type == "repository"
+        and item.metadata.get("relation") == "author_linked_from_verified_paper"
+        for parent_id in (item.metadata.get("parent_paper_id"),)
+        if parent_id
+    }
+    papers = tuple(
+        item
+        for item in candidates
+        if item.source_type == "paper"
+        and item.metadata.get("relation") == "direct_query"
+        and item.evidence_id.removeprefix("ev-") in repository_parent_ids
+        and not _is_review_evidence(item.title, item.summary)
+    )
+    if not papers:
+        return None
+    return max(papers, key=_baseline_evidence_rank)
+
+
 def _comparator_evidence_rank(item: EvidenceItem) -> tuple[int, float, str]:
     if item.source_type != "paper":
         return (-1, -1.0, item.evidence_id)
@@ -494,6 +524,8 @@ def build_method_proposal(
     baseline_evidence = _select_declared_baseline_evidence(
         list(request.user_material_refs), method_evidence
     ) or _select_inferred_baseline_evidence(method_evidence)
+    if baseline_evidence is None and not declared_baseline_titles:
+        baseline_evidence = _select_repository_backed_direct_baseline(method_evidence)
     module_primary = _select_module_evidence(method_evidence, baseline=baseline_evidence)
     if module_primary is None:
         raise ValueError("method canonicalization requires accepted paper evidence")

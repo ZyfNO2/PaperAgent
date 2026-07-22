@@ -257,7 +257,12 @@ def _dataset_relation_names(
         for paper in paper_list
         for token in _distinctive_dataset_tokens(paper.canonical_title)
     }
-    names = [name for name in _dataset_names_from_query(query) if name.casefold() not in blocked]
+    # An explicitly named dataset is a user-visible retrieval constraint. The
+    # title-derived blocklist only suppresses uncued acronym/model guesses.
+    names = list(_explicit_dataset_names_from_text(query))
+    for name in _distinctive_dataset_tokens(query):
+        if name.casefold() not in blocked and name not in names:
+            names.append(name)
     for paper in paper_list:
         for name in _explicit_dataset_names_from_text(
             f"{paper.canonical_title}\n{paper.abstract or ''}"

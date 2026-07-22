@@ -116,6 +116,7 @@ def test_title_only_case_accepts_evidence_bound_inferred_baseline() -> None:
         baseline_name="A Reproducible Task-Matched Alternative",
         baseline_source_item=source,
         baseline_targets=["Hidden Reference Baseline"],
+        accepted_items=[source],
     )
 
     assert status == "evidence_bound_alternative"
@@ -125,9 +126,7 @@ def test_declared_baseline_still_rejects_a_different_bound_paper() -> None:
     case = {
         "case_type": "baseline_with_condition",
         "public_input": {
-            "supplied_materials": [
-                {"title": "Declared Baseline", "declared_role": "baseline"}
-            ]
+            "supplied_materials": [{"title": "Declared Baseline", "declared_role": "baseline"}]
         },
         "gold": {
             "baseline_decision": {"canonical": "Declared Baseline"},
@@ -148,6 +147,43 @@ def test_declared_baseline_still_rejects_a_different_bound_paper() -> None:
         baseline_name="Different Paper",
         baseline_source_item=source,
         baseline_targets=["Declared Baseline"],
+        accepted_items=[source],
     )
 
     assert status == "mismatch"
+
+
+def test_title_only_case_accepts_repo_backed_direct_baseline() -> None:
+    case = {
+        "case_type": "title_only",
+        "public_input": {"supplied_materials": []},
+        "gold": {
+            "baseline_decision": {"canonical": "Reference Baseline"},
+            "expected_assets": [],
+        },
+    }
+    source = {
+        "evidence_id": "ev-paper-task",
+        "source_type": "paper",
+        "title": "Verified Task Paper",
+        "metadata": {"relation": "direct_query"},
+    }
+    repository = {
+        "evidence_id": "ev-repository-task",
+        "source_type": "repository",
+        "title": "authors/task-code",
+        "metadata": {
+            "relation": "author_linked_from_verified_paper",
+            "parent_paper_id": "paper-task",
+        },
+    }
+
+    status = _baseline_identity_status(
+        case,
+        baseline_name="Verified Task Paper",
+        baseline_source_item=source,
+        baseline_targets=["Reference Baseline"],
+        accepted_items=[source, repository],
+    )
+
+    assert status == "evidence_bound_alternative"

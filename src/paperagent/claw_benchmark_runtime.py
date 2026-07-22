@@ -64,6 +64,7 @@ async def execute_benchmark_input(
     max_queries_per_round: int = 5,
     max_method_repairs: int = 1,
     max_evidence_items: int = 30,
+    recursion_limit: int = 100,
 ) -> tuple[dict[str, Any], PaperAgentState]:
     """Execute only user-visible benchmark input through the production graph.
 
@@ -71,6 +72,9 @@ async def execute_benchmark_input(
     identifiers are intentionally absent from this function's signature and graph
     configuration. External evaluation may attach those fields only after execution.
     """
+
+    if recursion_limit < 1:
+        raise ValueError("recursion_limit must be positive")
 
     services = RuntimeServices(
         llm=llm,
@@ -96,7 +100,8 @@ async def execute_benchmark_input(
                 "network_policy": "allow_search",
                 "budgets": budgets,
                 "human_review_policy": "block",
-            }
+            },
+            "recursion_limit": recursion_limit,
         },
         stream_mode="values",
     )
@@ -121,6 +126,7 @@ async def execute_benchmark_case(
     max_queries_per_round: int = 5,
     max_method_repairs: int = 1,
     max_evidence_items: int = 30,
+    recursion_limit: int = 100,
 ) -> tuple[dict[str, Any], AcademicTailoringRunTrace]:
     """Execute clean input first, then attach external case metadata for scoring."""
 
@@ -134,6 +140,7 @@ async def execute_benchmark_case(
         max_queries_per_round=max_queries_per_round,
         max_method_repairs=max_method_repairs,
         max_evidence_items=max_evidence_items,
+        recursion_limit=recursion_limit,
     )
     leakage_audit = audit_benchmark_execution_boundary()
     trace = normalize_paperagent_state(

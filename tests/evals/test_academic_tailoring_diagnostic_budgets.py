@@ -11,15 +11,14 @@ _SPEC.loader.exec_module(_MODULE)
 
 
 def test_diagnostic_runner_defaults_favor_coverage() -> None:
-    args = _MODULE._parser().parse_args(
-        ["--dataset", "public.json", "--output-dir", "build/eval"]
-    )
+    args = _MODULE._parser().parse_args(["--dataset", "public.json", "--output-dir", "build/eval"])
 
     assert args.max_llm_calls == 20
     assert args.max_retrieval_rounds == 4
     assert args.max_queries_per_round == 10
     assert args.max_method_repairs == 3
     assert args.max_evidence_items == 120
+    assert args.recursion_limit == 100
     assert args.provider_call_budget == 480
 
 
@@ -40,6 +39,8 @@ def test_diagnostic_runner_allows_explicit_budget_reduction() -> None:
             "1",
             "--max-evidence-items",
             "30",
+            "--recursion-limit",
+            "50",
             "--provider-call-budget",
             "120",
         ]
@@ -50,4 +51,5 @@ def test_diagnostic_runner_allows_explicit_budget_reduction() -> None:
     assert args.max_queries_per_round == 4
     assert args.max_method_repairs == 1
     assert args.max_evidence_items == 30
+    assert args.recursion_limit == 50
     assert args.provider_call_budget == 120
