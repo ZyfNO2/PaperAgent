@@ -2,9 +2,9 @@
 
 ## Status
 
-**PARTIAL / WAITING FOR REAL PROVIDER TESTS**
+**PARTIAL / REAL PROVIDER ACCEPTANCE IN PROGRESS**
 
-The implementation and isolated offline verification are complete. The branch remains a Draft PR and must not be merged until a real-provider 10-case rerun and a local multi-endpoint router probe have been reviewed.
+PR #46 must remain Draft. Do not merge or mark Ready until the real-provider artifacts, strict score diagnostics, normalized-output audit, recovery summary, artifact upload, and final acceptance gate have completed and been reviewed.
 
 ## Repository and branch
 
@@ -13,177 +13,172 @@ The implementation and isolated offline verification are complete. The branch re
 - Base commit: `ad44e6337f002aa8ecea3559cc0a2f213e1c8859`
 - Development branch: `fix/semantic-tailoring-role-bound-scoring`
 - Draft PR: `#46`
-- Authoritative final branch head: the current PR head shown by GitHub after this handoff commit
+- Start-of-review HEAD: `3342714d2e9d3cde73c1ff4342fd252a0d81d1ef`
+- Current authoritative HEAD: use the latest PR head after this Handoff commit
 
-## Completed work
+## Current real-provider run
 
-### Production method-design path
+Workflow: `Academic Tailoring Runtime Recovery`, run `29954249461`.
 
-- Added `src/paperagent/strict_method_design.py`.
-- Wired `src/paperagent/nodes/method_design.py` to the strict canonicalizer.
-- A user-declared baseline is now a hard identity constraint.
-- A missed declared baseline no longer falls through to an inferred or repository-backed alternative.
-- A user-declared parallel/module paper must be present in accepted evidence.
-- Baseline evidence cannot be reused as independent module provenance.
-- The final canonical proposal is checked against the declared evidence roles.
+At the time of this Handoff update:
 
-### Role-bound semantic scoring
+- Steps 1-9 completed successfully.
+- Step 10/15, `Execute cases 003, 005, 006, 007, and 010 with real provider`, was still in progress.
+- Steps 11-15 remained pending:
+  1. strict score diagnostics;
+  2. normalized LLM output audit;
+  3. recovery summary;
+  4. artifact upload;
+  5. real-runtime and score acceptance enforcement.
 
-- Added `scripts/score_academic_tailoring_retrieval_v2.py` while retaining v1 for compatibility.
-- Expected paper credit is assigned by the role actually used in the generated method, not by presence anywhere in state.
-- Module credit requires independently accepted `parallel_method` evidence.
-- Compatibility credit requires a non-generic contract and an independently accepted compatibility review.
-- Review/survey papers cannot serve as executable alternative baselines.
-- `GO` is rejected unless baseline identity, module provenance, compatibility, repository/dataset evidence, and every experiment arm's task-specific protocol pass.
-- The live retrieval workflow now scores with v2.
+The five selected cases are:
 
-### Local router validation
+- `atr-v1-003-nlp-bert-lora-clinc`
+- `atr-v1-005-remote-oriented-small-edge`
+- `atr-v1-006-industrial-usad-anomaly-transformer`
+- `atr-v1-007-graph-graphsage-gat-ppi`
+- `atr-v1-010-rec-coldstart-sequential`
 
-- Added `scripts/test_provider_router_load.py`.
-- Added failover-oriented `config/provider-router-load.example.json`.
-- Added balanced, same-pool `config/provider-router-balanced.example.json`.
-- Added one-command local runners:
-  - `scripts/run_local_semantic_and_router_test.ps1`
-  - `scripts/run_local_semantic_and_router_test.sh`
-- The runners fail unless the live probe succeeds and at least two endpoints complete requests.
-- All credentials and model identifiers are supplied through environment variables; no secret is committed.
+No case is considered accepted until the uploaded artifacts and final enforcement step confirm it.
 
-## Main files changed
+## Baseline identity policy
 
-- `src/paperagent/strict_method_design.py`
-- `src/paperagent/nodes/method_design.py`
-- `scripts/score_academic_tailoring_retrieval_v2.py`
-- `scripts/test_provider_router_load.py`
-- `scripts/run_local_semantic_and_router_test.ps1`
-- `scripts/run_local_semantic_and_router_test.sh`
-- `config/provider-router-load.example.json`
-- `config/provider-router-balanced.example.json`
-- `.github/workflows/academic-tailoring-retrieval-v1-live-test.yml`
-- `.github/workflows/semantic-tailoring-role-bound-ci.yml`
-- `tests/methodology/test_strict_method_design.py`
-- `tests/evals/test_academic_tailoring_retrieval_v2_scorer.py`
-- `tests/scripts/test_provider_router_load.py`
+The current policy is:
 
-## Architecture decisions
+1. An exact user-declared baseline has highest priority.
+2. If the exact declared baseline is not found, a repository-backed direct baseline may be used only when its identity, task fit, provenance, and executable evidence are verified.
+3. The system must not degrade to an arbitrary inferred baseline.
+4. Review/survey papers cannot be treated as executable direct baselines.
+5. Any fallback must remain explicit in the state, report, score evidence, and final decision.
 
-1. The production guard is generic and only reads user-declared evidence roles. It contains no benchmark case IDs, domain answer table, Gold decision, or expected method.
-2. Scorer v2 wraps the stable v1 CLI/input contract, minimizing workflow changes while replacing role-insensitive scoring behavior.
-3. V1 remains available for historical report reproducibility; the active live workflow uses v2.
-4. Router load testing uses the existing `RoutingLLMProvider` and real provider delegates. It does not fake endpoint distribution.
-5. The balanced profile places NVIDIA and Mistral in one pool so concurrent requests can be distributed for throughput. The failover profile preserves primary/fallback pool semantics.
+This supersedes the earlier blanket statement that any repository-backed fallback is forbidden.
 
-## Executed verification
+## Completed implementation areas
 
-Dedicated `Semantic Tailoring Role-Bound CI`:
+- Role-bound semantic scoring v2 is present and active in the live evaluation path.
+- Runtime recovery CI includes real OpenAI-compatible/NVIDIA execution coverage, provider error classification, call-budget isolation, report fallback checks, and selected-case recovery.
+- Offline provenance/runtime gates completed successfully in the active recovery run.
+- Provenance-bound public dataset generation completed successfully.
+- Isolated candidate workspace creation and installation completed successfully.
+- Dedicated semantic role-bound CI passed for the current pre-Handoff HEAD.
+- Eval snapshot provenance CI passed for the current pre-Handoff HEAD.
 
-- Python compilation: passed.
-- Ruff on all changed Python files: passed, zero findings.
-- Strict Mypy on the changed production path: passed, zero issues in two source files.
-- Focused regression: **37 passed**.
-- Committed formatting check: passed.
+## Important implementation and verification scope
 
-The academic corpus generation job also completed successfully.
+The current branch includes or validates work beyond the original 37-test Handoff, including:
 
-## CI limitation outside this change
+- provider/runtime behavior and error classification;
+- provider-call budget isolation;
+- low-relevance baseline rejection;
+- report fallback behavior;
+- Case 005 invalid JSON/schema recovery;
+- baseline-anchor handling for Case 006;
+- normalized real-output auditing;
+- runtime recovery artifact generation and acceptance enforcement.
 
-The repository-wide main CI and academic verification jobs are currently stopped at Ruff by pre-existing E501 findings in:
+The historical statement `37 passed` is not sufficient evidence for the current branch. Use the latest workflow jobs, logs, and artifacts.
 
-- `.github/scripts/apply_artifact_driven_fixes.py`
-- `.github/scripts/apply_artifact_driven_fixes_v2.py`
+## CI state at this update
 
-Those files have the same content on `master` and are not changed by PR #46. This branch therefore uses an isolated strict gate for the files it modifies rather than changing unrelated parallel-development files.
+For commit `3342714d2e9d3cde73c1ff4342fd252a0d81d1ef`:
 
-## Not executed / not verified
+Successful:
 
-- A fresh real-provider run of all 10 academic-tailoring cases with the new production canonicalizer.
-- A real multi-endpoint router load test using the user's NVIDIA/Mistral credentials and models.
-- A production-cost or sustained-rate benchmark.
-- Automatic acceleration of the 10-case benchmark itself through the router. The supplied router test validates endpoint distribution and throughput independently; the existing 10-case runner still constructs one provider per case.
+- `Semantic Tailoring Role-Bound CI`
+- `Eval Snapshot Provenance CI`
 
-## Local verification
+In progress:
 
-### Required environment variables
+- `Academic Tailoring Runtime Recovery`
 
-PowerShell example:
+Failed repository-level workflows were also present. Their failures must be inspected individually before attributing them to this branch; a red aggregate status is not by itself proof of a regression in the changed path.
 
-```powershell
-$env:NVIDIA_API_KEY_A = "<your key>"
-$env:NVIDIA_MODEL = "<model available on NVIDIA endpoint>"
-$env:MISTRAL_API_KEY = "<your key>"
-$env:MISTRAL_MODEL = "<model available on Mistral endpoint>"
-```
+## Acceptance checklist
 
-Bash example:
+The branch remains PARTIAL until all items below are verified:
 
-```bash
-export NVIDIA_API_KEY_A='<your key>'
-export NVIDIA_MODEL='<model available on NVIDIA endpoint>'
-export MISTRAL_API_KEY='<your key>'
-export MISTRAL_MODEL='<model available on Mistral endpoint>'
-```
+- [ ] Real-provider execution finishes for all five selected recovery cases.
+- [ ] Runtime output files exist for every selected case.
+- [ ] Strict score diagnostics complete without scorer infrastructure failure.
+- [ ] Per-case scores and hard failures are manually cross-checked against artifacts.
+- [ ] Normalized LLM output audit confirms JSON/schema and semantic output integrity.
+- [ ] Case 003 preserves BERT and valid LoRA module provenance.
+- [ ] Case 005 handles invalid JSON/schema output without false success.
+- [ ] Case 006 applies exact-first, verified repository-backed direct baseline fallback, never arbitrary inference.
+- [ ] Case 007 keeps GraphSAGE baseline and independently supported GAT module roles.
+- [ ] Case 010 rejects the wrong cold-start baseline and records the supported decision.
+- [ ] Recovery summary accurately distinguishes real-provider, offline, Mock/Fake/Stub, and unverified evidence.
+- [ ] Workflow artifacts are uploaded and downloadable.
+- [ ] Final real-runtime and score acceptance step passes.
+- [ ] Any remaining failed repository workflows are classified as branch-related or pre-existing.
 
-### One-command Windows verification
+## Required score review
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/run_local_semantic_and_router_test.ps1 \
-  -Requests 24 \
-  -Concurrency 8 \
-  -RequireSuccessfulEndpoints 2
-```
+Each case must be reviewed on a 100-point scale:
 
-### One-command Linux/macOS verification
+- evidence and citations: 20;
+- baseline and reproducibility: 15;
+- gap and falsifiability: 15;
+- module and compatibility contracts: 20;
+- experiments and ablations: 20;
+- conclusion and artifact completeness: 10.
 
-```bash
-chmod +x scripts/run_local_semantic_and_router_test.sh
-scripts/run_local_semantic_and_router_test.sh \
-  --requests 24 \
-  --concurrency 8 \
-  --require-successful-endpoints 2
-```
+Every deduction must cite an artifact location. Check for missed deductions, duplicate deductions, arithmetic errors, role-invalid credit, and disagreement between the score and the evidence.
 
-### Rescore an existing 10-case artifact
+## Real versus offline evidence
 
-```bash
-python scripts/score_academic_tailoring_retrieval_v2.py \
-  --authoring evals/academic_tailoring_retrieval_v1/dataset-authoring.json \
-  --states PATH_TO_RUN/states.jsonl \
-  --traces PATH_TO_RUN/run-traces.jsonl \
-  --prompts PATH_TO_RUN/prompt-log.jsonl \
-  --runtime-summary PATH_TO_RUN/execution-summary.json \
-  --output PATH_TO_RUN/diagnostic-report-v2.json \
-  --minimum-score 80
-```
+- The active step 10 run is real-provider execution.
+- Offline provenance, compilation, Ruff, Mypy, focused pytest, configuration validation, and shell syntax checks are not real E2E evidence.
+- Mock/Fake/Stub tests may verify control flow but cannot establish provider behavior or output quality.
+- A successful provider call alone does not prove academic-method quality; the generated artifacts and role-bound score evidence must be reviewed.
 
-Add `--require-pass` only when the candidate is expected to satisfy the strict gate. During diagnosis, omit it so the report is still generated on failure.
+## Known blockers and stop conditions
 
-## Pass/fail criteria
+If the runtime workflow fails because of missing/invalid credentials, provider quota/rate limits, unavailable models, network failure, or external-service instability:
 
-### Semantic fix passes when
-
-- all 37 focused tests pass;
-- PatchTST cannot silently become TimeMachine;
-- BERT cannot silently become BEiT;
-- baseline evidence is not reused as module evidence;
-- generic experiment templates cannot support `GO`.
-
-### Router load test passes when
-
-- the script exits with code 0;
-- report status is `passed`;
-- final request failures are zero;
-- at least two configured endpoints have `successes > 0`;
-- `artifacts/provider-router-load-report.json` contains endpoint distribution, throughput, latency, errors, and circuit snapshots.
-
-## Known limitations
-
-- Explicit role binding can enforce declared identities, but it cannot invent a correct undeclared domain baseline. Scorer v2 still rejects unsupported role choices.
-- A provider may accept prompt-injected JSON differently from another provider; the load report exposes endpoint-specific schema failures.
-- Small probe counts are functional checks, not statistically reliable throughput benchmarks. Use at least 24 requests for a quick check and a larger run only after cost/rate limits are understood.
+1. preserve and upload all available logs and partial artifacts;
+2. classify the run as `BLOCKED / NOT VERIFIED`, not PASS;
+3. record the failing endpoint, error class, retry/budget state, and affected cases;
+4. complete all remaining offline diagnostics that do not depend on the provider;
+5. provide exact rerun commands and acceptance criteria.
 
 ## Next developer steps
 
-1. Check out PR #46's branch.
-2. Run the one-command local script with two valid endpoints.
-3. Return `artifacts/provider-router-load-report.json` if endpoint distribution or fallback fails.
-4. Run the real 10-case workflow or local candidate runner and score it with v2.
-5. Compare the new per-case hard failures with the manual review before considering the Draft PR mergeable.
+1. Re-read this Handoff and verify the PR head has not moved unexpectedly.
+2. Inspect run `29954249461` until it reaches a terminal state.
+3. Read the job steps and failure logs if any step fails.
+4. Download and inspect the runtime-recovery artifact.
+5. Review each selected case's state, trace, prompt log, execution summary, score diagnostics, and normalized output audit.
+6. Fix branch-related defects with the smallest testable change; add regression tests and rerun the relevant workflow.
+7. Update this Handoff with the final HEAD, exact test counts, artifact names, per-case scores, hard failures, and final status.
+8. Keep PR #46 Draft unless every required acceptance item passes.
+
+## Suggested verification commands
+
+```bash
+ruff check \
+  src/paperagent/eval_runtime_reporting.py \
+  src/paperagent/providers/runtime.py \
+  src/paperagent/nodes/planning.py \
+  src/paperagent/nodes/report.py \
+  src/paperagent/method_design_draft.py \
+  src/paperagent/strict_method_design.py \
+  scripts/project_academic_tailoring_retrieval_v1.py \
+  scripts/run_academic_tailoring_retrieval_v1.py \
+  scripts/score_academic_tailoring_retrieval_v2.py
+
+pytest -q \
+  tests/providers/test_runtime.py \
+  tests/nodes/test_planning_identity_priority.py \
+  tests/nodes/test_method_design_baseline_anchor.py \
+  tests/nodes/test_report_fallback.py \
+  tests/methodology/test_strict_method_design.py \
+  tests/methodology/test_method_design_draft.py \
+  tests/evals/test_eval_runtime_reporting.py \
+  tests/evals/test_eval_snapshot_provenance.py \
+  tests/evals/test_academic_tailoring_retrieval_v1_boundary.py
+```
+
+## Current conclusion
+
+**PARTIAL.** Offline gates and isolated setup are verified, but real-provider case execution and the downstream score/artifact acceptance chain were still running when this Handoff was committed. Do not treat the selected cases, the 10-case benchmark, or PR #46 as complete.
