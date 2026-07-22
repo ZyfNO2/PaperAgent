@@ -13,13 +13,25 @@ on:
       - "scripts/run_academic_tailoring_retrieval_v1.py"
       - "scripts/score_academic_tailoring_retrieval_v1.py"
       - "src/paperagent/**"
+  pull_request:
+    branches:
+      - feat/eval-engine-resilient-fatal-codes
+    paths:
+      - ".github/workflows/academic-eval-opencode-live.yml"
+      - "config/academic-tailoring-mimo-diagnostic.env.example"
+      - "evals/academic_tailoring_retrieval_v1/**"
+      - "scripts/check_llm_provider_health.py"
+      - "scripts/project_academic_tailoring_retrieval_v1.py"
+      - "scripts/run_academic_tailoring_retrieval_v1.py"
+      - "scripts/score_academic_tailoring_retrieval_v1.py"
+      - "src/paperagent/**"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: academic-eval-opencode-diagnostic
+  group: academic-eval-opencode-diagnostic-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
