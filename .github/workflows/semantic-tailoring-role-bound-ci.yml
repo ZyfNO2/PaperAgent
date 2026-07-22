@@ -97,7 +97,7 @@ jobs:
       - name: Validate PowerShell local runner
         shell: pwsh
         run: |
-          & scripts/run_local_semantic_and_router_test.ps1 `
+          & ./scripts/run_local_semantic_and_router_test.ps1 `
             -SkipInstall -SkipSemantic -SkipLive
       - name: Capture lint and type diagnostics
         shell: bash
