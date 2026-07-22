@@ -1,0 +1,83 @@
+name: Semantic Tailoring Role-Bound CI
+
+on:
+  push:
+    branches:
+      - fix/semantic-tailoring-role-bound-scoring
+    paths:
+      - "src/paperagent/strict_method_design.py"
+      - "src/paperagent/nodes/method_design.py"
+      - "scripts/score_academic_tailoring_retrieval_v2.py"
+      - "scripts/test_provider_router_load.py"
+      - "config/provider-router-load.example.json"
+      - "tests/methodology/test_strict_method_design.py"
+      - "tests/evals/test_academic_tailoring_retrieval_v2_scorer.py"
+      - "tests/scripts/test_provider_router_load.py"
+      - ".github/workflows/semantic-tailoring-role-bound-ci.yml"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "src/paperagent/strict_method_design.py"
+      - "src/paperagent/nodes/method_design.py"
+      - "scripts/score_academic_tailoring_retrieval_v2.py"
+      - "scripts/test_provider_router_load.py"
+      - "config/provider-router-load.example.json"
+      - "tests/methodology/test_strict_method_design.py"
+      - "tests/evals/test_academic_tailoring_retrieval_v2_scorer.py"
+      - "tests/scripts/test_provider_router_load.py"
+      - ".github/workflows/semantic-tailoring-role-bound-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-semantic-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Compile changed runtime modules
+        run: |
+          python -m compileall -q \
+            src/paperagent/strict_method_design.py \
+            src/paperagent/nodes/method_design.py \
+            scripts/score_academic_tailoring_retrieval_v2.py \
+            scripts/test_provider_router_load.py
+      - name: Check formatting
+        run: |
+          ruff format --check \
+            src/paperagent/strict_method_design.py \
+            src/paperagent/nodes/method_design.py \
+            scripts/score_academic_tailoring_retrieval_v2.py \
+            scripts/test_provider_router_load.py \
+            tests/methodology/test_strict_method_design.py \
+            tests/evals/test_academic_tailoring_retrieval_v2_scorer.py \
+            tests/scripts/test_provider_router_load.py
+      - name: Lint changed files
+        run: |
+          ruff check \
+            src/paperagent/strict_method_design.py \
+            src/paperagent/nodes/method_design.py \
+            scripts/score_academic_tailoring_retrieval_v2.py \
+            scripts/test_provider_router_load.py \
+            tests/methodology/test_strict_method_design.py \
+            tests/evals/test_academic_tailoring_retrieval_v2_scorer.py \
+            tests/scripts/test_provider_router_load.py
+      - name: Run focused semantic and router tests
+        run: |
+          python -m pytest -q \
+            tests/methodology/test_strict_method_design.py \
+            tests/methodology/test_method_design_draft.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_scorer.py \
+            tests/evals/test_academic_tailoring_retrieval_v2_scorer.py \
+            tests/providers/test_routing_llm_provider.py \
+            tests/scripts/test_provider_router_load.py
