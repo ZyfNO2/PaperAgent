@@ -1,0 +1,87 @@
+name: Academic Eval Fix Validation
+
+on:
+  push:
+    branches:
+      - fix/academic-eval-diagnostics-baseline-binding
+  pull_request:
+    branches:
+      - feat/eval-engine-resilient-fatal-codes
+    paths:
+      - "config/academic-tailoring-mimo-diagnostic.env.example"
+      - "scripts/run_academic_tailoring_retrieval_v1.py"
+      - "scripts/score_academic_tailoring_retrieval_v1.py"
+      - "src/paperagent/claw_benchmark_runtime.py"
+      - "src/paperagent/nodes/planning.py"
+      - "tests/evals/**"
+      - "tests/nodes/**"
+      - ".github/workflows/academic-eval-fix-validation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: academic-eval-fix-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Compile changed Python files
+        run: |
+          python -m py_compile \
+            scripts/run_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/claw_benchmark_runtime.py \
+            src/paperagent/nodes/planning.py \
+            tests/evals/test_academic_tailoring_diagnostic_budgets.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_diagnostics.py \
+            tests/nodes/test_planning_identity_priority.py
+      - name: Ruff format and lint
+        run: |
+          ruff format --check \
+            scripts/run_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/claw_benchmark_runtime.py \
+            src/paperagent/nodes/planning.py \
+            tests/evals/test_academic_tailoring_diagnostic_budgets.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_diagnostics.py \
+            tests/nodes/test_planning_identity_priority.py
+          ruff check \
+            scripts/run_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/claw_benchmark_runtime.py \
+            src/paperagent/nodes/planning.py \
+            tests/evals/test_academic_tailoring_diagnostic_budgets.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_diagnostics.py \
+            tests/nodes/test_planning_identity_priority.py
+      - name: Focused regression tests
+        run: |
+          pytest -q \
+            tests/nodes/test_intake_planning.py \
+            tests/nodes/test_planning_identity_priority.py \
+            tests/evals/test_academic_tailoring_runtime_fail_fast.py \
+            tests/evals/test_academic_tailoring_diagnostic_budgets.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_scorer.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_diagnostics.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py
+      - name: Production leakage audit
+        run: |
+          python - <<'PY'
+          from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
+
+          result = audit_benchmark_execution_boundary()
+          print(result.model_dump_json(indent=2))
+          if not result.passed:
+              raise SystemExit(result.findings)
+          PY
