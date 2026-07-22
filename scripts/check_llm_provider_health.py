@@ -11,6 +11,10 @@ from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 SCHEMA = "paperagent.llm-provider-health.v1"
+_API_USER_AGENT = (
+    "PaperAgent/0.9 (OpenAI-compatible API client; "
+    "+https://github.com/ZyfNO2/PaperAgent)"
+)
 _TOKEN_LIKE_RE = re.compile(r"(?i)\b(?:sk|oc|key|token)[-_][A-Za-z0-9._-]{8,}\b")
 
 
@@ -171,7 +175,11 @@ def _build_request(
     model: str,
     probe_mode: str,
 ) -> Request:
-    headers = {"Authorization": f"Bearer {api_key}", "Accept": "application/json"}
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Accept": "application/json",
+        "User-Agent": _API_USER_AGENT,
+    }
     if probe_mode == "models":
         return Request(f"{base_url.rstrip('/')}/models", headers=headers)
     payload = json.dumps(
