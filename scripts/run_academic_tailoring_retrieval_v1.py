@@ -25,7 +25,7 @@ from paperagent.providers.base import LLMProvider
 from paperagent.providers.config import load_provider_config
 from paperagent.providers.runtime import ProviderError, ProviderErrorCode
 from paperagent.providers.runtime_factory import build_llm_provider
-from paperagent.schemas import Message
+from paperagent.schemas import Message, RunBudgets
 
 PUBLIC_SCHEMA = "paperagent.academic-tailoring-retrieval.public.v1"
 FORBIDDEN_KEYS = {
@@ -121,6 +121,10 @@ def _build_runtime_summary(
     leakage_passed: bool,
     leakage_findings: list[str],
     allow_gold_in_workspace: bool,
+    graph_budgets: RunBudgets,
+    provider_call_budget_total: int,
+    provider_call_budgets_by_case: tuple[int, ...],
+    provider_config: dict[str, object],
 ) -> dict[str, object]:
     attempted = set(attempted_case_ids)
     return {
@@ -143,6 +147,13 @@ def _build_runtime_summary(
         },
         "prompt_records": prompt_records,
         "gold_absent_from_candidate_workspace": not allow_gold_in_workspace,
+        "budget_profile": {
+            "mode": "diagnostic_expanded",
+            "graph": graph_budgets.model_dump(mode="json"),
+            "literature_provider_calls_total": provider_call_budget_total,
+            "literature_provider_calls_by_case": list(provider_call_budgets_by_case),
+            "llm_provider": provider_config,
+        },
         "passed": (
             completed_case_count == len(cases) and fatal_provider_error is None and not errors
         ),
@@ -245,8 +256,14 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--case-id", action="append", default=[])
     parser.add_argument("--max-cases", type=int, default=10)
-    parser.add_argument("--max-llm-calls", type=int, default=10)
-    parser.add_argument("--provider-call-budget", type=int, default=80)
+    # Diagnostic defaults deliberately trade cost for coverage. Tighten only after the
+    # retrieval and evidence-binding failure stages are understood.
+    parser.add_argument("--max-llm-calls", type=int, default=20)
+    parser.add_argument("--max-retrieval-rounds", type=int, default=4)
+    parser.add_argument("--max-queries-per-round", type=int, default=10)
+    parser.add_argument("--max-method-repairs", type=int, default=3)
+    parser.add_argument("--max-evidence-items", type=int, default=120)
+    parser.add_argument("--provider-call-budget", type=int, default=480)
     parser.add_argument("--llm-provider", default=None)
     parser.add_argument("--llm-model", default=None)
     parser.add_argument("--llm-base-url", default=None)
@@ -273,6 +290,14 @@ async def _run(args: argparse.Namespace) -> int:
         raise ValueError("LLM and provider budgets must be positive")
     cases = cases[: args.max_cases]
 
+    graph_budgets = RunBudgets(
+        max_llm_calls=args.max_llm_calls,
+        max_retrieval_rounds=args.max_retrieval_rounds,
+        max_queries_per_round=args.max_queries_per_round,
+        max_method_repairs=args.max_method_repairs,
+        max_evidence_items=args.max_evidence_items,
+    )
+
     leakage_audit = audit_benchmark_execution_boundary()
     if not leakage_audit.passed:
         raise RuntimeError(f"static leakage audit failed: {leakage_audit.findings}")
@@ -295,7 +320,22 @@ async def _run(args: argparse.Namespace) -> int:
     case_provider_config = provider_config_for_case(
         provider_config,
         selected_case_count=len(cases),
+        max_logical_calls=args.max_llm_calls,
     )
+    safe_provider_config: dict[str, object] = {
+        "provider": case_provider_config.provider.value,
+        "model": case_provider_config.model,
+        "base_url": case_provider_config.base_url,
+        "max_attempts": case_provider_config.max_attempts,
+        "max_physical_requests_per_case": case_provider_config.max_llm_calls_per_task,
+        "max_input_tokens_per_task": case_provider_config.max_input_tokens_per_task,
+        "max_output_tokens_per_call": case_provider_config.max_output_tokens_per_call,
+        "max_output_tokens_per_task": case_provider_config.max_output_tokens_per_task,
+        "task_wall_clock_seconds": case_provider_config.task_wall_clock_seconds,
+        "native_json_schema": case_provider_config.native_json_schema,
+        "allow_schema_repair": case_provider_config.allow_schema_repair,
+        "reasoning_effort": case_provider_config.reasoning_effort,
+    }
 
     states: list[dict[str, object]] = []
     traces: list[dict[str, object]] = []
@@ -319,6 +359,10 @@ async def _run(args: argparse.Namespace) -> int:
             leakage_passed=leakage_audit.passed,
             leakage_findings=list(leakage_audit.findings),
             allow_gold_in_workspace=args.allow_gold_in_workspace,
+            graph_budgets=graph_budgets,
+            provider_call_budget_total=args.provider_call_budget,
+            provider_call_budgets_by_case=budgets,
+            provider_config=safe_provider_config,
         )
         _write_runtime_outputs(
             output_dir=output_dir,
@@ -355,7 +399,11 @@ async def _run(args: argparse.Namespace) -> int:
                 case_id=case_id,
                 llm=llm,
                 search=search_runtime.adapter,
-                max_llm_calls=args.max_llm_calls,
+                max_llm_calls=graph_budgets.max_llm_calls,
+                max_retrieval_rounds=graph_budgets.max_retrieval_rounds,
+                max_queries_per_round=graph_budgets.max_queries_per_round,
+                max_method_repairs=graph_budgets.max_method_repairs,
+                max_evidence_items=graph_budgets.max_evidence_items,
                 task_id=f"atr-v1-{index:02d}",
             )
             trace_payload = trace.model_dump(mode="json", by_alias=True)
