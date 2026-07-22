@@ -105,9 +105,7 @@ class ProviderError(BaseProviderError):
         retryable: bool = False,
         status_code: int | None = None,
     ) -> None:
-        provider_name = (
-            provider.value if isinstance(provider, LLMProviderName) else provider
-        )
+        provider_name = provider.value if isinstance(provider, LLMProviderName) else provider
         super().__init__(
             message,
             provider=provider_name,
