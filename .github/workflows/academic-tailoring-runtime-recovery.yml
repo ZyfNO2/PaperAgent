@@ -109,6 +109,7 @@ jobs:
         shell: bash
         run: |
           set +e
+          mkdir -p "$GITHUB_WORKSPACE/build/runtime-recovery"
           python scripts/run_academic_tailoring_retrieval_v1.py \
             --dataset input/public-dataset.json \
             --output-dir build/runtime-recovery/candidate \
@@ -124,10 +125,12 @@ jobs:
             --source-commit "$GITHUB_SHA" \
             --llm-provider openai \
             --llm-model z-ai/glm-5.2 \
-            --llm-base-url https://integrate.api.nvidia.com/v1
+            --llm-base-url https://integrate.api.nvidia.com/v1 \
+            > "$GITHUB_WORKSPACE/build/runtime-recovery/runtime-command.log" 2>&1
           status=$?
           echo "status=$status" >> "$GITHUB_OUTPUT"
-          echo "$status" > build/runtime-recovery/candidate/runtime-exit-code.txt
+          echo "$status" > "$GITHUB_WORKSPACE/build/runtime-recovery/runtime-exit-code.txt"
+          cat "$GITHUB_WORKSPACE/build/runtime-recovery/runtime-command.log"
           exit 0
       - name: Build selected authoring set and score diagnostics
         if: always()
@@ -168,7 +171,11 @@ jobs:
           else
             echo "candidate outputs missing" > build/runtime-recovery/scorer-not-run.txt
           fi
-          cp -R candidate-workspace/build/runtime-recovery/candidate build/runtime-recovery/candidate
+          if test -d candidate-workspace/build/runtime-recovery/candidate; then
+            cp -R candidate-workspace/build/runtime-recovery/candidate build/runtime-recovery/candidate
+          else
+            mkdir -p build/runtime-recovery/candidate
+          fi
       - name: Build normalized LLM output audit
         if: always()
         shell: bash
