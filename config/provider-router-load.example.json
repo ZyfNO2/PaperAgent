@@ -6,7 +6,7 @@
       "pool_id": "primary-free-or-low-cost",
       "endpoints": [
         {
-          "endpoint_id": "nvidia-account-a",
+          "endpoint_id": "nvidia-primary",
           "vendor": "nvidia",
           "protocol": "openai_chat_completions",
           "base_url": "https://integrate.api.nvidia.com/v1",
@@ -21,24 +21,6 @@
           "max_output_tokens": 64,
           "failure_threshold": 2,
           "cooldown_seconds": 20
-        },
-        {
-          "endpoint_id": "nvidia-account-b",
-          "vendor": "nvidia",
-          "protocol": "openai_chat_completions",
-          "base_url": "https://integrate.api.nvidia.com/v1",
-          "api_key_env": "NVIDIA_API_KEY_B",
-          "model_env": "NVIDIA_MODEL",
-          "native_json_schema": false,
-          "prompt_injected_schema": true,
-          "allow_schema_repair": true,
-          "max_concurrency": 4,
-          "requests_per_minute": 40,
-          "timeout_seconds": 60,
-          "max_output_tokens": 64,
-          "failure_threshold": 2,
-          "cooldown_seconds": 20,
-          "disabled": true
         }
       ]
     },
