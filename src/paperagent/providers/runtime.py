@@ -100,13 +100,15 @@ class ProviderError(BaseProviderError):
         error_code: ProviderErrorCode,
         message: str,
         *,
+        provider: LLMProviderName | str = LLMProviderName.MISTRAL,
         task: str = "llm",
         retryable: bool = False,
         status_code: int | None = None,
     ) -> None:
+        provider_name = provider.value if isinstance(provider, LLMProviderName) else provider
         super().__init__(
             message,
-            provider="mistral",
+            provider=provider_name,
             task=task,
             retryable=retryable,
             code=f"LLM_{error_code.value.upper()}",
@@ -188,6 +190,7 @@ class TaskBudget:
             raise ProviderError(
                 ProviderErrorCode.BUDGET_EXHAUSTED,
                 "maximum LLM calls per task exhausted",
+                provider=self._config.provider,
                 task=task,
             )
         self._calls_by_task[key] = calls + 1
@@ -202,6 +205,7 @@ class TaskBudget:
                 raise ProviderError(
                     ProviderErrorCode.BUDGET_EXHAUSTED,
                     "input token budget exhausted",
+                    provider=self._config.provider,
                     task=task,
                 )
         if usage.output_tokens is not None:
@@ -211,6 +215,7 @@ class TaskBudget:
                 raise ProviderError(
                     ProviderErrorCode.BUDGET_EXHAUSTED,
                     "output token budget exhausted",
+                    provider=self._config.provider,
                     task=task,
                 )
         maximum = self._config.max_estimated_cost_usd
@@ -218,6 +223,7 @@ class TaskBudget:
             raise ProviderError(
                 ProviderErrorCode.BUDGET_EXHAUSTED,
                 "monetary budget cannot be enforced because provider usage is unknown",
+                provider=self._config.provider,
                 task=task,
             )
         if usage.estimated_cost_usd is not None:
@@ -226,6 +232,7 @@ class TaskBudget:
                 raise ProviderError(
                     ProviderErrorCode.BUDGET_EXHAUSTED,
                     "estimated monetary budget exhausted",
+                    provider=self._config.provider,
                     task=task,
                 )
         self._check_time(task=task)
@@ -237,6 +244,7 @@ class TaskBudget:
             raise ProviderError(
                 ProviderErrorCode.BUDGET_EXHAUSTED,
                 "task wall-clock budget exhausted",
+                provider=self._config.provider,
                 task=task,
             )
 

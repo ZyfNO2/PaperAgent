@@ -5,6 +5,7 @@ from pydantic import SecretStr, ValidationError
 
 from paperagent.errors import ProviderError as BaseProviderError
 from paperagent.providers.runtime import (
+    LLMProviderName,
     ProviderError,
     ProviderErrorCode,
     ProviderRuntimeConfig,
@@ -46,6 +47,18 @@ def test_provider_error_is_compatible_with_existing_node_error_bridge() -> None:
     assert error.code == "LLM_AUTHENTICATION"
     assert error.provider == "mistral"
     assert error.task == "planning"
+
+
+def test_budget_errors_preserve_configured_provider() -> None:
+    budget = TaskBudget(
+        make_config(provider=LLMProviderName.OPENAI, max_input_tokens_per_task=10)
+    )
+
+    with pytest.raises(ProviderError) as exc_info:
+        budget.record_usage(UsageRecord(input_tokens=11), task="planning")
+
+    assert exc_info.value.provider == "openai"
+    assert exc_info.value.code == "LLM_BUDGET_EXHAUSTED"
 
 
 def test_budget_counts_physical_calls() -> None:
