@@ -81,6 +81,28 @@ def test_incomplete_context_extracts_trace_and_state_details() -> None:
     assert context["message"] == "invalid JSON"
 
 
+@pytest.mark.parametrize(
+    ("raw_value", "expected"),
+    [
+        ("3", 3),
+        (-2, 0),
+        (True, 0),
+        ("not-a-number", 0),
+        ({"unexpected": "shape"}, 0),
+    ],
+)
+def test_incomplete_context_normalizes_untrusted_repair_attempts(
+    raw_value: object,
+    expected: int,
+) -> None:
+    context = extract_incomplete_context(
+        state={"execution": {"status": "blocked", "repair_attempts": raw_value}},
+        trace={},
+    )
+
+    assert context["repair_attempts"] == expected
+
+
 def test_error_summary_records_first_fatal_and_provider_counts() -> None:
     errors = [
         build_error_record(
