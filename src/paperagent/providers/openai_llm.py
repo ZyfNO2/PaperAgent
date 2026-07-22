@@ -28,6 +28,10 @@ from paperagent.schemas import Message, TokenUsage
 
 T = TypeVar("T", bound=BaseModel)
 
+_API_USER_AGENT = (
+    "PaperAgent/0.9 (OpenAI-compatible API client; "
+    "+https://github.com/ZyfNO2/PaperAgent)"
+)
 _RETRY_BACKOFF_SECONDS: tuple[float, ...] = (0.5, 1.0, 2.0)
 _RATE_LIMIT_BACKOFF_SECONDS: tuple[float, ...] = (15.0, 30.0, 60.0)
 _MAX_RETRY_AFTER_SECONDS = 300.0
@@ -36,6 +40,17 @@ _STRUCTURED_OUTPUT_ERROR_CODES = {
     "LLM_RESPONSE_JSON_INVALID",
     "LLM_RESPONSE_SCHEMA_INVALID",
 }
+
+
+def _request_headers(api_key: str) -> dict[str, str]:
+    """Build stable API headers without relying on transport-library fingerprints."""
+
+    return {
+        "Authorization": f"Bearer {api_key}",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "User-Agent": _API_USER_AGENT,
+    }
 
 
 class _StructuredProviderError(ProviderError):
@@ -189,10 +204,7 @@ class OpenAILLMProvider:
         messages: list[Message],
     ) -> T:
         del scenario, call_index, fixture_version
-        headers = {
-            "Authorization": f"Bearer {self._api_key}",
-            "Content-Type": "application/json",
-        }
+        headers = _request_headers(self._api_key)
         url = f"{self._base_url}/chat/completions"
         native_error: _StructuredProviderError | None = None
 
