@@ -6,7 +6,7 @@ on:
       - fix/academic-eval-diagnostics-baseline-binding
     paths:
       - ".github/workflows/academic-eval-artifact-driven-fixes.yml"
-      - ".github/scripts/apply_artifact_driven_fixes_v3.py"
+      - ".github/scripts/apply_artifact_driven_fixes_v4.py"
   workflow_dispatch:
 
 permissions:
@@ -35,7 +35,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Apply exact patches
-        run: python .github/scripts/apply_artifact_driven_fixes_v3.py
+        run: python .github/scripts/apply_artifact_driven_fixes_v4.py
 
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
@@ -120,4 +120,4 @@ jobs:
         run: |
           run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body \
-            "Artifact-driven v3 fix workflow finished with job status \`${{ job.status }}\`: [open run]($run_url)."
+            "Artifact-driven v4 fix workflow finished with job status \`${{ job.status }}\`: [open run]($run_url)."
