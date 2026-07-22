@@ -77,6 +77,9 @@ jobs:
             tests/scripts/test_provider_router_load.py \
             > build/semantic-tailoring-ci/ruff.json
           echo "$?" > build/semantic-tailoring-ci/ruff-exit-code.txt
+          ruff check --output-format json . \
+            > build/semantic-tailoring-ci/full-ruff.json
+          echo "$?" > build/semantic-tailoring-ci/full-ruff-exit-code.txt
           exit 0
       - name: Capture focused semantic and router tests
         shell: bash
@@ -118,6 +121,7 @@ jobs:
       - name: Enforce lint, tests, and committed formatting
         run: |
           test "$(cat build/semantic-tailoring-ci/ruff-exit-code.txt)" = "0"
+          test "$(cat build/semantic-tailoring-ci/full-ruff-exit-code.txt)" = "0"
           test "$(cat build/semantic-tailoring-ci/pytest-exit-code.txt)" = "0"
           git diff --exit-code -- \
             src/paperagent/strict_method_design.py \
