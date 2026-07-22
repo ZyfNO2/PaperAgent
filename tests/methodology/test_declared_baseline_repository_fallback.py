@@ -4,7 +4,13 @@ from datetime import UTC, datetime
 from typing import cast
 
 from paperagent.method_design_draft import MethodDesignDraft, build_method_proposal
-from paperagent.schemas import EvidenceBundle, EvidenceGap, EvidenceItem, ResearchPlan, ResearchRequest
+from paperagent.schemas import (
+    EvidenceBundle,
+    EvidenceGap,
+    EvidenceItem,
+    ResearchPlan,
+    ResearchRequest,
+)
 from paperagent.schemas.plan import SearchQuery
 from paperagent.state import PaperAgentState
 
@@ -28,7 +34,7 @@ def test_declared_baseline_miss_uses_repository_backed_direct_paper() -> None:
                 query_id="q-baseline",
                 gap_id=baseline_gap.gap_id,
                 query="industrial anomaly detection baseline repository",
-                source_types=["paper", "repository"],
+                source_types=["paper"],
             ),
             SearchQuery(
                 query_id="q-mechanism",
