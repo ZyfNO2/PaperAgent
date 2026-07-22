@@ -60,6 +60,10 @@ async def execute_benchmark_input(
     search: SearchProvider,
     max_llm_calls: int,
     task_id: str,
+    max_retrieval_rounds: int = 2,
+    max_queries_per_round: int = 5,
+    max_method_repairs: int = 1,
+    max_evidence_items: int = 30,
 ) -> tuple[dict[str, Any], PaperAgentState]:
     """Execute only user-visible benchmark input through the production graph.
 
@@ -75,6 +79,13 @@ async def execute_benchmark_input(
         ids=UUIDIdFactory(),
         store=InMemoryStateStore(),
     )
+    budgets = RunBudgets(
+        max_llm_calls=max_llm_calls,
+        max_retrieval_rounds=max_retrieval_rounds,
+        max_queries_per_round=max_queries_per_round,
+        max_method_repairs=max_method_repairs,
+        max_evidence_items=max_evidence_items,
+    )
     graph = build_graph()
     stream = graph.astream(
         {"request": benchmark_input_to_request(benchmark_input)},
@@ -83,7 +94,7 @@ async def execute_benchmark_input(
                 "services": services,
                 "thread_id": task_id,
                 "network_policy": "allow_search",
-                "budgets": RunBudgets(max_llm_calls=max_llm_calls),
+                "budgets": budgets,
                 "human_review_policy": "block",
             }
         },
@@ -106,6 +117,10 @@ async def execute_benchmark_case(
     search: SearchProvider,
     max_llm_calls: int,
     task_id: str,
+    max_retrieval_rounds: int = 2,
+    max_queries_per_round: int = 5,
+    max_method_repairs: int = 1,
+    max_evidence_items: int = 30,
 ) -> tuple[dict[str, Any], AcademicTailoringRunTrace]:
     """Execute clean input first, then attach external case metadata for scoring."""
 
@@ -115,6 +130,10 @@ async def execute_benchmark_case(
         search=search,
         max_llm_calls=max_llm_calls,
         task_id=task_id,
+        max_retrieval_rounds=max_retrieval_rounds,
+        max_queries_per_round=max_queries_per_round,
+        max_method_repairs=max_method_repairs,
+        max_evidence_items=max_evidence_items,
     )
     leakage_audit = audit_benchmark_execution_boundary()
     trace = normalize_paperagent_state(
