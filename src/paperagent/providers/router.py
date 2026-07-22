@@ -10,7 +10,6 @@ from typing import TypeVar
 from pydantic import BaseModel
 
 from paperagent.errors import ProviderError
-from paperagent.providers.base import LLMProvider
 from paperagent.providers.endpoint import (
     EndpointHealthState,
     ProviderPool,
