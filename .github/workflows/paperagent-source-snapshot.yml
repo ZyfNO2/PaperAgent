@@ -6,6 +6,11 @@ on:
       - fix/semantic-tailoring-role-bound-scoring
     paths:
       - ".github/workflows/paperagent-source-snapshot.yml"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/paperagent-source-snapshot.yml"
   workflow_dispatch:
 
 permissions:
