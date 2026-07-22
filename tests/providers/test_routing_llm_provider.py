@@ -49,6 +49,7 @@ class _StubProvider:
         messages: list[Message],
     ) -> T:
         del task, scenario, call_index, fixture_version, messages
+        await asyncio.sleep(0)
         self.calls += 1
         outcome = self._outcomes.pop(0)
         if isinstance(outcome, ProviderError):
