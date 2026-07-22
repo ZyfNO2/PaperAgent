@@ -21,7 +21,7 @@ concurrency:
 jobs:
   observe:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,7 +45,7 @@ jobs:
             echo '{"error":"no artifact-driven workflow run found"}' > /tmp/run-detail.json
             : > /tmp/failed.log
           else
-            for _ in $(seq 1 30); do
+            for _ in $(seq 1 60); do
               status="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --json status --jq .status)"
               if [ "$status" = "completed" ]; then
                 break
