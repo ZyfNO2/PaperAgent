@@ -43,7 +43,7 @@ jobs:
         run: python scripts/apply_eval_runner_reporting_patch.py
       - name: Apply safe lint fixes, format, and compile
         run: |
-          ruff check --fix \
+          ruff check --fix --exit-zero \
             src/paperagent/eval_runtime_reporting.py \
             scripts/project_academic_tailoring_retrieval_v1.py \
             scripts/gen_public_dataset.py \
@@ -73,6 +73,26 @@ jobs:
             scripts/build_eval_snapshot.py \
             scripts/validate_eval_snapshot.py \
             scripts/repair_legacy_eval_snapshot.py
+          mkdir -p build/eval-runner-patch
+          ruff check --output-format json \
+            src/paperagent/eval_runtime_reporting.py \
+            scripts/project_academic_tailoring_retrieval_v1.py \
+            scripts/gen_public_dataset.py \
+            scripts/run_academic_tailoring_retrieval_v1.py \
+            scripts/build_eval_snapshot.py \
+            scripts/validate_eval_snapshot.py \
+            scripts/repair_legacy_eval_snapshot.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
+            tests/evals/test_eval_snapshot_provenance.py \
+            tests/evals/test_eval_runtime_reporting.py \
+            > build/eval-runner-patch/ruff.json || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-runner-patch-lint
+          path: build/eval-runner-patch/ruff.json
+          if-no-files-found: error
+          retention-days: 3
       - name: Enforce lint
         run: |
           ruff check \
