@@ -97,11 +97,12 @@ def _prepare_role_bound_state(state: PaperAgentState) -> PaperAgentState:
             "do not synthesize an unattributed replacement module"
         )
 
-    if declared_baseline is not None and declared_module is not None:
-        if declared_baseline.evidence_id == declared_module.evidence_id:
-            raise ValueError(
-                "baseline and declared module source must be independent evidence items"
-            )
+    if (
+        declared_baseline is not None
+        and declared_module is not None
+        and declared_baseline.evidence_id == declared_module.evidence_id
+    ):
+        raise ValueError("baseline and declared module source must be independent evidence items")
 
     if declared_module is None:
         return state

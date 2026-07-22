@@ -274,6 +274,6 @@ def test_go_is_rejected_when_experiment_contract_is_generic() -> None:
         )
     )
 
-    assert result["dimensions"]["experiment_and_ablation_design"] < 7
+    assert result["scoring_audit"]["task_specific_experiment_count"] == 0
     assert "unsupported_go_decision" in result["hard_failures"]
     assert result["status"] == "failed"

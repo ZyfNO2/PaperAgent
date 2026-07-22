@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import importlib.util
-import re
 from pathlib import Path
 from typing import Any
 
@@ -299,7 +298,8 @@ def _score_case(
         experiment_score += 1
     if trace.stop_conditions or any(item.stopping_criteria for item in trace.experiments):
         experiment_score += 1
-    if trace.experiments and all(_protocol_specific(item) for item in trace.experiments):
+    task_specific_experiment_count = sum(_protocol_specific(item) for item in trace.experiments)
+    if trace.experiments and task_specific_experiment_count == len(trace.experiments):
         experiment_score += 2
     experiment_score = min(10, experiment_score)
 
@@ -346,6 +346,8 @@ def _score_case(
         or dimensions.get("dataset_truth_and_task_fit", 0) < 5
         or dimensions.get("repository_truth_and_relation", 0) < 3
         or experiment_score < 7
+        or not trace.experiments
+        or task_specific_experiment_count != len(trace.experiments)
     ):
         hard_failures.add("unsupported_go_decision")
 
@@ -371,9 +373,7 @@ def _score_case(
             "role_bound_paper_asset_matches": matched_papers,
             "role_bound_module_evidence_ids": sorted(module_source_ids),
             "verified_module_contract_count": len(verified_contract_modules),
-            "task_specific_experiment_count": sum(
-                _protocol_specific(item) for item in trace.experiments
-            ),
+            "task_specific_experiment_count": task_specific_experiment_count,
         }
     )
     result["scoring_audit"] = audit

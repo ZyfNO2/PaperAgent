@@ -57,7 +57,7 @@ class InstrumentedProvider:
         return self.delegate.model_name
 
     @property
-    def last_usage(self):  # noqa: ANN201 - compatibility property
+    def last_usage(self):
         return self.delegate.last_usage
 
     @property

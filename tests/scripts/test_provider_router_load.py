@@ -43,7 +43,7 @@ class SuccessfulDelegate:
 class FailingDelegate(SuccessfulDelegate):
     model_name = "fake-failure"
 
-    async def generate_structured(self, **kwargs):  # noqa: ANN201, ANN003
+    async def generate_structured(self, **kwargs):
         del kwargs
         raise ProviderError(
             "rate limited",
