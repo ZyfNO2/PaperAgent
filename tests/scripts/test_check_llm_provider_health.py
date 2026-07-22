@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import importlib.util
+import io
+import json
 from pathlib import Path
 from types import ModuleType
+from urllib.error import HTTPError
 
 SCRIPT = Path(__file__).parents[2] / "scripts" / "check_llm_provider_health.py"
 
@@ -39,6 +42,46 @@ def test_chat_probe_requires_a_choice_object() -> None:
     assert not module._chat_completion_accessible({"choices": ["bad"]})
 
 
+def test_credential_diagnostics_detect_assignment_and_whitespace_without_value() -> None:
+    module = _load_script()
+    diagnostics = module._credential_diagnostics(
+        "  OPENCODE_API_KEY=super-secret-value\n", "OPENCODE_API_KEY"
+    )
+
+    assert diagnostics == {
+        "credential_present": True,
+        "credential_had_outer_whitespace": True,
+        "credential_contains_env_assignment": True,
+    }
+    assert "super-secret-value" not in repr(diagnostics)
+
+
+def test_http_error_details_preserve_provider_reason_and_redact_key() -> None:
+    module = _load_script()
+    api_key = "sk-secret-material-123456"
+    body = json.dumps(
+        {
+            "error": {
+                "code": "invalid_api_key",
+                "message": f"API key {api_key} is not authorized for this workspace",
+            }
+        }
+    ).encode()
+    error = HTTPError(
+        "https://opencode.ai/zen/v1/chat/completions",
+        403,
+        "Forbidden",
+        hdrs=None,
+        fp=io.BytesIO(body),
+    )
+
+    details = module._http_error_details(error, api_key=api_key)
+
+    assert details["provider_error_code"] == "invalid_api_key"
+    assert api_key not in details["provider_error_message"]
+    assert "[REDACTED]" in details["provider_error_message"]
+
+
 def test_redacted_result_never_contains_credential_material() -> None:
     module = _load_script()
     result = module._result(
@@ -48,6 +91,15 @@ def test_redacted_result_never_contains_credential_material() -> None:
         probe_mode="chat",
         status="authentication",
         http_status=401,
+        credential_diagnostics={
+            "credential_present": True,
+            "credential_had_outer_whitespace": False,
+            "credential_contains_env_assignment": False,
+        },
+        provider_error={
+            "provider_error_code": "invalid_api_key",
+            "provider_error_message": "credential rejected",
+        },
     )
     assert result["base_url_host"] == "integrate.api.nvidia.com"
     assert result["probe_mode"] == "chat"
