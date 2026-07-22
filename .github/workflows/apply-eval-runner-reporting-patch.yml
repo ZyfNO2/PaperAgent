@@ -21,7 +21,7 @@ permissions:
 
 concurrency:
   group: apply-eval-runner-reporting-patch
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply-test-and-commit:
@@ -107,7 +107,7 @@ jobs:
           BRANCH: fix/semantic-tailoring-role-bound-scoring
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "4189824+github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "fix(eval): close snapshot provenance and runtime diagnostics"
           git push origin "HEAD:$BRANCH"
