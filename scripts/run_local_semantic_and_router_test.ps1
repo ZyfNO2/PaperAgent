@@ -17,7 +17,7 @@ function Invoke-PythonCommand {
     param([Parameter(Mandatory = $true)][string[]]$CommandArgs)
     & python @CommandArgs
     if ($LASTEXITCODE -ne 0) {
-        throw "python command failed with exit code $LASTEXITCODE: python $($CommandArgs -join ' ')"
+        throw "python command failed with exit code ${LASTEXITCODE}: python $($CommandArgs -join ' ')"
     }
 }
 
@@ -65,7 +65,7 @@ try {
                 $report.endpoints.PSObject.Properties |
                     ForEach-Object { "$($_.Name)=$([int]$_.Value.successes)" }
             ) -join ", "
-            throw "only $($successfulEndpoints.Count) endpoints completed requests; required $RequireSuccessfulEndpoints. Distribution: $distribution"
+            throw "only $($successfulEndpoints.Count) endpoints completed requests; required ${RequireSuccessfulEndpoints}. Distribution: $distribution"
         }
 
         Write-Host "Router validation passed."
