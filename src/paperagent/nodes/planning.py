@@ -7,7 +7,7 @@ from paperagent.nodes._shared import call_structured
 from paperagent.runtime import get_option
 from paperagent.schemas import EvidenceGap, ResearchPlan, ResearchRequest, SearchQuery
 from paperagent.state import PaperAgentState, StatePatch
-from paperagent.user_materials import user_material_identities
+from paperagent.user_materials import UserMaterialIdentity, user_material_identities
 
 NODE = "planning_node"
 _BUDGET_NORMALIZATION_RISK = (
@@ -208,7 +208,7 @@ def _ensure_user_material_identity_queries(
 
     identity_gaps: list[EvidenceGap] = []
     identity_queries: list[SearchQuery] = []
-    queued_identities: list[tuple[object, str, str]] = []
+    queued_identities: list[tuple[UserMaterialIdentity, str, str]] = []
 
     for identity in identities:
         if len(identity_queries) >= query_budget:
