@@ -6,10 +6,10 @@ on:
       - master
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  format-and-test:
+  verify-formatted-runtime:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -23,9 +23,9 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Apply Ruff formatting
+      - name: Ruff format check
         run: |
-          ruff format \
+          ruff format --check \
             src/paperagent/providers/runtime.py \
             src/paperagent/providers/openai_llm.py \
             src/paperagent/providers/mistral.py \
@@ -42,19 +42,7 @@ jobs:
             tests/nodes/test_report_fallback.py \
             tests/methodology/test_strict_method_design.py \
             tests/methodology/test_method_design_draft.py
-      - name: Commit isolated formatting patch
-        shell: bash
-        run: |
-          if git diff --quiet; then
-            echo "No formatting changes required."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src tests
-          git commit -m "style(runtime): apply Ruff formatting"
-          git push origin HEAD:tmp/cloud-format-c0f3
-      - name: Verify targeted quality and regressions
+      - name: Ruff lint
         run: |
           ruff check \
             src/paperagent/providers/runtime.py \
@@ -73,7 +61,10 @@ jobs:
             tests/nodes/test_report_fallback.py \
             tests/methodology/test_strict_method_design.py \
             tests/methodology/test_method_design_draft.py
-          python -m compileall -q src/paperagent
+      - name: Compile
+        run: python -m compileall -q src/paperagent
+      - name: Strict Mypy
+        run: |
           mypy --strict \
             src/paperagent/providers/runtime.py \
             src/paperagent/providers/openai_llm.py \
@@ -83,6 +74,8 @@ jobs:
             src/paperagent/nodes/report.py \
             src/paperagent/method_design_draft.py \
             src/paperagent/strict_method_design.py
+      - name: Focused pytest
+        run: |
           pytest -q \
             tests/providers/test_runtime.py \
             tests/providers/test_openai_llm_runtime_limits.py \
