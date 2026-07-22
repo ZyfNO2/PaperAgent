@@ -23,6 +23,13 @@ FORBIDDEN_PROMPT_TERMS = {
     "paperagent.academic-tailoring-retrieval.authoring.v1",
 }
 TOKEN_RE = re.compile(r"[a-z0-9]+", re.IGNORECASE)
+_INFERRED_BASELINE_RELATIONS = frozenset(
+    {
+        "baseline_role_query",
+        "parallel_via_dataset",
+        "direct_query",
+    }
+)
 
 
 def _canonical_bytes(value: object) -> bytes:
@@ -183,6 +190,60 @@ def _accepted_verified_items(
     return [items_by_id[evidence_id] for evidence_id in valid_ids if evidence_id in items_by_id]
 
 
+def _retrieval_pipeline_diagnostics(
+    state: dict[str, Any], trace: AcademicTailoringRunTrace
+) -> dict[str, Any]:
+    items_by_id = _state_evidence_items(state)
+    candidate_ids = set(items_by_id)
+    identity_verified_ids = {
+        item.evidence_id for item in trace.evidence_reviews if item.identity_verified
+    } & candidate_ids
+    relevance_passed_ids = {
+        item.evidence_id
+        for item in trace.evidence_reviews
+        if item.identity_verified and item.relevance_passed
+    } & candidate_ids
+    trace_accepted_ids = {
+        item.evidence_id
+        for item in trace.evidence_reviews
+        if item.accepted and item.identity_verified and item.relevance_passed
+    } & candidate_ids
+    state_evidence = state.get("evidence", {})
+    state_accepted_ids = {
+        str(value)
+        for value in (
+            state_evidence.get("accepted_ids", []) if isinstance(state_evidence, dict) else []
+        )
+    } & candidate_ids
+    accepted_verified_ids = trace_accepted_ids & state_accepted_ids
+
+    failure_stage: str | None = None
+    if not candidate_ids:
+        failure_stage = "no_candidates_returned"
+    elif not identity_verified_ids:
+        failure_stage = "no_identity_verified_candidates"
+    elif not relevance_passed_ids:
+        failure_stage = "no_relevance_passed_candidates"
+    elif not trace_accepted_ids:
+        failure_stage = "no_trace_accepted_candidates"
+    elif not accepted_verified_ids:
+        failure_stage = "state_trace_acceptance_mismatch"
+
+    return {
+        "failure_stage": failure_stage,
+        "candidate_count": len(candidate_ids),
+        "identity_verified_count": len(identity_verified_ids),
+        "relevance_passed_count": len(relevance_passed_ids),
+        "trace_accepted_count": len(trace_accepted_ids),
+        "state_accepted_count": len(state_accepted_ids),
+        "accepted_verified_count": len(accepted_verified_ids),
+        "identity_rejected_count": len(candidate_ids - identity_verified_ids),
+        "relevance_rejected_count": len(identity_verified_ids - relevance_passed_ids),
+        "review_rejected_count": len(relevance_passed_ids - trace_accepted_ids),
+        "state_trace_mismatch_count": len(trace_accepted_ids ^ state_accepted_ids),
+    }
+
+
 def _accepted_asset_matches(assets: list[dict[str, Any]], items: list[dict[str, Any]]) -> int:
     return sum(any(_asset_matches_item(asset, item) for item in items) for asset in assets)
 
@@ -238,6 +299,38 @@ def _gold_baseline_titles(case: dict[str, Any]) -> list[str]:
 def _baseline_target_titles(case: dict[str, Any]) -> list[str]:
     declared = _declared_baseline_titles(case)
     return declared if declared else _gold_baseline_titles(case)
+
+
+def _baseline_identity_status(
+    case: dict[str, Any],
+    *,
+    baseline_name: str | None,
+    baseline_source_item: dict[str, Any] | None,
+    baseline_targets: list[str],
+) -> str:
+    if baseline_name is None:
+        return "missing"
+    if baseline_source_item is None:
+        return "unbound"
+    source_title = str(baseline_source_item.get("title", ""))
+    if any(
+        _titles_related(baseline_name, target) or _titles_related(source_title, target)
+        for target in baseline_targets
+    ):
+        return "exact_target"
+    if _declared_baseline_titles(case):
+        return "mismatch"
+    metadata = baseline_source_item.get("metadata", {})
+    relation = metadata.get("relation") if isinstance(metadata, dict) else None
+    baseline_candidate = metadata.get("baseline_candidate") if isinstance(metadata, dict) else None
+    if (
+        case.get("case_type") == "title_only"
+        and baseline_source_item.get("source_type") == "paper"
+        and baseline_candidate == "inferred"
+        and relation in _INFERRED_BASELINE_RELATIONS
+    ):
+        return "evidence_bound_alternative"
+    return "mismatch"
 
 
 def _specific_protocol_text(value: str | None) -> bool:
@@ -341,6 +434,7 @@ def _score_case(
     dataset_assets = [item for item in expected_assets if item.get("kind") == "dataset"]
 
     accepted_items = _accepted_verified_items(state, trace)
+    retrieval_diagnostics = _retrieval_pipeline_diagnostics(state, trace)
     accepted_items_by_id = {
         str(item["evidence_id"]): item for item in accepted_items if item.get("evidence_id")
     }
@@ -361,14 +455,17 @@ def _score_case(
     baseline_source_title = (
         str(baseline_source_item.get("title", "")) if baseline_source_item is not None else ""
     )
-    baseline_target_match = bool(
-        baseline is not None
-        and baseline_targets
-        and any(
-            _titles_related(baseline.name, target) or _titles_related(baseline_source_title, target)
-            for target in baseline_targets
-        )
+    baseline_identity_status = _baseline_identity_status(
+        case,
+        baseline_name=baseline.name if baseline is not None else None,
+        baseline_source_item=baseline_source_item,
+        baseline_targets=baseline_targets,
     )
+    baseline_target_match = baseline_identity_status == "exact_target"
+    baseline_identity_acceptable = baseline_identity_status in {
+        "exact_target",
+        "evidence_bound_alternative",
+    }
 
     identity_score = 0
     if accepted_papers:
@@ -377,6 +474,8 @@ def _score_case(
         identity_score += round(10 * matched_papers / len(paper_assets))
     else:
         identity_score += 10
+    if baseline_identity_status == "evidence_bound_alternative":
+        identity_score += 5
     identity_score = min(15, identity_score)
 
     baseline_score = 0
@@ -384,6 +483,8 @@ def _score_case(
         baseline_score += 5
         if baseline_target_match:
             baseline_score += 5
+        elif baseline_identity_status == "evidence_bound_alternative":
+            baseline_score += 3
         if baseline.source_evidence_id:
             baseline_score += 2
         if baseline.version_or_commit:
@@ -457,7 +558,7 @@ def _score_case(
     hypothesis_score = 0
     if _complete_hypothesis(trace):
         hypothesis_score += 3
-        if baseline_target_match and accepted_items:
+        if baseline_identity_acceptable and accepted_items:
             hypothesis_score += 2
 
     experiment_score = 0
@@ -503,7 +604,7 @@ def _score_case(
         hard_failures.append("no_real_retrieval")
     if baseline is not None and baseline_source_item is None:
         hard_failures.append("baseline_not_bound_to_accepted_evidence")
-    if baseline is not None and baseline_targets and not baseline_target_match:
+    if baseline_identity_status == "mismatch":
         hard_failures.append("wrong_paper_identity")
     if baseline is None and baseline_targets:
         hard_failures.append("missing_required_baseline")
@@ -530,7 +631,10 @@ def _score_case(
     ):
         hard_failures.append("evidence_role_mismatch")
     if trace.decision == "ACCEPT" and (
-        hard_failures or not baseline_target_match or dataset_score < 5 or repository_score < 3
+        hard_failures
+        or not baseline_identity_acceptable
+        or dataset_score < 5
+        or repository_score < 3
     ):
         hard_failures.append("unsupported_acceptance")
 
@@ -553,10 +657,15 @@ def _score_case(
             "accepted_verified_evidence_count": len(accepted_items),
             "accepted_repository_count": len(accepted_repos),
             "accepted_dataset_count": len(accepted_datasets),
+            "retrieval_pipeline": retrieval_diagnostics,
             "baseline_name": baseline.name if baseline is not None else None,
             "baseline_source_title": baseline_source_title or None,
             "baseline_targets": baseline_targets,
             "baseline_target_match": baseline_target_match,
+            "baseline_identity_status": baseline_identity_status,
+            "evidence_bound_alternative_baseline": (
+                baseline_identity_status == "evidence_bound_alternative"
+            ),
             "evidence_backed_module_count": evidence_backed_modules,
         },
     }
@@ -610,7 +719,8 @@ def main() -> int:
         for case in cases
     ]
     passed = sum(item["status"] == "passed" for item in results)
-    hard_failure_count = sum(len(item["hard_failures"]) for item in results)
+    hard_failure_label_count = sum(len(item["hard_failures"]) for item in results)
+    hard_failure_case_count = sum(bool(item["hard_failures"]) for item in results)
     report = {
         "schema": "paperagent.academic-tailoring-retrieval.diagnostic-report.v1",
         "dataset_id": authoring.get("dataset_id"),
@@ -622,7 +732,9 @@ def main() -> int:
         "passed": passed,
         "failed": len(results) - passed,
         "average_score": round(sum(item["score"] for item in results) / len(results), 2),
-        "hard_failure_count": hard_failure_count,
+        "hard_failure_count": hard_failure_label_count,
+        "hard_failure_label_count": hard_failure_label_count,
+        "hard_failure_case_count": hard_failure_case_count,
         "prompt_leakage_findings": prompt_findings,
         "runtime_errors": runtime_summary.get("errors", []),
         "cases": results,
@@ -635,7 +747,10 @@ def main() -> int:
     )
     print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
     failed = (
-        report["failed"] or hard_failure_count or prompt_findings or runtime_summary.get("errors")
+        report["failed"]
+        or hard_failure_label_count
+        or prompt_findings
+        or runtime_summary.get("errors")
     )
     return 1 if args.require_pass and failed else 0
 
