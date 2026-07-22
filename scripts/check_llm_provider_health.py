@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -10,6 +11,7 @@ from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 SCHEMA = "paperagent.llm-provider-health.v1"
+_TOKEN_LIKE_RE = re.compile(r"(?i)\b(?:sk|oc|key|token)[-_][A-Za-z0-9._-]{8,}\b")
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -58,6 +60,72 @@ def _chat_completion_accessible(payload: object) -> bool:
     return isinstance(choices, list) and bool(choices) and isinstance(choices[0], dict)
 
 
+def _credential_diagnostics(raw_value: str, env_name: str) -> dict[str, bool]:
+    stripped = raw_value.strip()
+    return {
+        "credential_present": bool(stripped),
+        "credential_had_outer_whitespace": raw_value != stripped,
+        "credential_contains_env_assignment": stripped.startswith(f"{env_name}="),
+    }
+
+
+def _sanitize_provider_text(value: object, *, api_key: str, limit: int = 400) -> str | None:
+    if not isinstance(value, str):
+        return None
+    text = " ".join(value.split())
+    if not text:
+        return None
+    if api_key:
+        text = text.replace(api_key, "[REDACTED]")
+    text = _TOKEN_LIKE_RE.sub("[REDACTED]", text)
+    return text[:limit]
+
+
+def _http_error_details(exc: HTTPError, *, api_key: str) -> dict[str, str]:
+    try:
+        raw = exc.read()
+    except OSError:
+        return {}
+    if not raw:
+        return {}
+    try:
+        text = raw.decode("utf-8", errors="replace")
+    except AttributeError:
+        return {}
+
+    payload: object
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError:
+        message = _sanitize_provider_text(text, api_key=api_key)
+        return {"provider_error_message": message} if message else {}
+
+    code: object = None
+    message: object = None
+    if isinstance(payload, dict):
+        error = payload.get("error")
+        if isinstance(error, dict):
+            code = error.get("code") or error.get("type") or error.get("name")
+            message = error.get("message") or error.get("detail")
+        elif isinstance(error, str):
+            message = error
+        code = code or payload.get("code") or payload.get("type")
+        message = message or payload.get("message") or payload.get("detail")
+
+    details: dict[str, str] = {}
+    safe_code = _sanitize_provider_text(code, api_key=api_key, limit=120)
+    safe_message = _sanitize_provider_text(message, api_key=api_key)
+    if safe_code:
+        details["provider_error_code"] = safe_code
+    if safe_message:
+        details["provider_error_message"] = safe_message
+    if not details:
+        fallback = _sanitize_provider_text(text, api_key=api_key)
+        if fallback:
+            details["provider_error_message"] = fallback
+    return details
+
+
 def _write_result(path: Path | None, result: dict[str, Any]) -> None:
     serialized = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     print(serialized, end="")
@@ -75,8 +143,10 @@ def _result(
     probe_mode: str = "models",
     http_status: int | None = None,
     model_accessible: bool | None = None,
+    credential_diagnostics: dict[str, bool] | None = None,
+    provider_error: dict[str, str] | None = None,
 ) -> dict[str, Any]:
-    return {
+    result: dict[str, Any] = {
         "schema": SCHEMA,
         "provider": provider,
         "model": model,
@@ -87,6 +157,11 @@ def _result(
         "model_accessible": model_accessible,
         "credential_present": True,
     }
+    if credential_diagnostics:
+        result.update(credential_diagnostics)
+    if provider_error:
+        result.update(provider_error)
+    return result
 
 
 def _build_request(
@@ -119,7 +194,9 @@ def _build_request(
 
 def main() -> int:
     args = _parser().parse_args()
-    api_key = os.getenv(args.api_key_env, "").strip()
+    raw_api_key = os.getenv(args.api_key_env, "")
+    credential_diagnostics = _credential_diagnostics(raw_api_key, args.api_key_env)
+    api_key = raw_api_key.strip()
     if not api_key:
         result = _result(
             provider=args.provider,
@@ -127,8 +204,8 @@ def main() -> int:
             base_url=args.base_url,
             probe_mode=args.probe_mode,
             status="configuration",
+            credential_diagnostics=credential_diagnostics,
         )
-        result["credential_present"] = False
         _write_result(args.output, result)
         return 2
 
@@ -150,6 +227,8 @@ def main() -> int:
             probe_mode=args.probe_mode,
             status=_status_name(exc.code),
             http_status=exc.code,
+            credential_diagnostics=credential_diagnostics,
+            provider_error=_http_error_details(exc, api_key=api_key),
         )
         _write_result(args.output, result)
         return 3
@@ -160,6 +239,7 @@ def main() -> int:
             base_url=args.base_url,
             probe_mode=args.probe_mode,
             status="connect",
+            credential_diagnostics=credential_diagnostics,
         )
         _write_result(args.output, result)
         return 4
@@ -170,6 +250,7 @@ def main() -> int:
             base_url=args.base_url,
             probe_mode=args.probe_mode,
             status="malformed_response",
+            credential_diagnostics=credential_diagnostics,
         )
         _write_result(args.output, result)
         return 5
@@ -182,6 +263,7 @@ def main() -> int:
             probe_mode=args.probe_mode,
             status=_status_name(status_code),
             http_status=status_code,
+            credential_diagnostics=credential_diagnostics,
         )
         _write_result(args.output, result)
         return 3
@@ -198,6 +280,7 @@ def main() -> int:
         status="ok" if model_accessible else "model_unavailable",
         http_status=status_code,
         model_accessible=model_accessible,
+        credential_diagnostics=credential_diagnostics,
     )
     _write_result(args.output, result)
     return 0 if model_accessible else 6
