@@ -1,0 +1,77 @@
+name: Semantic Tailoring Cloud Development
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-test-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out development branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/semantic-tailoring-role-bound-scoring
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install development dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Apply semantic hardening migration
+        run: python scripts/dev/apply_semantic_tailoring_hardening.py
+
+      - name: Format changed Python files
+        run: |
+          ruff format \
+            src/paperagent/method_design_draft.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            tests/methodology/test_role_bound_method_selection.py \
+            tests/evaluation/test_semantic_role_bound_retrieval_scorer.py
+
+      - name: Lint changed Python files
+        run: |
+          ruff check \
+            src/paperagent/method_design_draft.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            tests/methodology/test_role_bound_method_selection.py \
+            tests/evaluation/test_semantic_role_bound_retrieval_scorer.py
+
+      - name: Run focused semantic tests
+        run: |
+          python -m pytest -q \
+            tests/methodology/test_role_bound_method_selection.py \
+            tests/evaluation/test_semantic_role_bound_retrieval_scorer.py \
+            tests/methodology/test_method_design_draft.py \
+            tests/evaluation/test_academic_tailoring_retrieval_v1.py
+
+      - name: Run full regression
+        id: full_regression
+        continue-on-error: true
+        run: python -m pytest -q
+
+      - name: Commit generated implementation
+        run: |
+          git config user.name "paperagent-cloud-dev"
+          git config user.email "paperagent-cloud-dev@users.noreply.github.com"
+          git add \
+            src/paperagent/method_design_draft.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            tests/methodology/test_role_bound_method_selection.py \
+            tests/evaluation/test_semantic_role_bound_retrieval_scorer.py
+          git commit -m "fix(eval): enforce role-bound academic tailoring evidence"
+          git push origin HEAD:fix/semantic-tailoring-role-bound-scoring
+
+      - name: Report full regression status
+        if: steps.full_regression.outcome != 'success'
+        run: |
+          echo "Full regression failed; focused semantic tests passed and the fix commit was pushed."
+          exit 1
