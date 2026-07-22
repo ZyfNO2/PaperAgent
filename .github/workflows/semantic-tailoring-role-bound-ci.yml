@@ -52,7 +52,9 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
       - name: Install project
-        run: python -m pip install -q -e '.[dev]'
+        run: |
+          python -m pip install -q -e '.[dev]'
+          mkdir -p build/semantic-tailoring-ci
       - name: Apply repository formatting in validation workspace
         run: |
           ruff format \
@@ -70,30 +72,36 @@ jobs:
             src/paperagent/nodes/method_design.py \
             scripts/score_academic_tailoring_retrieval_v2.py \
             scripts/test_provider_router_load.py
-      - name: Validate local runners and router configurations
+      - name: Validate router JSON files
+        run: |
+          python -m json.tool config/provider-router-load.example.json >/dev/null
+          python -m json.tool config/provider-router-balanced.example.json >/dev/null
+      - name: Construct router profiles without network calls
         env:
           NVIDIA_API_KEY_A: ci-placeholder
           NVIDIA_MODEL: ci/model
           MISTRAL_API_KEY: ci-placeholder
           MISTRAL_MODEL: ci/model
         run: |
-          python -m json.tool config/provider-router-load.example.json >/dev/null
-          python -m json.tool config/provider-router-balanced.example.json >/dev/null
           python scripts/test_provider_router_load.py \
             --config config/provider-router-load.example.json \
             --validate-only
           python scripts/test_provider_router_load.py \
             --config config/provider-router-balanced.example.json \
             --validate-only
+      - name: Validate Bash local runner
+        run: |
           bash -n scripts/run_local_semantic_and_router_test.sh
           bash scripts/run_local_semantic_and_router_test.sh \
             --skip-install --skip-semantic --skip-live
-          pwsh -NoProfile -File scripts/run_local_semantic_and_router_test.ps1 \
+      - name: Validate PowerShell local runner
+        shell: pwsh
+        run: |
+          & scripts/run_local_semantic_and_router_test.ps1 `
             -SkipInstall -SkipSemantic -SkipLive
       - name: Capture lint and type diagnostics
         shell: bash
         run: |
-          mkdir -p build/semantic-tailoring-ci
           set +e
           ruff check --output-format json \
             src/paperagent/strict_method_design.py \
@@ -125,7 +133,7 @@ jobs:
             2>&1 | tee build/semantic-tailoring-ci/pytest.txt
           echo "${PIPESTATUS[0]}" > build/semantic-tailoring-ci/pytest-exit-code.txt
           exit 0
-      - name: Upload validated formatted source
+      - name: Upload validated source and runners
         if: always()
         uses: actions/upload-artifact@v4
         with:
