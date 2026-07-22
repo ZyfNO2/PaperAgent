@@ -8,6 +8,11 @@ on:
       - ".github/workflows/academic-tailoring-runtime-recovery.yml"
       - "scripts/run_academic_tailoring_retrieval_v1.py"
       - "src/paperagent/eval_runtime_reporting.py"
+      - "src/paperagent/providers/runtime.py"
+      - "src/paperagent/nodes/planning.py"
+      - "src/paperagent/nodes/report.py"
+      - "src/paperagent/method_design_draft.py"
+      - "src/paperagent/strict_method_design.py"
   workflow_dispatch:
 
 permissions:
@@ -58,10 +63,21 @@ jobs:
         run: |
           ruff check \
             src/paperagent/eval_runtime_reporting.py \
+            src/paperagent/providers/runtime.py \
+            src/paperagent/nodes/planning.py \
+            src/paperagent/nodes/report.py \
+            src/paperagent/method_design_draft.py \
+            src/paperagent/strict_method_design.py \
             scripts/project_academic_tailoring_retrieval_v1.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/score_academic_tailoring_retrieval_v2.py
           pytest -q \
+            tests/providers/test_runtime.py \
+            tests/nodes/test_planning_identity_priority.py \
+            tests/nodes/test_method_design_baseline_anchor.py \
+            tests/nodes/test_report_fallback.py \
+            tests/methodology/test_strict_method_design.py \
+            tests/methodology/test_method_design_draft.py \
             tests/evals/test_eval_runtime_reporting.py \
             tests/evals/test_eval_snapshot_provenance.py \
             tests/evals/test_academic_tailoring_retrieval_v1_boundary.py
@@ -87,7 +103,7 @@ jobs:
       - name: Install isolated candidate
         working-directory: candidate-workspace
         run: python -m pip install -q -e '.[dev]'
-      - name: Execute cases 003, 006, 007, and 010 with real provider
+      - name: Execute cases 003, 005, 006, 007, and 010 with real provider
         id: runtime
         working-directory: candidate-workspace
         shell: bash
@@ -97,12 +113,13 @@ jobs:
             --dataset input/public-dataset.json \
             --output-dir build/runtime-recovery/candidate \
             --case-id atr-v1-003-nlp-bert-lora-clinc \
+            --case-id atr-v1-005-remote-oriented-small-edge \
             --case-id atr-v1-006-industrial-usad-anomaly-transformer \
             --case-id atr-v1-007-graph-graphsage-gat-ppi \
             --case-id atr-v1-010-rec-coldstart-sequential \
-            --max-cases 4 \
-            --max-llm-calls 20 \
-            --provider-call-budget 240 \
+            --max-cases 5 \
+            --max-llm-calls 24 \
+            --provider-call-budget 300 \
             --enable-web-search \
             --source-commit "$GITHUB_SHA" \
             --llm-provider openai \
@@ -123,6 +140,7 @@ jobs:
 
           selected = {
               'atr-v1-003-nlp-bert-lora-clinc',
+              'atr-v1-005-remote-oriented-small-edge',
               'atr-v1-006-industrial-usad-anomaly-transformer',
               'atr-v1-007-graph-graphsage-gat-ppi',
               'atr-v1-010-rec-coldstart-sequential',
@@ -151,6 +169,41 @@ jobs:
             echo "candidate outputs missing" > build/runtime-recovery/scorer-not-run.txt
           fi
           cp -R candidate-workspace/build/runtime-recovery/candidate build/runtime-recovery/candidate
+      - name: Build normalized LLM output audit
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          states_path = Path('build/runtime-recovery/candidate/states.jsonl')
+          output = {'schema': 'paperagent.real-llm-output-audit.v1', 'cases': []}
+          if states_path.is_file():
+              for line in states_path.read_text(encoding='utf-8').splitlines():
+                  record = json.loads(line)
+                  state = record.get('state') or {}
+                  method = state.get('method') or {}
+                  plan = method.get('methodology_plan') or {}
+                  baseline = plan.get('baseline') or method.get('baseline') or {}
+                  modules = plan.get('modules') or method.get('modules') or []
+                  output['cases'].append({
+                      'case_id': record.get('case_id'),
+                      'execution_status': (state.get('execution') or {}).get('status'),
+                      'scientific_verdict': (state.get('final_outcome') or {}).get('scientific_verdict'),
+                      'report_status': (state.get('report') or {}).get('status'),
+                      'baseline_name': baseline.get('name'),
+                      'baseline_evidence_id': baseline.get('source_evidence_id'),
+                      'module_names': [item.get('name') or item.get('module_id') for item in modules],
+                      'module_evidence_ids': [item.get('evidence_id') for item in modules],
+                      'trace_audit_passed': (state.get('trace_audit') or {}).get('passed'),
+                      'last_error_code': ((state.get('execution') or {}).get('last_error') or {}).get('code'),
+                  })
+          Path('build/runtime-recovery/llm-output-audit.json').write_text(
+              json.dumps(output, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          PY
       - name: Write recovery summary
         if: always()
         shell: bash
