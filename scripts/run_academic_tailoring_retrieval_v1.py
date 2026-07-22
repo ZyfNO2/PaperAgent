@@ -22,6 +22,7 @@ from paperagent.claw_runtime_evidence import (
 )
 from paperagent.eval_runtime_reporting import (
     build_error_record,
+    classify_error,
     extract_incomplete_context,
     load_resume_checkpoint,
     should_stop_run,
@@ -53,26 +54,6 @@ FORBIDDEN_KEYS = {
     "cases_sha256",
 }
 T = TypeVar("T", bound=BaseModel)
-_FATAL_PROVIDER_ERROR_CODES = frozenset(
-    {
-        *(
-            f"LLM_{code.value.upper()}"
-            for code in (
-                ProviderErrorCode.CONFIGURATION,
-                ProviderErrorCode.AUTHENTICATION,
-                ProviderErrorCode.PERMISSION,
-                ProviderErrorCode.RATE_LIMITED,
-                ProviderErrorCode.READ_TIMEOUT,
-                ProviderErrorCode.CANCELLED,
-                ProviderErrorCode.UNKNOWN,
-            )
-        ),
-        "LLM_PROVIDER_HTTP_ERROR",
-        "LLM_TIMEOUT",
-        "LLM_INVALID_REQUEST",
-        "LLM_RESPONSE_FORMAT_UNSUPPORTED",
-    }
-)
 
 
 def _normalize_provider_error_code(value: object) -> str | None:
@@ -100,7 +81,9 @@ def _fatal_provider_error_code_from_trace(trace_payload: dict[str, object]) -> s
         candidates.extend(trace_codes)
     for candidate in candidates:
         normalized = _normalize_provider_error_code(candidate)
-        if normalized in _FATAL_PROVIDER_ERROR_CODES:
+        if normalized is not None and should_stop_run(
+            classify_error(error_code=normalized, retryable=False)
+        ):
             return normalized
     return None
 

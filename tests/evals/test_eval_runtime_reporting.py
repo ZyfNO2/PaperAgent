@@ -148,3 +148,25 @@ def test_resume_checkpoint_requires_complete_prefix_and_matching_digest(
             selected_case_ids=selected,
             expected_public_sha256="b" * 64,
         )
+
+
+def test_runner_trace_fatal_policy_uses_shared_classifier() -> None:
+    import importlib.util
+
+    script = Path(__file__).parents[2] / "scripts" / "run_academic_tailoring_retrieval_v1.py"
+    spec = importlib.util.spec_from_file_location("academic_tailoring_runtime_runner", script)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    assert (
+        module._fatal_provider_error_code_from_trace({"trace_error_codes": ["LLM_AUTHENTICATION"]})
+        == "LLM_AUTHENTICATION"
+    )
+    for code in (
+        "LLM_RATE_LIMITED",
+        "LLM_READ_TIMEOUT",
+        "LLM_PROVIDER_5XX",
+        "LLM_UNKNOWN",
+    ):
+        assert module._fatal_provider_error_code_from_trace({"trace_error_codes": [code]}) is None
