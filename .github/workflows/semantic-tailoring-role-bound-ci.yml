@@ -9,10 +9,14 @@ on:
       - "src/paperagent/nodes/method_design.py"
       - "scripts/score_academic_tailoring_retrieval_v2.py"
       - "scripts/test_provider_router_load.py"
+      - "scripts/run_local_semantic_and_router_test.ps1"
+      - "scripts/run_local_semantic_and_router_test.sh"
       - "config/provider-router-load.example.json"
+      - "config/provider-router-balanced.example.json"
       - "tests/methodology/test_strict_method_design.py"
       - "tests/evals/test_academic_tailoring_retrieval_v2_scorer.py"
       - "tests/scripts/test_provider_router_load.py"
+      - "docs/evaluation/SEMANTIC_ROLE_BOUND_SCORING_HANDOFF.md"
       - ".github/workflows/semantic-tailoring-role-bound-ci.yml"
   pull_request:
     branches:
@@ -22,10 +26,14 @@ on:
       - "src/paperagent/nodes/method_design.py"
       - "scripts/score_academic_tailoring_retrieval_v2.py"
       - "scripts/test_provider_router_load.py"
+      - "scripts/run_local_semantic_and_router_test.ps1"
+      - "scripts/run_local_semantic_and_router_test.sh"
       - "config/provider-router-load.example.json"
+      - "config/provider-router-balanced.example.json"
       - "tests/methodology/test_strict_method_design.py"
       - "tests/evals/test_academic_tailoring_retrieval_v2_scorer.py"
       - "tests/scripts/test_provider_router_load.py"
+      - "docs/evaluation/SEMANTIC_ROLE_BOUND_SCORING_HANDOFF.md"
       - ".github/workflows/semantic-tailoring-role-bound-ci.yml"
   workflow_dispatch:
 
@@ -62,6 +70,26 @@ jobs:
             src/paperagent/nodes/method_design.py \
             scripts/score_academic_tailoring_retrieval_v2.py \
             scripts/test_provider_router_load.py
+      - name: Validate local runners and router configurations
+        env:
+          NVIDIA_API_KEY_A: ci-placeholder
+          NVIDIA_MODEL: ci/model
+          MISTRAL_API_KEY: ci-placeholder
+          MISTRAL_MODEL: ci/model
+        run: |
+          python -m json.tool config/provider-router-load.example.json >/dev/null
+          python -m json.tool config/provider-router-balanced.example.json >/dev/null
+          python scripts/test_provider_router_load.py \
+            --config config/provider-router-load.example.json \
+            --validate-only
+          python scripts/test_provider_router_load.py \
+            --config config/provider-router-balanced.example.json \
+            --validate-only
+          bash -n scripts/run_local_semantic_and_router_test.sh
+          bash scripts/run_local_semantic_and_router_test.sh \
+            --skip-install --skip-semantic --skip-live
+          pwsh -NoProfile -File scripts/run_local_semantic_and_router_test.ps1 \
+            -SkipInstall -SkipSemantic -SkipLive
       - name: Capture lint and type diagnostics
         shell: bash
         run: |
@@ -107,6 +135,10 @@ jobs:
             src/paperagent/nodes/method_design.py
             scripts/score_academic_tailoring_retrieval_v2.py
             scripts/test_provider_router_load.py
+            scripts/run_local_semantic_and_router_test.ps1
+            scripts/run_local_semantic_and_router_test.sh
+            config/provider-router-load.example.json
+            config/provider-router-balanced.example.json
             tests/methodology/test_strict_method_design.py
             tests/evals/test_academic_tailoring_retrieval_v2_scorer.py
             tests/scripts/test_provider_router_load.py
