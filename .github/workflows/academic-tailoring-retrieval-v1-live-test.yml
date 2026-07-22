@@ -10,6 +10,7 @@ on:
       - "scripts/project_academic_tailoring_retrieval_v1.py"
       - "scripts/run_academic_tailoring_retrieval_v1.py"
       - "scripts/score_academic_tailoring_retrieval_v1.py"
+      - "scripts/score_academic_tailoring_retrieval_v2.py"
       - "tests/evals/test_academic_tailoring_retrieval_v1_boundary.py"
       - "tests/nodes/test_intake_planning.py"
       - "tests/scripts/test_check_llm_provider_health.py"
@@ -24,6 +25,7 @@ on:
       - "scripts/project_academic_tailoring_retrieval_v1.py"
       - "scripts/run_academic_tailoring_retrieval_v1.py"
       - "scripts/score_academic_tailoring_retrieval_v1.py"
+      - "scripts/score_academic_tailoring_retrieval_v2.py"
       - "tests/evals/test_academic_tailoring_retrieval_v1_boundary.py"
       - "tests/nodes/test_intake_planning.py"
       - "tests/scripts/test_check_llm_provider_health.py"
@@ -72,6 +74,7 @@ jobs:
             scripts/project_academic_tailoring_retrieval_v1.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/score_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v2.py \
             src/paperagent/nodes/planning.py \
             tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
             tests/nodes/test_intake_planning.py \
@@ -81,6 +84,7 @@ jobs:
             scripts/project_academic_tailoring_retrieval_v1.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/score_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v2.py \
             src/paperagent/nodes/planning.py \
             tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
             tests/nodes/test_intake_planning.py \
@@ -235,12 +239,12 @@ jobs:
         with:
           name: academic-tailoring-retrieval-v1-candidate-run
           path: candidate-run
-      - name: Score outside candidate boundary
+      - name: Score outside candidate boundary with role-bound semantic policy
         id: score
         shell: bash
         run: |
           set +e
-          python scripts/score_academic_tailoring_retrieval_v1.py \
+          python scripts/score_academic_tailoring_retrieval_v2.py \
             --authoring evals/academic_tailoring_retrieval_v1/dataset-authoring.json \
             --states candidate-run/states.jsonl \
             --traces candidate-run/run-traces.jsonl \
