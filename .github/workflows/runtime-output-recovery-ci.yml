@@ -6,11 +6,16 @@ on:
       - fix/semantic-tailoring-role-bound-scoring
     paths:
       - "src/paperagent/providers/runtime.py"
+      - "src/paperagent/providers/openai_llm.py"
+      - "src/paperagent/providers/mistral.py"
+      - "src/paperagent/eval_runtime_reporting.py"
       - "src/paperagent/nodes/planning.py"
       - "src/paperagent/nodes/report.py"
       - "src/paperagent/method_design_draft.py"
       - "src/paperagent/strict_method_design.py"
       - "tests/providers/test_runtime.py"
+      - "tests/providers/test_openai_llm_runtime_limits.py"
+      - "tests/evals/test_eval_runtime_reporting.py"
       - "tests/nodes/test_planning_identity_priority.py"
       - "tests/nodes/test_method_design_baseline_anchor.py"
       - "tests/nodes/test_report_fallback.py"
@@ -22,11 +27,16 @@ on:
       - master
     paths:
       - "src/paperagent/providers/runtime.py"
+      - "src/paperagent/providers/openai_llm.py"
+      - "src/paperagent/providers/mistral.py"
+      - "src/paperagent/eval_runtime_reporting.py"
       - "src/paperagent/nodes/planning.py"
       - "src/paperagent/nodes/report.py"
       - "src/paperagent/method_design_draft.py"
       - "src/paperagent/strict_method_design.py"
       - "tests/providers/test_runtime.py"
+      - "tests/providers/test_openai_llm_runtime_limits.py"
+      - "tests/evals/test_eval_runtime_reporting.py"
       - "tests/nodes/test_planning_identity_priority.py"
       - "tests/nodes/test_method_design_baseline_anchor.py"
       - "tests/nodes/test_report_fallback.py"
@@ -55,11 +65,16 @@ jobs:
         run: |
           ruff format --check \
             src/paperagent/providers/runtime.py \
+            src/paperagent/providers/openai_llm.py \
+            src/paperagent/providers/mistral.py \
+            src/paperagent/eval_runtime_reporting.py \
             src/paperagent/nodes/planning.py \
             src/paperagent/nodes/report.py \
             src/paperagent/method_design_draft.py \
             src/paperagent/strict_method_design.py \
             tests/providers/test_runtime.py \
+            tests/providers/test_openai_llm_runtime_limits.py \
+            tests/evals/test_eval_runtime_reporting.py \
             tests/nodes/test_planning_identity_priority.py \
             tests/nodes/test_method_design_baseline_anchor.py \
             tests/nodes/test_report_fallback.py \
@@ -69,11 +84,16 @@ jobs:
         run: |
           ruff check \
             src/paperagent/providers/runtime.py \
+            src/paperagent/providers/openai_llm.py \
+            src/paperagent/providers/mistral.py \
+            src/paperagent/eval_runtime_reporting.py \
             src/paperagent/nodes/planning.py \
             src/paperagent/nodes/report.py \
             src/paperagent/method_design_draft.py \
             src/paperagent/strict_method_design.py \
             tests/providers/test_runtime.py \
+            tests/providers/test_openai_llm_runtime_limits.py \
+            tests/evals/test_eval_runtime_reporting.py \
             tests/nodes/test_planning_identity_priority.py \
             tests/nodes/test_method_design_baseline_anchor.py \
             tests/nodes/test_report_fallback.py \
@@ -81,6 +101,9 @@ jobs:
             tests/methodology/test_method_design_draft.py
           python -m compileall -q \
             src/paperagent/providers/runtime.py \
+            src/paperagent/providers/openai_llm.py \
+            src/paperagent/providers/mistral.py \
+            src/paperagent/eval_runtime_reporting.py \
             src/paperagent/nodes/planning.py \
             src/paperagent/nodes/report.py \
             src/paperagent/method_design_draft.py \
@@ -89,6 +112,9 @@ jobs:
         run: |
           mypy --strict \
             src/paperagent/providers/runtime.py \
+            src/paperagent/providers/openai_llm.py \
+            src/paperagent/providers/mistral.py \
+            src/paperagent/eval_runtime_reporting.py \
             src/paperagent/nodes/planning.py \
             src/paperagent/nodes/report.py \
             src/paperagent/method_design_draft.py \
@@ -97,6 +123,8 @@ jobs:
         run: |
           pytest -q \
             tests/providers/test_runtime.py \
+            tests/providers/test_openai_llm_runtime_limits.py \
+            tests/evals/test_eval_runtime_reporting.py \
             tests/nodes/test_planning_identity_priority.py \
             tests/nodes/test_method_design_baseline_anchor.py \
             tests/nodes/test_report_fallback.py \
