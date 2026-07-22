@@ -1,0 +1,158 @@
+name: Apply declared baseline repository fallback fix
+
+on:
+  push:
+    branches:
+      - fix/academic-eval-diagnostics-baseline-binding
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out target branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/academic-eval-diagnostics-baseline-binding
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply production fix and regression test
+        shell: python
+        run: |
+          from pathlib import Path
+
+          source_path = Path("src/paperagent/method_design_draft.py")
+          source = source_path.read_text(encoding="utf-8")
+
+          old_doc = '''    This is a last-resort baseline only when the user did not declare one and
+              focused baseline retrieval produced no accepted candidate.
+          '''
+          new_doc = '''    This is a last-resort baseline when neither a declared-title match nor
+              focused baseline retrieval produced an accepted candidate.
+          '''
+          if old_doc not in source:
+              raise SystemExit("expected repository fallback docstring was not found")
+          source = source.replace(old_doc, new_doc, 1)
+
+          old_logic = '''    declared_baseline_titles = _declared_baseline_titles(list(request.user_material_refs))
+              baseline_evidence = _select_declared_baseline_evidence(
+                  list(request.user_material_refs), method_evidence
+              ) or _select_inferred_baseline_evidence(method_evidence)
+              if baseline_evidence is None and not declared_baseline_titles:
+                  baseline_evidence = _select_repository_backed_direct_baseline(method_evidence)
+          '''
+          new_logic = '''    baseline_evidence = _select_declared_baseline_evidence(
+                  list(request.user_material_refs), method_evidence
+              ) or _select_inferred_baseline_evidence(method_evidence)
+              if baseline_evidence is None:
+                  baseline_evidence = _select_repository_backed_direct_baseline(method_evidence)
+          '''
+          if old_logic not in source:
+              raise SystemExit("expected baseline fallback block was not found")
+          source = source.replace(old_logic, new_logic, 1)
+          source_path.write_text(source, encoding="utf-8")
+
+          test_path = Path("tests/methodology/test_method_design_draft.py")
+          tests = test_path.read_text(encoding="utf-8")
+          marker = "def test_declared_baseline_miss_uses_repository_backed_direct_paper()"
+          if marker not in tests:
+              tests += '''
+
+
+def test_declared_baseline_miss_uses_repository_backed_direct_paper() -> None:
+    state = _state()
+    request = state["request"]
+    evidence = state["evidence"]
+    assert request is not None
+    assert evidence is not None
+
+    direct_item = evidence.items[0].model_copy(
+        update={
+            "metadata": {
+                "doi": "10.3390/s24175496",
+                "relation": "direct_query",
+                "rank_score": "0.99",
+                "license": "CC BY 4.0",
+            }
+        }
+    )
+    repository_id = "repo-drone-detr"
+    repository_item = EvidenceItem(
+        evidence_id=repository_id,
+        source_type="repository",
+        title="Drone-DETR official implementation",
+        locator="https://github.com/example/drone-detr",
+        retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+        verification_status="accepted",
+        supports_gap_ids=["baseline_comparison"],
+        summary="Author-linked repository for the verified Drone-DETR paper.",
+        content_hash="sha256:repo-drone-detr",
+        provider="literature_retrieval",
+        metadata={
+            "relation": "author_linked_from_verified_paper",
+            "parent_paper_id": _EVIDENCE_ID.removeprefix("ev-"),
+            "license": "CC BY 4.0",
+        },
+    )
+    fallback_state = cast(
+        PaperAgentState,
+        {
+            **state,
+            "request": request.model_copy(
+                update={"user_material_refs": ["USAD [declared role:baseline]"]}
+            ),
+            "evidence": evidence.model_copy(
+                update={
+                    "items": [direct_item, repository_item],
+                    "accepted_ids": [_EVIDENCE_ID, repository_id],
+                    "identity_verified_ids": [_EVIDENCE_ID, repository_id],
+                }
+            ),
+        },
+    )
+
+    proposal = build_method_proposal(fallback_state, _draft())
+
+    assert proposal.methodology_plan.baseline.name == direct_item.title
+    assert proposal.methodology_plan.baseline.source_evidence_id == _EVIDENCE_ID
+'''
+          test_path.write_text(tests, encoding="utf-8")
+
+      - name: Install development dependencies
+        run: python -m pip install --disable-pip-version-check -e '.[dev]'
+
+      - name: Format touched files
+        run: python -m ruff format src/paperagent/method_design_draft.py tests/methodology/test_method_design_draft.py
+
+      - name: Lint touched files
+        run: python -m ruff check src/paperagent/method_design_draft.py tests/methodology/test_method_design_draft.py
+
+      - name: Type check source
+        run: python -m mypy src/paperagent
+
+      - name: Run focused method-design tests
+        run: python -m pytest tests/methodology/test_method_design_draft.py -q
+
+      - name: Run full offline regression
+        run: python -m pytest -q -m 'not real_provider and not network and not browser and not llm'
+
+      - name: Commit verified repair and remove one-time workflow
+        shell: bash
+        run: |
+          rm .github/workflows/apply-declared-baseline-repository-fallback-fix.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/paperagent/method_design_draft.py tests/methodology/test_method_design_draft.py .github/workflows/apply-declared-baseline-repository-fallback-fix.yml
+          git commit -m "fix(method): fallback after declared baseline miss"
+          git push origin HEAD:fix/academic-eval-diagnostics-baseline-binding
