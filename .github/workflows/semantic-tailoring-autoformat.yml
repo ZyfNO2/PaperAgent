@@ -36,54 +36,105 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
-          def replace_once(path: str, old: str, new: str) -> None:
+          def transition(path: str, old: str, new: str) -> None:
               file = Path(path)
               text = file.read_text(encoding="utf-8")
-              count = text.count(old)
-              if count != 1:
-                  raise RuntimeError(f"{path}: expected one match, found {count}")
-              file.write_text(text.replace(old, new), encoding="utf-8")
+              if new in text:
+                  print(f"already applied: {path}")
+                  return
+              if old not in text:
+                  raise RuntimeError(f"{path}: neither old nor new form found")
+              file.write_text(text.replace(old, new, 1), encoding="utf-8")
+              print(f"patched: {path}")
 
-          replace_once(
-              "scripts/score_academic_tailoring_retrieval_v2.py",
-              "import importlib.util\nimport re\nfrom pathlib import Path\n",
-              "import importlib.util\nfrom pathlib import Path\n",
+          scorer_path = Path("scripts/score_academic_tailoring_retrieval_v2.py")
+          scorer = scorer_path.read_text(encoding="utf-8")
+          scorer = scorer.replace("import re\n", "", 1)
+          if "task_specific_experiment_count = sum(" not in scorer:
+              pattern = re.compile(
+                  r"    if trace\.experiments and all\(\s*"
+                  r"_protocol_specific\(item\) for item in trace\.experiments\s*"
+                  r"\):\n        experiment_score \+= 2\n"
+              )
+              replacement = (
+                  "    task_specific_experiment_count = sum(\n"
+                  "        _protocol_specific(item) for item in trace.experiments\n"
+                  "    )\n"
+                  "    if (\n"
+                  "        trace.experiments\n"
+                  "        and task_specific_experiment_count == len(trace.experiments)\n"
+                  "    ):\n"
+                  "        experiment_score += 2\n"
+              )
+              scorer, count = pattern.subn(replacement, scorer, count=1)
+              if count != 1:
+                  raise RuntimeError("scorer: experiment protocol block not found")
+          if "or task_specific_experiment_count != len(trace.experiments)" not in scorer:
+              anchor = "        or experiment_score < 7\n    ):\n"
+              replacement = (
+                  "        or experiment_score < 7\n"
+                  "        or not trace.experiments\n"
+                  "        or task_specific_experiment_count != len(trace.experiments)\n"
+                  "    ):\n"
+              )
+              if anchor not in scorer:
+                  raise RuntimeError("scorer: GO gate anchor not found")
+              scorer = scorer.replace(anchor, replacement, 1)
+          audit_pattern = re.compile(
+              r'            "task_specific_experiment_count": sum\(\n'
+              r"                _protocol_specific\(item\) for item in trace\.experiments\n"
+              r"            \),\n"
           )
-          replace_once(
-              "src/paperagent/strict_method_design.py",
-              '''    if declared_baseline is not None and declared_module is not None:\n        if declared_baseline.evidence_id == declared_module.evidence_id:\n            raise ValueError("baseline and declared module source must be independent evidence items")\n''',
-              '''    if (\n        declared_baseline is not None\n        and declared_module is not None\n        and declared_baseline.evidence_id == declared_module.evidence_id\n    ):\n        raise ValueError("baseline and declared module source must be independent evidence items")\n''',
+          scorer = audit_pattern.sub(
+              '            "task_specific_experiment_count": task_specific_experiment_count,\n',
+              scorer,
+              count=1,
           )
-          replace_once(
-              "scripts/test_provider_router_load.py",
-              "    def last_usage(self):  # noqa: ANN201 - compatibility property\n",
-              "    def last_usage(self):\n",
+          scorer_path.write_text(scorer, encoding="utf-8")
+
+          strict_path = Path("src/paperagent/strict_method_design.py")
+          strict = strict_path.read_text(encoding="utf-8")
+          if "and declared_baseline.evidence_id == declared_module.evidence_id" not in strict:
+              pattern = re.compile(
+                  r"    if declared_baseline is not None and declared_module is not None:\n"
+                  r"        if declared_baseline\.evidence_id == declared_module\.evidence_id:\n"
+                  r"            raise ValueError\(\n?"
+                  r'\s*"baseline and declared module source must be independent evidence items"\n?'
+                  r"\s*\)\n"
+              )
+              replacement = (
+                  "    if (\n"
+                  "        declared_baseline is not None\n"
+                  "        and declared_module is not None\n"
+                  "        and declared_baseline.evidence_id == declared_module.evidence_id\n"
+                  "    ):\n"
+                  "        raise ValueError(\n"
+                  "            \"baseline and declared module source must be independent evidence items\"\n"
+                  "        )\n"
+              )
+              strict, count = pattern.subn(replacement, strict, count=1)
+              if count != 1:
+                  raise RuntimeError("strict canonicalizer: nested identity guard not found")
+          strict_path.write_text(strict, encoding="utf-8")
+
+          load_path = Path("scripts/test_provider_router_load.py")
+          load_text = load_path.read_text(encoding="utf-8").replace(
+              "  # noqa: ANN201 - compatibility property", "", 1
           )
-          replace_once(
-              "tests/scripts/test_provider_router_load.py",
-              "    async def generate_structured(self, **kwargs):  # noqa: ANN201, ANN003\n",
-              "    async def generate_structured(self, **kwargs):\n",
+          load_path.write_text(load_text, encoding="utf-8")
+
+          load_test_path = Path("tests/scripts/test_provider_router_load.py")
+          load_test_text = load_test_path.read_text(encoding="utf-8").replace(
+              "  # noqa: ANN201, ANN003", "", 1
           )
-          replace_once(
-              "scripts/score_academic_tailoring_retrieval_v2.py",
-              '''    if trace.experiments and all(_protocol_specific(item) for item in trace.experiments):\n        experiment_score += 2\n    experiment_score = min(10, experiment_score)\n''',
-              '''    task_specific_experiment_count = sum(\n        _protocol_specific(item) for item in trace.experiments\n    )\n    if (\n        trace.experiments\n        and task_specific_experiment_count == len(trace.experiments)\n    ):\n        experiment_score += 2\n    experiment_score = min(10, experiment_score)\n''',
-          )
-          replace_once(
-              "scripts/score_academic_tailoring_retrieval_v2.py",
-              '''        or dimensions.get("repository_truth_and_relation", 0) < 3\n        or experiment_score < 7\n    ):\n''',
-              '''        or dimensions.get("repository_truth_and_relation", 0) < 3\n        or experiment_score < 7\n        or not trace.experiments\n        or task_specific_experiment_count != len(trace.experiments)\n    ):\n''',
-          )
-          replace_once(
-              "scripts/score_academic_tailoring_retrieval_v2.py",
-              '''            "task_specific_experiment_count": sum(\n                _protocol_specific(item) for item in trace.experiments\n            ),\n''',
-              '''            "task_specific_experiment_count": task_specific_experiment_count,\n''',
-          )
-          replace_once(
+          load_test_path.write_text(load_test_text, encoding="utf-8")
+
+          transition(
               "tests/evals/test_academic_tailoring_retrieval_v2_scorer.py",
-              '''    assert result["dimensions"]["experiment_and_ablation_design"] < 7\n''',
-              '''    assert result["scoring_audit"]["task_specific_experiment_count"] == 0\n''',
+              '    assert result["dimensions"]["experiment_and_ablation_design"] < 7\n',
+              '    assert result["scoring_audit"]["task_specific_experiment_count"] == 0\n',
           )
           PY
       - name: Apply repository formatter
