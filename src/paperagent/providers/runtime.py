@@ -193,7 +193,7 @@ class TaskBudget:
                 provider=self._config.provider,
                 task=task,
             )
-        self._cals_by_task[key] = calls + 1
+        self._calls_by_task[key] = calls + 1
         self._calls += 1
 
     def record_usage(self, usage: UsageRecord, *, task: str = "llm") -> None:
