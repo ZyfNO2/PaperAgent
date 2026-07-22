@@ -13,11 +13,11 @@ param(
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-function Invoke-Python {
-    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Arguments)
-    & python @Arguments
+function Invoke-PythonCommand {
+    param([Parameter(Mandatory = $true)][string[]]$CommandArgs)
+    & python @CommandArgs
     if ($LASTEXITCODE -ne 0) {
-        throw "python command failed with exit code $LASTEXITCODE: python $($Arguments -join ' ')"
+        throw "python command failed with exit code $LASTEXITCODE: python $($CommandArgs -join ' ')"
     }
 }
 
@@ -26,27 +26,31 @@ Push-Location $repoRoot
 try {
     if (-not $SkipInstall) {
         Write-Host "[1/3] Installing PaperAgent development dependencies..."
-        Invoke-Python -m pip install -e ".[dev]"
+        Invoke-PythonCommand -CommandArgs @("-m", "pip", "install", "-e", ".[dev]")
     }
 
     if (-not $SkipSemantic) {
         Write-Host "[2/3] Running role-bound semantic and router regression tests..."
-        Invoke-Python -m pytest -q `
-            tests/methodology/test_strict_method_design.py `
-            tests/methodology/test_method_design_draft.py `
-            tests/evals/test_academic_tailoring_retrieval_v1_scorer.py `
-            tests/evals/test_academic_tailoring_retrieval_v2_scorer.py `
-            tests/providers/test_routing_llm_provider.py `
-            tests/scripts/test_provider_router_load.py
+        Invoke-PythonCommand -CommandArgs @(
+            "-m", "pytest", "-q",
+            "tests/methodology/test_strict_method_design.py",
+            "tests/methodology/test_method_design_draft.py",
+            "tests/evals/test_academic_tailoring_retrieval_v1_scorer.py",
+            "tests/evals/test_academic_tailoring_retrieval_v2_scorer.py",
+            "tests/providers/test_routing_llm_provider.py",
+            "tests/scripts/test_provider_router_load.py"
+        )
     }
 
     if (-not $SkipLive) {
         Write-Host "[3/3] Running live concurrent router probes..."
-        Invoke-Python scripts/test_provider_router_load.py `
-            --config $ConfigPath `
-            --requests $Requests `
-            --concurrency $Concurrency `
-            --output $OutputPath
+        Invoke-PythonCommand -CommandArgs @(
+            "scripts/test_provider_router_load.py",
+            "--config", $ConfigPath,
+            "--requests", "$Requests",
+            "--concurrency", "$Concurrency",
+            "--output", $OutputPath
+        )
 
         $report = Get-Content -Raw -Encoding UTF8 $OutputPath | ConvertFrom-Json
         $successfulEndpoints = @(
