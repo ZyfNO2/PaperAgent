@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/apply-eval-runner-reporting-patch.yml"
       - "scripts/apply_eval_runner_reporting_patch.py"
+      - "scripts/repair_legacy_eval_snapshot.py"
 
 permissions:
   contents: write
@@ -42,6 +43,8 @@ jobs:
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/build_eval_snapshot.py \
             scripts/validate_eval_snapshot.py \
+            scripts/repair_legacy_eval_snapshot.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
             tests/evals/test_eval_snapshot_provenance.py \
             tests/evals/test_eval_runtime_reporting.py
           python -m compileall -q \
@@ -50,7 +53,8 @@ jobs:
             scripts/gen_public_dataset.py \
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/build_eval_snapshot.py \
-            scripts/validate_eval_snapshot.py
+            scripts/validate_eval_snapshot.py \
+            scripts/repair_legacy_eval_snapshot.py
       - name: Lint focused files
         run: |
           ruff check \
@@ -60,6 +64,8 @@ jobs:
             scripts/run_academic_tailoring_retrieval_v1.py \
             scripts/build_eval_snapshot.py \
             scripts/validate_eval_snapshot.py \
+            scripts/repair_legacy_eval_snapshot.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
             tests/evals/test_eval_snapshot_provenance.py \
             tests/evals/test_eval_runtime_reporting.py
       - name: Run focused regression
@@ -82,9 +88,12 @@ jobs:
           assert len(data['public_sha256']) == 64
           assert data['generated_from']['authoring_commit']
           PY
+      - name: Repair legacy snapshot truth labels
+        run: python scripts/repair_legacy_eval_snapshot.py
       - name: Remove one-shot patch machinery
         run: |
           rm scripts/apply_eval_runner_reporting_patch.py
+          rm scripts/repair_legacy_eval_snapshot.py
           rm .github/workflows/apply-eval-runner-reporting-patch.yml
       - name: Commit validated integration
         env:
