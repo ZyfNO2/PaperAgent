@@ -38,11 +38,20 @@ def test_structured_error_classifies_provider_budget_and_retryable_failures() ->
         message="timeout",
         retryable=True,
     )
+    global_budget = build_error_record(
+        case_id="case-4",
+        error_code="RUN_BUDGET_EXHAUSTED",
+        message="global budget",
+        retryable=False,
+    )
 
     assert authentication["error_category"] == RunErrorCategory.FATAL_PROVIDER
-    assert budget["error_category"] == RunErrorCategory.FATAL_BUDGET
+    assert budget["error_category"] == RunErrorCategory.CASE_ERROR
+    assert global_budget["error_category"] == RunErrorCategory.FATAL_BUDGET
     assert timeout["error_category"] == RunErrorCategory.RETRYABLE
     assert should_stop_run(str(authentication["error_category"])) is True
+    assert should_stop_run(str(budget["error_category"])) is False
+    assert should_stop_run(str(global_budget["error_category"])) is True
     assert should_stop_run(str(timeout["error_category"])) is False
 
 
@@ -167,6 +176,7 @@ def test_runner_trace_fatal_policy_uses_shared_classifier() -> None:
         "LLM_RATE_LIMITED",
         "LLM_READ_TIMEOUT",
         "LLM_PROVIDER_5XX",
+        "LLM_BUDGET_EXHAUSTED",
         "LLM_UNKNOWN",
     ):
         assert module._fatal_provider_error_code_from_trace({"trace_error_codes": [code]}) is None
