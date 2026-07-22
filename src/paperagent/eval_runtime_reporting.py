@@ -159,6 +159,20 @@ def _first_non_empty(*values: object) -> object | None:
     return None
 
 
+def _non_negative_int(value: object) -> int:
+    if isinstance(value, bool):
+        return 0
+    if isinstance(value, int):
+        return max(value, 0)
+    if isinstance(value, str):
+        try:
+            parsed = int(value.strip())
+        except ValueError:
+            return 0
+        return max(parsed, 0)
+    return 0
+
+
 def extract_incomplete_context(
     *,
     state: Mapping[str, Any],
@@ -188,14 +202,13 @@ def extract_incomplete_context(
         "node": task if isinstance(task, str) else None,
         "call_index": _first_non_empty(details.get("call_index"), trace.get("call_index")),
         "retryable": bool(last_error.get("retryable", False)),
-        "repair_attempts": int(
+        "repair_attempts": _non_negative_int(
             _first_non_empty(
                 trace.get("method_repair_count"),
                 trace.get("repair_attempts"),
                 execution.get("repair_attempts"),
                 0,
             )
-            or 0
         ),
         "execution_status": execution.get("status"),
         "message": _first_non_empty(
