@@ -13,26 +13,16 @@ on:
       - "scripts/run_academic_tailoring_retrieval_v1.py"
       - "scripts/score_academic_tailoring_retrieval_v1.py"
       - "src/paperagent/**"
-  pull_request:
-    branches:
-      - feat/eval-engine-resilient-fatal-codes
-    paths:
-      - ".github/workflows/academic-eval-opencode-live.yml"
-      - "config/academic-tailoring-mimo-diagnostic.env.example"
-      - "evals/academic_tailoring_retrieval_v1/**"
-      - "scripts/check_llm_provider_health.py"
-      - "scripts/project_academic_tailoring_retrieval_v1.py"
-      - "scripts/run_academic_tailoring_retrieval_v1.py"
-      - "scripts/score_academic_tailoring_retrieval_v1.py"
-      - "src/paperagent/**"
   workflow_dispatch:
 
 permissions:
   contents: read
+  issues: write
+  pull-requests: write
 
 concurrency:
-  group: academic-eval-opencode-diagnostic-${{ github.event_name }}-${{ github.ref }}
-  cancel-in-progress: false
+  group: academic-eval-opencode-diagnostic
+  cancel-in-progress: true
 
 jobs:
   opencode-diagnostic:
@@ -69,6 +59,15 @@ jobs:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: pyproject.toml
+
+      - name: Announce diagnostic start
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          short_sha="${GITHUB_SHA:0:7}"
+          gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body \
+            "Opencode diagnostic started for commit \`$short_sha\`. Primary: \`mimo-v2.5-free\`; runtime fallback: \`laguna-s-2.1-free\`; secret: \`OPENCODE_API_KEY\`."
 
       - name: Require Opencode credential
         run: test -n "$OPENCODE_API_KEY"
@@ -274,6 +273,28 @@ jobs:
               handle.write(summary)
           PY
 
+      - name: Comment final diagnostic status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          short_sha="${GITHUB_SHA:0:7}"
+          if [ -f build/academic-tailoring-retrieval-v1/summary.md ]; then
+            {
+              echo "Opencode diagnostic completed for commit \`$short_sha\`."
+              echo
+              cat build/academic-tailoring-retrieval-v1/summary.md
+            } > /tmp/opencode-diagnostic-comment.md
+          else
+            cat > /tmp/opencode-diagnostic-comment.md <<EOF
+          Opencode diagnostic did not reach scoring for commit \`$short_sha\`.
+
+          Workflow conclusion at comment time: \`${{ job.status }}\`. Inspect the uploaded partial artifacts or job logs for the first failed step.
+          EOF
+          fi
+          gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body-file /tmp/opencode-diagnostic-comment.md
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -282,5 +303,5 @@ jobs:
             build/opencode-health/
             build/academic-tailoring-retrieval-v1/
             candidate-workspace/build/academic-tailoring-retrieval-v1/
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 30
