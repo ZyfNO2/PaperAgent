@@ -12,8 +12,10 @@ on:
       - "scripts/run_academic_tailoring_retrieval_v1.py"
       - "scripts/score_academic_tailoring_retrieval_v1.py"
       - "src/paperagent/claw_benchmark_runtime.py"
+      - "src/paperagent/method_design_draft.py"
       - "src/paperagent/nodes/planning.py"
       - "tests/evals/**"
+      - "tests/methodology/**"
       - "tests/nodes/**"
       - ".github/workflows/academic-eval-fix-validation.yml"
 
@@ -25,6 +27,64 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  case006-baseline-fallback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Compile method fallback files
+        run: |
+          python -m py_compile \
+            src/paperagent/method_design_draft.py \
+            tests/methodology/test_declared_baseline_repository_fallback.py
+      - name: Ruff method fallback files
+        run: |
+          ruff format --check \
+            src/paperagent/method_design_draft.py \
+            tests/methodology/test_declared_baseline_repository_fallback.py
+          ruff check \
+            src/paperagent/method_design_draft.py \
+            tests/methodology/test_declared_baseline_repository_fallback.py
+      - name: Type check method fallback source
+        run: mypy src/paperagent/method_design_draft.py
+      - name: Run method fallback regression
+        run: |
+          pytest -q \
+            tests/methodology/test_declared_baseline_repository_fallback.py \
+            tests/methodology/test_method_design_draft.py
+      - name: Run full offline regression
+        shell: bash
+        run: |
+          set -o pipefail
+          pytest -q -m 'not real_provider and not network and not browser and not llm' \
+            2>&1 | tee case006-full-offline.log
+      - name: Upload full offline regression diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: case006-full-offline-regression
+          path: case006-full-offline.log
+          if-no-files-found: error
+          retention-days: 14
+      - name: Production leakage audit for fallback
+        if: always()
+        run: |
+          python - <<'PY'
+          from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
+
+          result = audit_benchmark_execution_boundary()
+          print(result.model_dump_json(indent=2))
+          if not result.passed:
+              raise SystemExit(result.findings)
+          PY
+
   offline-validation:
     runs-on: ubuntu-24.04
     timeout-minutes: 30

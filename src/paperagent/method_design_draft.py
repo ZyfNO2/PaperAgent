@@ -182,8 +182,8 @@ def _select_repository_backed_direct_baseline(
 ) -> EvidenceItem | None:
     """Select a verified task paper with an accepted author-linked repository.
 
-    This is a last-resort baseline only when the user did not declare one and
-    focused baseline retrieval produced no accepted candidate.
+    This is a last-resort baseline when neither a declared-title match nor
+    focused baseline retrieval produced an accepted candidate.
     """
 
     repository_parent_ids: set[str] = {
@@ -524,7 +524,7 @@ def build_method_proposal(
     baseline_evidence = _select_declared_baseline_evidence(
         list(request.user_material_refs), method_evidence
     ) or _select_inferred_baseline_evidence(method_evidence)
-    if baseline_evidence is None and not declared_baseline_titles:
+    if baseline_evidence is None:
         baseline_evidence = _select_repository_backed_direct_baseline(method_evidence)
     module_primary = _select_module_evidence(method_evidence, baseline=baseline_evidence)
     if module_primary is None:
