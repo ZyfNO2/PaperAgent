@@ -42,6 +42,19 @@ def test_chat_probe_requires_a_choice_object() -> None:
     assert not module._chat_completion_accessible({"choices": ["bad"]})
 
 
+def test_health_probe_sets_stable_api_user_agent() -> None:
+    module = _load_script()
+    request = module._build_request(
+        base_url="https://opencode.ai/zen/v1",
+        api_key="test-key",
+        model="mimo-v2.5-free",
+        probe_mode="chat",
+    )
+
+    assert request.get_header("User-agent").startswith("PaperAgent/")
+    assert request.get_header("Authorization") == "Bearer test-key"
+
+
 def test_credential_diagnostics_detect_assignment_and_whitespace_without_value() -> None:
     module = _load_script()
     diagnostics = module._credential_diagnostics(
