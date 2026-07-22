@@ -16,9 +16,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build source archive
         run: |
-          tar --exclude=.git --exclude=.venv --exclude='**/__pycache__' -czf paperagent-source.tgz .
+          tar --exclude=.git --exclude=.venv --exclude='**/__pycache__' -czf /tmp/paperagent-source.tgz .
       - uses: actions/upload-artifact@v4
         with:
           name: paperagent-source-c0f3
-          path: paperagent-source.tgz
+          path: /tmp/paperagent-source.tgz
           retention-days: 1
