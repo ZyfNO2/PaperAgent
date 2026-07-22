@@ -2,9 +2,9 @@
 
 ## Status
 
-`PARTIAL / OFFLINE SKELETON IMPLEMENTED`
+`SKELETON COMPLETE / LIVE INTEGRATION PENDING`
 
-This branch adds the isolated in-process routing core requested by the multi-provider design. It does not yet replace the active single-provider runtime used by the evaluation workflows.
+This branch adds the isolated in-process routing core requested by the multi-provider design. The skeleton and focused cloud tests are complete. It does not yet replace the active single-provider runtime used by the evaluation workflows.
 
 ## Repository identity
 
@@ -12,6 +12,8 @@ This branch adds the isolated in-process routing core requested by the multi-pro
 - Base branch: `fix/academic-eval-diagnostics-baseline-binding`
 - Base commit: `b1ebc1641de86f9c6d0fd2fa7c6d1084ef5295e9`
 - Development branch: `feat/multi-provider-router-skeleton`
+- Draft PR: `#42`
+- Validated implementation commit: `0604ecd328d01ceab895114187c8672f614f0ba4`
 
 ## Implemented
 
@@ -63,18 +65,26 @@ No credential value is stored in these contracts. `api_key_env` contains only an
 
 The focused workflow runs lint, format, strict Mypy, and tests on Python 3.11 and 3.12.
 
-## Verification boundary
+## Verification
 
-Verified locally in an isolated compatibility harness:
+### Local isolated compatibility harness
 
 ```text
 pytest: 7 passed
 compileall: passed
 ```
 
-This is offline control-flow evidence. It is not a real NVIDIA, OpenCode, Mistral, or DeepSeek end-to-end test.
+### GitHub Actions
 
-GitHub Actions exact-head results must be recorded after the branch workflow completes.
+Workflow: `Provider Router Skeleton`
+
+- run ID: `29934655002`;
+- source commit: `0604ecd328d01ceab895114187c8672f614f0ba4`;
+- Python 3.11: Ruff lint PASS, Ruff format PASS, strict Mypy PASS, 7 focused tests PASS;
+- Python 3.12: Ruff lint PASS, Ruff format PASS, strict Mypy PASS, 7 focused tests PASS;
+- final conclusion: SUCCESS.
+
+This is offline control-flow evidence. It is not a real NVIDIA, OpenCode, Mistral, or DeepSeek end-to-end test.
 
 ## Deliberately not implemented in this slice
 
@@ -123,4 +133,5 @@ python -m pytest tests/providers/test_routing_llm_provider.py
 - No secrets are committed.
 - No live paid or free-provider request is made by this branch.
 - No existing production provider path is replaced.
-- The branch should remain a Draft PR until exact-head CI is green and the next integration slice is reviewed.
+- The PR remains Draft.
+- Do not merge until the next integration slice wires profiles, shared clients, and preflight with its own regression evidence.
