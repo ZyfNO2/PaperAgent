@@ -119,7 +119,7 @@ jobs:
             --case-id atr-v1-007-graph-graphsage-gat-ppi \
             --case-id atr-v1-010-rec-coldstart-sequential \
             --max-cases 5 \
-            --max-llm-calls 24 \
+            --max-llm-calls 20 \
             --provider-call-budget 300 \
             --enable-web-search \
             --source-commit "$GITHUB_SHA" \
@@ -244,3 +244,13 @@ jobs:
           path: build/runtime-recovery/
           if-no-files-found: error
           retention-days: 14
+      - name: Enforce real-runtime and score acceptance
+        if: always()
+        shell: bash
+        run: |
+          test -f build/runtime-recovery/runtime-exit-code.txt
+          test "$(cat build/runtime-recovery/runtime-exit-code.txt)" = "0"
+          test -f build/runtime-recovery/candidate/execution-summary.json
+          test -f build/runtime-recovery/diagnostic-report.json
+          test -f build/runtime-recovery/scorer-exit-code.txt
+          test "$(cat build/runtime-recovery/scorer-exit-code.txt)" = "0"
