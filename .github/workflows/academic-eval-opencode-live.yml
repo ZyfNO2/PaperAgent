@@ -126,7 +126,7 @@ jobs:
           cp build/academic-tailoring-retrieval-v1/public-dataset.json candidate-workspace/input/
           test ! -e candidate-workspace/evals/academic_tailoring_retrieval_v1/dataset-authoring.json
           ! find candidate-workspace -name dataset-authoring.json -print -quit | grep -q .
-          python -m pip install -q -e 'candidate-workspace[dev]'
+          (cd candidate-workspace && python -m pip install -q -e '.[dev]')
 
       - name: Run Mimo primary diagnostic
         id: mimo
@@ -135,6 +135,7 @@ jobs:
         shell: bash
         run: |
           set +e
+          mkdir -p build/academic-tailoring-retrieval-v1/mimo
           PAPERAGENT_LLM_MODEL=mimo-v2.5-free \
           python scripts/run_academic_tailoring_retrieval_v1.py \
             --dataset input/public-dataset.json \
@@ -165,6 +166,7 @@ jobs:
         shell: bash
         run: |
           set +e
+          mkdir -p build/academic-tailoring-retrieval-v1/laguna
           PAPERAGENT_LLM_MODEL=laguna-s-2.1-free \
           python scripts/run_academic_tailoring_retrieval_v1.py \
             --dataset input/public-dataset.json \
@@ -225,6 +227,7 @@ jobs:
         run: |
           python - <<'PY'
           import json
+          import os
           from pathlib import Path
 
           report = json.loads(
@@ -255,7 +258,7 @@ jobs:
               )
           summary = "\n".join(lines) + "\n"
           Path("build/academic-tailoring-retrieval-v1/summary.md").write_text(summary)
-          with Path("/home/runner/work/_temp/_runner_file_commands/step_summary").open("a") as handle:
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as handle:
               handle.write(summary)
           PY
 
