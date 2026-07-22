@@ -1,4 +1,4 @@
-name: Cloud Provider Attribution Format
+name: Cloud Provider Attribution Diagnostics
 
 on:
   pull_request:
@@ -6,10 +6,10 @@ on:
       - master
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  format:
+  diagnose:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -22,16 +22,24 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -q -e '.[dev]'
-      - name: Apply repository formatter
-        run: ruff format src/paperagent/providers/runtime.py tests/providers/test_runtime.py
-      - name: Commit exact formatter output
+      - name: Capture diagnostics
+        shell: bash
         run: |
-          if git diff --quiet; then
-            echo "No formatting changes required."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/paperagent/providers/runtime.py tests/providers/test_runtime.py
-          git commit -m "style(runtime): apply exact provider attribution format"
-          git push origin HEAD:tmp/format-provider-attribution
+          mkdir -p build/provider-attribution-diagnostics
+          set +e
+          ruff format --check src/paperagent/providers/runtime.py tests/providers/test_runtime.py > build/provider-attribution-diagnostics/format.txt 2>&1
+          echo "$?" > build/provider-attribution-diagnostics/format-exit-code.txt
+          mypy --strict src/paperagent/providers/runtime.py > build/provider-attribution-diagnostics/mypy.txt 2>&1
+          echo "$?" > build/provider-attribution-diagnostics/mypy-exit-code.txt
+          pytest -q tests/providers/test_runtime.py > build/provider-attribution-diagnostics/pytest.txt 2>&1
+          echo "$?" > build/provider-attribution-diagnostics/pytest-exit-code.txt
+          cat build/provider-attribution-diagnostics/format.txt
+          cat build/provider-attribution-diagnostics/mypy.txt
+          cat build/provider-attribution-diagnostics/pytest.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: provider-attribution-diagnostics
+          path: build/provider-attribution-diagnostics/
+          retention-days: 1
