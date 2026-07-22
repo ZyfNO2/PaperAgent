@@ -173,6 +173,12 @@ def _ensure_baseline_role_query(
     return plan.model_copy(update={"risks": risks})
 
 
+def _query_contains_material_title(query: SearchQuery, title: str) -> bool:
+    normalized_title = " ".join(title.replace('"', " ").split()).casefold()
+    normalized_query = " ".join(query.query.replace('"', " ").split()).casefold()
+    return bool(normalized_title and normalized_title in normalized_query)
+
+
 def _ensure_user_material_identity_queries(
     plan: ResearchPlan,
     request: ResearchRequest,
@@ -182,19 +188,36 @@ def _ensure_user_material_identity_queries(
     """Prioritize exact-title verification for identifiable public supplied materials.
 
     Generic upload placeholders stay unverified. The function does not accept a material or infer
-    compatibility; it only creates explicit identity-and-role evidence gaps within the query budget.
+    compatibility; it only creates explicit identity-and-role evidence gaps. Identity queries are
+    prepended and the merged plan is normalized afterwards, so a planner that consumes the entire
+    query budget cannot crowd out verification of user-declared papers.
     """
 
     if plan.status == "blocked" or not request.user_material_refs:
         return plan
-    identity_gaps: list[EvidenceGap] = []
-    identity_queries: list[SearchQuery] = []
+
     existing_gap_ids = {gap.gap_id for gap in plan.evidence_gaps}
     existing_query_ids = {query.query_id for query in plan.search_queries}
-    available_slots = max(query_budget - len(plan.search_queries), 0)
+    identities = [
+        identity
+        for identity in user_material_identities(request.user_material_refs)
+        if identity.identifiable
+    ]
+    if not identities:
+        return plan
 
-    for identity in user_material_identities(request.user_material_refs):
-        if not identity.identifiable or available_slots <= 0:
+    identity_gaps: list[EvidenceGap] = []
+    identity_queries: list[SearchQuery] = []
+    queued_identities: list[tuple[object, str, str]] = []
+
+    for identity in identities:
+        if len(identity_queries) >= query_budget:
+            break
+        if any(
+            _query_contains_material_title(query, identity.title)
+            and "paper" in query.source_types
+            for query in plan.search_queries
+        ):
             continue
         gap_id = _unique_identifier(identity.gap_id, existing_gap_ids)
         query_id = _unique_identifier(identity.query_id, existing_query_ids)
@@ -218,8 +241,16 @@ def _ensure_user_material_identity_queries(
                 source_types=["paper", "web"],
             )
         )
-        available_slots -= 1
-        if available_slots <= 0:
+        queued_identities.append((identity, gap_id, exact_title))
+
+    for identity, gap_id, exact_title in queued_identities:
+        if len(identity_queries) >= query_budget:
+            break
+        if any(
+            _query_contains_material_title(query, identity.title)
+            and "repository" in query.source_types
+            for query in plan.search_queries
+        ):
             continue
         repository_query_id = _unique_identifier(
             f"{identity.query_id}-implementation", existing_query_ids
@@ -232,17 +263,17 @@ def _ensure_user_material_identity_queries(
                 source_types=["repository", "web"],
             )
         )
-        available_slots -= 1
 
     if not identity_queries:
         return plan
-    return plan.model_copy(
+    merged = plan.model_copy(
         update={
             "evidence_gaps": [*identity_gaps, *plan.evidence_gaps],
             "search_queries": [*identity_queries, *plan.search_queries],
             "status": "ready" if plan.status == "need_human" else plan.status,
         }
     )
+    return _normalize_plan_to_query_budget(merged, query_budget=query_budget)
 
 
 async def planning_node(state: PaperAgentState, config: RunnableConfig) -> StatePatch:
@@ -291,7 +322,11 @@ async def planning_node(state: PaperAgentState, config: RunnableConfig) -> State
             with_materials,
             query_budget=query_budget,
         )
-        patch["plan"] = _normalize_nonblocking_clarification(with_baseline_query)
+        bounded = _normalize_plan_to_query_budget(
+            with_baseline_query,
+            query_budget=query_budget,
+        )
+        patch["plan"] = _normalize_nonblocking_clarification(bounded)
     return patch
 
 
