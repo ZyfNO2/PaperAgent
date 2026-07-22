@@ -1,0 +1,71 @@
+name: Apply Declared Baseline Fallback Patch
+
+on:
+  push:
+    branches:
+      - fix/semantic-tailoring-runtime-followup
+    paths:
+      - ".github/workflows/apply-declared-baseline-fallback-patch.yml"
+      - "scripts/apply_declared_baseline_fallback_patch.py"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-declared-baseline-fallback-patch
+  cancel-in-progress: true
+
+jobs:
+  patch-test-and-commit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/semantic-tailoring-runtime-followup
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Apply deterministic fallback patch
+        run: python scripts/apply_declared_baseline_fallback_patch.py
+      - name: Format, lint, and compile
+        run: |
+          ruff check --fix --unsafe-fixes --exit-zero \
+            src/paperagent/method_design_draft.py \
+            src/paperagent/strict_method_design.py \
+            tests/methodology/test_strict_method_design.py
+          ruff format \
+            src/paperagent/method_design_draft.py \
+            src/paperagent/strict_method_design.py \
+            tests/methodology/test_strict_method_design.py
+          ruff check \
+            src/paperagent/method_design_draft.py \
+            src/paperagent/strict_method_design.py \
+            tests/methodology/test_strict_method_design.py
+          python -m compileall -q \
+            src/paperagent/method_design_draft.py \
+            src/paperagent/strict_method_design.py \
+            tests/methodology/test_strict_method_design.py
+      - name: Run focused method regressions
+        run: |
+          pytest -q \
+            tests/methodology/test_strict_method_design.py \
+            tests/evals/test_academic_tailoring_retrieval_v2_scorer.py
+      - name: Remove one-shot machinery
+        run: |
+          rm scripts/apply_declared_baseline_fallback_patch.py
+          rm .github/workflows/apply-declared-baseline-fallback-patch.yml
+      - name: Commit validated patch
+        env:
+          BRANCH: fix/semantic-tailoring-runtime-followup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(method): allow repository fallback after declared baseline miss"
+          git push origin "HEAD:$BRANCH"
