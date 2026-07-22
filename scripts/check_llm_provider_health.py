@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import re
+import time
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -27,6 +28,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--probe-mode", choices=["models", "chat"], default="models")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--timeout-seconds", type=float, default=15.0)
+    parser.add_argument("--max-attempts", type=int, default=3)
+    parser.add_argument("--retry-delay-seconds", type=float, default=5.0)
     return parser
 
 
@@ -42,6 +45,10 @@ def _status_name(status_code: int) -> str:
     if status_code >= 400:
         return "invalid_request"
     return "ok"
+
+
+def _retryable_http_status(status_code: int) -> bool:
+    return status_code == 429 or 500 <= status_code <= 599
 
 
 def _model_ids(payload: object) -> set[str]:
@@ -149,6 +156,7 @@ def _result(
     model_accessible: bool | None = None,
     credential_diagnostics: dict[str, bool] | None = None,
     provider_error: dict[str, str] | None = None,
+    attempts_used: int = 1,
 ) -> dict[str, Any]:
     result: dict[str, Any] = {
         "schema": SCHEMA,
@@ -160,6 +168,7 @@ def _result(
         "http_status": http_status,
         "model_accessible": model_accessible,
         "credential_present": True,
+        "attempts_used": attempts_used,
     }
     if credential_diagnostics:
         result.update(credential_diagnostics)
@@ -200,8 +209,18 @@ def _build_request(
     )
 
 
+def _sleep_before_retry(attempt: int, base_delay: float) -> None:
+    if base_delay > 0:
+        time.sleep(base_delay * attempt)
+
+
 def main() -> int:
     args = _parser().parse_args()
+    if args.max_attempts < 1:
+        raise ValueError("--max-attempts must be positive")
+    if args.retry_delay_seconds < 0:
+        raise ValueError("--retry-delay-seconds must be non-negative")
+
     raw_api_key = os.getenv(args.api_key_env, "")
     credential_diagnostics = _credential_diagnostics(raw_api_key, args.api_key_env)
     api_key = raw_api_key.strip()
@@ -217,81 +236,99 @@ def main() -> int:
         _write_result(args.output, result)
         return 2
 
-    request = _build_request(
-        base_url=args.base_url,
-        api_key=api_key,
-        model=args.model,
-        probe_mode=args.probe_mode,
-    )
-    try:
-        with urlopen(request, timeout=args.timeout_seconds) as response:
-            status_code = response.status
-            payload = json.loads(response.read().decode("utf-8"))
-    except HTTPError as exc:
-        result = _result(
-            provider=args.provider,
-            model=args.model,
+    for attempt in range(1, args.max_attempts + 1):
+        request = _build_request(
             base_url=args.base_url,
-            probe_mode=args.probe_mode,
-            status=_status_name(exc.code),
-            http_status=exc.code,
-            credential_diagnostics=credential_diagnostics,
-            provider_error=_http_error_details(exc, api_key=api_key),
-        )
-        _write_result(args.output, result)
-        return 3
-    except (URLError, TimeoutError, OSError):
-        result = _result(
-            provider=args.provider,
+            api_key=api_key,
             model=args.model,
-            base_url=args.base_url,
             probe_mode=args.probe_mode,
-            status="connect",
-            credential_diagnostics=credential_diagnostics,
         )
-        _write_result(args.output, result)
-        return 4
-    except (UnicodeDecodeError, json.JSONDecodeError):
-        result = _result(
-            provider=args.provider,
-            model=args.model,
-            base_url=args.base_url,
-            probe_mode=args.probe_mode,
-            status="malformed_response",
-            credential_diagnostics=credential_diagnostics,
-        )
-        _write_result(args.output, result)
-        return 5
+        try:
+            with urlopen(request, timeout=args.timeout_seconds) as response:
+                status_code = response.status
+                payload = json.loads(response.read().decode("utf-8"))
+        except HTTPError as exc:
+            provider_error = _http_error_details(exc, api_key=api_key)
+            if _retryable_http_status(exc.code) and attempt < args.max_attempts:
+                _sleep_before_retry(attempt, args.retry_delay_seconds)
+                continue
+            result = _result(
+                provider=args.provider,
+                model=args.model,
+                base_url=args.base_url,
+                probe_mode=args.probe_mode,
+                status=_status_name(exc.code),
+                http_status=exc.code,
+                credential_diagnostics=credential_diagnostics,
+                provider_error=provider_error,
+                attempts_used=attempt,
+            )
+            _write_result(args.output, result)
+            return 3
+        except (URLError, TimeoutError, OSError):
+            if attempt < args.max_attempts:
+                _sleep_before_retry(attempt, args.retry_delay_seconds)
+                continue
+            result = _result(
+                provider=args.provider,
+                model=args.model,
+                base_url=args.base_url,
+                probe_mode=args.probe_mode,
+                status="connect",
+                credential_diagnostics=credential_diagnostics,
+                attempts_used=attempt,
+            )
+            _write_result(args.output, result)
+            return 4
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            result = _result(
+                provider=args.provider,
+                model=args.model,
+                base_url=args.base_url,
+                probe_mode=args.probe_mode,
+                status="malformed_response",
+                credential_diagnostics=credential_diagnostics,
+                attempts_used=attempt,
+            )
+            _write_result(args.output, result)
+            return 5
 
-    if status_code >= 400:
+        if status_code >= 400:
+            if _retryable_http_status(status_code) and attempt < args.max_attempts:
+                _sleep_before_retry(attempt, args.retry_delay_seconds)
+                continue
+            result = _result(
+                provider=args.provider,
+                model=args.model,
+                base_url=args.base_url,
+                probe_mode=args.probe_mode,
+                status=_status_name(status_code),
+                http_status=status_code,
+                credential_diagnostics=credential_diagnostics,
+                attempts_used=attempt,
+            )
+            _write_result(args.output, result)
+            return 3
+
+        if args.probe_mode == "models":
+            model_accessible = args.model in _model_ids(payload)
+        else:
+            model_accessible = _chat_completion_accessible(payload)
         result = _result(
             provider=args.provider,
             model=args.model,
             base_url=args.base_url,
             probe_mode=args.probe_mode,
-            status=_status_name(status_code),
+            status="ok" if model_accessible else "model_unavailable",
             http_status=status_code,
+            model_accessible=model_accessible,
             credential_diagnostics=credential_diagnostics,
+            attempts_used=attempt,
         )
         _write_result(args.output, result)
-        return 3
+        return 0 if model_accessible else 6
 
-    if args.probe_mode == "models":
-        model_accessible = args.model in _model_ids(payload)
-    else:
-        model_accessible = _chat_completion_accessible(payload)
-    result = _result(
-        provider=args.provider,
-        model=args.model,
-        base_url=args.base_url,
-        probe_mode=args.probe_mode,
-        status="ok" if model_accessible else "model_unavailable",
-        http_status=status_code,
-        model_accessible=model_accessible,
-        credential_diagnostics=credential_diagnostics,
-    )
-    _write_result(args.output, result)
-    return 0 if model_accessible else 6
+    raise RuntimeError("health probe exhausted without a result")
 
 
 if __name__ == "__main__":
