@@ -203,7 +203,8 @@ class OpenAILLMProvider:
         schema: type[T],
         messages: list[Message],
     ) -> T:
-        del scenario, call_index, fixture_version
+        del scenario, fixture_version
+        budget_task = f"{task}:invocation-{call_index}"
         headers = _request_headers(self._api_key)
         url = f"{self._base_url}/chat/completions"
         native_error: _StructuredProviderError | None = None
@@ -218,6 +219,7 @@ class OpenAILLMProvider:
                     headers=headers,
                     schema=schema,
                     task=task,
+                    budget_task=budget_task,
                 )
             except _StructuredProviderError as exc:
                 native_error = exc
@@ -234,6 +236,7 @@ class OpenAILLMProvider:
                 headers=headers,
                 schema=schema,
                 task=task,
+                budget_task=budget_task,
             )
         except _StructuredProviderError as fallback_error:
             if not self._allow_schema_repair:
@@ -252,6 +255,7 @@ class OpenAILLMProvider:
                 headers=headers,
                 schema=schema,
                 task=f"{task}:schema-repair",
+                budget_task=f"{budget_task}:schema-repair",
             )
 
     @staticmethod
@@ -304,12 +308,13 @@ class OpenAILLMProvider:
         headers: dict[str, str],
         schema: type[T],
         task: str,
+        budget_task: str,
     ) -> T:
         attempts = self._max_retries + 1
 
         for attempt in range(attempts):
             if self._budget is not None:
-                self._budget.reserve_call(task=task)
+                self._budget.reserve_call(task=budget_task)
             if self._max_requests_per_minute is not None:
                 limiter = shared_request_rate_limiter(
                     namespace=f"{self._base_url}|{self._model}",
@@ -340,7 +345,7 @@ class OpenAILLMProvider:
                             output_tokens=self.last_usage.output_tokens,
                             estimated_cost_usd=estimated_cost,
                         ),
-                        task=task,
+                        task=budget_task,
                     )
                 return self._parse_response(response, schema, task)
             except (TimeoutError, httpx.TimeoutException) as exc:
