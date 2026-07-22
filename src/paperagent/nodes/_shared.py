@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable, Mapping
-from typing import Any, Literal, TypeVar
+from typing import Any, Literal, TypeVar, overload
 
 from pydantic import BaseModel
 
@@ -14,6 +14,7 @@ from paperagent.state import PaperAgentState, StatePatch
 from paperagent.telemetry import make_event
 
 T = TypeVar("T", bound=BaseModel)
+R = TypeVar("R", bound=BaseModel)
 _UNSET = object()
 
 
@@ -74,6 +75,7 @@ def json_message(payload: Any) -> str:
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
 
 
+@overload
 async def call_structured(
     *,
     state: PaperAgentState,
@@ -83,9 +85,38 @@ async def call_structured(
     schema: type[T],
     user_payload: Any,
     semantic_validate: Callable[[T], None] | None = None,
-    transform: Callable[[T], T] | None = None,
+    transform: None = None,
     scenario: str | None = None,
-) -> tuple[StatePatch, T | None]:
+) -> tuple[StatePatch, T | None]: ...
+
+
+@overload
+async def call_structured(
+    *,
+    state: PaperAgentState,
+    config: Mapping[str, Any] | None,
+    node: str,
+    task: str,
+    schema: type[T],
+    user_payload: Any,
+    semantic_validate: Callable[[R], None] | None = None,
+    transform: Callable[[T], R],
+    scenario: str | None = None,
+) -> tuple[StatePatch, R | None]: ...
+
+
+async def call_structured(
+    *,
+    state: PaperAgentState,
+    config: Mapping[str, Any] | None,
+    node: str,
+    task: str,
+    schema: type[BaseModel],
+    user_payload: Any,
+    semantic_validate: Callable[[Any], None] | None = None,
+    transform: Callable[[Any], BaseModel] | None = None,
+    scenario: str | None = None,
+) -> tuple[StatePatch, BaseModel | None]:
     services = get_services(config)
     prompt = get_prompt(task)
     selected_scenario = scenario or get_task_scenario(config, task)

@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from enum import StrEnum
 from time import monotonic
-from typing import cast
+from typing import Literal, cast
 from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, model_validator
@@ -47,6 +47,7 @@ class ProviderRuntimeConfig(BaseModel):
     read_timeout_seconds: float = Field(default=60.0, gt=0)
     total_timeout_seconds: float = Field(default=90.0, gt=0)
     max_attempts: int = Field(default=2, ge=1, le=4)
+    max_requests_per_minute: int | None = Field(default=None, ge=1)
     max_input_tokens_per_task: int = Field(default=32_000, ge=1)
     max_output_tokens_per_call: int = Field(default=4_096, ge=1)
     max_output_tokens_per_task: int = Field(default=16_384, ge=1)
@@ -55,6 +56,7 @@ class ProviderRuntimeConfig(BaseModel):
     max_estimated_cost_usd: float | None = Field(default=None, gt=0)
     allow_schema_repair: bool = True
     native_json_schema: bool = True
+    reasoning_effort: Literal["none", "minimal", "low", "medium", "high", "xhigh"] | None = None
     redaction_policy_version: str = "v0.6"
     telemetry_enabled: bool = True
 

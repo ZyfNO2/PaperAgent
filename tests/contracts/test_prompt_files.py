@@ -3,7 +3,7 @@ from __future__ import annotations
 from paperagent.prompts.registry import all_prompts
 
 _EXPECTED_VERSIONS = {
-    "planning": "planning.v0.1.2",
+    "planning": "planning.v0.1.3",
     "evidence_synthesis": "evidence_synthesis.v0.1.0",
     "method_design": "method_design.v0.2.0",
     "report": "report.v0.1.0",

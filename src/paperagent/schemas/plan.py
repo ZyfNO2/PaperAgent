@@ -31,8 +31,22 @@ class PreparedQuery(FrozenModel):
     query_id: str
     gap_id: str
     query: str
+    original_query: str | None = None
+    refinement_reason: str | None = None
+    removed_families: list[str] = Field(default_factory=list)
     source_types: list[SourceType] = Field(default_factory=list)
     round: int = Field(ge=1)
+
+    @model_validator(mode="after")
+    def validate_refinement_audit(self) -> PreparedQuery:
+        if self.original_query is not None:
+            if not self.refinement_reason:
+                raise ValueError("refined query requires refinement_reason")
+            if self.original_query.strip() == self.query.strip():
+                raise ValueError("refined query must differ from original_query")
+        elif self.refinement_reason is not None or self.removed_families:
+            raise ValueError("unmodified query cannot include refinement audit fields")
+        return self
 
 
 class ResearchPlan(FrozenModel):
@@ -57,8 +71,8 @@ class ResearchPlan(FrozenModel):
             unknown = {query.gap_id for query in self.search_queries} - known_gaps
             if unknown:
                 raise ValueError(f"search queries reference unknown gaps: {sorted(unknown)}")
-            if self.clarification_question is not None or self.block_reason is not None:
-                raise ValueError("ready plan cannot include clarification_question or block_reason")
+            if self.block_reason is not None:
+                raise ValueError("ready plan cannot include block_reason")
         elif self.status == "need_human":
             if not self.clarification_question:
                 raise ValueError("need_human plan requires clarification_question")

@@ -1,0 +1,116 @@
+{
+  "case_id": "at-001-uav-small-object-lightweight",
+  "checks": {
+    "all_results_pass_adapter_thresholds": true,
+    "found_results": true,
+    "found_verified_result": true,
+    "precision_risk_low": true,
+    "provider_budget_respected": true,
+    "query_approved": true,
+    "verification_budget_respected": true,
+    "web_not_used": true,
+    "zero_semantic_false_positives": true
+  },
+  "diagnostics": {
+    "attempted_providers": [
+      "openalex",
+      "semantic_scholar",
+      "arxiv"
+    ],
+    "fallback_used": false,
+    "informative_terms": [
+      "lightweight",
+      "uav",
+      "aerial",
+      "small",
+      "object",
+      "detection",
+      "visdrone",
+      "ap_small",
+      "latency",
+      "tensorrt"
+    ],
+    "maximum_provider_calls": 3,
+    "minimum_rank_score": 0.62,
+    "minimum_relevance": 0.34,
+    "policy_reasons": [],
+    "precision_risk": "low",
+    "provider_call_count": 3,
+    "query_approved": true,
+    "query_id": "probe-at-001-uav-small-object-lightweight",
+    "relevant_verified_papers": 2,
+    "returned_papers": 2,
+    "stop_reason": "sufficient_academic_evidence"
+  },
+  "original_question": "轻量化无人机小目标检测",
+  "passed": true,
+  "provider_call_budget": {
+    "maximum": 3,
+    "remaining": 0,
+    "used": 3
+  },
+  "provider_results": [
+    {
+      "cache_status": "miss",
+      "error_code": null,
+      "provider": "openalex",
+      "raw_paper_count": 0,
+      "status": "empty"
+    },
+    {
+      "cache_status": "miss",
+      "error_code": "RATE_LIMITED",
+      "provider": "semantic_scholar",
+      "raw_paper_count": 0,
+      "status": "rate_limited"
+    },
+    {
+      "cache_status": "miss",
+      "error_code": null,
+      "provider": "arxiv",
+      "raw_paper_count": 3,
+      "status": "success"
+    }
+  ],
+  "results": [
+    {
+      "locator": "https://arxiv.org/abs/1911.06073",
+      "providers": "arxiv",
+      "rank_score": 0.741667,
+      "relevance_score": 0.625,
+      "required_concepts_match": true,
+      "snippet": "Many applications utilizing Unmanned Aerial Vehicles (UAVs) require the use of computer vision algorithms to analyze the information captured from their on-board camera. Recent advances in deep learning have made it possible to use single-shot Convolutional Neural Network (CNN) detection algorithms that process the input image to detect various objects of interest. To keep the computational demands low these neural networks typically operate on small image sizes which, however, makes it difficult to detect small objects. This is further emphasized when considering UAVs equipped with cameras where due to the viewing range, objects tend to appear relatively small. This paper therefore, explores the trade-offs involved when maintaining the resolution of the objects of interest by extracting smaller patches (tiles) from the larger input image and processing them using a neural network. Specifically, we introduce an attention mechanism to focus on detecting objects only in some of the tiles and a memory mechanism to keep track of information for tiles that are not processed. Through the analysis of different methods and experiments we show that by carefully selecting which tiles to process we can considerably improve the detection accuracy while maintaining comparable performance to CNNs that resize and process a single image which makes the proposed approach suitable for UAV applications.",
+      "title": "Efficient ConvNet-based Object Detection for Unmanned Aerial Vehicles by Selective Tile Processing",
+      "topic_matches": [
+        "scene",
+        "scale",
+        "visual_object_detection",
+        "efficiency"
+      ],
+      "verification_status": "verified"
+    },
+    {
+      "locator": "https://arxiv.org/abs/2401.06503",
+      "providers": "arxiv",
+      "rank_score": 0.733333,
+      "relevance_score": 0.5,
+      "required_concepts_match": true,
+      "snippet": "Small oriented objects that represent tiny pixel-area in large-scale aerial images are difficult to detect due to their size and orientation. Existing oriented aerial detectors have shown promising results but are mainly focused on orientation modeling with less regard to the size of the objects. In this work, we proposed a method to accurately detect small oriented objects in aerial images by enhancing the classification and regression tasks of the oriented object detection model. We designed the Attention-Points Network consisting of two losses: Guided-Attention Loss (GALoss) and Box-Points Loss (BPLoss). GALoss uses an instance segmentation mask as ground-truth to learn the attention features needed to improve the detection of small objects. These attention features are then used to predict box points for BPLoss, which determines the points' position relative to the target oriented bounding box. Experimental results show the effectiveness of our Attention-Points Network on a standard oriented aerial dataset with small object instances (DOTA-v1.5) and on a maritime-related dataset (HRSC2016). The code is publicly available.",
+      "title": "Improving the Detection of Small Oriented Objects in Aerial Images",
+      "topic_matches": [
+        "scene",
+        "scale",
+        "visual_object_detection"
+      ],
+      "verification_status": "verified"
+    }
+  ],
+  "reviewed_query": "lightweight UAV aerial small object detection VisDrone AP_small latency TensorRT",
+  "verification_call_budget": {
+    "maximum": 8,
+    "remaining": 8,
+    "used": 0
+  },
+  "workflow_head_sha": "e49c98d78c1586b8428f0a254e46a26921030b2d",
+  "workflow_run_id": 29709781962
+}

@@ -9,10 +9,12 @@ from paperagent.literature.cache import InMemoryProviderCache
 from paperagent.literature.providers import (
     ArxivProvider,
     AsyncHTTPTransport,
+    DuckDuckGoProvider,
     HttpxTransport,
     LiteratureProvider,
     OpenAlexProvider,
     SemanticScholarProvider,
+    TavilyProvider,
 )
 from paperagent.literature.service import (
     DeterministicFocusedQueryRewriter,
@@ -30,11 +32,17 @@ class LiteratureProviderSettings(BaseModel):
 
     contact_email: str | None = None
     semantic_scholar_api_key: str | None = None
+    tavily_api_key: str | None = None
     provider_timeout_seconds: float = Field(default=10.0, gt=0, le=60)
     round_deadline_seconds: float = Field(default=25.0, gt=0, le=120)
     success_cache_ttl_seconds: float = Field(default=3600.0, gt=0)
     empty_cache_ttl_seconds: float = Field(default=120.0, gt=0)
+    results_per_provider_request: int = Field(default=6, ge=1, le=10)
+    max_provider_calls_total: int | None = Field(default=48, ge=1, le=1000)
+    max_verification_calls_total: int | None = Field(default=96, ge=1, le=2000)
     enable_arxiv_fallback: bool = False
+    enable_web_search: bool = False
+    enable_duckduckgo: bool = True
 
 
 @dataclass(frozen=True)
@@ -72,6 +80,25 @@ def build_literature_runtime(
             timeout_seconds=resolved.provider_timeout_seconds,
         ),
     ]
+    web_sources: list[str] = []
+    if resolved.enable_web_search:
+        if resolved.tavily_api_key:
+            providers.append(
+                TavilyProvider(
+                    api_key=resolved.tavily_api_key,
+                    transport=shared_transport,
+                    timeout_seconds=resolved.provider_timeout_seconds,
+                )
+            )
+            web_sources.append("tavily")
+        if resolved.enable_duckduckgo:
+            providers.append(
+                DuckDuckGoProvider(
+                    transport=shared_transport,
+                    timeout_seconds=resolved.provider_timeout_seconds,
+                )
+            )
+            web_sources.append("duckduckgo")
     verifier = VerificationService(
         [
             CrossrefVerifier(
@@ -83,7 +110,8 @@ def build_literature_runtime(
                 transport=shared_transport,
                 timeout_seconds=resolved.provider_timeout_seconds,
             ),
-        ]
+        ],
+        max_network_calls=resolved.max_verification_calls_total,
     )
     service = LiteratureRetrievalService(
         providers=providers,
@@ -94,13 +122,16 @@ def build_literature_runtime(
         ),
         rewriter=DeterministicFocusedQueryRewriter(),
         total_deadline_seconds=resolved.round_deadline_seconds,
+        results_per_request=resolved.results_per_provider_request,
+        max_provider_calls=resolved.max_provider_calls_total,
     )
-    fallback_preferences = ["arxiv", "openalex"] if resolved.enable_arxiv_fallback else None
     return LiteratureRuntime(
         service=service,
         adapter=LiteratureSearchAdapter(
             service=service,
-            fallback_source_preferences=fallback_preferences,
+            source_preferences=["openalex", "semantic_scholar"],
+            supplement_source_preferences=["arxiv"],
+            fallback_source_preferences=web_sources or None,
         ),
         transport=shared_transport,
         owns_transport=transport is None,

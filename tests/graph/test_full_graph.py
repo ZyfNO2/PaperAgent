@@ -102,6 +102,7 @@ async def test_graph__happy_path__runs_compiled_langgraph_with_four_llm_calls(fi
     ]
     assert completed_nodes == [
         "intake_node",
+        "readiness_preflight_node",
         "planning_node",
         "prepare_search_node",
         "search_tool_node",

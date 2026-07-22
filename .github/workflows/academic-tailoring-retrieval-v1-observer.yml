@@ -1,0 +1,149 @@
+name: Academic Tailoring Retrieval v1 Observer
+
+on:
+  push:
+    branches:
+      - eval/academic-tailoring-retrieval-v1-live-test
+    paths:
+      - "evals/academic_tailoring_retrieval_v1/live-test-trigger.json"
+      - "scripts/project_academic_tailoring_retrieval_v1.py"
+      - "scripts/run_academic_tailoring_retrieval_v1.py"
+      - "scripts/score_academic_tailoring_retrieval_v1.py"
+      - "tests/evals/test_academic_tailoring_retrieval_v1_boundary.py"
+      - ".github/workflows/academic-tailoring-retrieval-v1-live-test.yml"
+      - ".github/workflows/academic-tailoring-retrieval-v1-observer.yml"
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: academic-tailoring-retrieval-v1-observer
+  cancel-in-progress: true
+
+jobs:
+  observe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TARGET_WORKFLOW: academic-tailoring-retrieval-v1-live-test.yml
+      RESULT_ROOT: artifacts/evaluation/academic_tailoring_retrieval_v1/latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Wait for matching live-test run
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_id=""
+          for _ in $(seq 1 90); do
+            run_id=$(gh run list \
+              --repo "$GITHUB_REPOSITORY" \
+              --workflow "$TARGET_WORKFLOW" \
+              --branch "$GITHUB_REF_NAME" \
+              --event push \
+              --limit 20 \
+              --json databaseId,headSha \
+              --jq ".[] | select(.headSha == \"$GITHUB_SHA\") | .databaseId" \
+              | head -n 1)
+            if [ -n "$run_id" ]; then
+              break
+            fi
+            sleep 10
+          done
+          if [ -z "$run_id" ]; then
+            echo "No matching live-test run found for $GITHUB_SHA" >&2
+            exit 1
+          fi
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+      - name: Wait for target completion
+        id: watch
+        shell: bash
+        run: |
+          set +e
+          gh run watch "${{ steps.target.outputs.run_id }}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --exit-status
+          echo "target_exit=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Collect safe run evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_id="${{ steps.target.outputs.run_id }}"
+          mkdir -p "$RESULT_ROOT" build/downloaded
+          gh run view "$run_id" \
+            --repo "$GITHUB_REPOSITORY" \
+            --json databaseId,displayTitle,event,headBranch,headSha,status,conclusion,createdAt,updatedAt,url \
+            > build/run-view.json
+          gh api \
+            --paginate \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" \
+            > build/run-jobs.json
+          set +e
+          gh run download "$run_id" \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir build/downloaded
+          download_exit=$?
+          set -e
+          export DOWNLOAD_EXIT="$download_exit"
+          find build/downloaded -type f -name boundary-report.json -exec cp {} "$RESULT_ROOT/boundary-report.json" \; || true
+          find build/downloaded -type f -name execution-summary.json -exec cp {} "$RESULT_ROOT/execution-summary.json" \; || true
+          find build/downloaded -type f -name diagnostic-report.json -exec cp {} "$RESULT_ROOT/diagnostic-report.json" \; || true
+          python - <<'PY'
+          from __future__ import annotations
+
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["RESULT_ROOT"])
+          run = json.loads(Path("build/run-view.json").read_text(encoding="utf-8"))
+          jobs_payload = json.loads(Path("build/run-jobs.json").read_text(encoding="utf-8"))
+          jobs = [
+              {
+                  "name": job.get("name"),
+                  "status": job.get("status"),
+                  "conclusion": job.get("conclusion"),
+                  "started_at": job.get("started_at"),
+                  "completed_at": job.get("completed_at"),
+              }
+              for job in jobs_payload.get("jobs", [])
+          ]
+          manifest = {
+              "schema": "paperagent.academic-tailoring-retrieval.cloud-run-manifest.v1",
+              "observer_source_sha": os.environ["GITHUB_SHA"],
+              "target_run": run,
+              "target_exit": int("${{ steps.watch.outputs.target_exit || '1' }}"),
+              "artifact_download_exit": int(os.environ["DOWNLOAD_EXIT"]),
+              "jobs": jobs,
+              "safe_files": sorted(path.name for path in root.glob("*.json")),
+              "excluded_from_commit": [
+                  "prompt-log.jsonl",
+                  "states.jsonl",
+                  "run-traces.jsonl",
+                  "public-dataset.json",
+              ],
+          }
+          (root / "cloud-run-manifest.json").write_text(
+              json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+      - name: Commit safe evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$RESULT_ROOT"
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "test(eval): record retrieval v1 cloud run ${{ steps.target.outputs.run_id }} [skip ci]"
+          git push origin "HEAD:$GITHUB_REF_NAME"

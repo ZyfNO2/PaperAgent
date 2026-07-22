@@ -45,8 +45,13 @@ class ArxivProvider:
     ) -> ProviderResult:
         started = utc_now()
         request_id = make_request_id(self.provider_name, lane, filters, limit)
+        normalized_query = " ".join(lane.query.split())
+        escaped_query = normalized_query.replace('"', r"\"")
+        search_query = (
+            f'ti:"{escaped_query}"' if lane.purpose == "baseline" else f"all:{normalized_query}"
+        )
         params: dict[str, str | int] = {
-            "search_query": f"all:{lane.query}",
+            "search_query": search_query,
             "start": 0,
             "max_results": min(limit, 10),
             "sortBy": "relevance",

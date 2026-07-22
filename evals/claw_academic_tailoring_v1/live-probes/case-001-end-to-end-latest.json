@@ -1,0 +1,152 @@
+{
+  "accepted_evidence": [
+    {
+      "evidence_id": "ev-paper-f9e86bcf5af3c54fee38",
+      "locator": "doi:10.3390/s24175496",
+      "provider": "literature_retrieval",
+      "supports_gap_ids": [
+        "baseline_comparison",
+        "failure_mechanism_limitations",
+        "risk_negative_evidence"
+      ],
+      "title": "Drone-DETR: Efficient Small Object Detection for Remote Sensing Image Using Enhanced RT-DETR Model",
+      "verification_status": "accepted"
+    }
+  ],
+  "case_id": "at-001-uav-small-object-lightweight",
+  "decision_matches": true,
+  "execution_status": "completed",
+  "expected_decision": "REVISE_TO_PILOT",
+  "failed_stages": [
+    {
+      "available": 10,
+      "earned": 7,
+      "findings": [
+        "clarification did not target a declared high-impact unknown"
+      ],
+      "passed": false,
+      "stage": "clarification_gate"
+    }
+  ],
+  "hard_failures": [],
+  "llm_call_budget": 12,
+  "minimum_score": 80,
+  "model": "mistral-small-latest",
+  "observed_decision": "REVISE_TO_PILOT",
+  "passed": true,
+  "provider": "mistral",
+  "provider_call_budget": {
+    "maximum": 8,
+    "remaining": 0,
+    "used": 8
+  },
+  "report_status": "completed",
+  "score": 97,
+  "search_diagnostics": [
+    {
+      "attempted_providers": [
+        "openalex",
+        "semantic_scholar",
+        "arxiv"
+      ],
+      "fallback_used": false,
+      "informative_terms": [
+        "lightweight",
+        "drone",
+        "small",
+        "object",
+        "detection",
+        "baseline",
+        "reproducible",
+        "method",
+        "dataset",
+        "metrics",
+        "efficiency",
+        "real-time"
+      ],
+      "maximum_provider_calls": 3,
+      "minimum_rank_score": 0.62,
+      "minimum_relevance": 0.34,
+      "policy_reasons": [],
+      "precision_risk": "low",
+      "provider_call_count": 3,
+      "query_approved": true,
+      "query_id": "q_baseline",
+      "relevant_verified_papers": 1,
+      "returned_papers": 1,
+      "stop_reason": "academic_budget_exhausted"
+    },
+    {
+      "attempted_providers": [
+        "openalex",
+        "semantic_scholar",
+        "arxiv"
+      ],
+      "fallback_used": false,
+      "informative_terms": [
+        "drone",
+        "small",
+        "object",
+        "detection",
+        "failure",
+        "mode",
+        "limitation",
+        "methods"
+      ],
+      "maximum_provider_calls": 3,
+      "minimum_rank_score": 0.62,
+      "minimum_relevance": 0.34,
+      "policy_reasons": [],
+      "precision_risk": "low",
+      "provider_call_count": 3,
+      "query_approved": true,
+      "query_id": "q_failure_mechanism",
+      "relevant_verified_papers": 0,
+      "returned_papers": 0,
+      "stop_reason": "academic_budget_exhausted"
+    },
+    {
+      "attempted_providers": [
+        "openalex",
+        "semantic_scholar",
+        "arxiv"
+      ],
+      "fallback_used": false,
+      "informative_terms": [
+        "drone",
+        "small",
+        "object",
+        "detection",
+        "risk",
+        "limitation",
+        "negative",
+        "evidence",
+        "failure",
+        "scenario",
+        "power",
+        "consumption",
+        "latency"
+      ],
+      "maximum_provider_calls": 4,
+      "minimum_rank_score": 0.62,
+      "minimum_relevance": 0.34,
+      "policy_reasons": [],
+      "precision_risk": "low",
+      "provider_call_count": 3,
+      "query_approved": true,
+      "query_id": "q_risk_negative",
+      "relevant_verified_papers": 0,
+      "returned_papers": 0,
+      "stop_reason": "academic_budget_exhausted"
+    }
+  ],
+  "status": "passed",
+  "verification_call_budget": {
+    "maximum": 16,
+    "remaining": 7,
+    "used": 9
+  },
+  "web_search_enabled": false,
+  "workflow_head_sha": "e661c7ee226ffbfb0bdb50f460fc6b3dcacba1c8",
+  "workflow_run_id": 29712913561
+}

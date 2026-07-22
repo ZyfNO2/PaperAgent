@@ -8,6 +8,18 @@ from pydantic import SecretStr
 from paperagent.providers.runtime import LLMProviderName, ProviderRuntimeConfig
 
 
+def _env_bool(values: Mapping[str, str], name: str, *, default: bool) -> bool:
+    raw = values.get(name)
+    if raw is None:
+        return default
+    normalized = raw.strip().casefold()
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    raise ValueError(f"{name} must be one of 1/0, true/false, yes/no, or on/off")
+
+
 def load_provider_config(
     *,
     environ: Mapping[str, str] | None = None,
@@ -53,6 +65,11 @@ def load_provider_config(
         read_timeout_seconds=float(values.get("PAPERAGENT_LLM_READ_TIMEOUT", "60")),
         total_timeout_seconds=float(values.get("PAPERAGENT_LLM_TOTAL_TIMEOUT", "90")),
         max_attempts=int(values.get("PAPERAGENT_LLM_MAX_ATTEMPTS", "2")),
+        max_requests_per_minute=(
+            int(values["PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE"])
+            if values.get("PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE")
+            else None
+        ),
         max_input_tokens_per_task=int(
             values.get("PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK", "32000")
         ),
@@ -67,6 +84,22 @@ def load_provider_config(
         max_estimated_cost_usd=(
             float(values["PAPERAGENT_LLM_MAX_COST_USD"])
             if values.get("PAPERAGENT_LLM_MAX_COST_USD")
+            else None
+        ),
+        allow_schema_repair=_env_bool(
+            values,
+            "PAPERAGENT_LLM_ALLOW_SCHEMA_REPAIR",
+            default=True,
+        ),
+        # Provider workflows may override this after an endpoint-level capability probe.
+        native_json_schema=_env_bool(
+            values,
+            "PAPERAGENT_LLM_NATIVE_JSON_SCHEMA",
+            default=True,
+        ),
+        reasoning_effort=(
+            values["PAPERAGENT_LLM_REASONING_EFFORT"].strip().casefold()
+            if values.get("PAPERAGENT_LLM_REASONING_EFFORT")
             else None
         ),
     )

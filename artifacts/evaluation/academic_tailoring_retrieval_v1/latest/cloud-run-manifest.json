@@ -1,0 +1,60 @@
+{
+  "artifact_download_exit": 0,
+  "excluded_from_commit": [
+    "prompt-log.jsonl",
+    "states.jsonl",
+    "run-traces.jsonl",
+    "public-dataset.json"
+  ],
+  "jobs": [
+    {
+      "completed_at": "2026-07-21T12:17:57Z",
+      "conclusion": "success",
+      "name": "offline-boundary-gate",
+      "started_at": "2026-07-21T12:17:32Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-07-21T12:18:04Z",
+      "conclusion": "success",
+      "name": "prepare-public-inputs",
+      "started_at": "2026-07-21T12:18:00Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-07-21T12:18:14Z",
+      "conclusion": "failure",
+      "name": "candidate-live-run",
+      "started_at": "2026-07-21T12:18:07Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-07-21T12:18:14Z",
+      "conclusion": "skipped",
+      "name": "score-and-audit",
+      "started_at": "2026-07-21T12:18:15Z",
+      "status": "completed"
+    }
+  ],
+  "observer_source_sha": "bdf45f60ed1d73073f30653287ddb6bfe98f3b02",
+  "safe_files": [
+    "boundary-report.json",
+    "cloud-run-manifest.json",
+    "diagnostic-report.json",
+    "execution-summary.json"
+  ],
+  "schema": "paperagent.academic-tailoring-retrieval.cloud-run-manifest.v1",
+  "target_exit": 1,
+  "target_run": {
+    "conclusion": "failure",
+    "createdAt": "2026-07-21T12:17:25Z",
+    "databaseId": 29829484983,
+    "displayTitle": "test(eval): run retrieval v1 with NVIDIA GLM-5.2",
+    "event": "push",
+    "headBranch": "eval/academic-tailoring-retrieval-v1-live-test",
+    "headSha": "bdf45f60ed1d73073f30653287ddb6bfe98f3b02",
+    "status": "completed",
+    "updatedAt": "2026-07-21T12:18:15Z",
+    "url": "https://github.com/ZyfNO2/PaperAgent/actions/runs/29829484983"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "artifact_download_exit": 0,
+  "excluded_from_commit": [
+    "prompt-log.jsonl",
+    "states.jsonl",
+    "run-traces.jsonl",
+    "public-dataset.json"
+  ],
+  "jobs": [
+    {
+      "completed_at": "2026-07-21T15:21:29Z",
+      "conclusion": "success",
+      "name": "offline-validation",
+      "started_at": "2026-07-21T15:21:00Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-07-21T15:21:36Z",
+      "conclusion": "success",
+      "name": "prepare-public-inputs",
+      "started_at": "2026-07-21T15:21:31Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-07-21T15:21:49Z",
+      "conclusion": "failure",
+      "name": "candidate-live-run",
+      "started_at": "2026-07-21T15:21:39Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-07-21T15:21:50Z",
+      "conclusion": "skipped",
+      "name": "score-and-audit",
+      "started_at": "2026-07-21T15:21:50Z",
+      "status": "completed"
+    }
+  ],
+  "observer_source_sha": "74742b1435847a2e0a20010c548adde8f84e9029",
+  "safe_files": [
+    "cloud-run-manifest.json",
+    "execution-summary.json"
+  ],
+  "schema": "paperagent.glm52-parallel-hedged.cloud-run-manifest.v1",
+  "target_exit": 1,
+  "target_run": {
+    "conclusion": "failure",
+    "createdAt": "2026-07-21T15:20:57Z",
+    "databaseId": 29843544027,
+    "displayTitle": "fix(llm): avoid structured parser variable redefinition",
+    "event": "push",
+    "headBranch": "fix/parallel-hedged-glm52",
+    "headSha": "74742b1435847a2e0a20010c548adde8f84e9029",
+    "status": "completed",
+    "updatedAt": "2026-07-21T15:21:50Z",
+    "url": "https://github.com/ZyfNO2/PaperAgent/actions/runs/29843544027"
+  }
+}

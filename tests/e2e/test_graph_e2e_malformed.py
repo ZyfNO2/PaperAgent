@@ -1,9 +1,9 @@
 """E2E: malformed LLM JSON through the HTTP task contract.
 
 When the LLM returns invalid JSON, the node must not fall back or retry silently;
-it must record ``LLM_RESPONSE_JSON_INVALID`` and route to a blocked report. This
-is the no-fallback guarantee from the v0.1 fixture contract, verified here
-through the full HTTP task pipeline rather than only at the graph level.
+it must record ``LLM_RESPONSE_JSON_INVALID``, preserve a failed FinalOutcome, and
+render a blocked ``NOT_EVALUATED`` report. The legacy ExecutionMeta terminal
+remains blocked for task-contract compatibility.
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ from helpers import FixtureKey, assert_completed_nodes, build_services, load_llm
 
 EXPECTED_MALFORMED_NODES = [
     "intake_node",
+    "readiness_preflight_node",
     # planning_node emits node.failed (not node.completed) when the LLM returns
     # invalid JSON, so it must NOT appear in the completed-node sequence.
     "report_node",
@@ -53,6 +54,8 @@ def test_e2e__malformed_planning_json__does_not_fallback_via_http(
         assert result["execution"]["status"] == "blocked"
         assert result["execution"]["last_error"]["code"] == "LLM_RESPONSE_JSON_INVALID"
         assert result["execution"]["last_error"]["retryable"] is False
+        assert result["final_outcome"]["execution_status"] == "failed"
+        assert result["final_outcome"]["scientific_verdict"] == "NOT_EVALUATED"
         assert result["report"]["status"] == "blocked"
         assert result.get("plan") is None
 

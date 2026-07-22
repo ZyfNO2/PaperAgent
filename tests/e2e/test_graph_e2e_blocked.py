@@ -15,6 +15,7 @@ from helpers import FixtureKey, assert_completed_nodes, build_services, load_llm
 
 EXPECTED_BLOCKED_NODES = [
     "intake_node",
+    "readiness_preflight_node",
     "planning_node",
     "report_node",
     "persist_node",

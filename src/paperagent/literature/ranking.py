@@ -3,6 +3,8 @@ from __future__ import annotations
 import math
 import re
 
+from paperagent.literature.query_concepts import matches_required_candidate_terms
+from paperagent.literature.specialized_guards import matches_specialized_candidate_terms
 from paperagent.schemas.literature import LiteratureQueryPlan, PaperRecord, RankFeatures
 
 _TOKEN = re.compile(r"[a-z0-9]+")
@@ -12,9 +14,27 @@ def _tokens(value: str) -> set[str]:
     return set(_TOKEN.findall(value.lower()))
 
 
+def _query_text(plan: LiteratureQueryPlan) -> str:
+    return " ".join([plan.question, *(lane.query for lane in plan.query_lanes)])
+
+
+def _paper_text(paper: PaperRecord) -> str:
+    return " ".join(filter(None, [paper.canonical_title, paper.abstract or ""]))
+
+
+def _concept_match(paper: PaperRecord, plan: LiteratureQueryPlan) -> bool:
+    query = _query_text(plan)
+    candidate = _paper_text(paper)
+    return matches_required_candidate_terms(
+        query, candidate
+    ) and matches_specialized_candidate_terms(query, candidate)
+
+
 def _relevance(paper: PaperRecord, plan: LiteratureQueryPlan) -> float:
-    query_tokens = _tokens(" ".join([plan.question, *(lane.query for lane in plan.query_lanes)]))
-    paper_tokens = _tokens(" ".join(filter(None, [paper.canonical_title, paper.abstract or ""])))
+    if not _concept_match(paper, plan):
+        return 0.0
+    query_tokens = _tokens(_query_text(plan))
+    paper_tokens = _tokens(_paper_text(paper))
     if not query_tokens or not paper_tokens:
         return 0.0
     overlap = len(query_tokens & paper_tokens)
@@ -78,6 +98,7 @@ def rank_papers(
 ) -> list[PaperRecord]:
     ranked: list[PaperRecord] = []
     for paper in papers:
+        concept_match = _concept_match(paper, plan)
         relevance = _relevance(paper, plan)
         gap_coverage = _gap_coverage(paper, plan)
         metadata = _metadata_verification(paper)
@@ -99,6 +120,7 @@ def rank_papers(
             citation_tiebreaker=math.log1p(paper.citation_count),
             score=min(1.0, score),
             explanation=[
+                f"required_concepts={'matched' if concept_match else 'missing'}",
                 f"relevance={relevance:.2f}",
                 f"gap_coverage={gap_coverage:.2f}",
                 f"verification={paper.verification_status}",

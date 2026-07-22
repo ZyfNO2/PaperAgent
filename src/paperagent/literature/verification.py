@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import re
 from dataclasses import dataclass
 from typing import Any, Literal, Protocol
@@ -108,8 +109,38 @@ class DataCiteVerifier:
 
 
 class VerificationService:
-    def __init__(self, verifiers: list[MetadataVerifier]) -> None:
+    def __init__(
+        self,
+        verifiers: list[MetadataVerifier],
+        *,
+        max_network_calls: int | None = 96,
+    ) -> None:
+        if max_network_calls is not None and max_network_calls < 1:
+            raise ValueError("max_network_calls must be positive or None")
         self._verifiers = verifiers
+        self._max_network_calls = max_network_calls
+        self._network_calls_started = 0
+        self._budget_lock = asyncio.Lock()
+
+    def verification_budget(self) -> dict[str, int | None]:
+        maximum = self._max_network_calls
+        return {
+            "maximum": maximum,
+            "used": self._network_calls_started,
+            "remaining": (
+                None if maximum is None else max(0, maximum - self._network_calls_started)
+            ),
+        }
+
+    async def _reserve_network_call(self) -> bool:
+        async with self._budget_lock:
+            if (
+                self._max_network_calls is not None
+                and self._network_calls_started >= self._max_network_calls
+            ):
+                return False
+            self._network_calls_started += 1
+            return True
 
     async def verify_all(self, papers: list[PaperRecord]) -> list[PaperRecord]:
         return [await self.verify_one(paper) for paper in papers]
@@ -118,6 +149,9 @@ class VerificationService:
         if paper.doi:
             saw_mismatch = False
             for verifier in self._verifiers:
+                if not await self._reserve_network_call():
+                    status = "suspicious" if saw_mismatch else "pending"
+                    return paper.model_copy(update={"verification_status": status})
                 attempt = await verifier.verify(paper)
                 if attempt.status == "verified":
                     return paper.model_copy(

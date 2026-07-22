@@ -6,7 +6,7 @@ from conftest import load_llm_raw
 
 
 @pytest.mark.asyncio
-async def test_graph__empty_search__stops_after_two_rounds_and_blocks(fixed_time) -> None:
+async def test_graph__empty_search__stops_after_two_rounds_and_revises(fixed_time) -> None:
     from paperagent.graph import build_graph
     from paperagent.persistence import InMemoryStateStore
     from paperagent.providers import (
@@ -23,12 +23,6 @@ async def test_graph__empty_search__stops_after_two_rounds_and_blocks(fixed_time
         fixtures={
             FixtureKey(task="planning", scenario="happy_path", call_index=0): load_llm_raw(
                 "planning", "happy_path", 0
-            ),
-            FixtureKey(task="evidence_synthesis", scenario="empty", call_index=0): load_llm_raw(
-                "evidence_synthesis", "empty", 0
-            ),
-            FixtureKey(task="method_design", scenario="empty", call_index=0): load_llm_raw(
-                "method_design", "empty", 0
             ),
             FixtureKey(task="report", scenario="blocked", call_index=0): load_llm_raw(
                 "report", "blocked", 0
@@ -49,16 +43,19 @@ async def test_graph__empty_search__stops_after_two_rounds_and_blocks(fixed_time
                 "services": services,
                 "scenarios": {
                     "planning": "happy_path",
-                    "evidence_synthesis": "empty",
-                    "method_design": "empty",
                     "report": "blocked",
                 },
                 "search_scenario": "empty",
             }
         },
     )
-    assert result["execution"].status == "blocked"
+    assert result["execution"].status == "completed"
     assert result["retrieval"].round == 2
     assert result["retrieval"].budget_exhausted is True
     assert len(search.calls) == 2
     assert "Q_RETRIEVAL_BUDGET_EXHAUSTED" in result["quality"].reason_codes
+    assert result["final_outcome"].scientific_verdict == "REVISE"
+    assert result["report"].status == "completed"
+    assert result["report"].next_actions
+    assert result.get("synthesis") is None
+    assert result.get("method") is None

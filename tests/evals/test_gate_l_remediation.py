@@ -12,17 +12,20 @@ from paperagent.schemas.literature import (
     LiteratureBundle,
     LiteratureQueryPlan,
     PaperRecord,
+    RankFeatures,
     RetrievalMetrics,
 )
 
 
 class _FallbackService:
+    provider_names = ("openalex", "semantic_scholar", "arxiv")
+
     def __init__(self) -> None:
         self.plans: list[LiteratureQueryPlan] = []
 
     async def retrieve(self, plan: LiteratureQueryPlan) -> LiteratureBundle:
         self.plans.append(plan)
-        if len(self.plans) == 1:
+        if len(self.plans) < 3:
             return LiteratureBundle(
                 papers=[],
                 coverage=CoverageReport(),
@@ -35,6 +38,16 @@ class _FallbackService:
                     canonical_title="Indirect prompt injection",
                     arxiv_id="2302.12173",
                     verification_status="verified",
+                    rank_features=RankFeatures(
+                        relevance=0.8,
+                        gap_coverage=1.0,
+                        metadata_verification=1.0,
+                        recency_fit=0.8,
+                        diversity=0.5,
+                        citation_tiebreaker=0.0,
+                        score=0.82,
+                        explanation=[],
+                    ),
                 )
             ],
             coverage=CoverageReport(),
@@ -42,24 +55,26 @@ class _FallbackService:
         )
 
 
-def test_planning_prompt_v012_is_budget_aware_and_fail_closed() -> None:
+def test_planning_prompt_v013_is_budget_aware_and_fail_closed() -> None:
     prompt = get_prompt("planning")
 
-    assert prompt.version == "planning.v0.1.2"
-    assert "2-4 scientifically indispensable gaps" in prompt.system
+    assert prompt.version == "planning.v0.1.3"
+    assert "Choose the number and boundaries of evidence gaps" in prompt.system
     assert "Keep minimum_accepted_items at 1" in prompt.system
     assert "cannot exist in public search" in prompt.system
-    assert "return blocked" in prompt.system
+    assert "blocked with the evidence deficiency" in prompt.system
     assert "Never fabricate" in prompt.system
+    assert "exactly two consolidated required gaps" not in prompt.system
+    assert "role-explicit gap descriptions" not in prompt.system
 
 
 @pytest.mark.asyncio
-async def test_arxiv_fallback_is_used_only_after_zero_verified_primary_results() -> None:
+async def test_arxiv_escalation_is_used_only_after_primary_sources_are_insufficient() -> None:
     service = _FallbackService()
     adapter = LiteratureSearchAdapter(
         service=cast(Any, service),
         source_preferences=["openalex", "semantic_scholar"],
-        fallback_source_preferences=["arxiv", "openalex"],
+        supplement_source_preferences=["arxiv"],
     )
     query = SearchQuery(
         query_id="q1",
@@ -76,13 +91,18 @@ async def test_arxiv_fallback_is_used_only_after_zero_verified_primary_results()
         limit=10,
     )
 
-    assert len(service.plans) == 2
-    assert service.plans[0].query_lanes[0].source_preferences == [
+    assert len(service.plans) == 3
+    assert [plan.query_lanes[0].source_preferences for plan in service.plans] == [
+        ["openalex"],
+        ["semantic_scholar"],
+        ["arxiv"],
+    ]
+    assert len(candidates) == 1
+    assert candidates[0].metadata["fallback_used"] == "false"
+    diagnostics = adapter.last_query_diagnostics("q1")
+    assert diagnostics["attempted_providers"] == [
         "openalex",
         "semantic_scholar",
+        "arxiv",
     ]
-    assert service.plans[1].query_lanes[0].source_preferences == ["arxiv", "openalex"]
-    assert len(candidates) == 1
-    assert candidates[0].metadata["fallback_used"] == "true"
-    diagnostics = adapter.last_query_diagnostics("q1")
-    assert diagnostics["fallback_used"] is True
+    assert diagnostics["fallback_used"] is False

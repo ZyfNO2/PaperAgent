@@ -1,0 +1,55 @@
+name: Provider Router Skeleton
+
+on:
+  push:
+    branches:
+      - feat/multi-provider-router-skeleton
+  pull_request:
+    paths:
+      - "src/paperagent/providers/endpoint.py"
+      - "src/paperagent/providers/router.py"
+      - "src/paperagent/providers/__init__.py"
+      - "tests/providers/test_routing_llm_provider.py"
+      - ".github/workflows/provider-router-skeleton.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  offline-router:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install development dependencies
+        run: python -m pip install -e ".[dev]"
+      - name: Ruff lint
+        run: >-
+          ruff check
+          src/paperagent/providers/endpoint.py
+          src/paperagent/providers/router.py
+          src/paperagent/providers/__init__.py
+          tests/providers/test_routing_llm_provider.py
+      - name: Ruff format
+        run: >-
+          ruff format --check
+          src/paperagent/providers/endpoint.py
+          src/paperagent/providers/router.py
+          src/paperagent/providers/__init__.py
+          tests/providers/test_routing_llm_provider.py
+      - name: Strict type check
+        run: >-
+          mypy
+          src/paperagent/providers/endpoint.py
+          src/paperagent/providers/router.py
+      - name: Focused offline tests
+        run: python -m pytest tests/providers/test_routing_llm_provider.py

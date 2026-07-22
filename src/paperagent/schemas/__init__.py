@@ -42,8 +42,19 @@ from paperagent.schemas.method import (
     MethodModule,
     MethodProposal,
 )
+from paperagent.schemas.outcome import FinalOutcome, TraceAuditResult, TraceInvariantResult
 from paperagent.schemas.plan import EvidenceGap, PreparedQuery, ResearchPlan, SearchQuery
 from paperagent.schemas.quality import QualityDecision
+from paperagent.schemas.relevance import (
+    EvidenceLedger,
+    EvidenceLedgerEntry,
+    EvidenceScope,
+    GapSupportAssessment,
+    GapSupportType,
+    LexicalRelevanceAssessment,
+    RelevanceAssessment,
+    ResearchContract,
+)
 from paperagent.schemas.report import FinalReport, ReportClaim
 from paperagent.schemas.request import ResearchRequest
 from paperagent.schemas.synthesis import (
@@ -65,13 +76,20 @@ __all__ = [
     "EvidenceConflict",
     "EvidenceGap",
     "EvidenceItem",
+    "EvidenceLedger",
+    "EvidenceLedgerEntry",
+    "EvidenceScope",
     "EvidenceSynthesis",
     "ExecutionMeta",
     "ExperimentPlan",
+    "FinalOutcome",
     "FinalReport",
     "GapAssessment",
+    "GapSupportAssessment",
+    "GapSupportType",
     "HumanAction",
     "IntegrationContract",
+    "LexicalRelevanceAssessment",
     "LiteratureBundle",
     "LiteratureFilters",
     "LiteratureQueryPlan",
@@ -89,7 +107,9 @@ __all__ = [
     "QueryLane",
     "QueryPurpose",
     "RankFeatures",
+    "RelevanceAssessment",
     "ReportClaim",
+    "ResearchContract",
     "ResearchPlan",
     "ResearchRequest",
     "RetrievalMetrics",
@@ -102,6 +122,8 @@ __all__ = [
     "SourceRecord",
     "TokenUsage",
     "ToolErrorRecord",
+    "TraceAuditResult",
     "TraceEvent",
+    "TraceInvariantResult",
     "VerificationStatus",
 ]

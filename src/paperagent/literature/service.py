@@ -79,7 +79,10 @@ class LiteratureRetrievalService:
         candidate_limit: int = 30,
         final_limit: int = 12,
         provider_concurrency: int = 2,
+        max_provider_calls: int | None = 48,
     ) -> None:
+        if max_provider_calls is not None and max_provider_calls < 1:
+            raise ValueError("max_provider_calls must be positive or None")
         self._providers = {provider.provider_name: provider for provider in providers}
         self._provider_order = [provider.provider_name for provider in providers]
         self._verifier = verifier
@@ -95,10 +98,23 @@ class LiteratureRetrievalService:
         }
         self._inflight: dict[CacheKey, asyncio.Task[ProviderResult]] = {}
         self._inflight_lock = asyncio.Lock()
+        self._max_provider_calls = max_provider_calls
+        self._provider_calls_started = 0
+        self._provider_call_budget_lock = asyncio.Lock()
 
     @property
     def provider_names(self) -> tuple[str, ...]:
         return tuple(self._provider_order)
+
+    def provider_call_budget(self) -> dict[str, int | None]:
+        maximum = self._max_provider_calls
+        return {
+            "maximum": maximum,
+            "used": self._provider_calls_started,
+            "remaining": (
+                None if maximum is None else max(0, maximum - self._provider_calls_started)
+            ),
+        }
 
     async def retrieve(self, plan: LiteratureQueryPlan) -> LiteratureBundle:
         first_results = await self._execute_lanes(plan.query_lanes, plan.filters)
@@ -106,7 +122,11 @@ class LiteratureRetrievalService:
         all_results = list(first_results)
         rounds = 1
         rewrite_calls = 0
-        if coverage.retry_recommendation == "focused_retry" and self._rewriter is not None:
+        if (
+            plan.max_rounds > 1
+            and coverage.retry_recommendation == "focused_retry"
+            and self._rewriter is not None
+        ):
             retry_lanes = await self._rewriter.rewrite(plan, coverage)
             rewrite_calls = 1
             if retry_lanes:
@@ -121,7 +141,11 @@ class LiteratureRetrievalService:
             coverage = coverage.model_copy(update={"retry_recommendation": "blocked"})
         metrics = RetrievalMetrics(
             rounds=rounds,
-            provider_calls=sum(result.cache_status in {"miss", "bypass"} for result in all_results),
+            provider_calls=sum(
+                result.cache_status in {"miss", "bypass"}
+                and result.error_code != "PROVIDER_CALL_BUDGET_EXHAUSTED"
+                for result in all_results
+            ),
             query_rewrite_calls=rewrite_calls,
             cache_hits=sum(result.cache_status == "hit" for result in all_results),
         )
@@ -211,6 +235,37 @@ class LiteratureRetrievalService:
             provider_contract_version=provider.contract_version,
         )
 
+    async def _reserve_provider_call(self) -> bool:
+        async with self._provider_call_budget_lock:
+            maximum = self._max_provider_calls
+            if maximum is not None and self._provider_calls_started >= maximum:
+                return False
+            self._provider_calls_started += 1
+            return True
+
+    def _budget_exhausted_result(
+        self,
+        provider: LiteratureProvider,
+        lane: QueryLane,
+        filters: LiteratureFilters,
+    ) -> ProviderResult:
+        now = utc_now()
+        return ProviderResult(
+            provider=provider.provider_name,
+            request_id=make_request_id(
+                provider.provider_name,
+                lane,
+                filters,
+                self._results_per_request,
+            ),
+            status="failed",
+            started_at=now,
+            finished_at=now,
+            cache_status="bypass",
+            error_code="PROVIDER_CALL_BUDGET_EXHAUSTED",
+            error_message="task-level external provider call budget exhausted",
+        )
+
     async def _call_provider(
         self,
         call: _ProviderCall,
@@ -219,6 +274,8 @@ class LiteratureRetrievalService:
         provider = call.provider
         key = self._cache_key(provider, call.lane, filters)
         if self._cache is None:
+            if not await self._reserve_provider_call():
+                return self._budget_exhausted_result(provider, call.lane, filters)
             async with self._semaphores[provider.provider_name]:
                 result = await provider.search(
                     lane=call.lane,
@@ -236,6 +293,8 @@ class LiteratureRetrievalService:
             task = self._inflight.get(key)
             owner = task is None
             if task is None:
+                if not await self._reserve_provider_call():
+                    return self._budget_exhausted_result(provider, call.lane, filters)
                 task = asyncio.create_task(self._run_provider(provider, call.lane, filters))
                 self._inflight[key] = task
         try:

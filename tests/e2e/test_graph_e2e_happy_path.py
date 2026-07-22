@@ -15,6 +15,7 @@ from helpers import assert_completed_nodes
 
 EXPECTED_HAPPY_NODES = [
     "intake_node",
+    "readiness_preflight_node",
     "planning_node",
     "prepare_search_node",
     "search_tool_node",

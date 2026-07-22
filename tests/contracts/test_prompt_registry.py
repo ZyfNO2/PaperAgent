@@ -6,9 +6,11 @@ def test_prompt_registry__known_task__returns_versioned_prompt() -> None:
 
     prompt = get_prompt("planning")
     assert prompt.task == "planning"
-    assert prompt.version == "planning.v0.1.2"
+    assert prompt.version == "planning.v0.1.3"
     assert "Use status=need_human only" in prompt.system
-    assert "normally set minimum_accepted_items=1" in prompt.system
+    assert "Choose the number and boundaries of evidence gaps" in prompt.system
+    assert "Keep minimum_accepted_items at 1" in prompt.system
+    assert "Academic metadata providers predominantly index English" in prompt.system
     assert "JSON" in prompt.system
     assert "hidden chain of thought" not in prompt.system.lower()
     assert not any(marker in prompt.system for marker in MERGE_CONFLICT_MARKERS)

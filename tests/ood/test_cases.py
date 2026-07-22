@@ -59,6 +59,9 @@ def _services(fixed_time: datetime, scenario: str):
                         "baseline_parity_verified": "true",
                         "dataset_fingerprint": "sha256:fixture-dataset",
                         "environment_fingerprint": "sha256:fixture-environment",
+                        "relevance_scope": "direct",
+                        "supporting_spans": "Synthetic domain evidence fixture.",
+                        "fixture_gap_support_ids": "gap-evidence",
                     },
                 )
             ],
@@ -71,7 +74,12 @@ def _services(fixed_time: datetime, scenario: str):
                     title="Synthetic evaluation evidence",
                     locator="fixture://ood/evaluation",
                     snippet="Synthetic evaluation contract.",
-                    metadata={"license": "MIT"},
+                    metadata={
+                        "license": "MIT",
+                        "relevance_scope": "direct",
+                        "supporting_spans": "Synthetic evaluation evidence fixture.",
+                        "fixture_gap_support_ids": "gap-evaluation",
+                    },
                 )
             ],
         }
