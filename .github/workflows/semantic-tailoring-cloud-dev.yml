@@ -1,6 +1,12 @@
 name: Semantic Tailoring Cloud Development
 
 on:
+  push:
+    branches:
+      - fix/semantic-tailoring-role-bound-scoring
+    paths:
+      - scripts/dev/apply_semantic_tailoring_hardening.py
+      - .github/workflows/semantic-tailoring-cloud-dev.yml
   workflow_dispatch:
 
 permissions:
