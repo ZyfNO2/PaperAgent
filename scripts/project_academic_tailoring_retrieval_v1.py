@@ -161,8 +161,7 @@ def project_public_dataset(
         titles = [str(material["title"]).strip() for material in materials]
         roles = [str(material["declared_role"]).strip() for material in materials]
         constraints = [
-            str(constraint).strip()
-            for constraint in public_input.get("declared_constraints", [])
+            str(constraint).strip() for constraint in public_input.get("declared_constraints", [])
         ]
         cases.append(
             {

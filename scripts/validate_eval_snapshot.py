@@ -63,7 +63,10 @@ def validate_snapshot(*, snapshot_dir: Path, authoring_path: Path) -> dict[str, 
     if run_status not in {"completed", "partial"}:
         raise ValueError("run_status must be completed or partial")
     expected_directory = f"{run_id}-{run_status}"
-    if snapshot_dir.name != expected_directory or manifest.get("artifact_directory") != expected_directory:
+    if (
+        snapshot_dir.name != expected_directory
+        or manifest.get("artifact_directory") != expected_directory
+    ):
         raise ValueError("snapshot directory name does not match run_id and run_status")
 
     public_sha256 = _require_hex(
@@ -85,7 +88,7 @@ def validate_snapshot(*, snapshot_dir: Path, authoring_path: Path) -> dict[str, 
     if completed_at <= started_at:
         raise ValueError("completed_at must be later than started_at")
     duration = manifest.get("duration_seconds")
-    if not isinstance(duration, (int, float)) or duration <= 0:
+    if not isinstance(duration, int | float) or duration <= 0:
         raise ValueError("duration_seconds must be positive")
     measured = (completed_at - started_at).total_seconds()
     if abs(float(duration) - measured) > max(1.0, measured * 0.01):
@@ -152,7 +155,12 @@ def validate_snapshot(*, snapshot_dir: Path, authoring_path: Path) -> dict[str, 
         selected <= 0 or attempted != selected or completed != selected or runtime_errors != 0
     ):
         raise ValueError("completed snapshot contains incomplete cases or runtime errors")
-    if run_status == "partial" and attempted == selected and completed == selected and runtime_errors == 0:
+    if (
+        run_status == "partial"
+        and attempted == selected
+        and completed == selected
+        and runtime_errors == 0
+    ):
         raise ValueError("partial snapshot has complete runtime evidence")
     if manifest.get("scientific_acceptance") is True and run_status != "completed":
         raise ValueError("partial snapshot cannot claim scientific acceptance")

@@ -42,9 +42,7 @@ def _authoring() -> dict[str, object]:
         if case_type != "title_only":
             materials.append({"title": f"Baseline {index}", "declared_role": "baseline"})
         if case_type == "baseline_plus_parallel_paper":
-            materials.append(
-                {"title": f"Parallel {index}", "declared_role": "parallel_method"}
-            )
+            materials.append({"title": f"Parallel {index}", "declared_role": "parallel_method"})
         cases.append(
             {
                 "case_id": f"atr-v1-{index:03d}-fixture",
@@ -83,9 +81,7 @@ def test_projection_preserves_constraints_and_closes_digest_chain() -> None:
     authoring = _authoring()
     public = project.project_public_dataset(authoring, authoring_commit="a" * 40)
 
-    assert public["cases"][0]["benchmark_input"]["declared_constraints"] == [
-        "constraint-1"
-    ]
+    assert public["cases"][0]["benchmark_input"]["declared_constraints"] == ["constraint-1"]
     assert public["generated_from"]["authoring_commit"] == "a" * 40
     assert len(public["generated_from"]["authoring_sha256"]) == 64
     assert validate_public_dataset_digest(public) == public["public_sha256"]
@@ -135,9 +131,7 @@ def test_snapshot_builder_and_validator_round_trip(tmp_path: Path) -> None:
         "completed_at": "2026-07-23T00:02:00+00:00",
         "duration_seconds": 120.0,
     }
-    (run_dir / "execution-summary.json").write_text(
-        json.dumps(summary), encoding="utf-8"
-    )
+    (run_dir / "execution-summary.json").write_text(json.dumps(summary), encoding="utf-8")
     diagnostic_path = tmp_path / "diagnostic.json"
     diagnostic_path.write_text(json.dumps({"passed": True}), encoding="utf-8")
 

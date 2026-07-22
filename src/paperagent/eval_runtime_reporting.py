@@ -72,8 +72,7 @@ def validate_public_dataset_digest(dataset: Mapping[str, Any]) -> str:
     actual = canonical_sha256(payload)
     if actual != declared:
         raise ValueError(
-            "public dataset digest mismatch: "
-            f"declared={declared!r}, actual={actual!r}"
+            f"public dataset digest mismatch: declared={declared!r}, actual={actual!r}"
         )
     return actual
 
@@ -263,7 +262,7 @@ def summarize_errors(
         category = str(error.get("error_category") or "UNKNOWN")
         provider_counts[provider][category] += 1
         amount = error.get("budget_consumed_usd")
-        if isinstance(amount, (int, float)):
+        if isinstance(amount, int | float):
             consumed_before_fatal += float(amount)
         if first_fatal is None and category in {
             RunErrorCategory.FATAL_PROVIDER.value,
@@ -308,7 +307,9 @@ def load_resume_checkpoint(
     states_path = output_dir / "states.jsonl"
     traces_path = output_dir / "run-traces.jsonl"
     if not all(path.is_file() for path in (summary_path, states_path, traces_path)):
-        raise ValueError("resume requires execution-summary.json, states.jsonl, and run-traces.jsonl")
+        raise ValueError(
+            "resume requires execution-summary.json, states.jsonl, and run-traces.jsonl"
+        )
 
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     if summary.get("public_dataset_sha256") != expected_public_sha256:
@@ -338,7 +339,9 @@ def load_resume_checkpoint(
         for line in traces_path.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
-    completed_traces = [trace for trace in raw_traces if str(trace.get("case_id") or "") in required_prefix]
+    completed_traces = [
+        trace for trace in raw_traces if str(trace.get("case_id") or "") in required_prefix
+    ]
     existing_errors = [
         dict(error)
         for error in summary.get("errors", [])

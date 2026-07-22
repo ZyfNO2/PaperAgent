@@ -111,7 +111,7 @@ def build_snapshot(
     if completed_at <= started_at:
         raise ValueError("completed_at must be later than started_at")
     duration_seconds = summary.get("duration_seconds")
-    if not isinstance(duration_seconds, (int, float)) or duration_seconds <= 0:
+    if not isinstance(duration_seconds, int | float) or duration_seconds <= 0:
         raise ValueError("execution summary duration_seconds must be positive")
     measured = (completed_at - started_at).total_seconds()
     if abs(float(duration_seconds) - measured) > max(1.0, measured * 0.01):
@@ -145,9 +145,7 @@ def build_snapshot(
     runtime_errors = int(summary.get("runtime_errors", len(summary.get("errors", []))))
     diagnostic = _load_json(output_dir / "diagnostic-report.json")
     scientific_acceptance = bool(
-        run_status == "completed"
-        and diagnostic.get("passed") is True
-        and runtime_errors == 0
+        run_status == "completed" and diagnostic.get("passed") is True and runtime_errors == 0
     )
     manifest = {
         "schema": MANIFEST_SCHEMA,

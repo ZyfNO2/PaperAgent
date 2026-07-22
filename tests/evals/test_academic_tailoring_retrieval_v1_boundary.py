@@ -89,9 +89,7 @@ def test_projection_contains_only_public_contract() -> None:
     assert "Secret paper" not in serialized
     assert "Secret baseline" not in serialized
     assert public["cases"][4]["benchmark_input"]["supplied_material_titles"] == ["Baseline 5"]
-    assert public["cases"][4]["benchmark_input"]["declared_constraints"] == [
-        "constraint-5"
-    ]
+    assert public["cases"][4]["benchmark_input"]["declared_constraints"] == ["constraint-5"]
     assert len(public["public_sha256"]) == 64
 
 

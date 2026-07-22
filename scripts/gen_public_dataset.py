@@ -5,6 +5,7 @@ This is a compatibility wrapper around the canonical projection implementation i
 boundary, declared constraints are preserved, and the canonical public digest is
 embedded in the generated file.
 """
+
 from __future__ import annotations
 
 import argparse
