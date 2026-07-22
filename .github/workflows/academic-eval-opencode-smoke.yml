@@ -61,7 +61,7 @@ jobs:
           short_sha="${GITHUB_SHA:0:7}"
           run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body \
-            "Expanded Opencode smoke started for commit \`$short_sha\`: [open run]($run_url). Cases: \`005 remote\`, \`006 USAD\`, \`008 protein\`."
+            "Post-fix Opencode smoke started for commit \`$short_sha\`: [open run]($run_url). Cases: \`005 remote\`, \`006 USAD\`, \`008 protein\`; recursion limit: \`100\`."
 
       - name: Require credential and install
         run: |
@@ -144,6 +144,7 @@ jobs:
             --max-queries-per-round 10 \
             --max-method-repairs 3 \
             --max-evidence-items 120 \
+            --recursion-limit 100 \
             --provider-call-budget 240 \
             --enable-web-search \
             --llm-provider deepseek \
@@ -177,6 +178,7 @@ jobs:
             --max-queries-per-round 10 \
             --max-method-repairs 3 \
             --max-evidence-items 120 \
+            --recursion-limit 100 \
             --provider-call-budget 240 \
             --enable-web-search \
             --llm-provider deepseek \
@@ -233,7 +235,7 @@ jobs:
           report = json.loads(Path("build/opencode-smoke/diagnostic-report.json").read_text())
           selection = json.loads(Path("build/opencode-smoke/model-selection.json").read_text())
           lines = [
-              "## Expanded Opencode smoke",
+              "## Post-fix Opencode smoke",
               "",
               f"- Selected model: `{selection['selected_model']}`",
               f"- Passed: **{report['passed']}/{report['total']}**",
@@ -274,13 +276,13 @@ jobs:
           run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           if [ -f build/opencode-smoke/summary.md ]; then
             {
-              echo "Expanded Opencode smoke completed for commit \`$short_sha\`: [open run]($run_url)"
+              echo "Post-fix Opencode smoke completed for commit \`$short_sha\`: [open run]($run_url)"
               echo
               cat build/opencode-smoke/summary.md
             } > /tmp/opencode-smoke-comment.md
           else
             cat > /tmp/opencode-smoke-comment.md <<EOF
-          Expanded Opencode smoke did not reach scoring for commit \`$short_sha\`: [open run]($run_url).
+          Post-fix Opencode smoke did not reach scoring for commit \`$short_sha\`: [open run]($run_url).
 
           Job status: \`${{ job.status }}\`.
           EOF
