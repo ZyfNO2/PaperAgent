@@ -138,10 +138,30 @@ jobs:
           test ! -e scripts/apply_runtime_output_fixes.py
           test ! -e .github/workflows/apply-runtime-output-fixes.yml
           test ! -e .github/workflows/paperagent-source-snapshot.yml
-      - name: Commit validated repair
+      - name: Package validated final tree
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "fix(runtime): recover role-bound LLM outputs"
-          git push origin HEAD:fix/semantic-tailoring-role-bound-scoring
+          mkdir -p build/validated-runtime-output-repair
+          tar -czf build/validated-runtime-output-repair/final-tree.tar.gz \
+            src/paperagent/providers/runtime.py \
+            src/paperagent/nodes/planning.py \
+            src/paperagent/nodes/report.py \
+            src/paperagent/method_design_draft.py \
+            src/paperagent/strict_method_design.py \
+            tests/providers/test_runtime.py \
+            tests/nodes/test_planning_identity_priority.py \
+            tests/nodes/test_method_design_baseline_anchor.py \
+            tests/nodes/test_report_fallback.py \
+            tests/methodology/test_strict_method_design.py \
+            tests/methodology/test_method_design_draft.py \
+            .github/workflows/academic-tailoring-runtime-recovery.yml \
+            .github/workflows/runtime-output-recovery-ci.yml
+          git diff --binary > build/validated-runtime-output-repair/final-tree.patch
+          git status --short > build/validated-runtime-output-repair/status.txt
+          sha256sum build/validated-runtime-output-repair/final-tree.tar.gz \
+            > build/validated-runtime-output-repair/archive-sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: validated-runtime-output-repair
+          path: build/validated-runtime-output-repair/
+          if-no-files-found: error
+          retention-days: 1
