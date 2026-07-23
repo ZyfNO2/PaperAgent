@@ -107,7 +107,7 @@ jobs:
             tests/nodes/test_evidence_synthesis_contract.py \
             tests/providers/test_runtime.py \
             tests/providers/test_openai_llm_runtime_limits.py
-      - name: Commit and push repaired formal source patch
+      - name: Publish validated source patch branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -115,4 +115,4 @@ jobs:
             src/paperagent/nodes/_shared.py \
             tests/nodes/test_synthesis_method_quality_report.py
           git commit -m "fix(runtime): restore validated graph invocation indexing"
-          git push origin HEAD:fix/semantic-tailoring-role-bound-scoring
+          git push --force origin HEAD:refs/heads/tmp/generated-call-index-patch-v2
