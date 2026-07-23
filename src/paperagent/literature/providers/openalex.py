@@ -10,6 +10,7 @@ from paperagent.literature.providers.base import (
     make_request_id,
     response_failure,
     response_success,
+    transport_exception_result,
     utc_now,
 )
 from paperagent.schemas.literature import (
@@ -22,18 +23,24 @@ from paperagent.schemas.literature import (
 
 class OpenAlexProvider:
     provider_name = "openalex"
-    contract_version = "2026-01"
+    contract_version = "2026-07"
     endpoint = "https://api.openalex.org/works"
+    _selected_fields = (
+        "id,display_name,publication_year,abstract_inverted_index,authorships,"
+        "primary_location,doi,cited_by_count,type,language"
+    )
 
     def __init__(
         self,
         *,
         transport: AsyncHTTPTransport | None = None,
         mailto: str | None = None,
+        api_key: str | None = None,
         timeout_seconds: float = 10.0,
     ) -> None:
         self._transport = transport or HttpxTransport()
         self._mailto = mailto
+        self._api_key = api_key
         self._timeout = timeout_seconds
 
     async def search(
@@ -45,7 +52,11 @@ class OpenAlexProvider:
     ) -> ProviderResult:
         started = utc_now()
         request_id = make_request_id(self.provider_name, lane, filters, limit)
-        params: dict[str, str | int] = {"search": lane.query, "per-page": min(limit, 10)}
+        params: dict[str, str | int] = {
+            "search": lane.query,
+            "per-page": min(limit, 100 if self._api_key else 10),
+            "select": self._selected_fields,
+        }
         filter_parts: list[str] = []
         if filters.year_min is not None:
             filter_parts.append(f"from_publication_date:{filters.year_min}-01-01")
@@ -55,27 +66,18 @@ class OpenAlexProvider:
             params["filter"] = ",".join(filter_parts)
         if self._mailto:
             params["mailto"] = self._mailto
+        if self._api_key:
+            params["api_key"] = self._api_key
         try:
             response = await self._transport.get(
                 self.endpoint, params=params, timeout=self._timeout
             )
-        except TimeoutError:
-            return response_failure(
-                provider=self.provider_name,
-                request_id=request_id,
-                started_at=started,
-                status="timeout",
-                code="TIMEOUT",
-                message="OpenAlex request timed out",
-            )
         except Exception as exc:
-            return response_failure(
+            return transport_exception_result(
                 provider=self.provider_name,
                 request_id=request_id,
                 started_at=started,
-                status="failed",
-                code="TRANSPORT_ERROR",
-                message=str(exc),
+                exc=exc,
             )
         failure = http_failure_result(
             provider=self.provider_name,
