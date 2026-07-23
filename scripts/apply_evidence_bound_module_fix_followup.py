@@ -9,6 +9,7 @@ from pathlib import Path
 from evidence_bound_module_lint_patch import apply_lint_repairs
 from evidence_bound_module_prepatch import apply_all
 from evidence_bound_module_remaining_patch import apply_remaining
+from evidence_bound_module_test_patch import apply_test_repairs
 
 _FAILURE_LOG = Path(".github/evidence-bound-module-followup-failure.log")
 _WRAPPER_DIR = Path("/tmp/paperagent-ci-wrappers")
@@ -92,6 +93,7 @@ def main() -> None:
         apply_all()
         apply_remaining()
         apply_lint_repairs()
+        apply_test_repairs()
         _install_ci_wrappers()
     except BaseException:
         rendered = traceback.format_exc()
