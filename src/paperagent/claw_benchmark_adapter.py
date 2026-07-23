@@ -19,6 +19,10 @@ from paperagent.claw_academic_benchmark import (
     ModuleTrace,
     ObservedDecision,
 )
+from paperagent.module_compatibility import (
+    ModuleCompatibilityResult,
+    evaluate_module_compatibility,
+)
 from paperagent.schemas.base import FrozenModel
 from paperagent.state import PaperAgentState
 
@@ -208,6 +212,39 @@ def _method_evidence_roles(state: PaperAgentState) -> dict[str, EvidenceRole]:
     return roles
 
 
+def _module_compatibility_by_evidence(
+    state: PaperAgentState,
+) -> dict[str, ModuleCompatibilityResult]:
+    method = state.get("method")
+    evidence = state.get("evidence")
+    if method is None or evidence is None:
+        return {}
+    plan = method.methodology_plan
+    by_id = {item.evidence_id: item for item in evidence.items}
+    request = state.get("request")
+    target_text = " ".join(
+        value
+        for value in (
+            request.question if request is not None else None,
+            plan.research.target_problem,
+            plan.research.scientific_setting,
+            plan.research.intended_claim,
+        )
+        if value
+    )
+    return {
+        module.evidence_id: evaluate_module_compatibility(
+            module=module,
+            evidence=by_id.get(module.evidence_id),
+            accepted_ids=evidence.accepted_ids,
+            baseline_evidence_id=plan.baseline.source_evidence_id,
+            target_text=target_text,
+        )
+        for module in plan.modules
+        if module.evidence_id
+    }
+
+
 _SUPPLIED_REF = re.compile(
     r"^(?P<title>.+?) \[declared role: (?P<role>.+?)\]$",
     re.IGNORECASE,
@@ -257,6 +294,7 @@ def _evidence_reviews(
     relevance_by_id = {item.evidence_id: item for item in state.get("relevance_assessments", [])}
     ledger_by_id = {item.evidence_id: item for item in ledger.entries} if ledger else {}
     method_roles = _method_evidence_roles(state)
+    module_compatibility = _module_compatibility_by_evidence(state)
     full_text_ids = set(context.full_text_evidence_ids)
     accepted_ids = set(ledger.accepted_ids if ledger is not None else bundle.accepted_ids)
     identity_ids = set(bundle.identity_verified_ids)
@@ -296,7 +334,11 @@ def _evidence_reviews(
                 core_evidence=role in {"baseline", "gap", "parallel_method"},
                 full_text_checked=item.evidence_id in full_text_ids or metadata_full_text,
                 source_is_supplied_material=item.source_type == "user_material",
-                role_compatible=None,
+                role_compatible=(
+                    module_compatibility[item.evidence_id].compatible
+                    if role == "parallel_method" and item.evidence_id in module_compatibility
+                    else None
+                ),
             )
         )
     supplied_count = sum(item.source_is_supplied_material for item in reviews)
@@ -364,25 +406,19 @@ def _modules(state: PaperAgentState) -> tuple[ModuleTrace, ...]:
     method = state.get("method")
     if method is None:
         return ()
+    compatibility_by_evidence = _module_compatibility_by_evidence(state)
     output: list[ModuleTrace] = []
     for module in method.methodology_plan.modules:
         optimization = _dedupe(
             (
-                module.gradient_expectation,
-                module.parameter_update_scope,
-                module.loss_scale,
+                module.gradient_path or module.gradient_expectation,
+                module.trainable_parameters,
+                module.frozen_parameters,
+                module.loss_weighting or module.loss_scale,
                 ", ".join(module.loss_terms) if module.loss_terms else None,
             )
         )
-        role_compatible = bool(
-            module.evidence_id
-            and module.original_role
-            and module.proposed_role
-            and module.input_semantics
-            and module.output_semantics
-            and module.input_semantics.casefold() not in {"tensor", "shape-only", "unknown"}
-            and module.output_semantics.casefold() not in {"tensor", "shape-only", "unknown"}
-        )
+        compatibility = compatibility_by_evidence.get(module.evidence_id or "")
         output.append(
             ModuleTrace(
                 module_id=module.name,
@@ -397,7 +433,12 @@ def _modules(state: PaperAgentState) -> tuple[ModuleTrace, ...]:
                 compute_cost=module.compute_cost,
                 failure_mode=module.failure_mode,
                 implementation_switch=module.implementation_switch,
-                role_compatible=role_compatible,
+                role_compatible=compatibility.compatible if compatibility is not None else False,
+                compatibility_reasons=(
+                    compatibility.reasons
+                    if compatibility is not None
+                    else ("module_evidence_missing",)
+                ),
             )
         )
     return tuple(output)

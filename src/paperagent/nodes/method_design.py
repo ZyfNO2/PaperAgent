@@ -13,13 +13,20 @@ from paperagent.state import PaperAgentState, StatePatch
 NODE = "method_design_node"
 
 _MODULE_CONTRACT_REQUIREMENTS = (
-    "Use one independently retrieved accepted module-lane paper that is distinct from the baseline.",
-    "Bind the module name and original role to the selected paper title, summary, or verified metadata.",
-    "State the exact baseline insertion point; do not use generic phrases such as selected representation stage.",
-    "Specify input and output semantics and explicit tensor ranks/shapes, or an explicit projection path.",
-    "Specify normalization and masking behavior for the target task rather than inheriting unspecified defaults.",
-    "Specify gradient path, trainable parameters, frozen parameters, loss terms, and numeric loss weighting separately.",
-    "Defer the module design when any required interface contract is unsupported by accepted evidence.",
+    "Use one independently retrieved accepted module-lane paper that is distinct "
+    "from the baseline.",
+    "Bind the module name and original role to the selected paper title, summary, "
+    "or verified metadata.",
+    "State the exact baseline insertion point; do not use generic phrases such as "
+    "selected representation stage.",
+    "Specify input and output semantics and explicit tensor ranks/shapes, or an "
+    "explicit projection path.",
+    "Specify normalization and masking behavior for the target task rather than "
+    "inheriting unspecified defaults.",
+    "Specify gradient path, trainable parameters, frozen parameters, loss terms, "
+    "and numeric loss weighting separately.",
+    "Defer the module design when any required interface contract is unsupported "
+    "by accepted evidence.",
 )
 
 

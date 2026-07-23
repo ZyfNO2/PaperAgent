@@ -62,6 +62,11 @@ _COMPARATOR_ROLE_QUERY = re.compile(
     r"(?:\bcomparators?\b|\bcomparison\b|对照|比较|对比)",
     re.IGNORECASE,
 )
+_MODULE_ROLE_QUERY = re.compile(
+    r"(?:\bmodules?\b|\bparallel(?: method| paper)?\b|\bmechanisms?\b|"
+    r"模块|平行论文|并行方法|机制)",
+    re.IGNORECASE,
+)
 _DATASET_CONTEXT = re.compile(
     r"\b(?P<name>[A-Za-z][A-Za-z0-9._-]{2,})\s+(?:dataset|benchmark|corpus)\b",
     re.IGNORECASE,
@@ -150,11 +155,17 @@ def _query_seeks_comparator_role(query: str) -> bool:
     return not _query_seeks_baseline_role(query) and bool(_COMPARATOR_ROLE_QUERY.search(query))
 
 
+def _query_seeks_module_role(query: str) -> bool:
+    return not _query_seeks_baseline_role(query) and bool(_MODULE_ROLE_QUERY.search(query))
+
+
 def _query_candidate_role(query: str) -> str | None:
     if _query_seeks_baseline_role(query):
         return "baseline"
     if _query_seeks_comparator_role(query):
         return "comparator"
+    if _query_seeks_module_role(query):
+        return "module"
     return None
 
 
@@ -483,21 +494,36 @@ class LiteratureSearchAdapter:
             fallback_used=fallback_used,
         )
         candidates: list[SearchCandidate] = []
+        query_role = _query_candidate_role(query.query)
         for paper in selected:
+            exact_declared_identity = required_title is not None and _exact_title_match(
+                paper.canonical_title, required_title
+            )
             relation = (
-                "declared_identity"
-                if required_title is not None
-                and _exact_title_match(paper.canonical_title, required_title)
+                "module_role_query"
+                if exact_declared_identity and query_role == "module"
                 else (
-                    "parallel_via_dataset"
-                    if paper.paper_id in relation_paper_ids
+                    "declared_identity"
+                    if exact_declared_identity
                     else (
-                        "baseline_role_query"
-                        if _query_candidate_role(query.query) == "baseline"
+                        "module_linked_by_focused_retrieval"
+                        if paper.paper_id in relation_paper_ids and query_role == "module"
                         else (
-                            "comparator_role_query"
-                            if _query_candidate_role(query.query) == "comparator"
-                            else "direct_query"
+                            "parallel_via_dataset"
+                            if paper.paper_id in relation_paper_ids
+                            else (
+                                "baseline_role_query"
+                                if query_role == "baseline"
+                                else (
+                                    "comparator_role_query"
+                                    if query_role == "comparator"
+                                    else (
+                                        "module_role_query"
+                                        if query_role == "module"
+                                        else "direct_query"
+                                    )
+                                )
+                            )
                         )
                     )
                 )
@@ -733,7 +759,16 @@ class LiteratureSearchAdapter:
                         else (
                             {"comparator_candidate": "inferred"}
                             if relation == "comparator_role_query"
-                            else {}
+                            else (
+                                {"module_candidate": "inferred"}
+                                if relation
+                                in {
+                                    "module_role_query",
+                                    "parallel_method_query",
+                                    "module_linked_by_focused_retrieval",
+                                }
+                                else {}
+                            )
                         )
                     )
                 ),

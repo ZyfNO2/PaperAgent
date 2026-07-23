@@ -25,6 +25,7 @@ from paperagent.schemas.relevance import (
 from paperagent.state import PaperAgentState
 
 _EVIDENCE_ID = "ev-drone-detr"
+_BASELINE_ID = "ev-rt-detr-baseline"
 _SUMMARY = (
     "Drone-DETR is evaluated on the VisDrone2019 dataset for small object detection in UAV "
     "imagery. It uses lightweight feature fusion and reports mAP50 gains over RT-DETR-R18 "
@@ -32,9 +33,14 @@ _SUMMARY = (
 )
 
 
-def _support(gap_id: str, claim: str) -> GapSupportAssessment:
+def _support(
+    gap_id: str,
+    claim: str,
+    *,
+    evidence_id: str = _EVIDENCE_ID,
+) -> GapSupportAssessment:
     return GapSupportAssessment(
-        evidence_id=_EVIDENCE_ID,
+        evidence_id=evidence_id,
         gap_id=gap_id,
         support_type="direct_support",
         supported_claim=claim,
@@ -96,14 +102,40 @@ def _state() -> PaperAgentState:
             "doi": "10.3390/s24175496",
             "candidate_gap_ids": "baseline_comparison,failure_mechanism",
             "license": "CC BY 4.0",
-            "baseline_candidate": "inferred",
-            "relation": "parallel_via_dataset",
+            "module_candidate": "inferred",
+            "relation": "module_role_query",
             "rank_score": "0.90",
+            "relevance_score": "0.90",
+        },
+    )
+    baseline_item = EvidenceItem(
+        evidence_id=_BASELINE_ID,
+        source_type="paper",
+        title="RT-DETR-R18 baseline for small object detection",
+        locator="doi:10.1000/rt-detr-baseline",
+        retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+        verification_status="accepted",
+        supports_gap_ids=[baseline_gap.gap_id],
+        summary="RT-DETR-R18 is a task-matched detector baseline with a verified paper identity.",
+        content_hash="sha256:rt-detr-baseline",
+        provider="literature_retrieval",
+        metadata={
+            "doi": "10.1000/rt-detr-baseline",
+            "baseline_candidate": "inferred",
+            "relation": "baseline_role_query",
+            "rank_score": "0.92",
+            "relevance_score": "0.90",
+            "license": "CC BY 4.0",
         },
     )
     support = (
         _support(baseline_gap.gap_id, baseline_gap.description),
         _support(mechanism_gap.gap_id, mechanism_gap.description),
+    )
+    baseline_support = _support(
+        baseline_gap.gap_id,
+        "RT-DETR-R18 supplies the independent baseline identity.",
+        evidence_id=_BASELINE_ID,
     )
     ledger = EvidenceLedger(
         entries=(
@@ -117,10 +149,20 @@ def _state() -> PaperAgentState:
                 accepted=True,
                 rejection_reasons=(),
             ),
+            EvidenceLedgerEntry(
+                evidence_id=_BASELINE_ID,
+                identity_verified=True,
+                relevance_scope="direct",
+                gap_supports=(baseline_support,),
+                supported_claims=(baseline_support.supported_claim or "",),
+                limitations=("pilot reproduction remains required",),
+                accepted=True,
+                rejection_reasons=(),
+            ),
         ),
-        accepted_ids=(_EVIDENCE_ID,),
+        accepted_ids=(_EVIDENCE_ID, _BASELINE_ID),
         rejected_ids=(),
-        coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
+        coverage_by_gap={baseline_gap.gap_id: 2, mechanism_gap.gap_id: 1},
     )
     synthesis = EvidenceSynthesis(
         gap_assessments=[
@@ -159,10 +201,10 @@ def _state() -> PaperAgentState:
             "request": ResearchRequest(question="轻量化无人机小目标检测"),
             "plan": plan,
             "evidence": EvidenceBundle(
-                items=[evidence_item],
-                accepted_ids=[_EVIDENCE_ID],
-                identity_verified_ids=[_EVIDENCE_ID],
-                coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
+                items=[evidence_item, baseline_item],
+                accepted_ids=[_EVIDENCE_ID, _BASELINE_ID],
+                identity_verified_ids=[_EVIDENCE_ID, _BASELINE_ID],
+                coverage_by_gap={baseline_gap.gap_id: 2, mechanism_gap.gap_id: 1},
             ),
             "evidence_ledger": ledger,
             "synthesis": synthesis,
@@ -187,8 +229,18 @@ def _draft(**updates: object) -> MethodDesignDraft:
         "module_name": "shallow_feature_fusion",
         "module_original_role": "feature enhancement in the accepted paper",
         "module_proposed_role": "single causal small-object feature intervention",
-        "input_semantics": "a shallow detector feature map containing fine spatial cues",
-        "output_semantics": "a shape-compatible enhanced feature map for the baseline head",
+        "input_semantics": "a shallow backbone feature map containing fine spatial cues",
+        "output_semantics": "a shape-compatible enhanced feature map for the baseline neck",
+        "input_shape": "[B, C3, H/8, W/8] shallow backbone feature map",
+        "output_shape": "[B, C3, H/8, W/8] enhanced feature map",
+        "insertion_point": "between the stride-8 backbone feature and the first neck fusion block",
+        "normalization_contract": "apply source-paper channel normalization before neck fusion",
+        "masking_contract": "preserve target-validity masks without adding padding-mask semantics",
+        "gradient_path": "detection losses backpropagate through the neck into fusion parameters",
+        "trainable_parameters": "feature-fusion convolution and channel-gating parameters",
+        "frozen_parameters": "none during the matched end-to-end detector pilot",
+        "loss_terms": ["classification loss", "box regression loss"],
+        "loss_weighting": "classification weight 1.0 and box regression weight 5.0",
         "predicted_effect": "improve small-object recall and AP_small",
         "failure_mode": "extra high-resolution computation may erase the latency benefit",
         "compute_cost": "one bounded feature-fusion path with measured parameter and latency delta",
@@ -222,7 +274,7 @@ def test_flat_draft_builds_aligned_canonical_method_proposal() -> None:
     assert proposal.methodology_plan.modules[0].name == "shallow_feature_fusion"
     assert proposal.modules[0].module_id == "shallow_feature_fusion"
     assert proposal.stop_conditions == list(proposal.methodology_plan.stop_conditions)
-    assert set(proposal.evidence_ids) == {_EVIDENCE_ID}
+    assert set(proposal.evidence_ids) == {_EVIDENCE_ID, _BASELINE_ID}
 
     arm_types = {experiment.arm_type for experiment in proposal.methodology_plan.experiments}
     assert arm_types == {
@@ -278,6 +330,10 @@ def test_non_vision_task_does_not_inherit_detector_specific_contracts() -> None:
             "metadata": {
                 "doi": "10.1007/s00500-024-09901-x",
                 "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+                "module_candidate": "inferred",
+                "relation": "module_role_query",
+                "rank_score": "0.91",
+                "relevance_score": "0.88",
             },
         }
     )
@@ -291,7 +347,7 @@ def test_non_vision_task_does_not_inherit_detector_specific_contracts() -> None:
                     "scope": "paired medical image representations with unresolved modalities",
                 }
             ),
-            "evidence": evidence.model_copy(update={"items": [medical_item]}),
+            "evidence": evidence.model_copy(update={"items": [medical_item, evidence.items[1]]}),
             "evidence_ledger": ledger,
             "synthesis": synthesis,
         },
@@ -358,7 +414,7 @@ def test_unqualified_direct_paper_does_not_become_baseline() -> None:
     state = _state()
     evidence = state["evidence"]
     assert evidence is not None
-    direct_item = evidence.items[0].model_copy(
+    direct_item = evidence.items[1].model_copy(
         update={
             "metadata": {
                 "doi": "10.3390/s24175496",
@@ -372,7 +428,7 @@ def test_unqualified_direct_paper_does_not_become_baseline() -> None:
         PaperAgentState,
         {
             **state,
-            "evidence": evidence.model_copy(update={"items": [direct_item]}),
+            "evidence": evidence.model_copy(update={"items": [evidence.items[0], direct_item]}),
         },
     )
     proposal = build_method_proposal(
