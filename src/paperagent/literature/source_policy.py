@@ -158,6 +158,7 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
         risk = "high"
 
     recent = bool(set(terms).intersection(_RECENT_HINTS) or _YEAR.search(normalized))
+    escalation: tuple[str, ...]
     if arxiv_requested:
         primary = "arxiv"
         escalation = ("openalex", "semantic_scholar")

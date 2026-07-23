@@ -2,10 +2,24 @@ from __future__ import annotations
 
 import os
 from collections.abc import Mapping
+from typing import Literal, cast
 
 from pydantic import SecretStr
 
 from paperagent.providers.runtime import LLMProviderName, ProviderRuntimeConfig
+
+ReasoningEffort = Literal["none", "minimal", "low", "medium", "high", "xhigh"]
+_REASONING_EFFORTS = {"none", "minimal", "low", "medium", "high", "xhigh"}
+
+
+def _reasoning_effort(values: Mapping[str, str]) -> ReasoningEffort | None:
+    raw = values.get("PAPERAGENT_LLM_REASONING_EFFORT")
+    if not raw:
+        return None
+    normalized = raw.strip().casefold()
+    if normalized not in _REASONING_EFFORTS:
+        raise ValueError("PAPERAGENT_LLM_REASONING_EFFORT has an unsupported value")
+    return cast(ReasoningEffort, normalized)
 
 
 def _env_bool(values: Mapping[str, str], name: str, *, default: bool) -> bool:
@@ -97,9 +111,5 @@ def load_provider_config(
             "PAPERAGENT_LLM_NATIVE_JSON_SCHEMA",
             default=True,
         ),
-        reasoning_effort=(
-            values["PAPERAGENT_LLM_REASONING_EFFORT"].strip().casefold()
-            if values.get("PAPERAGENT_LLM_REASONING_EFFORT")
-            else None
-        ),
+        reasoning_effort=_reasoning_effort(values),
     )

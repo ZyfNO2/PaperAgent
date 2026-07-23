@@ -399,11 +399,12 @@ class LiteratureRetrievalService:
                 return self._cached_copy(cached, offline=self._retrieval_mode == "offline")
         if self._retrieval_mode == "offline":
             return self._offline_miss_result(provider, call.lane, filters)
-        if self._cache is None:
+        cache = self._cache
+        if cache is None:
             return await self._execute_live(provider, call.lane, filters, key)
 
         async with self._inflight_lock:
-            cached = self._cache.get(key) if self._retrieval_mode != "live" else None
+            cached = cache.get(key) if self._retrieval_mode != "live" else None
             if cached is not None:
                 return self._cached_copy(cached, offline=False)
             task = self._inflight.get(key)

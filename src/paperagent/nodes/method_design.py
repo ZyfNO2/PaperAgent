@@ -117,6 +117,7 @@ async def method_design_node(state: PaperAgentState, config: RunnableConfig) -> 
         reason_codes=[last_error.code],
     )
     patch["quality"] = scientific_quality
+    assert execution is not None
     patch["execution"] = execution.model_copy(update={"status": "blocked"})
     patch["trace"] = [
         *patch.get("trace", []),
