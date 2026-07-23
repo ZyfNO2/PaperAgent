@@ -1,0 +1,153 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/paperagent/claw_benchmark_adapter.py:1:1
+   |
+ 1 | / from __future__ import annotations
+ 2 | |
+ 3 | | import hashlib
+ 4 | | import re
+ 5 | | from collections.abc import Iterable
+ 6 | |
+ 7 | | from pydantic import Field
+ 8 | |
+ 9 | | from paperagent.academic_methodology import ExperimentArmType
+10 | | from paperagent.module_compatibility import (
+11 | |     ModuleCompatibilityResult,
+12 | |     evaluate_module_compatibility,
+13 | | )
+14 | | from paperagent.claw_academic_benchmark import (
+15 | |     AcademicTailoringRunTrace,
+16 | |     BaselineTrace,
+17 | |     EvidenceReview,
+18 | |     EvidenceRole,
+19 | |     ExperimentArm,
+20 | |     ExperimentTrace,
+21 | |     FactPartitions,
+22 | |     HypothesisTrace,
+23 | |     ModuleTrace,
+24 | |     ObservedDecision,
+25 | | )
+26 | | from paperagent.schemas.base import FrozenModel
+27 | | from paperagent.state import PaperAgentState
+   | |____________________________________________^
+   |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/paperagent/method_design_draft.py:1:1
+   |
+ 1 | / from __future__ import annotations
+ 2 | |
+ 3 | | import re
+ 4 | | from collections.abc import Iterable
+ 5 | |
+ 6 | | from pydantic import Field
+ 7 | |
+ 8 | | from paperagent.academic_methodology import (
+ 9 | |     BaselineCard,
+10 | |     ExperimentArmType,
+11 | |     ExperimentCard,
+12 | |     FalsifiableHypothesis,
+13 | |     MethodPlan,
+14 | |     ModuleCard,
+15 | |     ResearchContract,
+16 | | )
+17 | | from paperagent.academic_methodology import (
+18 | |     EvidenceItem as MethodEvidenceItem,
+19 | | )
+20 | | from paperagent.schemas.base import FrozenModel
+21 | | from paperagent.schemas.evidence import EvidenceItem
+22 | | from paperagent.schemas.method import (
+23 | |     AblationPlan,
+24 | |     BaselineProposal,
+25 | |     ExperimentPlan,
+26 | |     IntegrationContract,
+27 | |     MethodModule,
+28 | |     MethodProposal,
+29 | | )
+30 | | from paperagent.module_compatibility import (
+31 | |     MODULE_EVIDENCE_RELATIONS,
+32 | |     evaluate_module_compatibility,
+33 | | )
+34 | | from paperagent.scientific_readiness import derive_scientific_readiness
+35 | | from paperagent.state import PaperAgentState
+   | |____________________________________________^
+   |
+help: Organize imports
+
+E501 Line too long (101 > 100)
+  --> src/paperagent/nodes/method_design.py:16:101
+   |
+15 | _MODULE_CONTRACT_REQUIREMENTS = (
+16 |     "Use one independently retrieved accepted module-lane paper that is distinct from the baseline.",
+   |                                                                                                     ^
+17 |     "Bind the module name and original role to the selected paper title, summary, or verified metadata.",
+18 |     "State the exact baseline insertion point; do not use generic phrases such as selected representation stage.",
+   |
+
+E501 Line too long (105 > 100)
+  --> src/paperagent/nodes/method_design.py:17:101
+   |
+15 | _MODULE_CONTRACT_REQUIREMENTS = (
+16 |     "Use one independently retrieved accepted module-lane paper that is distinct from the baseline.",
+17 |     "Bind the module name and original role to the selected paper title, summary, or verified metadata.",
+   |                                                                                                     ^^^^^
+18 |     "State the exact baseline insertion point; do not use generic phrases such as selected representation stage.",
+19 |     "Specify input and output semantics and explicit tensor ranks/shapes, or an explicit projection path.",
+   |
+
+E501 Line too long (114 > 100)
+  --> src/paperagent/nodes/method_design.py:18:101
+   |
+16 |     "Use one independently retrieved accepted module-lane paper that is distinct from the baseline.",
+17 |     "Bind the module name and original role to the selected paper title, summary, or verified metadata.",
+18 |     "State the exact baseline insertion point; do not use generic phrases such as selected representation stage.",
+   |                                                                                                     ^^^^^^^^^^^^^^
+19 |     "Specify input and output semantics and explicit tensor ranks/shapes, or an explicit projection path.",
+20 |     "Specify normalization and masking behavior for the target task rather than inheriting unspecified defaults.",
+   |
+
+E501 Line too long (107 > 100)
+  --> src/paperagent/nodes/method_design.py:19:101
+   |
+17 |     "Bind the module name and original role to the selected paper title, summary, or verified metadata.",
+18 |     "State the exact baseline insertion point; do not use generic phrases such as selected representation stage.",
+19 |     "Specify input and output semantics and explicit tensor ranks/shapes, or an explicit projection path.",
+   |                                                                                                     ^^^^^^^
+20 |     "Specify normalization and masking behavior for the target task rather than inheriting unspecified defaults.",
+21 |     "Specify gradient path, trainable parameters, frozen parameters, loss terms, and numeric loss weighting separately.",
+   |
+
+E501 Line too long (114 > 100)
+  --> src/paperagent/nodes/method_design.py:20:101
+   |
+18 |     "State the exact baseline insertion point; do not use generic phrases such as selected representation stage.",
+19 |     "Specify input and output semantics and explicit tensor ranks/shapes, or an explicit projection path.",
+20 |     "Specify normalization and masking behavior for the target task rather than inheriting unspecified defaults.",
+   |                                                                                                     ^^^^^^^^^^^^^^
+21 |     "Specify gradient path, trainable parameters, frozen parameters, loss terms, and numeric loss weighting separately.",
+22 |     "Defer the module design when any required interface contract is unsupported by accepted evidence.",
+   |
+
+E501 Line too long (121 > 100)
+  --> src/paperagent/nodes/method_design.py:21:101
+   |
+19 |     "Specify input and output semantics and explicit tensor ranks/shapes, or an explicit projection path.",
+20 |     "Specify normalization and masking behavior for the target task rather than inheriting unspecified defaults.",
+21 |     "Specify gradient path, trainable parameters, frozen parameters, loss terms, and numeric loss weighting separately.",
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^
+22 |     "Defer the module design when any required interface contract is unsupported by accepted evidence.",
+23 | )
+   |
+
+E501 Line too long (104 > 100)
+  --> src/paperagent/nodes/method_design.py:22:101
+   |
+20 |     "Specify normalization and masking behavior for the target task rather than inheriting unspecified defaults.",
+21 |     "Specify gradient path, trainable parameters, frozen parameters, loss terms, and numeric loss weighting separately.",
+22 |     "Defer the module design when any required interface contract is unsupported by accepted evidence.",
+   |                                                                                                     ^^^^
+23 | )
+   |
+
+Found 9 errors.
+[*] 2 fixable with the `--fix` option.
