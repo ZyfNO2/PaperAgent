@@ -9,7 +9,9 @@ on:
       - "src/paperagent/providers/openai_llm.py"
       - "src/paperagent/providers/mistral.py"
       - "src/paperagent/eval_runtime_reporting.py"
+      - "src/paperagent/claw_benchmark_adapter.py"
       - "src/paperagent/nodes/_shared.py"
+      - "src/paperagent/nodes/evidence_synthesis.py"
       - "src/paperagent/nodes/planning.py"
       - "src/paperagent/nodes/report.py"
       - "src/paperagent/method_design_draft.py"
@@ -17,8 +19,13 @@ on:
       - "tests/providers/test_runtime.py"
       - "tests/providers/test_openai_llm_runtime_limits.py"
       - "tests/evals/test_eval_runtime_reporting.py"
+      - "tests/evals/test_academic_tailoring_retrieval_v2_scorer.py"
+      - "tests/evals/test_adapter_module_contract.py"
+      - "tests/nodes/test_evidence_synthesis_payload.py"
+      - "tests/nodes/test_evidence_synthesis_contract.py"
       - "tests/nodes/test_synthesis_method_quality_report.py"
       - "tests/nodes/test_planning_identity_priority.py"
+      - "tests/nodes/test_planning_methodology_assets.py"
       - "tests/nodes/test_method_design_baseline_anchor.py"
       - "tests/nodes/test_report_fallback.py"
       - "tests/methodology/test_strict_method_design.py"
@@ -32,7 +39,9 @@ on:
       - "src/paperagent/providers/openai_llm.py"
       - "src/paperagent/providers/mistral.py"
       - "src/paperagent/eval_runtime_reporting.py"
+      - "src/paperagent/claw_benchmark_adapter.py"
       - "src/paperagent/nodes/_shared.py"
+      - "src/paperagent/nodes/evidence_synthesis.py"
       - "src/paperagent/nodes/planning.py"
       - "src/paperagent/nodes/report.py"
       - "src/paperagent/method_design_draft.py"
@@ -40,8 +49,13 @@ on:
       - "tests/providers/test_runtime.py"
       - "tests/providers/test_openai_llm_runtime_limits.py"
       - "tests/evals/test_eval_runtime_reporting.py"
+      - "tests/evals/test_academic_tailoring_retrieval_v2_scorer.py"
+      - "tests/evals/test_adapter_module_contract.py"
+      - "tests/nodes/test_evidence_synthesis_payload.py"
+      - "tests/nodes/test_evidence_synthesis_contract.py"
       - "tests/nodes/test_synthesis_method_quality_report.py"
       - "tests/nodes/test_planning_identity_priority.py"
+      - "tests/nodes/test_planning_methodology_assets.py"
       - "tests/nodes/test_method_design_baseline_anchor.py"
       - "tests/nodes/test_report_fallback.py"
       - "tests/methodology/test_strict_method_design.py"
@@ -55,7 +69,7 @@ permissions:
 jobs:
   focused-runtime-output-gate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -72,7 +86,9 @@ jobs:
             src/paperagent/providers/openai_llm.py \
             src/paperagent/providers/mistral.py \
             src/paperagent/eval_runtime_reporting.py \
+            src/paperagent/claw_benchmark_adapter.py \
             src/paperagent/nodes/_shared.py \
+            src/paperagent/nodes/evidence_synthesis.py \
             src/paperagent/nodes/planning.py \
             src/paperagent/nodes/report.py \
             src/paperagent/method_design_draft.py \
@@ -80,8 +96,13 @@ jobs:
             tests/providers/test_runtime.py \
             tests/providers/test_openai_llm_runtime_limits.py \
             tests/evals/test_eval_runtime_reporting.py \
+            tests/evals/test_academic_tailoring_retrieval_v2_scorer.py \
+            tests/evals/test_adapter_module_contract.py \
+            tests/nodes/test_evidence_synthesis_payload.py \
+            tests/nodes/test_evidence_synthesis_contract.py \
             tests/nodes/test_synthesis_method_quality_report.py \
             tests/nodes/test_planning_identity_priority.py \
+            tests/nodes/test_planning_methodology_assets.py \
             tests/nodes/test_method_design_baseline_anchor.py \
             tests/nodes/test_report_fallback.py \
             tests/methodology/test_strict_method_design.py \
@@ -93,7 +114,9 @@ jobs:
             src/paperagent/providers/openai_llm.py \
             src/paperagent/providers/mistral.py \
             src/paperagent/eval_runtime_reporting.py \
+            src/paperagent/claw_benchmark_adapter.py \
             src/paperagent/nodes/_shared.py \
+            src/paperagent/nodes/evidence_synthesis.py \
             src/paperagent/nodes/planning.py \
             src/paperagent/nodes/report.py \
             src/paperagent/method_design_draft.py \
@@ -101,8 +124,13 @@ jobs:
             tests/providers/test_runtime.py \
             tests/providers/test_openai_llm_runtime_limits.py \
             tests/evals/test_eval_runtime_reporting.py \
+            tests/evals/test_academic_tailoring_retrieval_v2_scorer.py \
+            tests/evals/test_adapter_module_contract.py \
+            tests/nodes/test_evidence_synthesis_payload.py \
+            tests/nodes/test_evidence_synthesis_contract.py \
             tests/nodes/test_synthesis_method_quality_report.py \
             tests/nodes/test_planning_identity_priority.py \
+            tests/nodes/test_planning_methodology_assets.py \
             tests/nodes/test_method_design_baseline_anchor.py \
             tests/nodes/test_report_fallback.py \
             tests/methodology/test_strict_method_design.py \
@@ -112,7 +140,9 @@ jobs:
             src/paperagent/providers/openai_llm.py \
             src/paperagent/providers/mistral.py \
             src/paperagent/eval_runtime_reporting.py \
+            src/paperagent/claw_benchmark_adapter.py \
             src/paperagent/nodes/_shared.py \
+            src/paperagent/nodes/evidence_synthesis.py \
             src/paperagent/nodes/planning.py \
             src/paperagent/nodes/report.py \
             src/paperagent/method_design_draft.py \
@@ -124,7 +154,9 @@ jobs:
             src/paperagent/providers/openai_llm.py \
             src/paperagent/providers/mistral.py \
             src/paperagent/eval_runtime_reporting.py \
+            src/paperagent/claw_benchmark_adapter.py \
             src/paperagent/nodes/_shared.py \
+            src/paperagent/nodes/evidence_synthesis.py \
             src/paperagent/nodes/planning.py \
             src/paperagent/nodes/report.py \
             src/paperagent/method_design_draft.py \
@@ -135,8 +167,13 @@ jobs:
             tests/providers/test_runtime.py \
             tests/providers/test_openai_llm_runtime_limits.py \
             tests/evals/test_eval_runtime_reporting.py \
+            tests/evals/test_academic_tailoring_retrieval_v2_scorer.py \
+            tests/evals/test_adapter_module_contract.py \
+            tests/nodes/test_evidence_synthesis_payload.py \
+            tests/nodes/test_evidence_synthesis_contract.py \
             tests/nodes/test_synthesis_method_quality_report.py \
             tests/nodes/test_planning_identity_priority.py \
+            tests/nodes/test_planning_methodology_assets.py \
             tests/nodes/test_method_design_baseline_anchor.py \
             tests/nodes/test_report_fallback.py \
             tests/methodology/test_strict_method_design.py \
