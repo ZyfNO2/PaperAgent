@@ -28,6 +28,12 @@ def main() -> None:
         '            "relation": "baseline_role_query",\n            "rank_score": "0.90",\n            "relevance_score": "0.90",\n',
         "method test baseline metadata",
     )
+    text = replace_once(
+        text,
+        "        supports_gap_ids=[baseline_gap.gap_id, mechanism_gap.gap_id],\n",
+        "        supports_gap_ids=[baseline_gap.gap_id],\n",
+        "method test baseline gap coverage",
+    )
     insertion = """    module_item = EvidenceItem(
         evidence_id=_MODULE_EVIDENCE_ID,
         source_type="paper",
