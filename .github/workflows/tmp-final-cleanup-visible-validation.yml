@@ -1,0 +1,63 @@
+name: Temporary Final Cleanup Visible Validation
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/tmp-final-cleanup-visible-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/semantic-tailoring-role-bound-scoring
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Extract finalization steps
+        run: |
+          python -m pip install -q pyyaml
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          workflow = yaml.safe_load(
+              Path('.github/workflows/tmp-final-semantic-repair-cleanup.yml').read_text(
+                  encoding='utf-8'
+              )
+          )
+          steps = workflow['jobs']['finalize']['steps']
+          selected = [
+              step for step in steps
+              if step.get('name') in {
+                  'Apply final workflow coverage and cleanup',
+                  'Install project and YAML parser',
+                  'Validate workflow syntax',
+                  'Format, lint, types, and focused regressions',
+              }
+          ]
+          if len(selected) != 4:
+              raise SystemExit(f'expected 4 executable validation steps, got {len(selected)}')
+          for index, step in enumerate(selected, start=1):
+              Path(f'/tmp/finalize-{index}.sh').write_text(
+                  step['run'] + '\n',
+                  encoding='utf-8',
+              )
+          PY
+      - name: Apply proposed cleanup in workspace
+        run: bash /tmp/finalize-1.sh
+      - name: Install project and YAML parser
+        run: bash /tmp/finalize-2.sh
+      - name: Validate workflow syntax
+        run: bash /tmp/finalize-3.sh
+      - name: Run complete offline focused gate
+        run: bash /tmp/finalize-4.sh
