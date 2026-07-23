@@ -2,10 +2,14 @@ from __future__ import annotations
 
 import os
 from collections.abc import Mapping
+from typing import Literal
 
 from pydantic import SecretStr
 
 from paperagent.providers.runtime import LLMProviderName, ProviderRuntimeConfig
+
+ReasoningEffort = Literal["none", "minimal", "low", "medium", "high", "xhigh"]
+_REASONING_EFFORTS: set[str] = {"none", "minimal", "low", "medium", "high", "xhigh"}
 
 
 def _env_bool(values: Mapping[str, str], name: str, *, default: bool) -> bool:
@@ -18,6 +22,29 @@ def _env_bool(values: Mapping[str, str], name: str, *, default: bool) -> bool:
     if normalized in {"0", "false", "no", "off"}:
         return False
     raise ValueError(f"{name} must be one of 1/0, true/false, yes/no, or on/off")
+
+
+def _reasoning_effort(values: Mapping[str, str]) -> ReasoningEffort | None:
+    raw = values.get("PAPERAGENT_LLM_REASONING_EFFORT")
+    if raw is None:
+        return None
+    normalized = raw.strip().casefold()
+    if normalized not in _REASONING_EFFORTS:
+        raise ValueError(
+            "PAPERAGENT_LLM_REASONING_EFFORT must be one of "
+            "none, minimal, low, medium, high, or xhigh"
+        )
+    if normalized == "none":
+        return "none"
+    if normalized == "minimal":
+        return "minimal"
+    if normalized == "low":
+        return "low"
+    if normalized == "medium":
+        return "medium"
+    if normalized == "high":
+        return "high"
+    return "xhigh"
 
 
 def load_provider_config(
@@ -91,15 +118,10 @@ def load_provider_config(
             "PAPERAGENT_LLM_ALLOW_SCHEMA_REPAIR",
             default=True,
         ),
-        # Provider workflows may override this after an endpoint-level capability probe.
         native_json_schema=_env_bool(
             values,
             "PAPERAGENT_LLM_NATIVE_JSON_SCHEMA",
             default=True,
         ),
-        reasoning_effort=(
-            values["PAPERAGENT_LLM_REASONING_EFFORT"].strip().casefold()
-            if values.get("PAPERAGENT_LLM_REASONING_EFFORT")
-            else None
-        ),
+        reasoning_effort=_reasoning_effort(values),
     )
