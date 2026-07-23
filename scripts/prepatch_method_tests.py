@@ -200,6 +200,77 @@ def main() -> None:
         '    assert experiments["E2-full-method"].source_evidence_id == _MODULE_EVIDENCE_ID\n',
         "method test experiment module evidence assertions",
     )
+    medical_module = """    medical_module_item = evidence.items[1].model_copy(
+        update={
+            "title": "Gated Multimodal Fusion for Medical Image Classification",
+            "summary": (
+                "Gated multimodal fusion combines paired medical modality representations "
+                "before a classification head."
+            ),
+            "locator": "doi:10.1000/gated-medical-fusion",
+            "metadata": {
+                "doi": "10.1000/gated-medical-fusion",
+                "candidate_gap_ids": "failure_mechanism",
+                "license": "CC BY 4.0",
+                "module_candidate": "inferred",
+                "relation": "module_role_query",
+                "rank_score": "0.92",
+                "relevance_score": "0.92",
+            },
+        }
+    )
+"""
+    text = replace_once(
+        text,
+        """    )
+    medical_state = cast(
+""",
+        """    )
+""" + medical_module + """    medical_state = cast(
+""",
+        "method test medical module evidence",
+    )
+    text = replace_once(
+        text,
+        '            "evidence": evidence.model_copy(update={"items": [medical_item]}),\n',
+        '            "evidence": evidence.model_copy(\n                update={"items": [medical_item, medical_module_item]}\n            ),\n',
+        "method test medical evidence bundle",
+    )
+    text = replace_once(
+        text,
+        """                "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+            },
+""",
+        """                "candidate_gap_ids": "baseline_comparison",
+                "license": "CC BY 4.0",
+                "baseline_candidate": "inferred",
+                "relation": "baseline_role_query",
+                "rank_score": "0.90",
+                "relevance_score": "0.90",
+            },
+""",
+        "method test medical baseline metadata",
+    )
+    text = replace_once(
+        text,
+        """            input_semantics="paired modality representations",
+            output_semantics="fused representation for the classification head",
+""",
+        """            input_semantics="paired modality representations",
+            output_semantics="fused representation for the classification head",
+            input_shape="[B, M, D] paired modality embeddings",
+            output_shape="[B, D] projected fused representation",
+            insertion_point="after modality encoders and before the classification head",
+            normalization_contract="apply per-modality layer normalization before fusion",
+            masking_contract="apply the observed-modality availability mask at the fusion gate",
+            gradient_path="classification loss flows through the fusion gate and projections",
+            trainable_parameters="fusion gate and modality projection parameters",
+            frozen_parameters="modality encoder backbones during the first pilot",
+            loss_terms=["binary cross-entropy classification loss"],
+            loss_weighting="classification loss weight 1.0 with no auxiliary term",
+""",
+        "method test medical optimization contracts",
+    )
     PATH.write_text(text, encoding="utf-8")
 
 
