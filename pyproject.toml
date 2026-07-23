@@ -15,6 +15,7 @@ dependencies = [
   "httpx>=0.28,<0.29",
   "fastapi>=0.139,<0.140",
   "uvicorn>=0.51,<0.52",
+  "pypdf>=5,<6",
 ]
 
 [project.scripts]
@@ -39,7 +40,13 @@ release = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-paperagent = ["prompts/v0_1/*.md", "web/assets/*"]
+paperagent = [
+  "prompts/v0_1/*.md",
+  "web/assets/*",
+  "web/assets/css/*",
+  "web/assets/js/*",
+  "web/assets/js/views/*",
+]
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-markers"
