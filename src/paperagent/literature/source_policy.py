@@ -17,6 +17,10 @@ _IDENTIFIER = re.compile(
     r"(?:10\.\d{4,9}/\S+|(?:arxiv:|arxiv\.org/(?:abs|pdf)/)?\d{4}\.\d{4,5})",
     re.IGNORECASE,
 )
+_ARXIV_IDENTIFIER = re.compile(
+    r"(?:arxiv:|arxiv\.org/(?:abs|pdf)/)\s*\d{4}\.\d{4,5}",
+    re.IGNORECASE,
+)
 _YEAR = re.compile(r"\b20(?:1\d|2\d)\b")
 _RECENT_HINTS = frozenset(
     {
@@ -25,13 +29,12 @@ _RECENT_HINTS = frozenset(
         "current",
         "state-of-the-art",
         "sota",
-        "preprint",
-        "arxiv",
         "2024",
         "2025",
         "2026",
     }
 )
+_PREPRINT_HINTS = frozenset({"arxiv", "preprint", "preprints"})
 _STOPWORDS = frozenset(
     {
         "a",
@@ -127,6 +130,9 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
     unique_informative = tuple(dict.fromkeys(informative))
     discriminative = tuple(term for term in unique_informative if term not in _GENERIC_TERMS)
     identifier_query = bool(_IDENTIFIER.search(normalized))
+    arxiv_requested = bool(
+        _ARXIV_IDENTIFIER.search(normalized) or set(terms).intersection(_PREPRINT_HINTS)
+    )
     cjk_count = len(_CJK.findall(normalized))
     generic_only = bool(unique_informative) and not discriminative
     reasons: list[str] = []
@@ -152,12 +158,16 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
         risk = "high"
 
     recent = bool(set(terms).intersection(_RECENT_HINTS) or _YEAR.search(normalized))
-    if (identifier_query and "arxiv" in normalized.casefold()) or recent:
+    if arxiv_requested:
         primary = "arxiv"
         escalation = ("openalex", "semantic_scholar")
     else:
         primary = "openalex"
-        escalation = ("semantic_scholar", "arxiv")
+        escalation = (
+            ("semantic_scholar", "arxiv")
+            if recent
+            else ("semantic_scholar",)
+        )
 
     allow_web = approved and risk == "low" and "web" in query.source_types
     result_limit = 5 if risk == "low" else 6
