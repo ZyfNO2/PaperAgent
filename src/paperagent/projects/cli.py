@@ -112,20 +112,20 @@ def run_memory_rag_cli(args: argparse.Namespace) -> int | None:
     try:
         workflow = MemoryRAGWorkflow(cast(Path, args.database))
         if command == "project-create":
-            result = workflow.create_project(
+            project = workflow.create_project(
                 name=cast(str, args.name),
                 research_question=cast(str, args.question),
             )
-            _print_json(result.model_dump(mode="json"))
+            _print_json(project.model_dump(mode="json"))
             return 0
         if command == "paper-ingest":
-            result = workflow.ingest_paper(
+            ingestion = workflow.ingest_paper(
                 project_id=cast(str, args.project_id),
                 path=cast(Path, args.file),
                 title=cast(str | None, args.title),
                 paper_id=cast(str | None, args.paper_id),
             )
-            _print_json(result.model_dump(mode="json"))
+            _print_json(ingestion.model_dump(mode="json"))
             return 0
         if command == "rag-query":
             hits = workflow.query(
@@ -137,22 +137,22 @@ def run_memory_rag_cli(args: argparse.Namespace) -> int | None:
             _print_json({"hits": [hit.model_dump(mode="json") for hit in hits]})
             return 0
         if command == "memory-propose":
-            result = workflow.propose_memory(
+            proposal = workflow.propose_memory(
                 project_id=cast(str, args.project_id),
                 scope=MemoryScope(cast(str, args.scope)),
                 category=MemoryCategory(cast(str, args.category)),
                 content=cast(str, args.content),
                 evidence_unit_ids=cast(list[str], args.evidence_unit_id),
             )
-            _print_json(result.model_dump(mode="json"))
+            _print_json(proposal.model_dump(mode="json"))
             return 0
         if command == "memory-review":
-            result = workflow.review_memory(
+            reviewed = workflow.review_memory(
                 cast(str, args.memory_id),
                 approve=cast(bool, args.approve),
                 note=cast(str | None, args.note),
             )
-            _print_json(result.model_dump(mode="json"))
+            _print_json(reviewed.model_dump(mode="json"))
             return 0
         if command == "memory-show":
             entries = workflow.repository.list_memory(
@@ -162,15 +162,15 @@ def run_memory_rag_cli(args: argparse.Namespace) -> int | None:
             _print_json({"memory": [entry.model_dump(mode="json") for entry in entries]})
             return 0
         if command == "tailor":
-            result = workflow.design_tailoring_plan(
+            plan = workflow.design_tailoring_plan(
                 project_id=cast(str, args.project_id),
                 hypothesis=cast(str, args.hypothesis),
                 baseline_paper_id=cast(str, args.baseline_paper_id),
                 module_paper_ids=cast(list[str], args.module_paper_id),
                 evidence_query=cast(str | None, args.evidence_query),
             )
-            _print_json(result.model_dump(mode="json"))
-            return 0 if result.decision.value in {"GO", "REVISE"} else 3
+            _print_json(plan.model_dump(mode="json"))
+            return 0 if plan.decision.value in {"GO", "REVISE"} else 3
         raise RuntimeError(f"unhandled command: {command}")
     except (
         FileNotFoundError,
