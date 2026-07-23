@@ -17,8 +17,75 @@ def _run(*args: str, check: bool = False) -> subprocess.CompletedProcess[str]:
     return subprocess.run(args, check=check, text=True, capture_output=False)
 
 
+def _replace_exact(path: Path, old: str, new: str, label: str) -> None:
+    text = path.read_text(encoding="utf-8")
+    if new in text:
+        return
+    if text.count(old) != 1:
+        raise RuntimeError(f"{label} shape changed")
+    path.write_text(text.replace(old, new), encoding="utf-8")
+
+
+def _prepatch_literature_relation() -> None:
+    old = '''        for paper in selected:
+            relation = (
+                "declared_identity"
+                if required_title is not None
+                and _exact_title_match(paper.canonical_title, required_title)
+                else (
+                    "parallel_via_dataset"
+                    if paper.paper_id in relation_paper_ids
+                    else (
+                        "baseline_role_query"
+                        if _query_candidate_role(query.query) == "baseline"
+                        else (
+                            "comparator_role_query"
+                            if _query_candidate_role(query.query) == "comparator"
+                            else "direct_query"
+                        )
+                    )
+                )
+            )
+'''
+    new = '''        query_role = _query_candidate_role(query.query)
+        for paper in selected:
+            exact_declared_identity = required_title is not None and _exact_title_match(
+                paper.canonical_title, required_title
+            )
+            relation = (
+                "module_role_query"
+                if exact_declared_identity and query_role == "module"
+                else (
+                    "declared_identity"
+                    if exact_declared_identity
+                    else (
+                        "module_linked_by_focused_retrieval"
+                        if paper.paper_id in relation_paper_ids and query_role == "module"
+                        else (
+                            "parallel_via_dataset"
+                            if paper.paper_id in relation_paper_ids
+                            else (
+                                "baseline_role_query"
+                                if query_role == "baseline"
+                                else (
+                                    "comparator_role_query"
+                                    if query_role == "comparator"
+                                    else (
+                                        "module_role_query"
+                                        if query_role == "module"
+                                        else "direct_query"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+'''
+    _replace_exact(_LITERATURE_ADAPTER, old, new, "literature relation")
+
+
 def _prepatch_literature_metadata() -> None:
-    text = _LITERATURE_ADAPTER.read_text(encoding="utf-8")
     old = '''                **(
                     {"baseline_candidate": "declared"}
                     if relation == "declared_identity"
@@ -56,27 +123,23 @@ def _prepatch_literature_metadata() -> None:
                     )
                 ),
 '''
-    if new in text:
-        return
-    if text.count(old) != 1:
-        raise RuntimeError("literature adapter module metadata shape changed")
-    _LITERATURE_ADAPTER.write_text(text.replace(old, new), encoding="utf-8")
+    _replace_exact(_LITERATURE_ADAPTER, old, new, "literature module metadata")
 
 
-def _drop_original_literature_metadata_patch(payload: str) -> str:
-    needle = '''                                {"comparator_candidate": "inferred"}
-                                if relation == "comparator_role_query"
-                                else {}
-'''
+def _drop_replace_call(payload: str, needle: str) -> str:
     needle_index = payload.find(needle)
     if needle_index < 0:
-        raise RuntimeError("original literature metadata patch needle was not found")
+        raise RuntimeError(f"original patch needle was not found: {needle[:40]!r}")
     start = payload.rfind("    replace_once(\n", 0, needle_index)
-    end_marker = "\n    )\n\n\ndef patch_planning() -> None:\n"
-    end = payload.find(end_marker, needle_index)
-    if start < 0 or end < 0:
-        raise RuntimeError("original literature metadata patch block was not found")
-    return payload[:start] + "\n\ndef patch_planning() -> None:\n" + payload[end + len(end_marker) :]
+    if start < 0:
+        raise RuntimeError("original replace_once start was not found")
+    next_replace = payload.find("\n    replace_once(\n", needle_index + 1)
+    next_function = payload.find("\n\n\ndef patch_planning() -> None:\n", needle_index + 1)
+    boundaries = [value for value in (next_replace, next_function) if value >= 0]
+    if not boundaries:
+        raise RuntimeError("original replace_once end was not found")
+    end = min(boundaries)
+    return payload[:start] + payload[end + (1 if end == next_replace else 0) :]
 
 
 def _harden_original_payload(payload: str) -> str:
@@ -88,7 +151,19 @@ def _harden_original_payload(payload: str) -> str:
     )
     if removed != 1:
         raise RuntimeError("original module compatibility call was not found")
-    payload = _drop_original_literature_metadata_patch(payload)
+    payload = _drop_replace_call(
+        payload,
+        '''                    for paper in selected:
+                        relation = (
+''',
+    )
+    payload = _drop_replace_call(
+        payload,
+        '''                                {"comparator_candidate": "inferred"}
+                                if relation == "comparator_role_query"
+                                else {}
+''',
+    )
 
     old_helper = '''def replace_once(path: str, old: str, new: str) -> None:
     file = Path(path)
@@ -158,6 +233,7 @@ def _persist_failure(rendered: str) -> None:
 
 
 def main() -> None:
+    _prepatch_literature_relation()
     _prepatch_literature_metadata()
     original = _materialize_original()
     try:
