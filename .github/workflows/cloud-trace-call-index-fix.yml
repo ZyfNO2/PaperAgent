@@ -6,7 +6,7 @@ on:
       - master
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   patch-and-verify:
@@ -89,17 +89,20 @@ jobs:
             tests/nodes/test_evidence_synthesis_contract.py \
             tests/providers/test_runtime.py \
             tests/providers/test_openai_llm_runtime_limits.py
-      - name: Commit validated patch
+      - name: Stage validated patch artifact
         run: |
-          if git diff --quiet; then
-            echo "No changes required."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            src/paperagent/nodes/_shared.py \
-            tests/nodes/test_synthesis_method_quality_report.py \
-            .github/workflows/runtime-output-recovery-ci.yml
-          git commit -m "fix(runtime): isolate graph re-entry invocation budgets"
-          git push origin HEAD:tmp/trace-call-index-fix
+          mkdir -p build/trace-call-index-patch/src/paperagent/nodes
+          mkdir -p build/trace-call-index-patch/tests/nodes
+          mkdir -p build/trace-call-index-patch/.github/workflows
+          cp src/paperagent/nodes/_shared.py \
+            build/trace-call-index-patch/src/paperagent/nodes/_shared.py
+          cp tests/nodes/test_synthesis_method_quality_report.py \
+            build/trace-call-index-patch/tests/nodes/test_synthesis_method_quality_report.py
+          cp .github/workflows/runtime-output-recovery-ci.yml \
+            build/trace-call-index-patch/.github/workflows/runtime-output-recovery-ci.yml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trace-call-index-patch
+          path: build/trace-call-index-patch/
+          if-no-files-found: error
+          retention-days: 1
