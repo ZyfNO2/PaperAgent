@@ -245,7 +245,7 @@ def transport_exception_result(
         status, code = "timeout", "CONNECTION_TIMEOUT"
     elif isinstance(exc, httpx.ReadTimeout):
         status, code = "timeout", "READ_TIMEOUT"
-    elif isinstance(exc, (httpx.TimeoutException, TimeoutError)):
+    elif isinstance(exc, httpx.TimeoutException | TimeoutError):
         status, code = "timeout", "TIMEOUT"
     elif _contains_dns_failure(exc):
         status, code = "failed", "DNS_FAILURE"
