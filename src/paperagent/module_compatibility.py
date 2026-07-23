@@ -85,7 +85,7 @@ def evaluate_module_compatibility(
         if module_evidence.evidence_id not in accepted:
             reasons.append("module_evidence_not_accepted")
         if module_evidence.evidence_id == baseline_evidence_id:
-            reasons.append("module_evidence_reuses_baseline")
+            reasons.append("module_evidence_same_as_baseline")
         if module_evidence.metadata.get("relation") not in _MODULE_RELATIONS:
             reasons.append("module_relation_not_independent")
         if not module_evidence.metadata.get("module_candidate"):

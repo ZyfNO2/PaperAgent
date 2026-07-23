@@ -1,0 +1,151 @@
+{
+  "attempted_case_ids": [
+    "atr-v1-001-cv-crack-fewshot",
+    "atr-v1-002-timeseries-patchtst-missing",
+    "atr-v1-003-nlp-bert-lora-clinc",
+    "atr-v1-004-medical-ham10000-small",
+    "atr-v1-005-remote-oriented-small-edge",
+    "atr-v1-006-industrial-usad-anomaly-transformer",
+    "atr-v1-007-graph-graphsage-gat-ppi",
+    "atr-v1-008-bio-protein-function-lowlabel",
+    "atr-v1-009-audio-panns-mimii-domain",
+    "atr-v1-010-rec-coldstart-sequential"
+  ],
+  "budget_profile": {
+    "graph": {
+      "recursion_limit": 0
+    },
+    "literature_provider_calls_by_case": [],
+    "literature_provider_calls_total": 0,
+    "llm_provider": {},
+    "mode": "diagnostic_expanded"
+  },
+  "case_concurrency": 10,
+  "case_provider_assignments": {
+    "atr-v1-001-cv-crack-fewshot": {
+      "model": "deepseek-v4-flash-free",
+      "provider": "openai"
+    },
+    "atr-v1-002-timeseries-patchtst-missing": {
+      "model": "mistral-small-latest",
+      "provider": "mistral"
+    },
+    "atr-v1-003-nlp-bert-lora-clinc": {
+      "model": "agnes-2.0-flash",
+      "provider": "openai"
+    },
+    "atr-v1-004-medical-ham10000-small": {
+      "model": "deepseek-v4-flash-free",
+      "provider": "openai"
+    },
+    "atr-v1-005-remote-oriented-small-edge": {
+      "model": "mistral-small-latest",
+      "provider": "mistral"
+    },
+    "atr-v1-006-industrial-usad-anomaly-transformer": {
+      "model": "agnes-2.0-flash",
+      "provider": "openai"
+    },
+    "atr-v1-007-graph-graphsage-gat-ppi": {
+      "model": "deepseek-v4-flash-free",
+      "provider": "openai"
+    },
+    "atr-v1-008-bio-protein-function-lowlabel": {
+      "model": "mistral-small-latest",
+      "provider": "mistral"
+    },
+    "atr-v1-009-audio-panns-mimii-domain": {
+      "model": "agnes-2.0-flash",
+      "provider": "openai"
+    },
+    "atr-v1-010-rec-coldstart-sequential": {
+      "model": "deepseek-v4-flash-free",
+      "provider": "openai"
+    }
+  },
+  "completed": 3,
+  "elapsed_seconds": 253.906,
+  "errors": [
+    {
+      "case_id": "atr-v1-010-rec-coldstart-sequential",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'blocked'"
+    },
+    {
+      "case_id": "atr-v1-007-graph-graphsage-gat-ppi",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'blocked'"
+    },
+    {
+      "case_id": "atr-v1-004-medical-ham10000-small",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'blocked'"
+    },
+    {
+      "case_id": "atr-v1-002-timeseries-patchtst-missing",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'blocked'"
+    },
+    {
+      "case_id": "atr-v1-001-cv-crack-fewshot",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'blocked'"
+    },
+    {
+      "case_id": "atr-v1-005-remote-oriented-small-edge",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'blocked'"
+    },
+    {
+      "case_id": "atr-v1-008-bio-protein-function-lowlabel",
+      "error_type": "CaseExecutionIncomplete",
+      "message": "execution status was 'failed'"
+    }
+  ],
+  "fatal_provider_error": null,
+  "gold_absent_from_candidate_workspace": false,
+  "hedging": {
+    "cancellation": "best_effort",
+    "delay_seconds": 0.0,
+    "max_requests": 1
+  },
+  "not_run_case_ids": [],
+  "passed": false,
+  "prompt_records": 26,
+  "provider_pool": [
+    {
+      "model": "deepseek-v4-flash-free",
+      "provider": "openai"
+    },
+    {
+      "model": "mistral-small-latest",
+      "provider": "mistral"
+    },
+    {
+      "model": "agnes-2.0-flash",
+      "provider": "openai"
+    }
+  ],
+  "public_dataset_sha256": "5680c2d5b2be59826335679f6a5d5b865cfbc1c2dc5ed854b2b00098c4a7e9db",
+  "recorded_traces": 10,
+  "run_id": "20260723T131450Z-22424442",
+  "schema": "paperagent.academic-tailoring-retrieval.runtime-summary.v1",
+  "selected_case_count": 10,
+  "selected_case_ids": [
+    "atr-v1-001-cv-crack-fewshot",
+    "atr-v1-002-timeseries-patchtst-missing",
+    "atr-v1-003-nlp-bert-lora-clinc",
+    "atr-v1-004-medical-ham10000-small",
+    "atr-v1-005-remote-oriented-small-edge",
+    "atr-v1-006-industrial-usad-anomaly-transformer",
+    "atr-v1-007-graph-graphsage-gat-ppi",
+    "atr-v1-008-bio-protein-function-lowlabel",
+    "atr-v1-009-audio-panns-mimii-domain",
+    "atr-v1-010-rec-coldstart-sequential"
+  ],
+  "source_sha": "22424442fa4dbe7754dc22f623c924a054b0e48a",
+  "static_leakage_audit": {
+    "findings": [],
+    "passed": true
+  }
+}

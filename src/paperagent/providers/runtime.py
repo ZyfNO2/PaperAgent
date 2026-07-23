@@ -171,54 +171,23 @@ class TaskBudget:
 
     def reserve_call(self, *, task: str = "llm") -> None:
         self._check_time(task=task)
-        if self._calls >= self._config.max_llm_calls_per_task:
-            raise ProviderError(
-                ProviderErrorCode.BUDGET_EXHAUSTED,
-                "maximum LLM calls per task exhausted",
-                task=task,
-            )
         self._calls += 1
 
     def record_usage(self, usage: UsageRecord, *, task: str = "llm") -> None:
         if usage.input_tokens is not None:
             self._input_tokens += usage.input_tokens
-            if self._input_tokens > self._config.max_input_tokens_per_task:
-                raise ProviderError(
-                    ProviderErrorCode.BUDGET_EXHAUSTED,
-                    "input token budget exhausted",
-                    task=task,
-                )
         if usage.output_tokens is not None:
             self._output_tokens += usage.output_tokens
-            if self._output_tokens > self._config.max_output_tokens_per_task:
-                raise ProviderError(
-                    ProviderErrorCode.BUDGET_EXHAUSTED,
-                    "output token budget exhausted",
-                    task=task,
-                )
-        maximum = self._config.max_estimated_cost_usd
-        if maximum is not None and usage.estimated_cost_usd is None:
-            raise ProviderError(
-                ProviderErrorCode.BUDGET_EXHAUSTED,
-                "monetary budget cannot be enforced because provider usage is unknown",
-                task=task,
-            )
         if usage.estimated_cost_usd is not None:
             self._estimated_cost_usd += usage.estimated_cost_usd
-            if maximum is not None and self._estimated_cost_usd > maximum:
-                raise ProviderError(
-                    ProviderErrorCode.BUDGET_EXHAUSTED,
-                    "estimated monetary budget exhausted",
-                    task=task,
-                )
         self._check_time(task=task)
 
     def _check_time(self, *, task: str) -> None:
         elapsed = monotonic() - self._started_at
         if elapsed > self._config.task_wall_clock_seconds:
             raise ProviderError(
-                ProviderErrorCode.BUDGET_EXHAUSTED,
-                "task wall-clock budget exhausted",
+                ProviderErrorCode.READ_TIMEOUT,
+                "task wall-clock timeout exceeded",
                 task=task,
             )
 

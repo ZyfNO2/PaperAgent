@@ -30,6 +30,17 @@ _INFERRED_BASELINE_RELATIONS = frozenset(
         "direct_query",
     }
 )
+_IMPLEMENTATION_FAILURE_REASONS = frozenset(
+    {
+        "METHOD_CANONICALIZATION_FAILED",
+        "NOT_EVALUATED",
+        "LLM_TIMEOUT",
+        "LLM_READ_TIMEOUT",
+        "SCHEMA_VALIDATION_FAILED",
+        "TOKEN_BUDGET_EXCEEDED",
+        "LLM_BUDGET_EXHAUSTED",
+    }
+)
 
 
 def _canonical_bytes(value: object) -> bytes:
@@ -426,6 +437,30 @@ def _complete_hypothesis(trace: AcademicTailoringRunTrace) -> bool:
     )
 
 
+def _rejection_outcome(
+    *,
+    expected_outcome: str,
+    allowed_rejection_reasons: set[str],
+    decision: str,
+    module_defer_reason: str | None,
+    trace_error_codes: Iterable[str],
+    runtime_error: dict[str, Any] | None,
+) -> tuple[bool, bool]:
+    observed_reasons = {
+        str(module_defer_reason or ""),
+        *(str(code) for code in trace_error_codes),
+    } - {""}
+    implementation_failure = bool(observed_reasons & _IMPLEMENTATION_FAILURE_REASONS)
+    correct_rejection = (
+        expected_outcome == "safe_rejection"
+        and decision in {"REVISE", "NO_GO"}
+        and bool(observed_reasons & allowed_rejection_reasons)
+        and not implementation_failure
+        and runtime_error is None
+    )
+    return correct_rejection, implementation_failure
+
+
 def _score_case(
     case: dict[str, Any],
     state: dict[str, Any] | None,
@@ -433,6 +468,7 @@ def _score_case(
     *,
     prompt_leakage: bool,
     minimum_score: int,
+    runtime_error: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if state is None or trace is None:
         return {
@@ -671,22 +707,44 @@ def _score_case(
     ):
         hard_failures.append("unsupported_acceptance")
 
-    safe_rejection = trace.decision != "ACCEPT" and case["case_id"] in {
-        "atr-v1-006-industrial-usad-anomaly-transformer",
-        "atr-v1-010-fake-paper-identity",
+    expected_outcome = str(gold.get("expected_outcome", "positive_pass"))
+    allowed_rejection_reasons = {
+        str(reason) for reason in gold.get("allowed_rejection_reasons", [])
     }
+    correct_rejection, has_implementation_failure = _rejection_outcome(
+        expected_outcome=expected_outcome,
+        allowed_rejection_reasons=allowed_rejection_reasons,
+        decision=trace.decision,
+        module_defer_reason=trace.module_defer_reason,
+        trace_error_codes=trace.trace_error_codes,
+        runtime_error=runtime_error,
+    )
+    if runtime_error is not None or has_implementation_failure:
+        hard_failures.append("runtime_error_or_incomplete")
+    if (
+        expected_outcome == "safe_rejection"
+        and trace.decision != "ACCEPT"
+        and not correct_rejection
+    ):
+        hard_failures.append("invalid_safe_rejection")
+
+    if runtime_error is not None or has_implementation_failure:
+        status = "failed"
+        acceptance_mode = "implementation_failure"
+    elif correct_rejection:
+        status = "correct_rejection"
+        acceptance_mode = "correct_rejection"
+    else:
+        status = "positive_pass" if score >= minimum_score and not hard_failures else "failed"
+        acceptance_mode = "positive_evaluation"
     return {
         "case_id": case["case_id"],
         "case_type": case["case_type"],
         "domain": case["domain"],
         "score": score,
         "minimum_score": minimum_score,
-        "status": (
-            "safe_rejection"
-            if safe_rejection
-            else ("passed" if score >= minimum_score and not hard_failures else "failed")
-        ),
-        "acceptance_mode": "safe_rejection" if safe_rejection else "positive_evaluation",
+        "status": status,
+        "acceptance_mode": acceptance_mode,
         "dimensions": dimensions,
         "matched_assets": {
             "papers": [matched_papers, len(paper_assets)],
@@ -736,19 +794,56 @@ def main() -> int:
         raise ValueError("authoring dataset must contain 10 cases")
     cases_by_id = {str(case["case_id"]): case for case in cases}
 
+    state_rows = _load_jsonl(args.states)
+    trace_rows = _load_jsonl(args.traces)
     states_by_id = {
         str(row["case_id"]): row["state"]
-        for row in _load_jsonl(args.states)
+        for row in state_rows
         if isinstance(row.get("state"), dict)
     }
     traces_by_id: dict[str, AcademicTailoringRunTrace] = {}
-    for row in _load_jsonl(args.traces):
-        trace = AcademicTailoringRunTrace.model_validate(row)
+    for row in trace_rows:
+        trace_payload = {
+            key: value
+            for key, value in row.items()
+            if key not in {"run_id", "provider", "model"}
+        }
+        trace = AcademicTailoringRunTrace.model_validate(trace_payload)
         traces_by_id[trace.case_id] = trace
     prompts = _load_jsonl(args.prompts)
     prompt_findings = _scan_prompts(cases_by_id, prompts)
     prompt_cases = {finding.split(":", 1)[0] for finding in prompt_findings}
     runtime_summary = _load_json(args.runtime_summary)
+    runtime_errors_by_case = {
+        str(item["case_id"]): item
+        for item in runtime_summary.get("errors", [])
+        if isinstance(item, dict) and item.get("case_id")
+    }
+    selected_case_ids = [str(value) for value in runtime_summary.get("selected_case_ids", [])]
+    attempted_case_ids = [str(value) for value in runtime_summary.get("attempted_case_ids", [])]
+    if not runtime_summary.get("run_id"):
+        raise ValueError("missing run_id")
+    artifact_run_ids = {
+        str(row.get("run_id", "")) for row in (*state_rows, *trace_rows)
+    }
+    if artifact_run_ids and artifact_run_ids != {str(runtime_summary["run_id"])}:
+        raise ValueError("artifact run_id mismatch")
+    if not runtime_summary.get("source_sha"):
+        raise ValueError("missing source_sha")
+    if not runtime_summary.get("public_dataset_sha256"):
+        raise ValueError("missing public dataset fingerprint")
+    if runtime_summary.get("selected_case_count") != len(selected_case_ids):
+        raise ValueError("selected case count mismatch")
+    if len(attempted_case_ids) != len(selected_case_ids):
+        raise ValueError("incomplete selected case execution")
+    recorded_case_ids = set(states_by_id) | set(traces_by_id) | set(runtime_errors_by_case)
+    if set(selected_case_ids) != recorded_case_ids:
+        raise ValueError("selected cases do not match state/trace/failure records")
+    successful_case_ids = set(states_by_id) - set(runtime_errors_by_case)
+    if successful_case_ids != set(traces_by_id) - set(runtime_errors_by_case):
+        raise ValueError("states and traces contain different successful cases")
+    if runtime_summary.get("recorded_traces") != len(traces_by_id):
+        raise ValueError("trace count mismatch")
 
     results = [
         _score_case(
@@ -757,13 +852,16 @@ def main() -> int:
             traces_by_id.get(str(case["case_id"])),
             prompt_leakage=str(case["case_id"]) in prompt_cases,
             minimum_score=args.minimum_score,
+            runtime_error=runtime_errors_by_case.get(str(case["case_id"])),
         )
         for case in cases
     ]
-    passed = sum(item["status"] in {"passed", "safe_rejection"} for item in results)
+    passed = sum(item["status"] in {"positive_pass", "correct_rejection"} for item in results)
     hard_failure_label_count = sum(len(item["hard_failures"]) for item in results)
     hard_failure_case_count = sum(bool(item["hard_failures"]) for item in results)
-    implementation_failure_count = sum(item["status"] == "failed" for item in results)
+    implementation_failure_count = sum(
+        item["acceptance_mode"] == "implementation_failure" for item in results
+    )
     report = {
         "schema": "paperagent.academic-tailoring-retrieval.diagnostic-report.v1",
         "dataset_id": authoring.get("dataset_id"),

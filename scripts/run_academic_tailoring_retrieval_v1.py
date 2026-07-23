@@ -4,6 +4,8 @@ import argparse
 import asyncio
 import json
 import os
+import subprocess
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, TypeVar
 
@@ -121,16 +123,21 @@ def _build_runtime_summary(
     leakage_passed: bool,
     leakage_findings: list[str],
     allow_gold_in_workspace: bool,
-    graph_budgets: RunBudgets,
-    graph_recursion_limit: int,
-    provider_call_budget_total: int,
-    provider_call_budgets_by_case: tuple[int, ...],
-    provider_config: dict[str, object],
+    graph_budgets: RunBudgets | None = None,
+    graph_recursion_limit: int = 0,
+    provider_call_budget_total: int = 0,
+    provider_call_budgets_by_case: tuple[int, ...] = (),
+    provider_config: dict[str, object] | None = None,
+    run_id: str | None = None,
+    source_sha: str | None = None,
 ) -> dict[str, object]:
     attempted = set(attempted_case_ids)
     return {
         "schema": "paperagent.academic-tailoring-retrieval.runtime-summary.v1",
-        "source_sha": os.getenv("PAPERAGENT_SOURCE_SHA") or os.getenv("GITHUB_SHA"),
+        "run_id": run_id,
+        "source_sha": source_sha
+        or os.getenv("PAPERAGENT_SOURCE_SHA")
+        or os.getenv("GITHUB_SHA"),
         "public_dataset_sha256": dataset.get("public_sha256"),
         "selected_case_ids": [str(case["case_id"]) for case in cases],
         "selected_case_count": len(cases),
@@ -151,12 +158,12 @@ def _build_runtime_summary(
         "budget_profile": {
             "mode": "diagnostic_expanded",
             "graph": {
-                **graph_budgets.model_dump(mode="json"),
+                **(graph_budgets.model_dump(mode="json") if graph_budgets else {}),
                 "recursion_limit": graph_recursion_limit,
             },
             "literature_provider_calls_total": provider_call_budget_total,
             "literature_provider_calls_by_case": list(provider_call_budgets_by_case),
-            "llm_provider": provider_config,
+            "llm_provider": provider_config or {},
         },
         "passed": (
             completed_case_count == len(cases) and fatal_provider_error is None and not errors
@@ -170,6 +177,7 @@ def _write_runtime_outputs(
     states: list[dict[str, object]],
     traces: list[dict[str, object]],
     summary: dict[str, object],
+    errors: list[dict[str, str]] | None = None,
 ) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "states.jsonl").write_text(
@@ -178,6 +186,18 @@ def _write_runtime_outputs(
     )
     (output_dir / "run-traces.jsonl").write_text(
         "".join(json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n" for item in traces),
+        encoding="utf-8",
+    )
+    (output_dir / "case-failures.jsonl").write_text(
+        "".join(
+            json.dumps(
+                {"run_id": summary.get("run_id"), **item},
+                ensure_ascii=False,
+                sort_keys=True,
+            )
+            + "\n"
+            for item in (errors or [])
+        ),
         encoding="utf-8",
     )
     _write_json(output_dir / "execution-summary.json", summary)
@@ -275,13 +295,35 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--llm-price-table", type=Path, default=None)
     parser.add_argument("--enable-web-search", action="store_true")
     parser.add_argument("--allow-gold-in-workspace", action="store_true")
+    parser.add_argument("--resume", action="store_true")
     return parser
+
+
+def _current_source_sha() -> str:
+    configured = os.getenv("PAPERAGENT_SOURCE_SHA") or os.getenv("GITHUB_SHA")
+    if configured:
+        return configured
+    result = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout.strip()
 
 
 async def _run(args: argparse.Namespace) -> int:
     if not args.allow_gold_in_workspace:
         _assert_gold_absent(Path.cwd())
     dataset = _load_public_dataset(args.dataset)
+    output_dir: Path = args.output_dir
+    if output_dir.exists() and any(output_dir.iterdir()) and not args.resume:
+        raise RuntimeError(
+            f"output directory is not empty: {output_dir}; "
+            "use a new run directory or explicitly pass --resume"
+        )
+    source_sha = _current_source_sha()
+    run_id = f"{datetime.now(UTC):%Y%m%dT%H%M%SZ}-{source_sha[:8]}"
     cases = list(dataset["cases"])
     selected = set(args.case_id)
     if selected:
@@ -307,7 +349,6 @@ async def _run(args: argparse.Namespace) -> int:
     if not leakage_audit.passed:
         raise RuntimeError(f"static leakage audit failed: {leakage_audit.findings}")
 
-    output_dir: Path = args.output_dir
     prompt_log = output_dir / "prompt-log.jsonl"
     prompt_log.parent.mkdir(parents=True, exist_ok=True)
     prompt_log.write_text("", encoding="utf-8")
@@ -369,12 +410,15 @@ async def _run(args: argparse.Namespace) -> int:
             provider_call_budget_total=args.provider_call_budget,
             provider_call_budgets_by_case=budgets,
             provider_config=safe_provider_config,
+            run_id=run_id,
+            source_sha=source_sha,
         )
         _write_runtime_outputs(
             output_dir=output_dir,
             states=states,
             traces=traces,
             summary=summary,
+            errors=errors,
         )
         return summary
 
@@ -414,8 +458,8 @@ async def _run(args: argparse.Namespace) -> int:
                 task_id=f"atr-v1-{index:02d}",
             )
             trace_payload = trace.model_dump(mode="json", by_alias=True)
-            states.append({"case_id": case_id, "state": state})
-            traces.append(trace_payload)
+            states.append({"case_id": case_id, "run_id": run_id, "state": state})
+            traces.append({"run_id": run_id, **trace_payload})
             fatal_code = _fatal_provider_error_code_from_trace(trace_payload)
             if fatal_code is not None:
                 fatal_provider_error = {

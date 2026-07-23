@@ -19,6 +19,7 @@ _accepted_verified_items = _SCORER._accepted_verified_items
 _dataset_asset_score = _SCORER._dataset_asset_score
 _baseline_target_titles = _SCORER._baseline_target_titles
 _titles_related = _SCORER._titles_related
+_rejection_outcome = _SCORER._rejection_outcome
 
 
 def test_titles_related_accepts_alias_containment_but_rejects_neighbor_paper() -> None:
@@ -133,3 +134,41 @@ def test_dataset_mention_scores_partial_not_official_identity_credit() -> None:
     ]
     assert _accepted_asset_matches(assets, items) == 1
     assert _dataset_asset_score(assets, items) == 4
+
+
+def test_canonicalization_failure_is_not_safe_rejection() -> None:
+    correct, implementation_failure = _rejection_outcome(
+        expected_outcome="safe_rejection",
+        allowed_rejection_reasons={"semantic_incompatibility"},
+        decision="REVISE",
+        module_defer_reason="METHOD_CANONICALIZATION_FAILED",
+        trace_error_codes=("NOT_EVALUATED",),
+        runtime_error=None,
+    )
+    assert correct is False
+    assert implementation_failure is True
+
+
+def test_safe_rejection_requires_allowed_scientific_reason() -> None:
+    correct, implementation_failure = _rejection_outcome(
+        expected_outcome="safe_rejection",
+        allowed_rejection_reasons={"semantic_incompatibility"},
+        decision="NO_GO",
+        module_defer_reason="semantic_incompatibility",
+        trace_error_codes=(),
+        runtime_error=None,
+    )
+    assert correct is True
+    assert implementation_failure is False
+
+
+def test_runtime_failure_prevents_safe_rejection() -> None:
+    correct, _ = _rejection_outcome(
+        expected_outcome="safe_rejection",
+        allowed_rejection_reasons={"semantic_incompatibility"},
+        decision="NO_GO",
+        module_defer_reason="semantic_incompatibility",
+        trace_error_codes=(),
+        runtime_error={"case_id": "case", "error_type": "CaseExecutionIncomplete"},
+    )
+    assert correct is False

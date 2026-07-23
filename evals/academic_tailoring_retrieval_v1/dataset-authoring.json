@@ -761,6 +761,14 @@
         ]
       },
       "gold": {
+        "expected_outcome": "safe_rejection",
+        "allowed_rejection_reasons": [
+          "baseline_identity_missing",
+          "parallel_module_identity_missing",
+          "semantic_incompatibility",
+          "objective_incompatibility",
+          "insufficient_independent_evidence"
+        ],
         "task_definition": {
           "task": "Unsupervised multivariate time-series anomaly detection on SWaT.",
           "protocol_warning": "Point adjustment and threshold selection can dominate reported scores and must be fixed before comparison."

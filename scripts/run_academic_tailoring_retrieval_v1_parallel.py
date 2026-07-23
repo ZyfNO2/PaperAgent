@@ -6,6 +6,7 @@ import json
 import os
 import time
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,7 @@ from run_academic_tailoring_retrieval_v1 import (
     AuditedLLMProvider,
     _assert_gold_absent,
     _build_runtime_summary,
+    _current_source_sha,
     _fatal_provider_error_code_from_trace,
     _load_public_dataset,
     _normalize_provider_error_code,
@@ -26,6 +28,7 @@ from paperagent.claw_runtime_evidence import allocate_case_budgets, provider_con
 from paperagent.literature.factory import LiteratureProviderSettings
 from paperagent.pricing import load_price_table
 from paperagent.providers.config import load_provider_config
+from paperagent.providers.runtime import ProviderRuntimeConfig
 from paperagent.providers.runtime_factory import build_llm_provider
 
 
@@ -62,7 +65,47 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--llm-price-table", type=Path, default=None)
     parser.add_argument("--enable-web-search", action="store_true")
     parser.add_argument("--allow-gold-in-workspace", action="store_true")
+    parser.add_argument("--use-env-provider-pool", action="store_true")
     return parser
+
+
+def _provider_pool_from_env(args: argparse.Namespace) -> tuple[ProviderRuntimeConfig, ...]:
+    primary = load_provider_config(
+        provider=args.llm_provider,
+        model=args.llm_model,
+        base_url=args.llm_base_url,
+    )
+    if not args.use_env_provider_pool:
+        return (primary,)
+    configs = [primary]
+    mistral_model = os.getenv("PAPERAGENT_MISTRAL_MODEL", "mistral-small-latest")
+    for key_name in ("MISTRAL_API_KEY", "MISTRAL_API_KEY_BACKUP"):
+        key = os.getenv(key_name)
+        if not key:
+            continue
+        environment = dict(os.environ)
+        environment["MISTRAL_API_KEY"] = key
+        configs.append(
+            load_provider_config(
+                environ=environment,
+                provider="mistral",
+                model=mistral_model,
+                base_url="https://api.mistral.ai/v1",
+            )
+        )
+    agnes_key = os.getenv("AGNES_API_KEY")
+    if agnes_key:
+        environment = dict(os.environ)
+        environment["PAPERAGENT_OPENAI_API_KEY"] = agnes_key
+        configs.append(
+            load_provider_config(
+                environ=environment,
+                provider="openai",
+                model=os.getenv("AGNES_MODEL", "agnes-2.0-flash"),
+                base_url=os.getenv("AGNES_BASE_URL", "https://apihub.agnes-ai.com/v1"),
+            )
+        )
+    return tuple(configs)
 
 
 async def _execute_case(
@@ -203,24 +246,27 @@ async def _run(args: argparse.Namespace) -> int:
         raise RuntimeError(f"static leakage audit failed: {leakage_audit.findings}")
 
     output_dir: Path = args.output_dir
+    if output_dir.exists() and any(output_dir.iterdir()):
+        raise RuntimeError(f"output directory is not empty: {output_dir}")
+    source_sha = _current_source_sha()
+    run_id = f"{datetime.now(UTC):%Y%m%dT%H%M%SZ}-{source_sha[:8]}"
     prompt_log = output_dir / "prompt-log.jsonl"
     prompt_log.parent.mkdir(parents=True, exist_ok=True)
     prompt_log.write_text("", encoding="utf-8")
 
-    provider_config = load_provider_config(
-        provider=args.llm_provider,
-        model=args.llm_model,
-        base_url=args.llm_base_url,
-    )
+    provider_configs = _provider_pool_from_env(args)
     price_table_path = args.llm_price_table
     if price_table_path is None and os.getenv("PAPERAGENT_LLM_PRICE_TABLE"):
         price_table_path = Path(os.environ["PAPERAGENT_LLM_PRICE_TABLE"])
     price_table = load_price_table(price_table_path) if price_table_path else None
     budgets = allocate_case_budgets(args.provider_call_budget, len(cases))
-    case_provider_config = provider_config_for_case(
-        provider_config,
-        selected_case_count=len(cases),
-        max_logical_calls=args.max_llm_calls,
+    case_provider_configs = tuple(
+        provider_config_for_case(
+            config,
+            selected_case_count=len(cases),
+            max_logical_calls=args.max_llm_calls,
+        )
+        for config in provider_configs
     )
 
     states: list[dict[str, object]] = []
@@ -229,6 +275,7 @@ async def _run(args: argparse.Namespace) -> int:
     attempted_case_ids: list[str] = []
     completed_case_count = 0
     fatal_provider_error: dict[str, str] | None = None
+    case_provider_assignments: dict[str, dict[str, str]] = {}
     run_started = time.monotonic()
 
     def persist_checkpoint() -> dict[str, object]:
@@ -246,8 +293,15 @@ async def _run(args: argparse.Namespace) -> int:
             leakage_passed=leakage_audit.passed,
             leakage_findings=list(leakage_audit.findings),
             allow_gold_in_workspace=args.allow_gold_in_workspace,
+            run_id=run_id,
+            source_sha=source_sha,
         )
         summary["case_concurrency"] = args.case_concurrency
+        summary["provider_pool"] = [
+            {"provider": config.provider.value, "model": config.model}
+            for config in provider_configs
+        ]
+        summary["case_provider_assignments"] = case_provider_assignments
         summary["hedging"] = {
             "max_requests": int(os.getenv("PAPERAGENT_LLM_MAX_HEDGED_REQUESTS", "1")),
             "delay_seconds": float(os.getenv("PAPERAGENT_LLM_HEDGE_DELAY_SECONDS", "0")),
@@ -259,6 +313,7 @@ async def _run(args: argparse.Namespace) -> int:
             states=states,
             traces=traces,
             summary=summary,
+            errors=errors,
         )
         return summary
 
@@ -271,13 +326,18 @@ async def _run(args: argparse.Namespace) -> int:
         case = cases[next_case]
         search_budget = budgets[next_case]
         case_id = str(case["case_id"])
+        assigned_config = case_provider_configs[next_case % len(case_provider_configs)]
+        case_provider_assignments[case_id] = {
+            "provider": assigned_config.provider.value,
+            "model": assigned_config.model,
+        }
         attempted_case_ids.append(case_id)
         task = asyncio.create_task(
             _execute_case(
                 index=index,
                 case=case,
                 search_budget=search_budget,
-                case_provider_config=case_provider_config,
+                case_provider_config=assigned_config,
                 price_table=price_table,
                 prompt_log=prompt_log,
                 max_llm_calls=args.max_llm_calls,
@@ -307,21 +367,32 @@ async def _run(args: argparse.Namespace) -> int:
 
     while pending:
         done, _ = await asyncio.wait(tuple(pending), return_when=asyncio.FIRST_COMPLETED)
-        fatal_seen = False
         for task in done:
             pending.pop(task)
             result = task.result()
             if result.state is not None:
-                states.append({"case_id": result.case_id, "state": result.state})
+                states.append(
+                    {
+                        "case_id": result.case_id,
+                        "run_id": run_id,
+                        **case_provider_assignments[result.case_id],
+                        "state": result.state,
+                    }
+                )
             if result.trace is not None:
-                traces.append(result.trace)
+                traces.append(
+                    {
+                        "run_id": run_id,
+                        **case_provider_assignments[result.case_id],
+                        **result.trace,
+                    }
+                )
             if result.error is not None:
                 errors.append(result.error)
             if result.completed:
                 completed_case_count += 1
             if result.fatal_provider_error is not None:
                 fatal_provider_error = result.fatal_provider_error
-                fatal_seen = True
 
             checkpoint = persist_checkpoint()
             print(
@@ -344,24 +415,6 @@ async def _run(args: argparse.Namespace) -> int:
                 ),
                 flush=True,
             )
-
-        if fatal_seen:
-            for task, (_, case_id) in tuple(pending.items()):
-                errors.append(
-                    {
-                        "case_id": case_id,
-                        "error_type": "CancelledAfterFatalProviderError",
-                        "message": (
-                            "cancelled after another concurrent case hit a fatal "
-                            "provider error"
-                        ),
-                    }
-                )
-                task.cancel()
-            await asyncio.gather(*pending, return_exceptions=True)
-            pending.clear()
-            persist_checkpoint()
-            break
 
         while next_case < len(cases) and len(pending) < args.case_concurrency:
             schedule_one()

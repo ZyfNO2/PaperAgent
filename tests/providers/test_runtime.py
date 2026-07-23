@@ -48,19 +48,15 @@ def test_provider_error_is_compatible_with_existing_node_error_bridge() -> None:
     assert error.task == "planning"
 
 
-def test_budget_counts_physical_calls() -> None:
+def test_budget_counts_physical_calls_without_enforcing_a_call_ceiling() -> None:
     budget = TaskBudget(make_config(max_llm_calls_per_task=2))
     budget.reserve_call(task="planning")
     budget.reserve_call(task="planning")
-
-    with pytest.raises(ProviderError) as exc_info:
-        budget.reserve_call(task="planning")
-
-    assert exc_info.value.error_code is ProviderErrorCode.BUDGET_EXHAUSTED
-    assert budget.calls == 2
+    budget.reserve_call(task="planning")
+    assert budget.calls == 3
 
 
-def test_budget_fails_closed_on_tokens_and_cost() -> None:
+def test_budget_records_tokens_and_cost_without_enforcing_ceilings() -> None:
     budget = TaskBudget(
         make_config(
             max_input_tokens_per_task=10,
@@ -70,23 +66,19 @@ def test_budget_fails_closed_on_tokens_and_cost() -> None:
         )
     )
 
-    with pytest.raises(ProviderError) as input_error:
-        budget.record_usage(UsageRecord(input_tokens=11), task="planning")
-    assert input_error.value.error_code is ProviderErrorCode.BUDGET_EXHAUSTED
-
-    cost_budget = TaskBudget(make_config(max_estimated_cost_usd=0.01))
-    with pytest.raises(ProviderError) as cost_error:
-        cost_budget.record_usage(UsageRecord(estimated_cost_usd=0.02), task="planning")
-    assert cost_error.value.error_code is ProviderErrorCode.BUDGET_EXHAUSTED
+    budget.record_usage(
+        UsageRecord(input_tokens=11, output_tokens=11, estimated_cost_usd=0.02),
+        task="planning",
+    )
 
 
-def test_monetary_budget_fails_closed_when_usage_is_unknown() -> None:
+def test_unknown_cost_does_not_exhaust_otherwise_valid_budget() -> None:
     budget = TaskBudget(make_config(max_estimated_cost_usd=0.01))
 
-    with pytest.raises(ProviderError, match="provider usage is unknown") as exc_info:
-        budget.record_usage(UsageRecord(), task="planning")
-
-    assert exc_info.value.error_code is ProviderErrorCode.BUDGET_EXHAUSTED
+    budget.record_usage(
+        UsageRecord(input_tokens=10, output_tokens=5, estimated_cost_usd=None),
+        task="planning",
+    )
 
 
 def test_redaction_recurses_without_mutating_safe_values() -> None:
