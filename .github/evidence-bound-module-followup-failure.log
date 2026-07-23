@@ -1,15 +1,8 @@
 Traceback (most recent call last):
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 147, in <module>
-    main()
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 135, in main
-    original = _materialize_original()
-               ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 104, in _materialize_original
-    payload = _harden_original_payload(payload)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 64, in _harden_original_payload
-    payload = _drop_replace_call(payload, needle)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 24, in _drop_replace_call
-    raise RuntimeError(f"original patch needle was not found: {needle[:40]!r}")
-RuntimeError: original patch needle was not found: '                query=f\'"{exact_title}"\''
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 96, in main
+    apply_test_repairs()
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/evidence_bound_module_test_patch.py", line 11, in apply_test_repairs
+    replace_exact(
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/evidence_bound_module_prepatch.py", line 16, in replace_exact
+    raise RuntimeError(f"{label}: expected one exact match, found {count}")
+RuntimeError: method test derived coverage: expected one exact match, found 2
