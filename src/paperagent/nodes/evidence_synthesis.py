@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, create_model
 
 from paperagent.errors import NodeError
 from paperagent.nodes._shared import call_structured
-from paperagent.schemas import EvidenceSynthesis
+from paperagent.schemas import EvidenceItem, EvidenceSynthesis
 from paperagent.state import PaperAgentState, StatePatch
 
 NODE = "evidence_synthesis_node"
@@ -73,6 +73,35 @@ def _to_evidence_synthesis(value: BaseModel) -> EvidenceSynthesis:
     return EvidenceSynthesis.model_validate(value.model_dump(mode="json"))
 
 
+_SYNTHESIS_SUMMARY_LIMIT = 800
+_SYNTHESIS_METADATA_LIMIT = 500
+_SYNTHESIS_METADATA_KEYS = (
+    "relation",
+    "role_binding",
+    "baseline_candidate",
+    "comparator_candidate",
+    "repository_ref",
+    "query_text",
+)
+
+
+def _compact_evidence_payload(item: EvidenceItem) -> dict[str, object]:
+    metadata = {
+        key: value[:_SYNTHESIS_METADATA_LIMIT]
+        for key in _SYNTHESIS_METADATA_KEYS
+        if (value := item.metadata.get(key)) is not None and value.strip()
+    }
+    return {
+        "evidence_id": item.evidence_id,
+        "source_type": item.source_type,
+        "title": item.title,
+        "stable_identifier": item.stable_identifier,
+        "supports_gap_ids": list(item.supports_gap_ids),
+        "summary": item.summary[:_SYNTHESIS_SUMMARY_LIMIT],
+        "metadata": metadata,
+    }
+
+
 async def evidence_synthesis_node(state: PaperAgentState, config: RunnableConfig) -> StatePatch:
     plan = state.get("plan")
     evidence = state.get("evidence")
@@ -115,7 +144,7 @@ async def evidence_synthesis_node(state: PaperAgentState, config: RunnableConfig
                 "Do not create, expand, hash, abbreviate, or rewrite identifiers."
             ),
             "accepted_evidence": [
-                item.model_dump(mode="json") for item in evidence.accepted_items()
+                _compact_evidence_payload(item) for item in evidence.accepted_items()
             ],
             "coverage_by_gap": evidence.coverage_by_gap,
             "conflicts": [item.model_dump(mode="json") for item in evidence.conflicts],
