@@ -6,6 +6,11 @@ on:
       - fix/semantic-tailoring-role-bound-scoring
     paths:
       - ".github/workflows/tmp-final-branch-cleanup.yml"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/tmp-final-branch-cleanup.yml"
 
 permissions:
   contents: write
@@ -79,6 +84,7 @@ jobs:
                   raise SystemExit(f'{name}: expected mapping')
           PY
       - name: Commit cleanup
+        if: github.event_name == 'push'
         run: |
           git config user.name "paperagent-repair-bot"
           git config user.email "actions@users.noreply.github.com"
