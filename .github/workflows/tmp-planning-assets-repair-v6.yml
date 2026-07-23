@@ -1,0 +1,70 @@
+name: Temporary Planning Asset Repair V6
+
+on:
+  push:
+    branches: [fix/semantic-tailoring-role-bound-scoring]
+    paths: [".github/workflows/tmp-planning-assets-repair-v6.yml"]
+  pull_request:
+    branches: [master]
+    paths: [".github/workflows/tmp-planning-assets-repair-v6.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/semantic-tailoring-role-bound-scoring
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Apply final planning repair
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          workflow = Path('.github/workflows/tmp-planning-assets-repair-v2.yml').read_text(encoding='utf-8')
+          start = workflow.index('      - name: Apply corrected planning repair\n')
+          run_start = workflow.index('        run: |\n', start) + len('        run: |\n')
+          end = workflow.index('      - name: Install and verify\n', run_start)
+          lines = workflow[run_start:end].splitlines()
+          Path('/tmp/apply.sh').write_text(
+              '\n'.join(line[10:] if line.startswith('          ') else line for line in lines) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          bash /tmp/apply.sh
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/paperagent/nodes/planning.py')
+          text = path.read_text(encoding='utf-8')
+          if text.count('    "benchmark",\n') != 1:
+              raise RuntimeError('dataset benchmark hint mismatch')
+          if text.count('    "基准",\n') != 1:
+              raise RuntimeError('dataset Chinese benchmark hint mismatch')
+          text = text.replace('    "benchmark",\n', '', 1)
+          text = text.replace('    "基准",\n', '', 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+      - name: Install and verify
+        run: |
+          python -m pip install -q -e '.[dev]'
+          ruff format src/paperagent/nodes/planning.py tests/nodes/test_planning_methodology_assets.py
+          ruff check src/paperagent/nodes/planning.py tests/nodes/test_planning_methodology_assets.py
+          mypy --strict src/paperagent/nodes/planning.py
+          pytest -q tests/nodes/test_planning_methodology_assets.py tests/nodes/test_planning_identity_priority.py
+      - name: Commit planning repair
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "paperagent-repair-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/paperagent/nodes/planning.py tests/nodes/test_planning_methodology_assets.py
+          git commit -m "fix(planning): guarantee methodology evidence lanes"
+          git push origin HEAD:fix/semantic-tailoring-role-bound-scoring
