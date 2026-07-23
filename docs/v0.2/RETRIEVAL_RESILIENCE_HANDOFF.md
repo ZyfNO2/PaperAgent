@@ -14,7 +14,7 @@ first resolving the stacked base relationship.
 - Branch: `feat/retrieval-resilience-infrastructure`
 - Review PR: Draft PR #61, base `fix/evidence-bound-module-contracts-local`
 - Base implementation commit: `25c234611e0a253abd090973359a60aab21a98ac`
-- Final implementation commit before this Handoff: `ec1111cb475c30881679123cddb7b4391bd7c629`
+- Final implementation and coverage-test commit before this Handoff: `a8b9c64918ed4e47fe7d00e76f15f711030e0b32`
 - Final Handoff commit: use the current branch HEAD shown by Draft PR #61
 
 ## Completed work
@@ -43,7 +43,10 @@ first resolving the stacked base relationship.
 14. Added persistent DOI-verification caching so cached paper search results do not cause hidden
     Crossref/DataCite calls during replay.
 15. Added environment configuration, architecture documentation, and focused resilience tests.
-16. Fixed a related audit-policy defect: failed warning-level checks, including unknown licenses, now
+16. Added defensive coverage for corrupted cache rows, expired negative entries, fixture corruption,
+    half-open probes, quota resets, HTTP/network error classification, provider parsing, and DOI
+    verification degradation.
+17. Fixed a related audit-policy defect: failed warning-level checks, including unknown licenses, now
     produce `REVISE` instead of an inconsistent `GO`.
 
 ## Main files
@@ -62,6 +65,8 @@ first resolving the stacked base relationship.
 - `src/paperagent/cli.py`
 - `docs/v0.2/RETRIEVAL_RESILIENCE.md`
 - `tests/literature/test_retrieval_resilience.py`
+- `tests/literature/test_retrieval_resilience_coverage.py`
+- `tests/literature/test_provider_adapter_coverage.py`
 - `tests/literature/test_verification_cache.py`
 - `tests/literature/test_source_policy_routing.py`
 
@@ -88,35 +93,39 @@ first resolving the stacked base relationship.
 - `ruff check .`
 - strict `mypy`
 
-These passed in the repair workflow before the temporary workflow was removed.
+These passed during the final source-and-test repair cycle. The clean-tree standard CI run after this
+Handoff commit is the authoritative confirmation for both Python versions.
 
-### Offline test suite
+### Offline test suite and coverage
 
-Python 3.12 diagnostic run:
+The exact standard-CI command was reproduced on Python 3.12:
 
 ```text
-736 passed, 11 skipped, 3 warnings in 10.21s
+795 passed, 11 skipped, 3 warnings in 21.76s
+Required test coverage of 90.0% reached. Total coverage: 90.05%
 ```
 
 The skipped tests were the Playwright browser test and opt-in real LLM/provider tests. The three
 warnings were one Starlette/httpx deprecation warning and two pre-existing Pydantic serializer warnings
 in runner tests.
 
-A prior standard CI run also produced 91.66% line coverage, above the repository's 90% threshold. A
-final clean-tree standard CI run is required after this Handoff commit and is the authoritative branch
-status.
+The coverage result is combined line-and-branch coverage, not line coverage alone. The coverage gate
+was not lowered.
 
 ### What these tests prove
 
 - deterministic cache behavior;
 - process-restart persistence;
-- negative-cache suppression;
+- cache corruption cleanup;
+- negative-cache suppression and expiry;
 - single-flight behavior;
 - stale-cache fallback;
 - offline no-network behavior;
-- circuit opening and cooldown behavior;
-- quota-header parsing;
-- DOI verification replay;
+- circuit opening, half-open probing, and cooldown behavior;
+- quota-header and HTTP-date parsing;
+- transport-error classification;
+- DOI verification replay and degradation;
+- provider request shaping and sparse metadata parsing;
 - capability-based routing;
 - compatibility with the repository's offline regression suite.
 
@@ -148,7 +157,8 @@ They do **not** prove live quota, provider availability, or real network behavio
 
 1. Confirm Draft PR #61 remains based on `fix/evidence-bound-module-contracts-local` while PR #60 is
    unresolved.
-2. Run the clean-tree CI and confirm Ruff, Mypy, Python 3.11/3.12 pytest, and coverage all pass.
+2. Confirm the final clean-tree CI reports Ruff, Mypy, Python 3.11/3.12 pytest, and combined coverage
+   above 90%.
 3. With approved provider credentials, run a bounded live smoke test:
 
 ```bash
