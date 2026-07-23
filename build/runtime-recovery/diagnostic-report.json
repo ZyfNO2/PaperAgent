@@ -1,6 +1,6 @@
 {
   "authoring_sha256": "6ab5aa20b2440d0ad9c71451389d745ac5f7eb252a8eb3a4dff8eff1b92110e1",
-  "average_score": 14.4,
+  "average_score": 22.1,
   "cases": [
     {
       "case_id": "atr-v1-001-cv-crack-fewshot",
@@ -59,8 +59,8 @@
       "score": 69,
       "scoring_audit": {
         "accepted_dataset_count": 0,
-        "accepted_repository_count": 3,
-        "accepted_verified_evidence_count": 10,
+        "accepted_repository_count": 1,
+        "accepted_verified_evidence_count": 9,
         "baseline_identity_status": "exact_target",
         "baseline_name": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
         "baseline_source_title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
@@ -71,17 +71,17 @@
         "evidence_backed_module_count": 1,
         "evidence_bound_alternative_baseline": false,
         "retrieval_pipeline": {
-          "accepted_verified_count": 10,
-          "candidate_count": 10,
+          "accepted_verified_count": 9,
+          "candidate_count": 9,
           "failure_stage": null,
           "identity_rejected_count": 0,
-          "identity_verified_count": 10,
-          "relevance_passed_count": 10,
+          "identity_verified_count": 9,
+          "relevance_passed_count": 9,
           "relevance_rejected_count": 0,
           "review_rejected_count": 0,
-          "state_accepted_count": 10,
+          "state_accepted_count": 9,
           "state_trace_mismatch_count": 0,
-          "trace_accepted_count": 10
+          "trace_accepted_count": 9
         },
         "role_bound_module_evidence_ids": [
           "ev-paper-b85d9dbf9c291e185af0"
@@ -175,22 +175,142 @@
     },
     {
       "case_id": "atr-v1-006-industrial-usad-anomaly-transformer",
-      "dimensions": {},
+      "case_type": "baseline_plus_parallel_paper",
+      "dimensions": {
+        "baseline_selection": 0,
+        "dataset_truth_and_task_fit": 0,
+        "experiment_and_ablation_design": 0,
+        "falsifiable_hypothesis": 0,
+        "gap_analysis": 4,
+        "module_provenance_and_role": 4,
+        "paper_identity_and_citation_truth": 5,
+        "repository_truth_and_relation": 3,
+        "semantic_and_interface_compatibility": 3
+      },
+      "domain": "industrial_fault",
       "hard_failures": [
-        "runtime_error_or_missing_trace"
+        "missing_required_baseline"
       ],
+      "matched_assets": {
+        "datasets": [
+          0,
+          1
+        ],
+        "papers": [
+          0,
+          2
+        ],
+        "repositories": [
+          0,
+          2
+        ]
+      },
       "minimum_score": 80,
-      "score": 0,
+      "observed_decision": "REVISE",
+      "score": 19,
+      "scoring_audit": {
+        "accepted_dataset_count": 0,
+        "accepted_repository_count": 1,
+        "accepted_verified_evidence_count": 11,
+        "baseline_identity_status": "missing",
+        "baseline_name": null,
+        "baseline_source_title": null,
+        "baseline_target_match": false,
+        "baseline_targets": [
+          "USAD: UnSupervised Anomaly Detection on Multivariate Time Series"
+        ],
+        "evidence_backed_module_count": 0,
+        "evidence_bound_alternative_baseline": false,
+        "retrieval_pipeline": {
+          "accepted_verified_count": 11,
+          "candidate_count": 11,
+          "failure_stage": null,
+          "identity_rejected_count": 0,
+          "identity_verified_count": 11,
+          "relevance_passed_count": 11,
+          "relevance_rejected_count": 0,
+          "review_rejected_count": 0,
+          "state_accepted_count": 11,
+          "state_trace_mismatch_count": 0,
+          "trace_accepted_count": 11
+        },
+        "role_bound_module_evidence_ids": [],
+        "role_bound_paper_asset_matches": 0,
+        "task_specific_experiment_count": 0,
+        "verified_module_contract_count": 0
+      },
+      "scoring_policy": "role_bound_semantic_v2",
       "status": "failed"
     },
     {
       "case_id": "atr-v1-007-graph-graphsage-gat-ppi",
-      "dimensions": {},
+      "case_type": "baseline_plus_parallel_paper",
+      "dimensions": {
+        "baseline_selection": 15,
+        "dataset_truth_and_task_fit": 0,
+        "experiment_and_ablation_design": 7,
+        "falsifiable_hypothesis": 5,
+        "gap_analysis": 6,
+        "module_provenance_and_role": 10,
+        "paper_identity_and_citation_truth": 15,
+        "repository_truth_and_relation": 0,
+        "semantic_and_interface_compatibility": 0
+      },
+      "domain": "graph_learning",
       "hard_failures": [
-        "runtime_error_or_missing_trace"
+        "module_compatibility_not_independently_verified"
       ],
+      "matched_assets": {
+        "datasets": [
+          0,
+          1
+        ],
+        "papers": [
+          2,
+          2
+        ],
+        "repositories": [
+          0,
+          2
+        ]
+      },
       "minimum_score": 80,
-      "score": 0,
+      "observed_decision": "REVISE",
+      "score": 58,
+      "scoring_audit": {
+        "accepted_dataset_count": 0,
+        "accepted_repository_count": 0,
+        "accepted_verified_evidence_count": 6,
+        "baseline_identity_status": "exact_target",
+        "baseline_name": "Inductive Representation Learning on Large Graphs",
+        "baseline_source_title": "Inductive Representation Learning on Large Graphs",
+        "baseline_target_match": true,
+        "baseline_targets": [
+          "Inductive Representation Learning on Large Graphs"
+        ],
+        "evidence_backed_module_count": 1,
+        "evidence_bound_alternative_baseline": false,
+        "retrieval_pipeline": {
+          "accepted_verified_count": 6,
+          "candidate_count": 6,
+          "failure_stage": null,
+          "identity_rejected_count": 0,
+          "identity_verified_count": 6,
+          "relevance_passed_count": 6,
+          "relevance_rejected_count": 0,
+          "review_rejected_count": 0,
+          "state_accepted_count": 6,
+          "state_trace_mismatch_count": 0,
+          "trace_accepted_count": 6
+        },
+        "role_bound_module_evidence_ids": [
+          "ev-paper-3180db5605a7a65ed07a"
+        ],
+        "role_bound_paper_asset_matches": 2,
+        "task_specific_experiment_count": 0,
+        "verified_module_contract_count": 0
+      },
+      "scoring_policy": "role_bound_semantic_v2",
       "status": "failed"
     },
     {
@@ -296,9 +416,28 @@
   "minimum_score": 80,
   "passed": 0,
   "prompt_leakage_findings": [],
-  "report_sha256": "eab57824c5bfbbe2f919f17da2a87291f25ad8b5375a6394f8958525e1c0942e",
-  "runtime_errors": [],
-  "runtime_source_sha": "627264e6c57c579d932c3db5a2bad83fab6aa9b1",
+  "report_sha256": "5baef05fb02c56db1bea86f5d44297d9e4b55d21a9beeb42edb80ed1e76e1cba",
+  "runtime_errors": [
+    {
+      "budget_consumed_usd": null,
+      "call_index": null,
+      "case_id": "atr-v1-010-rec-coldstart-sequential",
+      "endpoint_id": null,
+      "error_category": "RETRYABLE",
+      "error_code": "LLM_CONNECT",
+      "error_type": "CaseExecutionIncomplete",
+      "execution_status": "blocked",
+      "message": "failed to connect to Mistral",
+      "model": "mistral-small-latest",
+      "node": "evidence_synthesis_node",
+      "provider": "mistral",
+      "repair_attempts": 0,
+      "retryable": true,
+      "stage": "synthesis",
+      "timestamp": "2026-07-23T06:54:02.966587+00:00"
+    }
+  ],
+  "runtime_source_sha": "02fde32c3033b1f7b84d240a81789893e0980f7d",
   "schema": "paperagent.academic-tailoring-retrieval.diagnostic-report.v1",
   "total": 10
 }
