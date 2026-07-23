@@ -392,14 +392,14 @@ class LiteratureRetrievalService:
     ) -> ProviderResult:
         provider = call.provider
         key = self._cache_key(provider, call.lane, filters)
-        use_cache = self._cache is not None and self._retrieval_mode != "live"
+        cache = self._cache
+        use_cache = cache is not None and self._retrieval_mode != "live"
         if use_cache:
-            cached = self._cache.get(key)
+            cached = cache.get(key)
             if cached is not None:
                 return self._cached_copy(cached, offline=self._retrieval_mode == "offline")
         if self._retrieval_mode == "offline":
             return self._offline_miss_result(provider, call.lane, filters)
-        cache = self._cache
         if cache is None:
             return await self._execute_live(provider, call.lane, filters, key)
 
