@@ -1,3 +1,11 @@
+HEAD is now at fd7ce852 ci: fix patch-wrapper parser
+[fix/evidence-bound-module-contracts b0147f41] chore(ci): record module follow-up patch failure
+ 1 file changed, 15 insertions(+), 4 deletions(-)
+To https://github.com/ZyfNO2/PaperAgent
+   fd7ce852..b0147f41  HEAD -> fix/evidence-bound-module-contracts
+patched: src/paperagent/academic_methodology.py
+patched: src/paperagent/literature/adapter.py
+patched: src/paperagent/literature/adapter.py
 Traceback (most recent call last):
   File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 164, in main
     runpy.run_path(str(original), run_name="__main__")
@@ -12,4 +20,18 @@ Traceback (most recent call last):
     replace_once(
   File "/tmp/paperagent-module-patch-kehl57he.py", line 23, in replace_once
     raise RuntimeError(f"{path}: expected one exact match, found {count}")
+RuntimeError: src/paperagent/literature/adapter.py: expected one exact match, found 0
+
+Traceback (most recent call last):
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 174, in <module>
+    main()
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 164, in main
+    runpy.run_path(str(original), run_name="__main__")
+  File "<frozen runpy>", line 291, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/tmp/paperagent-module-patch-kehl57he.py", line 1108, in <module>
+  File "/tmp/paperagent-module-patch-kehl57he.py", line 1097, in main
+  File "/tmp/paperagent-module-patch-kehl57he.py", line 198, in patch_literature_adapter
+  File "/tmp/paperagent-module-patch-kehl57he.py", line 23, in replace_once
 RuntimeError: src/paperagent/literature/adapter.py: expected one exact match, found 0
