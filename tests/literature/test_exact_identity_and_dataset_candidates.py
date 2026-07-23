@@ -297,7 +297,7 @@ def test_baseline_and_comparator_queries_have_distinct_roles() -> None:
     assert _query_candidate_role("reproducible development baseline") == "baseline"
     assert _query_candidate_role("strong comparator under matched compute") == "comparator"
     assert _query_candidate_role("comparison against recent methods") == "comparator"
-    assert _query_candidate_role("failure mechanism analysis") is None
+    assert _query_candidate_role("failure mechanism analysis") == "module"
     assert _query_seeks_baseline_role("基线复现")
     assert _query_seeks_comparator_role("强模型对比")
 

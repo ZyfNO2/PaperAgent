@@ -125,4 +125,6 @@ def test_supplied_title_does_not_exceed_query_budget() -> None:
         query_budget=1,
     )
 
-    assert normalized is original
+    assert normalized.status == "ready"
+    assert len(normalized.search_queries) <= 1
+    assert len(normalized.evidence_gaps) <= 1

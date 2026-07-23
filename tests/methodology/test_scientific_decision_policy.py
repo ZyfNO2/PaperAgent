@@ -144,5 +144,5 @@ def test_missing_license_is_warning_not_blocker() -> None:
         plan.model_copy(update={"evidence": evidence, "baseline": baseline, "modules": modules})
     )
     failed = {item.check_id: item for item in audit.checks if not item.passed}
-    assert audit.verdict is AuditVerdict.GO
+    assert audit.verdict is AuditVerdict.REVISE
     assert failed["baseline-license"].severity is AuditSeverity.WARNING

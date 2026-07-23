@@ -146,8 +146,8 @@ def _state() -> PaperAgentState:
                 evidence_id=_MODULE_EVIDENCE_ID,
                 identity_verified=True,
                 relevance_scope="direct",
-                gap_supports=(),
-                supported_claims=(),
+                gap_supports=(support[1],),
+                supported_claims=("shallow feature fusion for small object detection",),
                 limitations=("pilot reproduction remains required",),
                 accepted=True,
                 rejection_reasons=(),
@@ -155,7 +155,7 @@ def _state() -> PaperAgentState:
         ),
         accepted_ids=(_EVIDENCE_ID, _MODULE_EVIDENCE_ID),
         rejected_ids=(),
-        coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
+        coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 2},
     )
     synthesis = EvidenceSynthesis(
         gap_assessments=[

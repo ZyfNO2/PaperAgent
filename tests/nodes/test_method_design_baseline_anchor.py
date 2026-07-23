@@ -176,8 +176,11 @@ def test_direct_query_neighbor_is_module_evidence_not_baseline() -> None:
         "direct-only",
         "A Relevant Mechanism Paper",
         metadata={
-            "relation": "direct_query",
+            "relation": "module_role_query",
             "rank_score": "0.95",
+            "module_candidate": "inferred",
+            "relevance_score": "0.90",
+            "license": "CC BY 4.0",
         },
     )
     assert _select_inferred_baseline_evidence((direct,)) is None
@@ -237,13 +240,24 @@ def test_comparator_role_candidate_is_not_eligible_as_baseline() -> None:
 
 
 def test_comparator_candidate_is_not_selected_as_module_source() -> None:
-    baseline = _item(
-        "baseline-module-source",
-        "A Task-Matched Baseline and Mechanism Paper",
+    baseline_evidence = _item(
+        "baseline-only",
+        "A Task-Matched Baseline Paper",
         metadata={
             "baseline_candidate": "inferred",
-            "relation": "parallel_via_dataset",
+            "relation": "baseline_role_query",
+            "rank_score": "0.95",
+            "license": "CC BY 4.0",
+        },
+    )
+    module_candidate = _item(
+        "module-candidate",
+        "A Task-Matched Mechanism Paper",
+        metadata={
+            "relation": "module_role_query",
             "rank_score": "0.70",
+            "module_candidate": "inferred",
+            "relevance_score": "0.85",
             "license": "CC BY 4.0",
         },
     )
@@ -256,6 +270,8 @@ def test_comparator_candidate_is_not_selected_as_module_source() -> None:
             "rank_score": "0.99",
         },
     )
-    selected = _select_module_evidence((baseline, comparator), baseline=baseline)
+    selected = _select_module_evidence(
+        (baseline_evidence, module_candidate, comparator), baseline=baseline_evidence
+    )
     assert selected is not None
-    assert selected.evidence_id == baseline.evidence_id
+    assert selected.evidence_id == module_candidate.evidence_id
