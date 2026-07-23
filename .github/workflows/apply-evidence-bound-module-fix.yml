@@ -27,17 +27,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Apply exact source patches
-        run: |
-          python - <<'PY'
-          import base64
-          import zlib
-          from pathlib import Path
-
-          payload = Path('scripts/evidence_bound_module_patch.b64').read_text().strip()
-          Path('/tmp/apply_fix.py').write_bytes(zlib.decompress(base64.b64decode(payload)))
-          PY
-          python /tmp/apply_fix.py
+      - name: Apply auditable source patches
+        run: python scripts/apply_evidence_bound_module_fix_followup.py
 
       - name: Install development dependencies
         run: python -m pip install -e '.[dev]'
@@ -66,7 +57,10 @@ jobs:
       - name: Commit implementation
         run: |
           rm -f scripts/evidence_bound_module_patch.b64
+          rm -f scripts/evidence_bound_module_patch.part*
+          rm -f scripts/apply_evidence_bound_module_fix_followup.py
           rm -f .github/evidence-bound-module-trigger.txt
+          rm -f .github/evidence-bound-module-patch-failure.log
           rm -f .github/workflows/apply-evidence-bound-module-fix.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
