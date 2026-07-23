@@ -306,6 +306,15 @@ def _module_candidate_marker(item: EvidenceItem) -> bool:
     }
 
 
+def _module_titles_and_aliases(item: EvidenceItem) -> tuple[str, ...]:
+    aliases = tuple(
+        part.strip(" []\"'")
+        for part in re.split(r"[|,;]", item.metadata.get("module_aliases", ""))
+        if part.strip(" []\"'")
+    )
+    return (item.title, *aliases)
+
+
 def _select_module_evidence(
     candidates: tuple[EvidenceItem, ...],
     *,
@@ -332,7 +341,9 @@ def _select_module_evidence(
         if relevance < 0.25 or rank_score < 0.50:
             continue
         if declared_titles and not any(
-            _titles_equivalent(item.title, title) for title in declared_titles
+            _titles_equivalent(candidate_title, declared_title)
+            for candidate_title in _module_titles_and_aliases(item)
+            for declared_title in declared_titles
         ):
             continue
         papers.append(item)

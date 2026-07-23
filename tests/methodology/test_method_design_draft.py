@@ -5,7 +5,7 @@ from typing import cast
 
 from paperagent.academic_methodology import AuditVerdict, ExperimentArmType, audit_method_plan
 from paperagent.method_design_draft import MethodDesignDraft, build_method_proposal
-from paperagent.method_evidence import bind_method_evidence
+from paperagent.method_evidence import accepted_evidence_ledger, bind_method_evidence
 from paperagent.schemas import (
     Claim,
     EvidenceBundle,
@@ -620,3 +620,55 @@ def test_unmarked_neighbor_paper_is_not_used_as_comparator_fallback() -> None:
         experiment.arm_type is not ExperimentArmType.STRONG_COMPARISON
         for experiment in proposal.methodology_plan.experiments
     )
+
+
+def test_declared_module_alias_matches_module_metadata() -> None:
+    state = _state()
+    request = state["request"]
+    evidence = state["evidence"]
+    assert request is not None
+    assert evidence is not None
+    module_item = evidence.items[1].model_copy(
+        update={
+            "metadata": {
+                **evidence.items[1].metadata,
+                "module_aliases": "SFF|ShallowFusion",
+            }
+        }
+    )
+    alias_state = cast(
+        PaperAgentState,
+        {
+            **state,
+            "request": request.model_copy(
+                update={"user_material_refs": ["SFF [declared role: parallel paper]"]}
+            ),
+            "evidence": evidence.model_copy(update={"items": [evidence.items[0], module_item]}),
+        },
+    )
+
+    proposal = build_method_proposal(alias_state, _draft())
+
+    assert proposal.methodology_plan.modules[0].evidence_id == _MODULE_EVIDENCE_ID
+
+
+def test_method_evidence_payload_preserves_safe_module_metadata() -> None:
+    evidence = _state()["evidence"]
+    assert evidence is not None
+    module_item = evidence.items[1].model_copy(
+        update={
+            "metadata": {
+                **evidence.items[1].metadata,
+                "module_aliases": "SFF|ShallowFusion",
+            }
+        }
+    )
+    bundle = evidence.model_copy(update={"items": [evidence.items[0], module_item]})
+
+    payload = accepted_evidence_ledger(bundle)
+    module_payload = next(item for item in payload if item["evidence_id"] == _MODULE_EVIDENCE_ID)
+
+    assert module_payload["metadata"]["relation"] == "module_role_query"
+    assert module_payload["metadata"]["module_candidate"] == "inferred"
+    assert module_payload["metadata"]["relevance_score"] == "0.92"
+    assert module_payload["metadata"]["module_aliases"] == "SFF|ShallowFusion"

@@ -22,6 +22,11 @@ _ALLOWED_EVIDENCE_METADATA = frozenset(
         "baseline_parity_verified",
         "dataset_fingerprint",
         "environment_fingerprint",
+        "relation",
+        "module_candidate",
+        "relevance_score",
+        "rank_score",
+        "module_aliases",
     }
 )
 
