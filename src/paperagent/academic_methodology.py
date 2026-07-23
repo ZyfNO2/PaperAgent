@@ -275,9 +275,12 @@ class MethodAuditReport(BaseModel):
             not item.passed and item.severity is AuditSeverity.CRITICAL for item in checks
         )
         has_error = any(not item.passed and item.severity is AuditSeverity.ERROR for item in checks)
+        has_warning = any(
+            not item.passed and item.severity is AuditSeverity.WARNING for item in checks
+        )
         if has_critical:
             return AuditVerdict.NO_GO
-        if has_error:
+        if has_error or has_warning:
             return AuditVerdict.REVISE
         return AuditVerdict.GO
 

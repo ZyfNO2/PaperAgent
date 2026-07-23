@@ -277,7 +277,7 @@ async def test_nonretryable_http_error_is_wrapped(
             schema=ExampleOutput,
             messages=[Message(role="user", content="answer")],
         )
-    assert exc_info.value.code == "LLM_PROVIDER_HTTP_ERROR"
+    assert exc_info.value.code == "LLM_AUTHENTICATION"
     assert exc_info.value.retryable is False
 
 
@@ -308,7 +308,7 @@ async def test_transport_error_retries_then_fails(
             messages=[Message(role="user", content="answer")],
         )
     assert calls == 2
-    assert exc_info.value.code == "LLM_PROVIDER_HTTP_ERROR"
+    assert exc_info.value.code == "LLM_CONNECT"
     assert exc_info.value.retryable is True
 
 

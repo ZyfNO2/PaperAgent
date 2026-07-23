@@ -217,7 +217,7 @@ async def test_relevant_web_supplement_is_returned_only_after_academic_insuffici
         limit=5,
     )
 
-    assert service.calls == ["openalex", "semantic_scholar", "arxiv", "tavily"]
+    assert service.calls == ["openalex", "semantic_scholar", "tavily"]
     assert len(candidates) == 1
     assert candidates[0].metadata["source_kind"] == "web"
     assert candidates[0].metadata["fallback_used"] == "true"
