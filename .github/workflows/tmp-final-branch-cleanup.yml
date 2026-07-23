@@ -1,0 +1,87 @@
+name: Temporary Final Branch Cleanup
+
+on:
+  push:
+    branches:
+      - fix/semantic-tailoring-role-bound-scoring
+    paths:
+      - ".github/workflows/tmp-final-branch-cleanup.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/semantic-tailoring-role-bound-scoring
+          fetch-depth: 0
+      - name: Fix recovery workflow and remove temporary files
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/workflows/academic-tailoring-runtime-recovery.yml')
+          text = path.read_text(encoding='utf-8')
+          malformed = '''      PAPERAGENT_LLM_MAX_CALLS: "100"\n       PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE: "40"\n       # Budget is enforced per logical graph invocation.\n       # Graph re-entry receives a new call_index and an independent task budget.\n       PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "32000"\n'''
+          corrected = '''      PAPERAGENT_LLM_MAX_CALLS: "100"\n      PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE: "40"\n      # Budget is enforced per logical graph invocation.\n      # Graph re-entry receives a new call_index and an independent task budget.\n      PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "32000"\n'''
+          if text.count(malformed) != 1:
+              raise RuntimeError('runtime recovery budget block mismatch')
+          text = text.replace(malformed, corrected, 1)
+          marker = '''  recover-failed-cases:\n    runs-on: ubuntu-24.04\n'''
+          replacement = '''  recover-failed-cases:\n    # Real-provider recovery is manual to prevent PR updates from spending API quota.\n    if: github.event_name == 'workflow_dispatch'\n    runs-on: ubuntu-24.04\n'''
+          if text.count(marker) != 1:
+              raise RuntimeError('runtime recovery job marker mismatch')
+          text = text.replace(marker, replacement, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
+          git rm -f --ignore-unmatch \
+            .github/workflows/tmp-adapter-contract-repair.yml \
+            .github/workflows/tmp-method-design-repair-final.yml \
+            .github/workflows/tmp-method-design-repair-run.yml \
+            .github/workflows/tmp-method-design-repair.yml \
+            .github/workflows/tmp-planning-assets-debug.yml \
+            .github/workflows/tmp-planning-assets-repair.yml \
+            .github/workflows/tmp-planning-assets-repair-v2.yml \
+            .github/workflows/tmp-planning-assets-repair-v3.yml \
+            .github/workflows/tmp-planning-assets-repair-v4.yml \
+            .github/workflows/tmp-planning-assets-repair-v5.yml \
+            .github/workflows/tmp-planning-assets-repair-v6.yml \
+            .github/workflows/tmp-semantic-contract-repair-pr.yml \
+            .github/workflows/tmp-semantic-contract-repair.yml \
+            .github/workflows/tmp-semantic-repair-debug-write.yml \
+            .github/workflows/tmp-semantic-repair-debug.yml \
+            .github/workflows/tmp-synthesis-payload-repair.yml \
+            .github/workflows/tmp-final-semantic-repair-cleanup.yml \
+            .github/workflows/tmp-final-cleanup-visible-validation.yml \
+            .github/workflows/tmp-final-branch-cleanup.yml \
+            METHOD_REPAIR_DEBUG.txt \
+            PLANNING_PYTEST_DEBUG.txt \
+            SEMANTIC_REPAIR_DEBUG.txt
+      - name: Validate workflow YAML
+        run: |
+          python -m pip install -q pyyaml
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          for name in (
+              '.github/workflows/academic-tailoring-runtime-recovery.yml',
+              '.github/workflows/runtime-output-recovery-ci.yml',
+          ):
+              document = yaml.safe_load(Path(name).read_text(encoding='utf-8'))
+              if not isinstance(document, dict):
+                  raise SystemExit(f'{name}: expected mapping')
+          PY
+      - name: Commit cleanup
+        run: |
+          git config user.name "paperagent-repair-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(ci): finalize semantic repair workflows"
+          git push origin HEAD:fix/semantic-tailoring-role-bound-scoring
