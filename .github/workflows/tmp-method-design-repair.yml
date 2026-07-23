@@ -1,0 +1,139 @@
+name: Temporary Method Design Repair
+
+on:
+  push:
+    branches:
+      - fix/semantic-tailoring-role-bound-scoring
+    paths:
+      - ".github/workflows/tmp-method-design-repair.yml"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/tmp-method-design-repair.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/semantic-tailoring-role-bound-scoring
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Apply method design repair
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def replace_once(text: str, old: str, new: str, label: str) -> str:
+              count = text.count(old)
+              if count != 1:
+                  raise RuntimeError(f"{label}: expected one exact match, found {count}")
+              return text.replace(old, new, 1)
+
+          def sub_once(text: str, pattern: str, replacement: str, label: str) -> str:
+              updated, count = re.subn(pattern, replacement, text, count=1, flags=re.DOTALL)
+              if count != 1:
+                  raise RuntimeError(f"{label}: expected one regex match, found {count}")
+              return updated
+
+          path = Path('src/paperagent/method_design_draft.py')
+          text = path.read_text(encoding='utf-8')
+          text = replace_once(
+              text,
+              '''    input_semantics: str = Field(min_length=5)\n    output_semantics: str = Field(min_length=5)\n    predicted_effect: str = Field(min_length=5)\n''',
+              '''    input_semantics: str = Field(\n        min_length=5,\n        description="Concrete semantic meaning of the value consumed by the module.",\n    )\n    output_semantics: str = Field(\n        min_length=5,\n        description="Concrete semantic meaning of the value emitted to the baseline stage.",\n    )\n    input_shape: str = Field(\n        min_length=5,\n        description="Concrete symbolic rank and axes, for example batch x sequence x hidden_size.",\n    )\n    output_shape: str = Field(\n        min_length=5,\n        description="Concrete symbolic rank and axes after the module.",\n    )\n    optimization_interaction: str = Field(\n        min_length=10,\n        description=(\n            "State trainable and frozen parameters, objective terms, gradient path, "\n            "and loss weighting."\n        ),\n    )\n    predicted_effect: str = Field(min_length=5)\n''',
+              'draft contract fields',
+          )
+          text = sub_once(
+              text,
+              r'def _select_inferred_baseline_evidence\(.*?(?=def _matches_declared_repository_lookup\()',
+              '''def _author_linked_repository_parent_ids(\n    candidates: tuple[EvidenceItem, ...],\n) -> set[str]:\n    return {\n        parent_id\n        for item in candidates\n        if item.source_type == "repository"\n        and item.metadata.get("relation") == "author_linked_from_verified_paper"\n        for parent_id in (item.metadata.get("parent_paper_id"),)\n        if parent_id\n    }\n\n\ndef _select_inferred_baseline_evidence(\n    candidates: tuple[EvidenceItem, ...],\n) -> EvidenceItem | None:\n    papers = tuple(\n        item\n        for item in candidates\n        if item.source_type == "paper"\n        and item.metadata.get("baseline_candidate") == "inferred"\n        and item.metadata.get("relation") in {"baseline_role_query", "parallel_via_dataset"}\n        and _metadata_float(item, "relevance_score", default=0.0)\n        >= _MIN_DATASET_PARALLEL_BASELINE_RELEVANCE\n    )\n    if not papers:\n        return None\n    repository_parent_ids = _author_linked_repository_parent_ids(candidates)\n    repository_backed = tuple(\n        item\n        for item in papers\n        if item.evidence_id.removeprefix("ev-") in repository_parent_ids\n    )\n    eligible = repository_backed or papers\n    return max(eligible, key=_baseline_evidence_rank)\n\n\n''',
+              'inferred baseline selector',
+          )
+          text = sub_once(
+              text,
+              r'def _select_repository_backed_direct_baseline\(.*?(?=def _select_baseline_evidence\()',
+              '''def _select_repository_backed_direct_baseline(\n    candidates: tuple[EvidenceItem, ...],\n    *,\n    declared_titles: tuple[str, ...] = (),\n) -> EvidenceItem | None:\n    """Select an exact-query paper with an accepted author-linked repository."""\n\n    repository_parent_ids = _author_linked_repository_parent_ids(candidates)\n    papers = tuple(\n        item\n        for item in candidates\n        if item.source_type == "paper"\n        and item.metadata.get("relation")\n        in {"direct_query", "declared_identity", "baseline_role_query"}\n        and item.evidence_id.removeprefix("ev-") in repository_parent_ids\n        and not _is_review_evidence(item.title, item.summary)\n        and _matches_declared_repository_lookup(item, declared_titles)\n    )\n    if not papers:\n        return None\n    return max(papers, key=_baseline_evidence_rank)\n\n\n''',
+              'repository backed baseline selector',
+          )
+          text = sub_once(
+              text,
+              r'def _select_module_evidence\(.*?(?=def _question_declares_dataset\()',
+              '''def _select_module_evidence(\n    candidates: tuple[EvidenceItem, ...],\n    *,\n    baseline: EvidenceItem | None,\n) -> EvidenceItem | None:\n    baseline_id = baseline.evidence_id if baseline is not None else None\n    papers = tuple(\n        item\n        for item in candidates\n        if item.source_type == "paper"\n        and item.evidence_id != baseline_id\n        and item.metadata.get("comparator_candidate") != "inferred"\n        and item.metadata.get("relation") != "comparator_role_query"\n    )\n    if not papers:\n        return None\n    return max(\n        papers,\n        key=lambda item: _module_evidence_rank(\n            item,\n            baseline_evidence_id=baseline_id,\n        ),\n    )\n\n\n''',
+              'independent module selector',
+          )
+          text = replace_once(
+              text,
+              '''        split="freeze the official or documented train/validation/test split before the pilot",\n        preprocessing=(\n            "match input construction, preprocessing, normalization, post-processing, "\n            "and inference precision across arms"\n        ),\n        tuning_budget=(\n            "match epochs or steps, optimizer search space, input budget, early stopping, "\n            "and total compute"\n        ),\n''',
+              '''        split=(\n            f"Pre-register one immutable train/validation/test manifest for {dataset}, "\n            "including sample identifiers, timestamps where applicable, and content hashes."\n        ),\n        preprocessing=(\n            f"Serialize one deterministic preprocessing manifest for {dataset}; record transform "\n            "versions, ordering, normalization constants, and inference precision for every arm."\n        ),\n        tuning_budget=(\n            "Evaluate at most 12 predeclared configurations per arm, select on validation data "\n            "only, and retrain each selected configuration with seeds 1, 2, and 3."\n        ),\n''',
+              'experiment protocol',
+          )
+          text = replace_once(
+              text,
+              '''    if module_primary is None:\n        raise ValueError("method canonicalization requires accepted paper evidence")\n''',
+              '''    if module_primary is None:\n        raise ValueError(\n            "method canonicalization requires independent accepted module paper evidence "\n            "distinct from the baseline"\n        )\n''',
+              'module absence error',
+          )
+          text = replace_once(
+              text,
+              '''        input_semantics=draft.input_semantics,\n        output_semantics=draft.output_semantics,\n        input_shape=(\n            "task-specific representation at the selected insertion point; exact dimensions "\n            "are resolved after the baseline is frozen"\n        ),\n        output_shape="representation contract required by the downstream baseline stage",\n        normalization="inherit and freeze the baseline normalization contract",\n''',
+              '''        input_semantics=draft.input_semantics,\n        output_semantics=draft.output_semantics,\n        input_shape=draft.input_shape,\n        output_shape=draft.output_shape,\n        normalization=(\n            "Use the numeric normalization declared by the module source and record all "\n            "constants in the integration manifest."\n        ),\n''',
+              'module shapes',
+          )
+          text = replace_once(
+              text,
+              '''        loss_terms=("inherit baseline task losses and weights for the first pilot",),\n        gradient_expectation=(\n            "verify non-zero finite gradients in the module and connected baseline path"\n        ),\n        parameter_update_scope=(\n            "train the candidate module and matched baseline parameters under the same budget"\n        ),\n        loss_scale=(\n            "keep baseline loss scaling unchanged unless a documented pilot failure requires repair"\n        ),\n''',
+              '''        loss_terms=(f"Objective interaction: {draft.optimization_interaction}",),\n        gradient_expectation=f"Gradient contract: {draft.optimization_interaction}",\n        parameter_update_scope=f"Parameter update contract: {draft.optimization_interaction}",\n        loss_scale=f"Loss weighting contract: {draft.optimization_interaction}",\n''',
+              'optimization contract',
+          )
+          path.write_text(text, encoding='utf-8')
+
+          path = Path('tests/methodology/test_method_design_draft.py')
+          text = path.read_text(encoding='utf-8')
+          text = replace_once(
+              text,
+              '''        "input_semantics": "a shallow detector feature map containing fine spatial cues",\n        "output_semantics": "a shape-compatible enhanced feature map for the baseline head",\n        "predicted_effect": "improve small-object recall and AP_small",\n''',
+              '''        "input_semantics": "a shallow detector feature map containing fine spatial cues",\n        "output_semantics": "a shape-compatible enhanced feature map for the baseline head",\n        "input_shape": "batch x channels x height x width at the shallow feature level",\n        "output_shape": "batch x channels x height x width with unchanged spatial axes",\n        "optimization_interaction": (\n            "train the fusion projection and detector head; keep the backbone frozen; "\n            "backpropagate the detection objective through both paths with unit loss weight"\n        ),\n        "predicted_effect": "improve small-object recall and AP_small",\n''',
+              'test draft fields',
+          )
+          path.write_text(text, encoding='utf-8')
+
+          path = Path('tests/nodes/test_method_design_baseline_anchor.py')
+          text = path.read_text(encoding='utf-8')
+          text = sub_once(
+              text,
+              r'def test_comparator_candidate_is_not_selected_as_module_source\(\).*?(?=def test_zero_relevance_dataset_parallel_candidate)',
+              '''def test_baseline_evidence_is_not_reused_as_module_source() -> None:\n    baseline = _item(\n        "baseline-module-source",\n        "A Task-Matched Baseline and Mechanism Paper",\n        metadata={\n            "baseline_candidate": "inferred",\n            "relation": "parallel_via_dataset",\n            "rank_score": "0.70",\n            "license": "CC BY 4.0",\n        },\n    )\n    comparator = _item(\n        "comparator-not-module",\n        "A Strong Independent Comparator",\n        metadata={\n            "comparator_candidate": "inferred",\n            "relation": "comparator_role_query",\n            "rank_score": "0.99",\n        },\n    )\n    assert _select_module_evidence((baseline, comparator), baseline=baseline) is None\n\n\n''',
+              'baseline module reuse regression',
+          )
+          path.write_text(text, encoding='utf-8')
+          PY
+      - name: Format and install
+        run: |
+          ruff format src/paperagent/method_design_draft.py tests/methodology/test_method_design_draft.py tests/nodes/test_method_design_baseline_anchor.py
+          python -m pip install -q -e '.[dev]'
+      - name: Verify method repair
+        run: |
+          ruff check src/paperagent/method_design_draft.py tests/methodology/test_method_design_draft.py tests/nodes/test_method_design_baseline_anchor.py
+          mypy --strict src/paperagent/method_design_draft.py
+          pytest -q tests/methodology/test_method_design_draft.py tests/methodology/test_strict_method_design.py tests/nodes/test_method_design_baseline_anchor.py
+      - name: Commit method repair
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "paperagent-repair-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/paperagent/method_design_draft.py tests/methodology/test_method_design_draft.py tests/nodes/test_method_design_baseline_anchor.py
+          git commit -m "fix(method): enforce independent module contracts"
+          git push origin HEAD:fix/semantic-tailoring-role-bound-scoring
