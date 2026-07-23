@@ -31,6 +31,15 @@ def _continue_unless_failed(state: PaperAgentState) -> str:
     return "blocked" if execution is not None and execution.status == "failed" else "continue"
 
 
+def _after_method_design(state: PaperAgentState) -> str:
+    execution = state.get("execution")
+    return (
+        "blocked"
+        if execution is not None and execution.status in {"failed", "blocked"}
+        else "continue"
+    )
+
+
 def _after_retrieval(state: PaperAgentState) -> str:
     execution = state.get("execution")
     if execution is not None and execution.status == "failed":
@@ -195,7 +204,7 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     )
     builder.add_conditional_edges(
         "method_design_node",
-        _continue_unless_failed,
+        _after_method_design,
         {"continue": "methodology_audit_node", "blocked": "report_node"},
     )
     builder.add_edge("methodology_audit_node", "quality_gate_node")
