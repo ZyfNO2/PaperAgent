@@ -1,4 +1,15 @@
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 70
-    '''\n                                {"comparator_candidate": "inferred"}
-                                                                             ^
-SyntaxError: unexpected character after line continuation character
+Traceback (most recent call last):
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 164, in main
+    runpy.run_path(str(original), run_name="__main__")
+  File "<frozen runpy>", line 291, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/tmp/paperagent-module-patch-kehl57he.py", line 1108, in <module>
+    main()
+  File "/tmp/paperagent-module-patch-kehl57he.py", line 1097, in main
+    patch_literature_adapter()
+  File "/tmp/paperagent-module-patch-kehl57he.py", line 198, in patch_literature_adapter
+    replace_once(
+  File "/tmp/paperagent-module-patch-kehl57he.py", line 23, in replace_once
+    raise RuntimeError(f"{path}: expected one exact match, found {count}")
+RuntimeError: src/paperagent/literature/adapter.py: expected one exact match, found 0
