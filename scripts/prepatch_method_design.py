@@ -11,6 +11,7 @@ PAYLOAD = Path("scripts/prepatch_method_design.payload")
 
 def main() -> None:
     source = zlib.decompress(base64.b64decode(PAYLOAD.read_text(encoding="utf-8").strip()))
+    source = source.replace(b"        patch_driver_skip()\n", b"")
     handle = tempfile.NamedTemporaryFile(
         mode="wb",
         suffix=".py",
