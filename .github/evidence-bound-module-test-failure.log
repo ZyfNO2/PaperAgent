@@ -1,0 +1,1308 @@
+FFFFFFFFFF................                                               [100%]
+=================================== FAILURES ===================================
+___________ test_flat_draft_builds_aligned_canonical_method_proposal ___________
+
+    def test_flat_draft_builds_aligned_canonical_method_proposal() -> None:
+>       state = _state()
+                ^^^^^^^^
+
+tests/methodology/test_method_design_draft.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _state() -> PaperAgentState:
+        baseline_gap = EvidenceGap(
+            gap_id="baseline_comparison",
+            description="baseline and strong comparison evidence",
+        )
+        mechanism_gap = EvidenceGap(
+            gap_id="failure_mechanism",
+            description="failure mechanism and parallel method evidence",
+        )
+        plan = ResearchPlan(
+            status="ready",
+            problem_statement="lightweight UAV small object detection",
+            scope="aerial visual detection under unresolved deployment constraints",
+            evidence_gaps=[baseline_gap, mechanism_gap],
+            search_queries=[
+                SearchQuery(
+                    query_id="q-baseline",
+                    gap_id=baseline_gap.gap_id,
+                    query="lightweight UAV small object detection baseline VisDrone metrics",
+                    source_types=["paper"],
+                ),
+                SearchQuery(
+                    query_id="q-mechanism",
+                    gap_id=mechanism_gap.gap_id,
+                    query="UAV small object detection limitation feature fusion occlusion",
+                    source_types=["paper"],
+                ),
+            ],
+            success_criteria=["bounded pilot with matched comparisons"],
+            risks=["deployment device is unresolved", "dataset split is unresolved"],
+            clarification_question=(
+                "Which dataset, deployment device, and accuracy-latency priority should constrain "
+                "the pilot?"
+            ),
+        )
+        evidence_item = EvidenceItem(
+            evidence_id=_EVIDENCE_ID,
+            source_type="paper",
+            title="Drone-DETR: Efficient Small Object Detection for Remote Sensing Image",
+            locator="doi:10.3390/s24175496",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id, mechanism_gap.gap_id],
+            summary=_SUMMARY,
+            content_hash="sha256:drone-detr",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.3390/s24175496",
+                "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+                "license": "CC BY 4.0",
+                "module_candidate": "inferred",
+                "relation": "module_role_query",
+                "rank_score": "0.90",
+                "relevance_score": "0.90",
+            },
+        )
+        baseline_item = EvidenceItem(
+            evidence_id=_BASELINE_ID,
+            source_type="paper",
+            title="RT-DETR-R18 baseline for small object detection",
+            locator="doi:10.1000/rt-detr-baseline",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id],
+            summary="RT-DETR-R18 is a task-matched detector baseline with a verified paper identity.",
+            content_hash="sha256:rt-detr-baseline",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.1000/rt-detr-baseline",
+                "baseline_candidate": "inferred",
+                "relation": "baseline_role_query",
+                "rank_score": "0.92",
+                "relevance_score": "0.90",
+                "license": "CC BY 4.0",
+            },
+        )
+        support = (
+            _support(baseline_gap.gap_id, baseline_gap.description),
+            _support(mechanism_gap.gap_id, mechanism_gap.description),
+        )
+        baseline_support = _support(
+            baseline_gap.gap_id,
+            "RT-DETR-R18 supplies the independent baseline identity.",
+            evidence_id=_BASELINE_ID,
+        )
+>       ledger = EvidenceLedger(
+            entries=(
+                EvidenceLedgerEntry(
+                    evidence_id=_EVIDENCE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=support,
+                    supported_claims=tuple(item.supported_claim or "" for item in support),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+                EvidenceLedgerEntry(
+                    evidence_id=_BASELINE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=(baseline_support,),
+                    supported_claims=(baseline_support.supported_claim or "",),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+            ),
+            accepted_ids=(_EVIDENCE_ID, _BASELINE_ID),
+            rejected_ids=(),
+            coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+E         Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/methodology/test_method_design_draft.py:140: ValidationError
+_______ test_ungrounded_dataset_and_comparator_are_not_promoted_to_facts _______
+
+    def test_ungrounded_dataset_and_comparator_are_not_promoted_to_facts() -> None:
+        proposal = _bound_proposal(
+>           _state(),
+            ^^^^^^^^
+            _draft(
+                reported_dataset="InventedDroneBench",
+                reported_comparator="ImaginaryDetector-X",
+            ),
+        )
+
+tests/methodology/test_method_design_draft.py:292: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _state() -> PaperAgentState:
+        baseline_gap = EvidenceGap(
+            gap_id="baseline_comparison",
+            description="baseline and strong comparison evidence",
+        )
+        mechanism_gap = EvidenceGap(
+            gap_id="failure_mechanism",
+            description="failure mechanism and parallel method evidence",
+        )
+        plan = ResearchPlan(
+            status="ready",
+            problem_statement="lightweight UAV small object detection",
+            scope="aerial visual detection under unresolved deployment constraints",
+            evidence_gaps=[baseline_gap, mechanism_gap],
+            search_queries=[
+                SearchQuery(
+                    query_id="q-baseline",
+                    gap_id=baseline_gap.gap_id,
+                    query="lightweight UAV small object detection baseline VisDrone metrics",
+                    source_types=["paper"],
+                ),
+                SearchQuery(
+                    query_id="q-mechanism",
+                    gap_id=mechanism_gap.gap_id,
+                    query="UAV small object detection limitation feature fusion occlusion",
+                    source_types=["paper"],
+                ),
+            ],
+            success_criteria=["bounded pilot with matched comparisons"],
+            risks=["deployment device is unresolved", "dataset split is unresolved"],
+            clarification_question=(
+                "Which dataset, deployment device, and accuracy-latency priority should constrain "
+                "the pilot?"
+            ),
+        )
+        evidence_item = EvidenceItem(
+            evidence_id=_EVIDENCE_ID,
+            source_type="paper",
+            title="Drone-DETR: Efficient Small Object Detection for Remote Sensing Image",
+            locator="doi:10.3390/s24175496",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id, mechanism_gap.gap_id],
+            summary=_SUMMARY,
+            content_hash="sha256:drone-detr",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.3390/s24175496",
+                "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+                "license": "CC BY 4.0",
+                "module_candidate": "inferred",
+                "relation": "module_role_query",
+                "rank_score": "0.90",
+                "relevance_score": "0.90",
+            },
+        )
+        baseline_item = EvidenceItem(
+            evidence_id=_BASELINE_ID,
+            source_type="paper",
+            title="RT-DETR-R18 baseline for small object detection",
+            locator="doi:10.1000/rt-detr-baseline",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id],
+            summary="RT-DETR-R18 is a task-matched detector baseline with a verified paper identity.",
+            content_hash="sha256:rt-detr-baseline",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.1000/rt-detr-baseline",
+                "baseline_candidate": "inferred",
+                "relation": "baseline_role_query",
+                "rank_score": "0.92",
+                "relevance_score": "0.90",
+                "license": "CC BY 4.0",
+            },
+        )
+        support = (
+            _support(baseline_gap.gap_id, baseline_gap.description),
+            _support(mechanism_gap.gap_id, mechanism_gap.description),
+        )
+        baseline_support = _support(
+            baseline_gap.gap_id,
+            "RT-DETR-R18 supplies the independent baseline identity.",
+            evidence_id=_BASELINE_ID,
+        )
+>       ledger = EvidenceLedger(
+            entries=(
+                EvidenceLedgerEntry(
+                    evidence_id=_EVIDENCE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=support,
+                    supported_claims=tuple(item.supported_claim or "" for item in support),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+                EvidenceLedgerEntry(
+                    evidence_id=_BASELINE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=(baseline_support,),
+                    supported_claims=(baseline_support.supported_claim or "",),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+            ),
+            accepted_ids=(_EVIDENCE_ID, _BASELINE_ID),
+            rejected_ids=(),
+            coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+E         Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/methodology/test_method_design_draft.py:140: ValidationError
+______ test_non_vision_task_does_not_inherit_detector_specific_contracts _______
+
+    def test_non_vision_task_does_not_inherit_detector_specific_contracts() -> None:
+>       state = _state()
+                ^^^^^^^^
+
+tests/methodology/test_method_design_draft.py:312: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _state() -> PaperAgentState:
+        baseline_gap = EvidenceGap(
+            gap_id="baseline_comparison",
+            description="baseline and strong comparison evidence",
+        )
+        mechanism_gap = EvidenceGap(
+            gap_id="failure_mechanism",
+            description="failure mechanism and parallel method evidence",
+        )
+        plan = ResearchPlan(
+            status="ready",
+            problem_statement="lightweight UAV small object detection",
+            scope="aerial visual detection under unresolved deployment constraints",
+            evidence_gaps=[baseline_gap, mechanism_gap],
+            search_queries=[
+                SearchQuery(
+                    query_id="q-baseline",
+                    gap_id=baseline_gap.gap_id,
+                    query="lightweight UAV small object detection baseline VisDrone metrics",
+                    source_types=["paper"],
+                ),
+                SearchQuery(
+                    query_id="q-mechanism",
+                    gap_id=mechanism_gap.gap_id,
+                    query="UAV small object detection limitation feature fusion occlusion",
+                    source_types=["paper"],
+                ),
+            ],
+            success_criteria=["bounded pilot with matched comparisons"],
+            risks=["deployment device is unresolved", "dataset split is unresolved"],
+            clarification_question=(
+                "Which dataset, deployment device, and accuracy-latency priority should constrain "
+                "the pilot?"
+            ),
+        )
+        evidence_item = EvidenceItem(
+            evidence_id=_EVIDENCE_ID,
+            source_type="paper",
+            title="Drone-DETR: Efficient Small Object Detection for Remote Sensing Image",
+            locator="doi:10.3390/s24175496",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id, mechanism_gap.gap_id],
+            summary=_SUMMARY,
+            content_hash="sha256:drone-detr",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.3390/s24175496",
+                "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+                "license": "CC BY 4.0",
+                "module_candidate": "inferred",
+                "relation": "module_role_query",
+                "rank_score": "0.90",
+                "relevance_score": "0.90",
+            },
+        )
+        baseline_item = EvidenceItem(
+            evidence_id=_BASELINE_ID,
+            source_type="paper",
+            title="RT-DETR-R18 baseline for small object detection",
+            locator="doi:10.1000/rt-detr-baseline",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id],
+            summary="RT-DETR-R18 is a task-matched detector baseline with a verified paper identity.",
+            content_hash="sha256:rt-detr-baseline",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.1000/rt-detr-baseline",
+                "baseline_candidate": "inferred",
+                "relation": "baseline_role_query",
+                "rank_score": "0.92",
+                "relevance_score": "0.90",
+                "license": "CC BY 4.0",
+            },
+        )
+        support = (
+            _support(baseline_gap.gap_id, baseline_gap.description),
+            _support(mechanism_gap.gap_id, mechanism_gap.description),
+        )
+        baseline_support = _support(
+            baseline_gap.gap_id,
+            "RT-DETR-R18 supplies the independent baseline identity.",
+            evidence_id=_BASELINE_ID,
+        )
+>       ledger = EvidenceLedger(
+            entries=(
+                EvidenceLedgerEntry(
+                    evidence_id=_EVIDENCE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=support,
+                    supported_claims=tuple(item.supported_claim or "" for item in support),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+                EvidenceLedgerEntry(
+                    evidence_id=_BASELINE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=(baseline_support,),
+                    supported_claims=(baseline_support.supported_claim or "",),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+            ),
+            accepted_ids=(_EVIDENCE_ID, _BASELINE_ID),
+            rejected_ids=(),
+            coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+E         Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/methodology/test_method_design_draft.py:140: ValidationError
+_________ test_missing_license_requires_revision_without_forcing_no_go _________
+
+    def test_missing_license_requires_revision_without_forcing_no_go() -> None:
+>       audit = _audit_with_bound_license(None)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/methodology/test_method_design_draft.py:396: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/methodology/test_method_design_draft.py:385: in _audit_with_bound_license
+    proposal = _bound_proposal(_state(), _draft())
+                               ^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _state() -> PaperAgentState:
+        baseline_gap = EvidenceGap(
+            gap_id="baseline_comparison",
+            description="baseline and strong comparison evidence",
+        )
+        mechanism_gap = EvidenceGap(
+            gap_id="failure_mechanism",
+            description="failure mechanism and parallel method evidence",
+        )
+        plan = ResearchPlan(
+            status="ready",
+            problem_statement="lightweight UAV small object detection",
+            scope="aerial visual detection under unresolved deployment constraints",
+            evidence_gaps=[baseline_gap, mechanism_gap],
+            search_queries=[
+                SearchQuery(
+                    query_id="q-baseline",
+                    gap_id=baseline_gap.gap_id,
+                    query="lightweight UAV small object detection baseline VisDrone metrics",
+                    source_types=["paper"],
+                ),
+                SearchQuery(
+                    query_id="q-mechanism",
+                    gap_id=mechanism_gap.gap_id,
+                    query="UAV small object detection limitation feature fusion occlusion",
+                    source_types=["paper"],
+                ),
+            ],
+            success_criteria=["bounded pilot with matched comparisons"],
+            risks=["deployment device is unresolved", "dataset split is unresolved"],
+            clarification_question=(
+                "Which dataset, deployment device, and accuracy-latency priority should constrain "
+                "the pilot?"
+            ),
+        )
+        evidence_item = EvidenceItem(
+            evidence_id=_EVIDENCE_ID,
+            source_type="paper",
+            title="Drone-DETR: Efficient Small Object Detection for Remote Sensing Image",
+            locator="doi:10.3390/s24175496",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id, mechanism_gap.gap_id],
+            summary=_SUMMARY,
+            content_hash="sha256:drone-detr",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.3390/s24175496",
+                "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+                "license": "CC BY 4.0",
+                "module_candidate": "inferred",
+                "relation": "module_role_query",
+                "rank_score": "0.90",
+                "relevance_score": "0.90",
+            },
+        )
+        baseline_item = EvidenceItem(
+            evidence_id=_BASELINE_ID,
+            source_type="paper",
+            title="RT-DETR-R18 baseline for small object detection",
+            locator="doi:10.1000/rt-detr-baseline",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id],
+            summary="RT-DETR-R18 is a task-matched detector baseline with a verified paper identity.",
+            content_hash="sha256:rt-detr-baseline",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.1000/rt-detr-baseline",
+                "baseline_candidate": "inferred",
+                "relation": "baseline_role_query",
+                "rank_score": "0.92",
+                "relevance_score": "0.90",
+                "license": "CC BY 4.0",
+            },
+        )
+        support = (
+            _support(baseline_gap.gap_id, baseline_gap.description),
+            _support(mechanism_gap.gap_id, mechanism_gap.description),
+        )
+        baseline_support = _support(
+            baseline_gap.gap_id,
+            "RT-DETR-R18 supplies the independent baseline identity.",
+            evidence_id=_BASELINE_ID,
+        )
+>       ledger = EvidenceLedger(
+            entries=(
+                EvidenceLedgerEntry(
+                    evidence_id=_EVIDENCE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=support,
+                    supported_claims=tuple(item.supported_claim or "" for item in support),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+                EvidenceLedgerEntry(
+                    evidence_id=_BASELINE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=(baseline_support,),
+                    supported_claims=(baseline_support.supported_claim or "",),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+            ),
+            accepted_ids=(_EVIDENCE_ID, _BASELINE_ID),
+            rejected_ids=(),
+            coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+E         Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/methodology/test_method_design_draft.py:140: ValidationError
+______________ test_explicitly_incompatible_license_remains_no_go ______________
+
+    def test_explicitly_incompatible_license_remains_no_go() -> None:
+>       audit = _audit_with_bound_license("proprietary-no-reuse")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/methodology/test_method_design_draft.py:405: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/methodology/test_method_design_draft.py:385: in _audit_with_bound_license
+    proposal = _bound_proposal(_state(), _draft())
+                               ^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _state() -> PaperAgentState:
+        baseline_gap = EvidenceGap(
+            gap_id="baseline_comparison",
+            description="baseline and strong comparison evidence",
+        )
+        mechanism_gap = EvidenceGap(
+            gap_id="failure_mechanism",
+            description="failure mechanism and parallel method evidence",
+        )
+        plan = ResearchPlan(
+            status="ready",
+            problem_statement="lightweight UAV small object detection",
+            scope="aerial visual detection under unresolved deployment constraints",
+            evidence_gaps=[baseline_gap, mechanism_gap],
+            search_queries=[
+                SearchQuery(
+                    query_id="q-baseline",
+                    gap_id=baseline_gap.gap_id,
+                    query="lightweight UAV small object detection baseline VisDrone metrics",
+                    source_types=["paper"],
+                ),
+                SearchQuery(
+                    query_id="q-mechanism",
+                    gap_id=mechanism_gap.gap_id,
+                    query="UAV small object detection limitation feature fusion occlusion",
+                    source_types=["paper"],
+                ),
+            ],
+            success_criteria=["bounded pilot with matched comparisons"],
+            risks=["deployment device is unresolved", "dataset split is unresolved"],
+            clarification_question=(
+                "Which dataset, deployment device, and accuracy-latency priority should constrain "
+                "the pilot?"
+            ),
+        )
+        evidence_item = EvidenceItem(
+            evidence_id=_EVIDENCE_ID,
+            source_type="paper",
+            title="Drone-DETR: Efficient Small Object Detection for Remote Sensing Image",
+            locator="doi:10.3390/s24175496",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id, mechanism_gap.gap_id],
+            summary=_SUMMARY,
+            content_hash="sha256:drone-detr",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.3390/s24175496",
+                "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+                "license": "CC BY 4.0",
+                "module_candidate": "inferred",
+                "relation": "module_role_query",
+                "rank_score": "0.90",
+                "relevance_score": "0.90",
+            },
+        )
+        baseline_item = EvidenceItem(
+            evidence_id=_BASELINE_ID,
+            source_type="paper",
+            title="RT-DETR-R18 baseline for small object detection",
+            locator="doi:10.1000/rt-detr-baseline",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id],
+            summary="RT-DETR-R18 is a task-matched detector baseline with a verified paper identity.",
+            content_hash="sha256:rt-detr-baseline",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.1000/rt-detr-baseline",
+                "baseline_candidate": "inferred",
+                "relation": "baseline_role_query",
+                "rank_score": "0.92",
+                "relevance_score": "0.90",
+                "license": "CC BY 4.0",
+            },
+        )
+        support = (
+            _support(baseline_gap.gap_id, baseline_gap.description),
+            _support(mechanism_gap.gap_id, mechanism_gap.description),
+        )
+        baseline_support = _support(
+            baseline_gap.gap_id,
+            "RT-DETR-R18 supplies the independent baseline identity.",
+            evidence_id=_BASELINE_ID,
+        )
+>       ledger = EvidenceLedger(
+            entries=(
+                EvidenceLedgerEntry(
+                    evidence_id=_EVIDENCE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=support,
+                    supported_claims=tuple(item.supported_claim or "" for item in support),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+                EvidenceLedgerEntry(
+                    evidence_id=_BASELINE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=(baseline_support,),
+                    supported_claims=(baseline_support.supported_claim or "",),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+            ),
+            accepted_ids=(_EVIDENCE_ID, _BASELINE_ID),
+            rejected_ids=(),
+            coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+E         Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/methodology/test_method_design_draft.py:140: ValidationError
+____________ test_unqualified_direct_paper_does_not_become_baseline ____________
+
+    def test_unqualified_direct_paper_does_not_become_baseline() -> None:
+>       state = _state()
+                ^^^^^^^^
+
+tests/methodology/test_method_design_draft.py:414: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _state() -> PaperAgentState:
+        baseline_gap = EvidenceGap(
+            gap_id="baseline_comparison",
+            description="baseline and strong comparison evidence",
+        )
+        mechanism_gap = EvidenceGap(
+            gap_id="failure_mechanism",
+            description="failure mechanism and parallel method evidence",
+        )
+        plan = ResearchPlan(
+            status="ready",
+            problem_statement="lightweight UAV small object detection",
+            scope="aerial visual detection under unresolved deployment constraints",
+            evidence_gaps=[baseline_gap, mechanism_gap],
+            search_queries=[
+                SearchQuery(
+                    query_id="q-baseline",
+                    gap_id=baseline_gap.gap_id,
+                    query="lightweight UAV small object detection baseline VisDrone metrics",
+                    source_types=["paper"],
+                ),
+                SearchQuery(
+                    query_id="q-mechanism",
+                    gap_id=mechanism_gap.gap_id,
+                    query="UAV small object detection limitation feature fusion occlusion",
+                    source_types=["paper"],
+                ),
+            ],
+            success_criteria=["bounded pilot with matched comparisons"],
+            risks=["deployment device is unresolved", "dataset split is unresolved"],
+            clarification_question=(
+                "Which dataset, deployment device, and accuracy-latency priority should constrain "
+                "the pilot?"
+            ),
+        )
+        evidence_item = EvidenceItem(
+            evidence_id=_EVIDENCE_ID,
+            source_type="paper",
+            title="Drone-DETR: Efficient Small Object Detection for Remote Sensing Image",
+            locator="doi:10.3390/s24175496",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id, mechanism_gap.gap_id],
+            summary=_SUMMARY,
+            content_hash="sha256:drone-detr",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.3390/s24175496",
+                "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+                "license": "CC BY 4.0",
+                "module_candidate": "inferred",
+                "relation": "module_role_query",
+                "rank_score": "0.90",
+                "relevance_score": "0.90",
+            },
+        )
+        baseline_item = EvidenceItem(
+            evidence_id=_BASELINE_ID,
+            source_type="paper",
+            title="RT-DETR-R18 baseline for small object detection",
+            locator="doi:10.1000/rt-detr-baseline",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id],
+            summary="RT-DETR-R18 is a task-matched detector baseline with a verified paper identity.",
+            content_hash="sha256:rt-detr-baseline",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.1000/rt-detr-baseline",
+                "baseline_candidate": "inferred",
+                "relation": "baseline_role_query",
+                "rank_score": "0.92",
+                "relevance_score": "0.90",
+                "license": "CC BY 4.0",
+            },
+        )
+        support = (
+            _support(baseline_gap.gap_id, baseline_gap.description),
+            _support(mechanism_gap.gap_id, mechanism_gap.description),
+        )
+        baseline_support = _support(
+            baseline_gap.gap_id,
+            "RT-DETR-R18 supplies the independent baseline identity.",
+            evidence_id=_BASELINE_ID,
+        )
+>       ledger = EvidenceLedger(
+            entries=(
+                EvidenceLedgerEntry(
+                    evidence_id=_EVIDENCE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=support,
+                    supported_claims=tuple(item.supported_claim or "" for item in support),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+                EvidenceLedgerEntry(
+                    evidence_id=_BASELINE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=(baseline_support,),
+                    supported_claims=(baseline_support.supported_claim or "",),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+            ),
+            accepted_ids=(_EVIDENCE_ID, _BASELINE_ID),
+            rejected_ids=(),
+            coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+E         Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/methodology/test_method_design_draft.py:140: ValidationError
+_________ test_reported_comparator_requires_independent_paper_identity _________
+
+    def test_reported_comparator_requires_independent_paper_identity() -> None:
+>       state = _state()
+                ^^^^^^^^
+
+tests/methodology/test_method_design_draft.py:456: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _state() -> PaperAgentState:
+        baseline_gap = EvidenceGap(
+            gap_id="baseline_comparison",
+            description="baseline and strong comparison evidence",
+        )
+        mechanism_gap = EvidenceGap(
+            gap_id="failure_mechanism",
+            description="failure mechanism and parallel method evidence",
+        )
+        plan = ResearchPlan(
+            status="ready",
+            problem_statement="lightweight UAV small object detection",
+            scope="aerial visual detection under unresolved deployment constraints",
+            evidence_gaps=[baseline_gap, mechanism_gap],
+            search_queries=[
+                SearchQuery(
+                    query_id="q-baseline",
+                    gap_id=baseline_gap.gap_id,
+                    query="lightweight UAV small object detection baseline VisDrone metrics",
+                    source_types=["paper"],
+                ),
+                SearchQuery(
+                    query_id="q-mechanism",
+                    gap_id=mechanism_gap.gap_id,
+                    query="UAV small object detection limitation feature fusion occlusion",
+                    source_types=["paper"],
+                ),
+            ],
+            success_criteria=["bounded pilot with matched comparisons"],
+            risks=["deployment device is unresolved", "dataset split is unresolved"],
+            clarification_question=(
+                "Which dataset, deployment device, and accuracy-latency priority should constrain "
+                "the pilot?"
+            ),
+        )
+        evidence_item = EvidenceItem(
+            evidence_id=_EVIDENCE_ID,
+            source_type="paper",
+            title="Drone-DETR: Efficient Small Object Detection for Remote Sensing Image",
+            locator="doi:10.3390/s24175496",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id, mechanism_gap.gap_id],
+            summary=_SUMMARY,
+            content_hash="sha256:drone-detr",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.3390/s24175496",
+                "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+                "license": "CC BY 4.0",
+                "module_candidate": "inferred",
+                "relation": "module_role_query",
+                "rank_score": "0.90",
+                "relevance_score": "0.90",
+            },
+        )
+        baseline_item = EvidenceItem(
+            evidence_id=_BASELINE_ID,
+            source_type="paper",
+            title="RT-DETR-R18 baseline for small object detection",
+            locator="doi:10.1000/rt-detr-baseline",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id],
+            summary="RT-DETR-R18 is a task-matched detector baseline with a verified paper identity.",
+            content_hash="sha256:rt-detr-baseline",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.1000/rt-detr-baseline",
+                "baseline_candidate": "inferred",
+                "relation": "baseline_role_query",
+                "rank_score": "0.92",
+                "relevance_score": "0.90",
+                "license": "CC BY 4.0",
+            },
+        )
+        support = (
+            _support(baseline_gap.gap_id, baseline_gap.description),
+            _support(mechanism_gap.gap_id, mechanism_gap.description),
+        )
+        baseline_support = _support(
+            baseline_gap.gap_id,
+            "RT-DETR-R18 supplies the independent baseline identity.",
+            evidence_id=_BASELINE_ID,
+        )
+>       ledger = EvidenceLedger(
+            entries=(
+                EvidenceLedgerEntry(
+                    evidence_id=_EVIDENCE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=support,
+                    supported_claims=tuple(item.supported_claim or "" for item in support),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+                EvidenceLedgerEntry(
+                    evidence_id=_BASELINE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=(baseline_support,),
+                    supported_claims=(baseline_support.supported_claim or "",),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+            ),
+            accepted_ids=(_EVIDENCE_ID, _BASELINE_ID),
+            rejected_ids=(),
+            coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+E         Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/methodology/test_method_design_draft.py:140: ValidationError
+_______ test_independent_comparator_paper_creates_strong_comparison_arm ________
+
+    def test_independent_comparator_paper_creates_strong_comparison_arm() -> None:
+>       state = _state()
+                ^^^^^^^^
+
+tests/methodology/test_method_design_draft.py:468: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _state() -> PaperAgentState:
+        baseline_gap = EvidenceGap(
+            gap_id="baseline_comparison",
+            description="baseline and strong comparison evidence",
+        )
+        mechanism_gap = EvidenceGap(
+            gap_id="failure_mechanism",
+            description="failure mechanism and parallel method evidence",
+        )
+        plan = ResearchPlan(
+            status="ready",
+            problem_statement="lightweight UAV small object detection",
+            scope="aerial visual detection under unresolved deployment constraints",
+            evidence_gaps=[baseline_gap, mechanism_gap],
+            search_queries=[
+                SearchQuery(
+                    query_id="q-baseline",
+                    gap_id=baseline_gap.gap_id,
+                    query="lightweight UAV small object detection baseline VisDrone metrics",
+                    source_types=["paper"],
+                ),
+                SearchQuery(
+                    query_id="q-mechanism",
+                    gap_id=mechanism_gap.gap_id,
+                    query="UAV small object detection limitation feature fusion occlusion",
+                    source_types=["paper"],
+                ),
+            ],
+            success_criteria=["bounded pilot with matched comparisons"],
+            risks=["deployment device is unresolved", "dataset split is unresolved"],
+            clarification_question=(
+                "Which dataset, deployment device, and accuracy-latency priority should constrain "
+                "the pilot?"
+            ),
+        )
+        evidence_item = EvidenceItem(
+            evidence_id=_EVIDENCE_ID,
+            source_type="paper",
+            title="Drone-DETR: Efficient Small Object Detection for Remote Sensing Image",
+            locator="doi:10.3390/s24175496",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id, mechanism_gap.gap_id],
+            summary=_SUMMARY,
+            content_hash="sha256:drone-detr",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.3390/s24175496",
+                "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+                "license": "CC BY 4.0",
+                "module_candidate": "inferred",
+                "relation": "module_role_query",
+                "rank_score": "0.90",
+                "relevance_score": "0.90",
+            },
+        )
+        baseline_item = EvidenceItem(
+            evidence_id=_BASELINE_ID,
+            source_type="paper",
+            title="RT-DETR-R18 baseline for small object detection",
+            locator="doi:10.1000/rt-detr-baseline",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id],
+            summary="RT-DETR-R18 is a task-matched detector baseline with a verified paper identity.",
+            content_hash="sha256:rt-detr-baseline",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.1000/rt-detr-baseline",
+                "baseline_candidate": "inferred",
+                "relation": "baseline_role_query",
+                "rank_score": "0.92",
+                "relevance_score": "0.90",
+                "license": "CC BY 4.0",
+            },
+        )
+        support = (
+            _support(baseline_gap.gap_id, baseline_gap.description),
+            _support(mechanism_gap.gap_id, mechanism_gap.description),
+        )
+        baseline_support = _support(
+            baseline_gap.gap_id,
+            "RT-DETR-R18 supplies the independent baseline identity.",
+            evidence_id=_BASELINE_ID,
+        )
+>       ledger = EvidenceLedger(
+            entries=(
+                EvidenceLedgerEntry(
+                    evidence_id=_EVIDENCE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=support,
+                    supported_claims=tuple(item.supported_claim or "" for item in support),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+                EvidenceLedgerEntry(
+                    evidence_id=_BASELINE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=(baseline_support,),
+                    supported_claims=(baseline_support.supported_claim or "",),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+            ),
+            accepted_ids=(_EVIDENCE_ID, _BASELINE_ID),
+            rejected_ids=(),
+            coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+E         Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/methodology/test_method_design_draft.py:140: ValidationError
+_______ test_baseline_or_module_evidence_cannot_be_reused_as_comparator ________
+
+    def test_baseline_or_module_evidence_cannot_be_reused_as_comparator() -> None:
+>       state = _state()
+                ^^^^^^^^
+
+tests/methodology/test_method_design_draft.py:529: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _state() -> PaperAgentState:
+        baseline_gap = EvidenceGap(
+            gap_id="baseline_comparison",
+            description="baseline and strong comparison evidence",
+        )
+        mechanism_gap = EvidenceGap(
+            gap_id="failure_mechanism",
+            description="failure mechanism and parallel method evidence",
+        )
+        plan = ResearchPlan(
+            status="ready",
+            problem_statement="lightweight UAV small object detection",
+            scope="aerial visual detection under unresolved deployment constraints",
+            evidence_gaps=[baseline_gap, mechanism_gap],
+            search_queries=[
+                SearchQuery(
+                    query_id="q-baseline",
+                    gap_id=baseline_gap.gap_id,
+                    query="lightweight UAV small object detection baseline VisDrone metrics",
+                    source_types=["paper"],
+                ),
+                SearchQuery(
+                    query_id="q-mechanism",
+                    gap_id=mechanism_gap.gap_id,
+                    query="UAV small object detection limitation feature fusion occlusion",
+                    source_types=["paper"],
+                ),
+            ],
+            success_criteria=["bounded pilot with matched comparisons"],
+            risks=["deployment device is unresolved", "dataset split is unresolved"],
+            clarification_question=(
+                "Which dataset, deployment device, and accuracy-latency priority should constrain "
+                "the pilot?"
+            ),
+        )
+        evidence_item = EvidenceItem(
+            evidence_id=_EVIDENCE_ID,
+            source_type="paper",
+            title="Drone-DETR: Efficient Small Object Detection for Remote Sensing Image",
+            locator="doi:10.3390/s24175496",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id, mechanism_gap.gap_id],
+            summary=_SUMMARY,
+            content_hash="sha256:drone-detr",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.3390/s24175496",
+                "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+                "license": "CC BY 4.0",
+                "module_candidate": "inferred",
+                "relation": "module_role_query",
+                "rank_score": "0.90",
+                "relevance_score": "0.90",
+            },
+        )
+        baseline_item = EvidenceItem(
+            evidence_id=_BASELINE_ID,
+            source_type="paper",
+            title="RT-DETR-R18 baseline for small object detection",
+            locator="doi:10.1000/rt-detr-baseline",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id],
+            summary="RT-DETR-R18 is a task-matched detector baseline with a verified paper identity.",
+            content_hash="sha256:rt-detr-baseline",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.1000/rt-detr-baseline",
+                "baseline_candidate": "inferred",
+                "relation": "baseline_role_query",
+                "rank_score": "0.92",
+                "relevance_score": "0.90",
+                "license": "CC BY 4.0",
+            },
+        )
+        support = (
+            _support(baseline_gap.gap_id, baseline_gap.description),
+            _support(mechanism_gap.gap_id, mechanism_gap.description),
+        )
+        baseline_support = _support(
+            baseline_gap.gap_id,
+            "RT-DETR-R18 supplies the independent baseline identity.",
+            evidence_id=_BASELINE_ID,
+        )
+>       ledger = EvidenceLedger(
+            entries=(
+                EvidenceLedgerEntry(
+                    evidence_id=_EVIDENCE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=support,
+                    supported_claims=tuple(item.supported_claim or "" for item in support),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+                EvidenceLedgerEntry(
+                    evidence_id=_BASELINE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=(baseline_support,),
+                    supported_claims=(baseline_support.supported_claim or "",),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+            ),
+            accepted_ids=(_EVIDENCE_ID, _BASELINE_ID),
+            rejected_ids=(),
+            coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+E         Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/methodology/test_method_design_draft.py:140: ValidationError
+_______ test_unmarked_neighbor_paper_is_not_used_as_comparator_fallback ________
+
+    def test_unmarked_neighbor_paper_is_not_used_as_comparator_fallback() -> None:
+>       state = _state()
+                ^^^^^^^^
+
+tests/methodology/test_method_design_draft.py:546: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _state() -> PaperAgentState:
+        baseline_gap = EvidenceGap(
+            gap_id="baseline_comparison",
+            description="baseline and strong comparison evidence",
+        )
+        mechanism_gap = EvidenceGap(
+            gap_id="failure_mechanism",
+            description="failure mechanism and parallel method evidence",
+        )
+        plan = ResearchPlan(
+            status="ready",
+            problem_statement="lightweight UAV small object detection",
+            scope="aerial visual detection under unresolved deployment constraints",
+            evidence_gaps=[baseline_gap, mechanism_gap],
+            search_queries=[
+                SearchQuery(
+                    query_id="q-baseline",
+                    gap_id=baseline_gap.gap_id,
+                    query="lightweight UAV small object detection baseline VisDrone metrics",
+                    source_types=["paper"],
+                ),
+                SearchQuery(
+                    query_id="q-mechanism",
+                    gap_id=mechanism_gap.gap_id,
+                    query="UAV small object detection limitation feature fusion occlusion",
+                    source_types=["paper"],
+                ),
+            ],
+            success_criteria=["bounded pilot with matched comparisons"],
+            risks=["deployment device is unresolved", "dataset split is unresolved"],
+            clarification_question=(
+                "Which dataset, deployment device, and accuracy-latency priority should constrain "
+                "the pilot?"
+            ),
+        )
+        evidence_item = EvidenceItem(
+            evidence_id=_EVIDENCE_ID,
+            source_type="paper",
+            title="Drone-DETR: Efficient Small Object Detection for Remote Sensing Image",
+            locator="doi:10.3390/s24175496",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id, mechanism_gap.gap_id],
+            summary=_SUMMARY,
+            content_hash="sha256:drone-detr",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.3390/s24175496",
+                "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+                "license": "CC BY 4.0",
+                "module_candidate": "inferred",
+                "relation": "module_role_query",
+                "rank_score": "0.90",
+                "relevance_score": "0.90",
+            },
+        )
+        baseline_item = EvidenceItem(
+            evidence_id=_BASELINE_ID,
+            source_type="paper",
+            title="RT-DETR-R18 baseline for small object detection",
+            locator="doi:10.1000/rt-detr-baseline",
+            retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+            verification_status="accepted",
+            supports_gap_ids=[baseline_gap.gap_id],
+            summary="RT-DETR-R18 is a task-matched detector baseline with a verified paper identity.",
+            content_hash="sha256:rt-detr-baseline",
+            provider="literature_retrieval",
+            metadata={
+                "doi": "10.1000/rt-detr-baseline",
+                "baseline_candidate": "inferred",
+                "relation": "baseline_role_query",
+                "rank_score": "0.92",
+                "relevance_score": "0.90",
+                "license": "CC BY 4.0",
+            },
+        )
+        support = (
+            _support(baseline_gap.gap_id, baseline_gap.description),
+            _support(mechanism_gap.gap_id, mechanism_gap.description),
+        )
+        baseline_support = _support(
+            baseline_gap.gap_id,
+            "RT-DETR-R18 supplies the independent baseline identity.",
+            evidence_id=_BASELINE_ID,
+        )
+>       ledger = EvidenceLedger(
+            entries=(
+                EvidenceLedgerEntry(
+                    evidence_id=_EVIDENCE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=support,
+                    supported_claims=tuple(item.supported_claim or "" for item in support),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+                EvidenceLedgerEntry(
+                    evidence_id=_BASELINE_ID,
+                    identity_verified=True,
+                    relevance_scope="direct",
+                    gap_supports=(baseline_support,),
+                    supported_claims=(baseline_support.supported_claim or "",),
+                    limitations=("pilot reproduction remains required",),
+                    accepted=True,
+                    rejection_reasons=(),
+                ),
+            ),
+            accepted_ids=(_EVIDENCE_ID, _BASELINE_ID),
+            rejected_ids=(),
+            coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+E         Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/methodology/test_method_design_draft.py:140: ValidationError
+=========================== short test summary info ============================
+FAILED tests/methodology/test_method_design_draft.py::test_flat_draft_builds_aligned_canonical_method_proposal - pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+  Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error
+FAILED tests/methodology/test_method_design_draft.py::test_ungrounded_dataset_and_comparator_are_not_promoted_to_facts - pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+  Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error
+FAILED tests/methodology/test_method_design_draft.py::test_non_vision_task_does_not_inherit_detector_specific_contracts - pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+  Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error
+FAILED tests/methodology/test_method_design_draft.py::test_missing_license_requires_revision_without_forcing_no_go - pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+  Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error
+FAILED tests/methodology/test_method_design_draft.py::test_explicitly_incompatible_license_remains_no_go - pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+  Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error
+FAILED tests/methodology/test_method_design_draft.py::test_unqualified_direct_paper_does_not_become_baseline - pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+  Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error
+FAILED tests/methodology/test_method_design_draft.py::test_reported_comparator_requires_independent_paper_identity - pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+  Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error
+FAILED tests/methodology/test_method_design_draft.py::test_independent_comparator_paper_creates_strong_comparison_arm - pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+  Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error
+FAILED tests/methodology/test_method_design_draft.py::test_baseline_or_module_evidence_cannot_be_reused_as_comparator - pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+  Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error
+FAILED tests/methodology/test_method_design_draft.py::test_unmarked_neighbor_paper_is_not_used_as_comparator_fallback - pydantic_core._pydantic_core.ValidationError: 1 validation error for EvidenceLedger
+  Value error, coverage_by_gap must be derived from accepted gap bindings [type=value_error, input_value={'entries': (EvidenceLedg...'failure_mechanism': 1}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error
+10 failed, 16 passed in 0.90s
