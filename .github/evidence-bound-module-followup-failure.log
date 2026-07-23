@@ -1,39 +1,15 @@
-HEAD is now at 6cb315b5 ci: trigger evidence-bound module final pass
-[fix/evidence-bound-module-contracts c7df99dc] chore(ci): record module follow-up patch failure
- 1 file changed, 7 insertions(+), 29 deletions(-)
-To https://github.com/ZyfNO2/PaperAgent
-   6cb315b5..c7df99dc  HEAD -> fix/evidence-bound-module-contracts
-patched: src/paperagent/academic_methodology.py
-patched: src/paperagent/literature/adapter.py
-patched: src/paperagent/literature/adapter.py
-patched: src/paperagent/nodes/planning.py
-patched: src/paperagent/nodes/planning.py
 Traceback (most recent call last):
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 240, in main
-    runpy.run_path(str(original), run_name="__main__")
-  File "<frozen runpy>", line 291, in run_path
-  File "<frozen runpy>", line 98, in _run_module_code
-  File "<frozen runpy>", line 88, in _run_code
-  File "/tmp/paperagent-module-patch-peuo4zpm.py", line 1045, in <module>
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 147, in <module>
     main()
-  File "/tmp/paperagent-module-patch-peuo4zpm.py", line 1035, in main
-    patch_planning()
-  File "/tmp/paperagent-module-patch-peuo4zpm.py", line 240, in patch_planning
-    replace_once(
-  File "/tmp/paperagent-module-patch-peuo4zpm.py", line 23, in replace_once
-    raise RuntimeError(f"{path}: expected one exact match, found {count}")
-RuntimeError: src/paperagent/nodes/planning.py: expected one exact match, found 0
-
-Traceback (most recent call last):
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 250, in <module>
-    main()
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 240, in main
-    runpy.run_path(str(original), run_name="__main__")
-  File "<frozen runpy>", line 291, in run_path
-  File "<frozen runpy>", line 98, in _run_module_code
-  File "<frozen runpy>", line 88, in _run_code
-  File "/tmp/paperagent-module-patch-peuo4zpm.py", line 1045, in <module>
-  File "/tmp/paperagent-module-patch-peuo4zpm.py", line 1035, in main
-  File "/tmp/paperagent-module-patch-peuo4zpm.py", line 240, in patch_planning
-  File "/tmp/paperagent-module-patch-peuo4zpm.py", line 23, in replace_once
-RuntimeError: src/paperagent/nodes/planning.py: expected one exact match, found 0
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 135, in main
+    original = _materialize_original()
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 104, in _materialize_original
+    payload = _harden_original_payload(payload)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 64, in _harden_original_payload
+    payload = _drop_replace_call(payload, needle)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 24, in _drop_replace_call
+    raise RuntimeError(f"original patch needle was not found: {needle[:40]!r}")
+RuntimeError: original patch needle was not found: '                query=f\'"{exact_title}"\''
