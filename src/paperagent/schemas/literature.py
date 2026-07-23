@@ -1,14 +1,36 @@
 from __future__ import annotations
 
 from datetime import datetime
+from enum import Enum
 from typing import Any, Literal
 
 from pydantic import Field, model_validator
 
 from paperagent.schemas.base import FrozenModel
 
+
+class RetrievalErrorCode(str, Enum):
+    RATE_LIMITED = "RATE_LIMITED"
+    DAILY_QUOTA_EXHAUSTED = "DAILY_QUOTA_EXHAUSTED"
+    CONNECTION_TIMEOUT = "CONNECTION_TIMEOUT"
+    READ_TIMEOUT = "READ_TIMEOUT"
+    DNS_FAILURE = "DNS_FAILURE"
+    CONNECTION_FAILURE = "CONNECTION_FAILURE"
+    PROVIDER_UNAVAILABLE = "PROVIDER_UNAVAILABLE"
+    TIMEOUT = "TIMEOUT"
+
+
 ProviderStatus = Literal["success", "empty", "rate_limited", "timeout", "failed"]
-CacheStatus = Literal["miss", "hit", "coalesced", "bypass"]
+CacheStatus = Literal[
+    "miss",
+    "hit",
+    "coalesced",
+    "bypass",
+    "stale_hit",
+    "negative_hit",
+    "offline_hit",
+]
+RetrievalMode = Literal["live", "cache", "stale_cache", "offline_fixture"]
 VerificationStatus = Literal["verified", "pending", "suspicious", "failed", "rejected"]
 QueryPurpose = Literal[
     "baseline",
@@ -98,6 +120,11 @@ class ProviderResult(FrozenModel):
     finished_at: datetime
     retry_count: int = Field(default=0, ge=0)
     cache_status: CacheStatus = "miss"
+    retrieval_mode: RetrievalMode = "live"
+    cached_at: datetime | None = None
+    retry_at: datetime | None = None
+    rate_limit_remaining: int | None = Field(default=None, ge=0)
+    live_error_code: str | None = None
     error_code: str | None = None
     error_message: str | None = None
 
