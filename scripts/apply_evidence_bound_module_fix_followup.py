@@ -10,10 +10,75 @@ from pathlib import Path
 _PATCH_SOURCE_COMMIT = "0533bf3d7e717064f998a63545c40131cf98f01c"
 _PATCH_PATH = "scripts/apply_evidence_bound_module_fix_followup.py"
 _FAILURE_LOG = Path(".github/evidence-bound-module-followup-failure.log")
+_LITERATURE_ADAPTER = Path("src/paperagent/literature/adapter.py")
 
 
 def _run(*args: str, check: bool = False) -> subprocess.CompletedProcess[str]:
     return subprocess.run(args, check=check, text=True, capture_output=False)
+
+
+def _prepatch_literature_metadata() -> None:
+    text = _LITERATURE_ADAPTER.read_text(encoding="utf-8")
+    old = '''                **(
+                    {"baseline_candidate": "declared"}
+                    if relation == "declared_identity"
+                    else (
+                        {"baseline_candidate": "inferred"}
+                        if relation in {"parallel_via_dataset", "baseline_role_query"}
+                        else (
+                            {"comparator_candidate": "inferred"}
+                            if relation == "comparator_role_query"
+                            else {}
+                        )
+                    )
+                ),
+'''
+    new = '''                **(
+                    {"baseline_candidate": "declared"}
+                    if relation == "declared_identity"
+                    else (
+                        {"baseline_candidate": "inferred"}
+                        if relation in {"parallel_via_dataset", "baseline_role_query"}
+                        else (
+                            {"comparator_candidate": "inferred"}
+                            if relation == "comparator_role_query"
+                            else (
+                                {"module_candidate": "inferred"}
+                                if relation
+                                in {
+                                    "module_role_query",
+                                    "parallel_method_query",
+                                    "module_linked_by_focused_retrieval",
+                                }
+                                else {}
+                            )
+                        )
+                    )
+                ),
+'''
+    if new in text:
+        return
+    if text.count(old) != 1:
+        raise RuntimeError("literature adapter module metadata shape changed")
+    _LITERATURE_ADAPTER.write_text(text.replace(old, new), encoding="utf-8")
+
+
+def _drop_original_literature_metadata_patch(payload: str) -> str:
+    start_marker = '''    replace_once(
+        "src/paperagent/literature/adapter.py",
+        block(
+            '''\n                                {"comparator_candidate": "inferred"}
+'''
+    end_marker = '''    )
+
+
+def patch_planning() -> None:
+'''
+    start = payload.find(start_marker)
+    end = payload.find(end_marker, start)
+    if start < 0 or end < 0:
+        raise RuntimeError("original literature metadata patch block was not found")
+    return payload[:start] + payload[end + len("    )\n\n\n") :]
 
 
 def _harden_original_payload(payload: str) -> str:
@@ -25,6 +90,7 @@ def _harden_original_payload(payload: str) -> str:
     )
     if removed != 1:
         raise RuntimeError("original module compatibility call was not found")
+    payload = _drop_original_literature_metadata_patch(payload)
 
     old_helper = '''def replace_once(path: str, old: str, new: str) -> None:
     file = Path(path)
@@ -94,6 +160,7 @@ def _persist_failure(rendered: str) -> None:
 
 
 def main() -> None:
+    _prepatch_literature_metadata()
     original = _materialize_original()
     try:
         runpy.run_path(str(original), run_name="__main__")
