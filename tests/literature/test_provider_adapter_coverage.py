@@ -25,9 +25,7 @@ class CaptureTransport:
         headers: dict[str, str] | None = None,
         timeout: float | httpx.Timeout = 10.0,
     ) -> HTTPResponse:
-        self.calls.append(
-            {"url": url, "params": params, "headers": headers, "timeout": timeout}
-        )
+        self.calls.append({"url": url, "params": params, "headers": headers, "timeout": timeout})
         return self.response
 
     async def post(
@@ -168,7 +166,9 @@ def test_semantic_scholar_parse_type_guard() -> None:
 
 
 def test_arxiv_legacy_timeout_and_year_filter_branches() -> None:
-    provider = ArxivProvider(transport=CaptureTransport(HTTPResponse(200, {}, None, "")), timeout_seconds=7)
+    provider = ArxivProvider(
+        transport=CaptureTransport(HTTPResponse(200, {}, None, "")), timeout_seconds=7
+    )
     assert provider._timeout.connect == 7
     assert provider._timeout.read == 7
 
