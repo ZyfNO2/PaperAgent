@@ -151,7 +151,8 @@ def evaluate_module_compatibility(
         relation = evidence.metadata.get("relation", "")
         if relation not in MODULE_EVIDENCE_RELATIONS:
             reasons.append("module_relation_not_independent")
-        if not evidence.metadata.get("module_candidate"):
+        marker = evidence.metadata.get("module_candidate", "").casefold()
+        if marker not in {"true", "1", "yes", "declared", "inferred"}:
             reasons.append("module_candidate_marker_missing")
         evidence_text = f"{evidence.title} {evidence.summary}".casefold()
         if any(cue in evidence_text for cue in _REVIEW_CUES):
