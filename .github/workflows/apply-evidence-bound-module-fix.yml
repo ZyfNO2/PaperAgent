@@ -63,12 +63,28 @@ jobs:
           ruff check src/paperagent tests scripts/score_academic_tailoring_retrieval_v1.py
 
       - name: Run targeted offline tests
+        id: targeted_tests
+        continue-on-error: true
         run: |
+          set -o pipefail
           pytest -q \
             tests/methodology/test_method_design_draft.py \
             tests/evals/test_adapter_module_contract.py \
             tests/evals/test_academic_tailoring_retrieval_v1_scorer.py \
-            tests/evals/test_claw_benchmark_adapter.py
+            tests/evals/test_claw_benchmark_adapter.py \
+            2>&1 | tee build/evidence-bound-module-fix/targeted-tests.log
+
+      - name: Upload targeted test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-bound-module-targeted-tests
+          path: build/evidence-bound-module-fix/targeted-tests.log
+          if-no-files-found: warn
+
+      - name: Stop after targeted test failure
+        if: steps.targeted_tests.outcome == 'failure'
+        run: exit 1
 
       - name: Run offline regression
         id: offline_regression
@@ -81,6 +97,7 @@ jobs:
       - name: Commit implementation
         run: |
           rm -f scripts/evidence_bound_module_patch.b64
+          rm -f scripts/evidence_bound_module_patch.part*
           rm -f .github/evidence-bound-module-trigger.txt
           rm -f .github/workflows/apply-evidence-bound-module-fix.yml
           git config user.name 'github-actions[bot]'
