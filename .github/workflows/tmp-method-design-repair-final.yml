@@ -1,0 +1,103 @@
+name: Temporary Method Design Repair Final
+
+on:
+  push:
+    branches:
+      - fix/semantic-tailoring-role-bound-scoring
+    paths:
+      - ".github/workflows/tmp-method-design-repair-final.yml"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/tmp-method-design-repair-final.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/semantic-tailoring-role-bound-scoring
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Apply production and fixture repairs
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/tmp-method-design-repair.yml').read_text(encoding='utf-8')
+          start = text.index('      - name: Apply method design repair\n')
+          run_start = text.index('        run: |\n', start) + len('        run: |\n')
+          end = text.index('      - name: Format and install\n', run_start)
+          lines = text[run_start:end].splitlines()
+          script = '\n'.join(line[10:] if line.startswith('          ') else line for line in lines) + '\n'
+          Path('/tmp/apply-method-repair.sh').write_text(script, encoding='utf-8')
+          PY
+          bash /tmp/apply-method-repair.sh
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('tests/methodology/test_method_design_draft.py')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace(
+              'def _state() -> PaperAgentState:\n',
+              'def _legacy_state() -> PaperAgentState:\n',
+              1,
+          )
+          marker = '\n\ndef _draft(**updates: object) -> MethodDesignDraft:\n'
+          if text.count(marker) != 1:
+              raise RuntimeError('draft marker mismatch')
+          wrapper = '''\n\ndef _state() -> PaperAgentState:\n    state = _legacy_state()\n    evidence = state["evidence"]\n    ledger = state["evidence_ledger"]\n    synthesis = state["synthesis"]\n    assert evidence is not None\n    assert ledger is not None\n    assert synthesis is not None\n    baseline_item = evidence.items[0]\n    module_id = "ev-independent-feature-fusion"\n    module_item = baseline_item.model_copy(\n        update={\n            "evidence_id": module_id,\n            "title": "Independent Lightweight Feature Fusion for Small Object Detection",\n            "locator": "doi:10.1000/independent-feature-fusion",\n            "supports_gap_ids": ["failure_mechanism"],\n            "content_hash": "sha256:independent-feature-fusion",\n            "metadata": {\n                "doi": "10.1000/independent-feature-fusion",\n                "candidate_gap_ids": "failure_mechanism",\n                "license": "CC BY 4.0",\n                "relation": "direct_query",\n                "rank_score": "0.85",\n                "relevance_score": "0.90",\n            },\n        }\n    )\n    mechanism_supports = tuple(\n        support\n        for support in ledger.entries[0].gap_supports\n        if support.gap_id == "failure_mechanism"\n    )\n    module_entry = ledger.entries[0].model_copy(\n        update={\n            "evidence_id": module_id,\n            "gap_supports": mechanism_supports,\n            "supported_claims": ("independent feature fusion mechanism evidence",),\n        }\n    )\n    state["evidence"] = evidence.model_copy(\n        update={\n            "items": [baseline_item, module_item],\n            "accepted_ids": [_EVIDENCE_ID, module_id],\n            "identity_verified_ids": [_EVIDENCE_ID, module_id],\n            "coverage_by_gap": {"baseline_comparison": 1, "failure_mechanism": 2},\n        }\n    )\n    state["evidence_ledger"] = ledger.model_copy(\n        update={\n            "entries": (*ledger.entries, module_entry),\n            "accepted_ids": (_EVIDENCE_ID, module_id),\n            "coverage_by_gap": {"baseline_comparison": 1, "failure_mechanism": 2},\n        }\n    )\n    assessments = [\n        assessment.model_copy(\n            update={\n                "evidence_ids": [*assessment.evidence_ids, module_id]\n                if assessment.gap_id == "failure_mechanism"\n                else assessment.evidence_ids\n            }\n        )\n        for assessment in synthesis.gap_assessments\n    ]\n    state["synthesis"] = synthesis.model_copy(update={"gap_assessments": assessments})\n    return state\n'''
+          text = text.replace(marker, wrapper + marker, 1)
+          text = text.replace(
+              '''        "optimization_interaction": (\n            "train the fusion projection and detector head; keep the backbone frozen; "\n            "backpropagate the detection objective through both paths with unit loss weight"\n        ),\n''',
+              '''        "optimization_interaction": (\n            "train only the inserted module and downstream task head; keep upstream baseline "\n            "parameters frozen; backpropagate the primary task objective with unit loss weight"\n        ),\n''',
+              1,
+          )
+          text = text.replace(
+              '    assert set(proposal.evidence_ids) == {_EVIDENCE_ID}\n',
+              '    assert set(proposal.evidence_ids) == {_EVIDENCE_ID, "ev-independent-feature-fusion"}\n',
+              1,
+          )
+          text = text.replace(
+              '''    medical_item = evidence.items[0].model_copy(\n''',
+              '''    medical_item = evidence.items[0].model_copy(\n''',
+              1,
+          )
+          old = '''    medical_state = cast(\n        PaperAgentState,\n        {\n'''
+          new = '''    medical_module_item = evidence.items[1].model_copy(\n        update={\n            "title": "Independent Gated Multimodal Medical Representation Fusion",\n            "summary": (\n                "An independent fusion mechanism combines paired medical representations "\n                "under a switchable classification interface."\n            ),\n            "locator": "doi:10.1000/medical-fusion-module",\n            "content_hash": "sha256:medical-fusion-module",\n        }\n    )\n    medical_state = cast(\n        PaperAgentState,\n        {\n'''
+          if text.count(old) != 1:
+              raise RuntimeError('medical state marker mismatch')
+          text = text.replace(old, new, 1)
+          text = text.replace(
+              '            "evidence": evidence.model_copy(update={"items": [medical_item]}),\n',
+              '            "evidence": evidence.model_copy(update={"items": [medical_item, medical_module_item]}),\n',
+              1,
+          )
+          path.write_text(text, encoding='utf-8')
+          PY
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Format and verify
+        run: |
+          ruff format src/paperagent/method_design_draft.py tests/methodology/test_method_design_draft.py tests/nodes/test_method_design_baseline_anchor.py
+          ruff check src/paperagent/method_design_draft.py tests/methodology/test_method_design_draft.py tests/nodes/test_method_design_baseline_anchor.py
+          mypy --strict src/paperagent/method_design_draft.py
+          pytest -q tests/methodology/test_method_design_draft.py tests/methodology/test_strict_method_design.py tests/nodes/test_method_design_baseline_anchor.py
+      - name: Commit final method repair
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "paperagent-repair-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/paperagent/method_design_draft.py tests/methodology/test_method_design_draft.py tests/nodes/test_method_design_baseline_anchor.py
+          git commit -m "fix(method): enforce independent module contracts"
+          git push origin HEAD:fix/semantic-tailoring-role-bound-scoring
