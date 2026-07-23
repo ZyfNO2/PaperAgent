@@ -1,0 +1,49 @@
+name: Temporary Semantic Repair Debug Write
+
+on:
+  push:
+    branches:
+      - fix/semantic-tailoring-role-bound-scoring
+    paths:
+      - ".github/workflows/tmp-semantic-repair-debug-write.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/semantic-tailoring-role-bound-scoring
+          fetch-depth: 0
+      - name: Capture exact replacement failure
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/tmp-semantic-contract-repair.yml').read_text(encoding='utf-8')
+          marker = '      - name: Apply production repair and regressions\n'
+          start = text.index(marker)
+          run_start = text.index('        run: |\n', start) + len('        run: |\n')
+          end = text.index('      - name: Format repaired files\n', run_start)
+          lines = text[run_start:end].splitlines()
+          script = '\n'.join(line[10:] if line.startswith('          ') else line for line in lines) + '\n'
+          Path('/tmp/apply-semantic-repair.sh').write_text(script, encoding='utf-8')
+          PY
+          set +e
+          bash /tmp/apply-semantic-repair.sh > /tmp/repair.log 2>&1
+          status=$?
+          git reset --hard HEAD
+          mkdir -p build
+          {
+            echo "status=$status"
+            tail -n 50 /tmp/repair.log
+          } > build/semantic-repair-debug.log
+          git config user.name "paperagent-repair-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add build/semantic-repair-debug.log
+          git commit -m "chore(debug): capture semantic repair failure"
+          git push origin HEAD:fix/semantic-tailoring-role-bound-scoring
