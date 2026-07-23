@@ -77,7 +77,9 @@ def test_pwa__review_evidence_quality_gate_and_export(tmp_path: Path) -> None:
             expect(page.locator("#page-title")).to_have_text("总览")
 
             page.locator('[data-nav="literature"]').click()
+            expect(page.locator("#page-title")).to_have_text("文献检索")
             paper_cards = page.locator("article.paper-card")
+            expect(paper_cards.first).to_be_visible()
             initial_count = paper_cards.count()
             assert initial_count > 0
 
@@ -86,6 +88,7 @@ def test_pwa__review_evidence_quality_gate_and_export(tmp_path: Path) -> None:
             search_button = page.get_by_role("button", name="检索", exact=True)
             search_button.click()
             expect(search_button).to_be_enabled(timeout=3_000)
+            expect(paper_cards.first).to_be_visible()
             filtered_count = paper_cards.count()
             assert 0 < filtered_count <= initial_count
 
