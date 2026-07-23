@@ -1,0 +1,46 @@
+name: Retrieval cache narrowing
+
+on:
+  pull_request:
+    branches:
+      - fix/evidence-bound-module-contracts-local
+
+permissions:
+  contents: write
+
+jobs:
+  apply-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Apply direct narrowing
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("src/paperagent/literature/service.py")
+          text = path.read_text(encoding="utf-8")
+          old = (
+              '        cache = self._cache\n'
+              '        use_cache = cache is not None and self._retrieval_mode != "live"\n'
+              '        if use_cache:\n'
+              '            cached = cache.get(key)\n'
+          )
+          new = (
+              '        cache = self._cache\n'
+              '        if cache is not None and self._retrieval_mode != "live":\n'
+              '            cached = cache.get(key)\n'
+          )
+          if text.count(old) != 1:
+              raise SystemExit("expected one indirect narrowing site")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/paperagent/literature/service.py
+          git commit -m "fix(retrieval): narrow optional cache directly"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
