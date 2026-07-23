@@ -208,6 +208,60 @@ def _method_evidence_roles(state: PaperAgentState) -> dict[str, EvidenceRole]:
     return roles
 
 
+_GENERIC_MODULE_CONTRACT_CUES = (
+    "unresolved",
+    "unknown",
+    "selected insertion point",
+    "task-specific representation",
+    "inherit baseline",
+    "match the source evidence",
+)
+
+
+def _specific_module_contract_text(value: str | None) -> bool:
+    if value is None or not value.strip():
+        return False
+    folded = value.casefold()
+    return not any(cue in folded for cue in _GENERIC_MODULE_CONTRACT_CUES)
+
+
+def _module_compatibility_by_evidence(state: PaperAgentState) -> dict[str, bool]:
+    """Independently validate evidence-bound module contracts."""
+
+    method = state.get("method")
+    evidence = state.get("evidence")
+    if method is None or evidence is None:
+        return {}
+    plan = method.methodology_plan
+    baseline_id = plan.baseline.source_evidence_id
+    accepted_ids = set(evidence.accepted_ids)
+    output: dict[str, bool] = {}
+    for module in plan.modules:
+        evidence_id = module.evidence_id
+        if evidence_id is None:
+            continue
+        contract_values = (
+            module.input_semantics,
+            module.output_semantics,
+            module.input_shape,
+            module.output_shape,
+            module.gradient_expectation,
+            module.parameter_update_scope,
+            module.loss_scale,
+            module.failure_mode,
+            module.implementation_switch,
+        )
+        output[evidence_id] = bool(
+            evidence_id in accepted_ids
+            and evidence_id != baseline_id
+            and module.original_role
+            and module.proposed_role
+            and module.loss_terms
+            and all(_specific_module_contract_text(value) for value in contract_values)
+        )
+    return output
+
+
 _SUPPLIED_REF = re.compile(
     r"^(?P<title>.+?) \[declared role: (?P<role>.+?)\]$",
     re.IGNORECASE,
@@ -257,6 +311,7 @@ def _evidence_reviews(
     relevance_by_id = {item.evidence_id: item for item in state.get("relevance_assessments", [])}
     ledger_by_id = {item.evidence_id: item for item in ledger.entries} if ledger else {}
     method_roles = _method_evidence_roles(state)
+    module_compatibility = _module_compatibility_by_evidence(state)
     full_text_ids = set(context.full_text_evidence_ids)
     accepted_ids = set(ledger.accepted_ids if ledger is not None else bundle.accepted_ids)
     identity_ids = set(bundle.identity_verified_ids)
@@ -296,7 +351,11 @@ def _evidence_reviews(
                 core_evidence=role in {"baseline", "gap", "parallel_method"},
                 full_text_checked=item.evidence_id in full_text_ids or metadata_full_text,
                 source_is_supplied_material=item.source_type == "user_material",
-                role_compatible=None,
+                role_compatible=(
+                    module_compatibility.get(item.evidence_id)
+                    if role == "parallel_method"
+                    else None
+                ),
             )
         )
     supplied_count = sum(item.source_is_supplied_material for item in reviews)
