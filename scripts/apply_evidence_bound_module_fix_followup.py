@@ -277,6 +277,7 @@ def _harden_original_payload(payload: str) -> str:
         "patch_module_compatibility",
         "patch_literature_adapter",
         "patch_planning",
+        "patch_method_design",
     ):
         payload, removed = re.subn(
             rf"(?m)^\s*{call}\(\)\s*$",
@@ -357,6 +358,7 @@ def _persist_failure(rendered: str) -> None:
 def main() -> None:
     original: Path | None = None
     try:
+        runpy.run_path("scripts/prepatch_method_design.py", run_name="__main__")
         _patch_literature_adapter()
         _patch_planning()
         original = _materialize_original()
