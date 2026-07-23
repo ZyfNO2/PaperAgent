@@ -19,6 +19,7 @@ from paperagent.claw_academic_benchmark import (
     ModuleTrace,
     ObservedDecision,
 )
+from paperagent.module_compatibility import evaluate_module_compatibility
 from paperagent.schemas.base import FrozenModel
 from paperagent.state import PaperAgentState
 
@@ -257,6 +258,11 @@ def _evidence_reviews(
     relevance_by_id = {item.evidence_id: item for item in state.get("relevance_assessments", [])}
     ledger_by_id = {item.evidence_id: item for item in ledger.entries} if ledger else {}
     method_roles = _method_evidence_roles(state)
+    module_compatibility = {
+        item.evidence_id: item.role_compatible
+        for item in _modules(state)
+        if item.evidence_id is not None
+    }
     full_text_ids = set(context.full_text_evidence_ids)
     accepted_ids = set(ledger.accepted_ids if ledger is not None else bundle.accepted_ids)
     identity_ids = set(bundle.identity_verified_ids)
@@ -296,7 +302,7 @@ def _evidence_reviews(
                 core_evidence=role in {"baseline", "gap", "parallel_method"},
                 full_text_checked=item.evidence_id in full_text_ids or metadata_full_text,
                 source_is_supplied_material=item.source_type == "user_material",
-                role_compatible=None,
+                role_compatible=module_compatibility.get(item.evidence_id),
             )
         )
     supplied_count = sum(item.source_is_supplied_material for item in reviews)
@@ -364,6 +370,12 @@ def _modules(state: PaperAgentState) -> tuple[ModuleTrace, ...]:
     method = state.get("method")
     if method is None:
         return ()
+    bundle = state.get("evidence")
+    accepted_items = tuple(bundle.accepted_items()) if bundle is not None else ()
+    accepted_by_id = {item.evidence_id: item for item in accepted_items}
+    baseline_evidence_id = method.methodology_plan.baseline.source_evidence_id
+    request = state.get("request")
+    task = request.question if request is not None else ""
     output: list[ModuleTrace] = []
     for module in method.methodology_plan.modules:
         optimization = _dedupe(
@@ -374,14 +386,12 @@ def _modules(state: PaperAgentState) -> tuple[ModuleTrace, ...]:
                 ", ".join(module.loss_terms) if module.loss_terms else None,
             )
         )
-        role_compatible = bool(
-            module.evidence_id
-            and module.original_role
-            and module.proposed_role
-            and module.input_semantics
-            and module.output_semantics
-            and module.input_semantics.casefold() not in {"tensor", "shape-only", "unknown"}
-            and module.output_semantics.casefold() not in {"tensor", "shape-only", "unknown"}
+        assessment = evaluate_module_compatibility(
+            module,
+            module_evidence=accepted_by_id.get(module.evidence_id or ""),
+            accepted_evidence_ids=accepted_by_id,
+            baseline_evidence_id=baseline_evidence_id,
+            task=task,
         )
         output.append(
             ModuleTrace(
@@ -397,7 +407,8 @@ def _modules(state: PaperAgentState) -> tuple[ModuleTrace, ...]:
                 compute_cost=module.compute_cost,
                 failure_mode=module.failure_mode,
                 implementation_switch=module.implementation_switch,
-                role_compatible=role_compatible,
+                role_compatible=assessment.compatible,
+                compatibility_reason_codes=assessment.reasons,
             )
         )
     return tuple(output)

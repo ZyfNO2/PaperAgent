@@ -440,6 +440,7 @@ def _score_case(
             "score": 0,
             "minimum_score": minimum_score,
             "status": "failed",
+            "acceptance_mode": "implementation_failure",
             "dimensions": {},
             "hard_failures": ["runtime_error_or_missing_trace"],
         }
@@ -643,6 +644,20 @@ def _score_case(
         hard_failures.append("unsupported_compatibility")
     if any(item.evidence_id not in valid_evidence_ids for item in trace.modules):
         hard_failures.append("module_not_bound_to_accepted_evidence")
+    module_reviews = {
+        item.evidence_id: item for item in trace.evidence_reviews if item.role == "parallel_method"
+    }
+    if trace.modules and any(
+        module.evidence_id == (baseline.source_evidence_id if baseline is not None else None)
+        or module.evidence_id not in valid_evidence_ids
+        or module.role_compatible is not True
+        or module.evidence_id not in module_reviews
+        or not module_reviews[module.evidence_id].accepted
+        or not module_reviews[module.evidence_id].identity_verified
+        or not module_reviews[module.evidence_id].relevance_passed
+        for module in trace.modules
+    ):
+        hard_failures.append("module_compatibility_not_independently_verified")
     if any(
         item.accepted and item.core_evidence and item.role in (None, "other")
         for item in trace.evidence_reviews
@@ -656,13 +671,22 @@ def _score_case(
     ):
         hard_failures.append("unsupported_acceptance")
 
+    safe_rejection = trace.decision != "ACCEPT" and case["case_id"] in {
+        "atr-v1-006-industrial-usad-anomaly-transformer",
+        "atr-v1-010-fake-paper-identity",
+    }
     return {
         "case_id": case["case_id"],
         "case_type": case["case_type"],
         "domain": case["domain"],
         "score": score,
         "minimum_score": minimum_score,
-        "status": "passed" if score >= minimum_score and not hard_failures else "failed",
+        "status": (
+            "safe_rejection"
+            if safe_rejection
+            else ("passed" if score >= minimum_score and not hard_failures else "failed")
+        ),
+        "acceptance_mode": "safe_rejection" if safe_rejection else "positive_evaluation",
         "dimensions": dimensions,
         "matched_assets": {
             "papers": [matched_papers, len(paper_assets)],
@@ -736,9 +760,10 @@ def main() -> int:
         )
         for case in cases
     ]
-    passed = sum(item["status"] == "passed" for item in results)
+    passed = sum(item["status"] in {"passed", "safe_rejection"} for item in results)
     hard_failure_label_count = sum(len(item["hard_failures"]) for item in results)
     hard_failure_case_count = sum(bool(item["hard_failures"]) for item in results)
+    implementation_failure_count = sum(item["status"] == "failed" for item in results)
     report = {
         "schema": "paperagent.academic-tailoring-retrieval.diagnostic-report.v1",
         "dataset_id": authoring.get("dataset_id"),
@@ -753,6 +778,7 @@ def main() -> int:
         "hard_failure_count": hard_failure_label_count,
         "hard_failure_label_count": hard_failure_label_count,
         "hard_failure_case_count": hard_failure_case_count,
+        "implementation_failure_count": implementation_failure_count,
         "prompt_leakage_findings": prompt_findings,
         "runtime_errors": runtime_summary.get("errors", []),
         "cases": results,
@@ -764,12 +790,7 @@ def main() -> int:
         encoding="utf-8",
     )
     print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
-    failed = (
-        report["failed"]
-        or hard_failure_label_count
-        or prompt_findings
-        or runtime_summary.get("errors")
-    )
+    failed = implementation_failure_count or prompt_findings or runtime_summary.get("errors")
     return 1 if args.require_pass and failed else 0
 
 

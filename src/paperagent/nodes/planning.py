@@ -221,14 +221,26 @@ def _ensure_user_material_identity_queries(
         if len(identity_queries) >= query_budget:
             break
         if any(
-            _query_contains_material_title(query, identity.title)
-            and "paper" in query.source_types
+            _query_contains_material_title(query, identity.title) and "paper" in query.source_types
             for query in plan.search_queries
         ):
             continue
         gap_id = _unique_identifier(identity.gap_id, existing_gap_ids)
         query_id = _unique_identifier(identity.query_id, existing_query_ids)
         exact_title = identity.title.replace('"', " ").strip()
+        declared_role = (
+            identity.reference.rsplit("[declared role:", 1)[-1].rstrip("]").strip()
+            if "[declared role:" in identity.reference.casefold()
+            else ""
+        )
+        role_hint = (
+            " parallel method module mechanism"
+            if any(
+                cue in declared_role.casefold()
+                for cue in ("parallel", "module", "mechanism", "平行", "模块", "机制")
+            )
+            else ""
+        )
         identity_gaps.append(
             EvidenceGap(
                 gap_id=gap_id,
@@ -244,7 +256,7 @@ def _ensure_user_material_identity_queries(
             SearchQuery(
                 query_id=query_id,
                 gap_id=gap_id,
-                query=f'"{exact_title}"',
+                query=f'"{exact_title}"{role_hint}',
                 source_types=["paper", "web"],
             )
         )

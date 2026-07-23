@@ -17,6 +17,7 @@ from paperagent.academic_methodology import (
 from paperagent.academic_methodology import (
     EvidenceItem as MethodEvidenceItem,
 )
+from paperagent.module_compatibility import evaluate_module_compatibility
 from paperagent.schemas.base import FrozenModel
 from paperagent.schemas.evidence import EvidenceItem
 from paperagent.schemas.method import (
@@ -51,6 +52,16 @@ class MethodDesignDraft(FrozenModel):
     module_proposed_role: str = Field(min_length=3)
     input_semantics: str = Field(min_length=5)
     output_semantics: str = Field(min_length=5)
+    insertion_point: str = Field(min_length=5)
+    input_shape: str = Field(min_length=2)
+    output_shape: str = Field(min_length=2)
+    normalization_contract: str = Field(min_length=5)
+    masking_contract: str = Field(min_length=5)
+    gradient_path: str = Field(min_length=5)
+    trainable_parameters: str = Field(min_length=3)
+    frozen_parameters: str = Field(min_length=3)
+    loss_terms: list[str] = Field(min_length=1)
+    loss_weighting: str = Field(min_length=3)
     predicted_effect: str = Field(min_length=5)
     failure_mode: str = Field(min_length=5)
     compute_cost: str = Field(min_length=3)
@@ -125,6 +136,21 @@ def _declared_baseline_titles(references: list[str]) -> tuple[str, ...]:
     for reference in references:
         match = _DECLARED_ROLE_SUFFIX.search(reference)
         if match is None or "baseline" not in match.group("role").casefold():
+            continue
+        title = _DECLARED_ROLE_SUFFIX.sub("", reference).strip()
+        if title and title not in titles:
+            titles.append(title)
+    return tuple(titles)
+
+
+def _declared_module_titles(references: list[str]) -> tuple[str, ...]:
+    titles: list[str] = []
+    for reference in references:
+        match = _DECLARED_ROLE_SUFFIX.search(reference)
+        if match is None:
+            continue
+        role = match.group("role").casefold()
+        if not any(cue in role for cue in ("module", "parallel", "mechanism", "模块", "机制")):
             continue
         title = _DECLARED_ROLE_SUFFIX.sub("", reference).strip()
         if title and title not in titles:
@@ -242,9 +268,11 @@ def _select_primary_evidence(
 ) -> EvidenceItem:
     if not candidates:
         raise ValueError("primary evidence selection requires candidates")
-    selected = _select_declared_baseline_evidence(
-        references, candidates
-    ) or _select_inferred_baseline_evidence(candidates)
+    selected = (
+        _select_declared_baseline_evidence(references, candidates)
+        or _select_inferred_baseline_evidence(candidates)
+        or _select_repository_backed_direct_baseline(candidates)
+    )
     if selected is None:
         raise ValueError("no evidence-bound baseline candidate is available")
     return selected
@@ -259,10 +287,9 @@ def _module_evidence_rank(
         return (-1, -1, -1.0, item.evidence_id)
     relation = item.metadata.get("relation", "")
     relation_rank = {
-        "direct_query": 4,
-        "baseline_role_query": 3,
-        "parallel_via_dataset": 2,
-        "declared_identity": 1,
+        "module_role_query": 3,
+        "parallel_method_query": 2,
+        "module_linked_by_focused_retrieval": 1,
     }.get(relation, 0)
     distinct_from_baseline = int(item.evidence_id != baseline_evidence_id)
     try:
@@ -276,17 +303,32 @@ def _select_module_evidence(
     candidates: tuple[EvidenceItem, ...],
     *,
     baseline: EvidenceItem | None,
+    declared_names: tuple[str, ...] = (),
 ) -> EvidenceItem | None:
+    allowed_relations = {
+        "module_role_query",
+        "parallel_method_query",
+        "module_linked_by_focused_retrieval",
+    }
+    baseline_id = baseline.evidence_id if baseline is not None else None
     papers = tuple(
         item
         for item in candidates
         if item.source_type == "paper"
+        and item.evidence_id != baseline_id
+        and item.metadata.get("relation") in allowed_relations
+        and bool(item.metadata.get("module_candidate"))
         and item.metadata.get("comparator_candidate") != "inferred"
-        and item.metadata.get("relation") != "comparator_role_query"
+        and not _is_review_evidence(item.title, item.summary)
+        and _metadata_score(item, "relevance_score") >= 0.25
+        and _metadata_score(item, "rank_score") >= 0.50
+        and (
+            not declared_names
+            or any(_titles_equivalent(item.title, name) for name in declared_names)
+        )
     )
     if not papers:
         return None
-    baseline_id = baseline.evidence_id if baseline is not None else None
     return max(
         papers,
         key=lambda item: _module_evidence_rank(
@@ -294,6 +336,13 @@ def _select_module_evidence(
             baseline_evidence_id=baseline_id,
         ),
     )
+
+
+def _metadata_score(item: EvidenceItem, key: str) -> float:
+    try:
+        return float(item.metadata.get(key, "0"))
+    except (TypeError, ValueError):
+        return 0.0
 
 
 def _question_declares_dataset(question: str) -> bool:
@@ -526,9 +575,16 @@ def build_method_proposal(
     ) or _select_inferred_baseline_evidence(method_evidence)
     if baseline_evidence is None:
         baseline_evidence = _select_repository_backed_direct_baseline(method_evidence)
-    module_primary = _select_module_evidence(method_evidence, baseline=baseline_evidence)
+    module_primary = _select_module_evidence(
+        method_evidence,
+        baseline=baseline_evidence,
+        declared_names=_declared_module_titles(list(request.user_material_refs)),
+    )
     if module_primary is None:
-        raise ValueError("method canonicalization requires accepted paper evidence")
+        raise ValueError(
+            "module_design_deferred: no independent accepted module evidence satisfies "
+            "identity, relation, and relevance requirements"
+        )
     dataset_evidence = _select_dataset_evidence(request.question, accepted)
     evidence_text = _evidence_text(state)
     grounded_dataset = _grounded_optional(draft.reported_dataset, evidence_text)
@@ -699,31 +755,27 @@ def build_method_proposal(
         license=_metadata_text(module_primary.metadata, "license"),
         input_semantics=draft.input_semantics,
         output_semantics=draft.output_semantics,
-        input_shape=(
-            "task-specific representation at the selected insertion point; exact dimensions "
-            "are resolved after the baseline is frozen"
-        ),
-        output_shape="representation contract required by the downstream baseline stage",
-        normalization="inherit and freeze the baseline normalization contract",
-        masks=(
-            "inherit baseline target and padding masks; introduce no new mask semantics initially"
-        ),
-        ordering="insert one independently switchable module at the selected representation stage",
+        insertion_point=draft.insertion_point,
+        input_shape=draft.input_shape,
+        output_shape=draft.output_shape,
+        normalization_contract=draft.normalization_contract,
+        masking_contract=draft.masking_contract,
+        gradient_path=draft.gradient_path,
+        trainable_parameters=draft.trainable_parameters,
+        frozen_parameters=draft.frozen_parameters,
+        loss_weighting=draft.loss_weighting,
+        normalization=draft.normalization_contract,
+        masks=draft.masking_contract,
+        ordering=draft.insertion_point,
         trainable=True,
-        loss_terms=("inherit baseline task losses and weights for the first pilot",),
-        gradient_expectation=(
-            "verify non-zero finite gradients in the module and connected baseline path"
-        ),
+        loss_terms=_dedupe(draft.loss_terms),
+        gradient_expectation=draft.gradient_path,
         parameter_update_scope=(
-            "train the candidate module and matched baseline parameters under the same budget"
+            f"trainable: {draft.trainable_parameters}; frozen: {draft.frozen_parameters}"
         ),
-        loss_scale=(
-            "keep baseline loss scaling unchanged unless a documented pilot failure requires repair"
-        ),
+        loss_scale=draft.loss_weighting,
         compute_cost=draft.compute_cost,
-        assumptions=_dedupe(
-            (*plan_risks, "the selected insertion point preserves representation semantics")
-        ),
+        assumptions=plan_risks,
         predicted_effect=draft.predicted_effect,
         failure_mode=draft.failure_mode,
         implementation_switch=module_switch,
@@ -732,6 +784,15 @@ def build_method_proposal(
             "preprocessing, or loss terms"
         ),
     )
+    compatibility = evaluate_module_compatibility(
+        module,
+        module_evidence=module_primary,
+        accepted_evidence_ids=(item.evidence_id for item in accepted),
+        baseline_evidence_id=baseline_source_evidence_id,
+        task=request.question,
+    )
+    if not compatibility.compatible:
+        raise ValueError("module_design_deferred: " + ", ".join(compatibility.reasons))
     metrics = _dedupe((draft.primary_metric, "latency"))
     resources = _dedupe((*draft.resource_measures, "parameters", "memory", "latency"))
     experiments = [

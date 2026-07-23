@@ -62,6 +62,10 @@ _COMPARATOR_ROLE_QUERY = re.compile(
     r"(?:\bcomparators?\b|\bcomparison\b|对照|比较|对比)",
     re.IGNORECASE,
 )
+_MODULE_ROLE_QUERY = re.compile(
+    r"(?:\bmodules?\b|\bparallel\s+(?:method|paper)\b|\bmechanism\b|模块|平行论文|平行方法|机制)",
+    re.IGNORECASE,
+)
 _DATASET_CONTEXT = re.compile(
     r"\b(?P<name>[A-Za-z][A-Za-z0-9._-]{2,})\s+(?:dataset|benchmark|corpus)\b",
     re.IGNORECASE,
@@ -155,6 +159,8 @@ def _query_candidate_role(query: str) -> str | None:
         return "baseline"
     if _query_seeks_comparator_role(query):
         return "comparator"
+    if _MODULE_ROLE_QUERY.search(query):
+        return "module"
     return None
 
 
@@ -485,11 +491,19 @@ class LiteratureSearchAdapter:
         candidates: list[SearchCandidate] = []
         for paper in selected:
             relation = (
-                "declared_identity"
+                (
+                    "module_role_query"
+                    if _query_candidate_role(query.query) == "module"
+                    else "declared_identity"
+                )
                 if required_title is not None
                 and _exact_title_match(paper.canonical_title, required_title)
                 else (
-                    "parallel_via_dataset"
+                    (
+                        "module_linked_by_focused_retrieval"
+                        if _query_candidate_role(query.query) == "module"
+                        else "parallel_via_dataset"
+                    )
                     if paper.paper_id in relation_paper_ids
                     else (
                         "baseline_role_query"
@@ -497,7 +511,11 @@ class LiteratureSearchAdapter:
                         else (
                             "comparator_role_query"
                             if _query_candidate_role(query.query) == "comparator"
-                            else "direct_query"
+                            else (
+                                "module_role_query"
+                                if _query_candidate_role(query.query) == "module"
+                                else "direct_query"
+                            )
                         )
                     )
                 )
@@ -725,6 +743,16 @@ class LiteratureSearchAdapter:
                 "source_kind": source_kind,
                 "relation": relation,
                 **(
+                    {"module_aliases": _quoted_title(query.query) or paper.canonical_title}
+                    if relation
+                    in {
+                        "module_role_query",
+                        "parallel_method_query",
+                        "module_linked_by_focused_retrieval",
+                    }
+                    else {}
+                ),
+                **(
                     {"baseline_candidate": "declared"}
                     if relation == "declared_identity"
                     else (
@@ -733,7 +761,16 @@ class LiteratureSearchAdapter:
                         else (
                             {"comparator_candidate": "inferred"}
                             if relation == "comparator_role_query"
-                            else {}
+                            else (
+                                {"module_candidate": "inferred"}
+                                if relation
+                                in {
+                                    "module_role_query",
+                                    "parallel_method_query",
+                                    "module_linked_by_focused_retrieval",
+                                }
+                                else {}
+                            )
                         )
                     )
                 ),
