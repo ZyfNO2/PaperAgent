@@ -23,6 +23,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Prepatch method-design contracts
+        run: python scripts/prepatch_method_design.py
+
       - name: Apply validated source patches
         run: python scripts/apply_evidence_bound_module_fix_followup.py
 
@@ -53,8 +56,11 @@ jobs:
       - name: Commit implementation
         run: |
           rm -f scripts/apply_evidence_bound_module_fix_followup.py
+          rm -f scripts/prepatch_method_design.py
+          rm -f scripts/prepatch_method_design.payload
           rm -f .github/workflows/evidence-bound-module-repair.yml
           rm -f .github/evidence-bound-module-followup-failure.log
+          rm -f .github/prepatch-method-design-failure.log
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
