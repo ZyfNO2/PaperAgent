@@ -10,6 +10,7 @@ from paperagent.literature.providers.base import (
     make_request_id,
     response_failure,
     response_success,
+    transport_exception_result,
     utc_now,
 )
 from paperagent.schemas.literature import (
@@ -22,7 +23,7 @@ from paperagent.schemas.literature import (
 
 class SemanticScholarProvider:
     provider_name = "semantic_scholar"
-    contract_version = "graph-v1-2026-01"
+    contract_version = "graph-v1-2026-07"
     endpoint = "https://api.semanticscholar.org/graph/v1/paper/search"
 
     def __init__(
@@ -47,7 +48,7 @@ class SemanticScholarProvider:
         request_id = make_request_id(self.provider_name, lane, filters, limit)
         params: dict[str, str | int] = {
             "query": lane.query,
-            "limit": min(limit, 10),
+            "limit": min(limit, 100),
             "fields": (
                 "paperId,title,abstract,year,authors,externalIds,venue,url,"
                 "citationCount,publicationTypes"
@@ -65,23 +66,12 @@ class SemanticScholarProvider:
                 headers=headers,
                 timeout=self._timeout,
             )
-        except TimeoutError:
-            return response_failure(
-                provider=self.provider_name,
-                request_id=request_id,
-                started_at=started,
-                status="timeout",
-                code="TIMEOUT",
-                message="Semantic Scholar request timed out",
-            )
         except Exception as exc:
-            return response_failure(
+            return transport_exception_result(
                 provider=self.provider_name,
                 request_id=request_id,
                 started_at=started,
-                status="failed",
-                code="TRANSPORT_ERROR",
-                message=str(exc),
+                exc=exc,
             )
         failure = http_failure_result(
             provider=self.provider_name,
