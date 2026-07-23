@@ -1,37 +1,15 @@
-HEAD is now at a32c0cc2 fix(method): expose evidence-bound module contract requirements
-[fix/evidence-bound-module-contracts da931ce8] chore(ci): record module follow-up patch failure
- 1 file changed, 5 insertions(+), 5 deletions(-)
-To https://github.com/ZyfNO2/PaperAgent
-   a32c0cc2..da931ce8  HEAD -> fix/evidence-bound-module-contracts
-patched: src/paperagent/academic_methodology.py
-patched: src/paperagent/literature/adapter.py
-patched: src/paperagent/literature/adapter.py
 Traceback (most recent call last):
   File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 99, in main
     runpy.run_path(str(original), run_name="__main__")
   File "<frozen runpy>", line 291, in run_path
   File "<frozen runpy>", line 98, in _run_module_code
   File "<frozen runpy>", line 88, in _run_code
-  File "/tmp/paperagent-module-patch-mi9ghbb1.py", line 1140, in <module>
+  File "/tmp/paperagent-module-patch-w9v2mqkn.py", line 1140, in <module>
     main()
-  File "/tmp/paperagent-module-patch-mi9ghbb1.py", line 1129, in main
+  File "/tmp/paperagent-module-patch-w9v2mqkn.py", line 1129, in main
     patch_literature_adapter()
-  File "/tmp/paperagent-module-patch-mi9ghbb1.py", line 198, in patch_literature_adapter
+  File "/tmp/paperagent-module-patch-w9v2mqkn.py", line 198, in patch_literature_adapter
     replace_once(
-  File "/tmp/paperagent-module-patch-mi9ghbb1.py", line 23, in replace_once
+  File "/tmp/paperagent-module-patch-w9v2mqkn.py", line 23, in replace_once
     raise RuntimeError(f"{path}: expected one exact match, found {count}")
-RuntimeError: src/paperagent/literature/adapter.py: expected one exact match, found 0
-
-Traceback (most recent call last):
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 109, in <module>
-    main()
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 99, in main
-    runpy.run_path(str(original), run_name="__main__")
-  File "<frozen runpy>", line 291, in run_path
-  File "<frozen runpy>", line 98, in _run_module_code
-  File "<frozen runpy>", line 88, in _run_code
-  File "/tmp/paperagent-module-patch-mi9ghbb1.py", line 1140, in <module>
-  File "/tmp/paperagent-module-patch-mi9ghbb1.py", line 1129, in main
-  File "/tmp/paperagent-module-patch-mi9ghbb1.py", line 198, in patch_literature_adapter
-  File "/tmp/paperagent-module-patch-mi9ghbb1.py", line 23, in replace_once
 RuntimeError: src/paperagent/literature/adapter.py: expected one exact match, found 0
