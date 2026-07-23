@@ -1,0 +1,45 @@
+ruff_status=0
+All checks passed!
+mypy_status=0
+Success: no issues found in 1 source file
+pytest_status=1
+                ),
+                "failure_policy_confirmed": (
+                    draft.failure_policy_confirmed or explicit.failure_policy_confirmed
+                ),
+                "explicit_evaluation_protocol_invalid": invalid_protocol,
+            }
+        )
+    
+        accepted = tuple(evidence_bundle.accepted_items())
+        if not accepted:
+            raise ValueError("method canonicalization requires accepted methodology evidence")
+        attributed = tuple(
+            item for item in accepted if not _is_review_evidence(item.title, item.summary)
+        )
+        method_evidence = attributed if attributed else accepted
+        declared_baseline_titles = _declared_baseline_titles(list(request.user_material_refs))
+        baseline_evidence = _select_baseline_evidence(list(request.user_material_refs), method_evidence)
+        module_primary = _select_module_evidence(method_evidence, baseline=baseline_evidence)
+        if module_primary is None:
+>           raise ValueError(
+                "method canonicalization requires independent accepted module paper evidence "
+                "distinct from the baseline"
+            )
+E           ValueError: method canonicalization requires independent accepted module paper evidence distinct from the baseline
+
+src/paperagent/method_design_draft.py:604: ValueError
+=========================== short test summary info ============================
+FAILED tests/methodology/test_method_design_draft.py::test_flat_draft_builds_aligned_canonical_method_proposal - ValueError: method canonicalization requires independent accepted module paper evidence distinct from the baseline
+FAILED tests/methodology/test_method_design_draft.py::test_ungrounded_dataset_and_comparator_are_not_promoted_to_facts - ValueError: method canonicalization requires independent accepted module paper evidence distinct from the baseline
+FAILED tests/methodology/test_method_design_draft.py::test_non_vision_task_does_not_inherit_detector_specific_contracts - AssertionError: assert 'detector' not in 'objective i... loss weight'
+  
+  'detector' is contained here:
+    ction and detector head; keep the backbone frozen; backpropagate the detection objective through both paths with unit loss weight
+  ?           ++++++++
+FAILED tests/methodology/test_method_design_draft.py::test_missing_license_requires_revision_without_forcing_no_go - ValueError: method canonicalization requires independent accepted module paper evidence distinct from the baseline
+FAILED tests/methodology/test_method_design_draft.py::test_explicitly_incompatible_license_remains_no_go - ValueError: method canonicalization requires independent accepted module paper evidence distinct from the baseline
+FAILED tests/methodology/test_method_design_draft.py::test_reported_comparator_requires_independent_paper_identity - ValueError: method canonicalization requires independent accepted module paper evidence distinct from the baseline
+FAILED tests/methodology/test_method_design_draft.py::test_independent_comparator_paper_creates_strong_comparison_arm - ValueError: method canonicalization requires independent accepted module paper evidence distinct from the baseline
+FAILED tests/methodology/test_method_design_draft.py::test_baseline_or_module_evidence_cannot_be_reused_as_comparator - ValueError: method canonicalization requires independent accepted module paper evidence distinct from the baseline
+8 failed, 25 passed in 0.44s
