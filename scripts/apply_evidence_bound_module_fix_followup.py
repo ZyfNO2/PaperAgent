@@ -7,157 +7,15 @@ import tempfile
 import traceback
 from pathlib import Path
 
+from evidence_bound_module_prepatch import apply_all
+
 _PATCH_SOURCE_COMMIT = "0533bf3d7e717064f998a63545c40131cf98f01c"
 _PATCH_PATH = "scripts/apply_evidence_bound_module_fix_followup.py"
 _FAILURE_LOG = Path(".github/evidence-bound-module-followup-failure.log")
-_LITERATURE_ADAPTER = Path("src/paperagent/literature/adapter.py")
-_PLANNING = Path("src/paperagent/nodes/planning.py")
 
 
 def _run(*args: str, check: bool = False) -> subprocess.CompletedProcess[str]:
     return subprocess.run(args, check=check, text=True, capture_output=False)
-
-
-def _replace_exact(path: Path, old: str, new: str, label: str) -> None:
-    text = path.read_text(encoding="utf-8")
-    if new in text:
-        return
-    if text.count(old) != 1:
-        raise RuntimeError(f"{label} shape changed")
-    path.write_text(text.replace(old, new), encoding="utf-8")
-
-
-def _prepatch_literature_relation() -> None:
-    old = '''        for paper in selected:
-            relation = (
-                "declared_identity"
-                if required_title is not None
-                and _exact_title_match(paper.canonical_title, required_title)
-                else (
-                    "parallel_via_dataset"
-                    if paper.paper_id in relation_paper_ids
-                    else (
-                        "baseline_role_query"
-                        if _query_candidate_role(query.query) == "baseline"
-                        else (
-                            "comparator_role_query"
-                            if _query_candidate_role(query.query) == "comparator"
-                            else "direct_query"
-                        )
-                    )
-                )
-            )
-'''
-    new = '''        query_role = _query_candidate_role(query.query)
-        for paper in selected:
-            exact_declared_identity = required_title is not None and _exact_title_match(
-                paper.canonical_title, required_title
-            )
-            relation = (
-                "module_role_query"
-                if exact_declared_identity and query_role == "module"
-                else (
-                    "declared_identity"
-                    if exact_declared_identity
-                    else (
-                        "module_linked_by_focused_retrieval"
-                        if paper.paper_id in relation_paper_ids and query_role == "module"
-                        else (
-                            "parallel_via_dataset"
-                            if paper.paper_id in relation_paper_ids
-                            else (
-                                "baseline_role_query"
-                                if query_role == "baseline"
-                                else (
-                                    "comparator_role_query"
-                                    if query_role == "comparator"
-                                    else (
-                                        "module_role_query"
-                                        if query_role == "module"
-                                        else "direct_query"
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-'''
-    _replace_exact(_LITERATURE_ADAPTER, old, new, "literature relation")
-
-
-def _prepatch_literature_metadata() -> None:
-    old = '''                **(
-                    {"baseline_candidate": "declared"}
-                    if relation == "declared_identity"
-                    else (
-                        {"baseline_candidate": "inferred"}
-                        if relation in {"parallel_via_dataset", "baseline_role_query"}
-                        else (
-                            {"comparator_candidate": "inferred"}
-                            if relation == "comparator_role_query"
-                            else {}
-                        )
-                    )
-                ),
-'''
-    new = '''                **(
-                    {"baseline_candidate": "declared"}
-                    if relation == "declared_identity"
-                    else (
-                        {"baseline_candidate": "inferred"}
-                        if relation in {"parallel_via_dataset", "baseline_role_query"}
-                        else (
-                            {"comparator_candidate": "inferred"}
-                            if relation == "comparator_role_query"
-                            else (
-                                {"module_candidate": "inferred"}
-                                if relation
-                                in {
-                                    "module_role_query",
-                                    "parallel_method_query",
-                                    "module_linked_by_focused_retrieval",
-                                }
-                                else {}
-                            )
-                        )
-                    )
-                ),
-'''
-    _replace_exact(_LITERATURE_ADAPTER, old, new, "literature module metadata")
-
-
-def _prepatch_planning_queries() -> None:
-    _replace_exact(
-        _PLANNING,
-        '''        exact_title = identity.title.replace('"', " ").strip()
-        identity_gaps.append(
-''',
-        '''        exact_title = identity.title.replace('"', " ").strip()
-        role_hint = _material_query_role_hint(identity.reference)
-        identity_gaps.append(
-''',
-        "planning material role hint",
-    )
-    _replace_exact(
-        _PLANNING,
-        '''                query=f'"{exact_title}"',
-''',
-        '''                query=f'"{exact_title}"{role_hint}',
-''',
-        "planning exact-title role query",
-    )
-    _replace_exact(
-        _PLANNING,
-        '''                query=f'"{exact_title}" official implementation code repository',
-''',
-        '''                query=(
-                    f'"{exact_title}" official implementation code repository'
-                    f'{_material_query_role_hint(identity.reference)}'
-                ),
-''',
-        "planning repository role query",
-    )
 
 
 def _drop_replace_call(payload: str, needle: str) -> str:
@@ -177,14 +35,16 @@ def _drop_replace_call(payload: str, needle: str) -> str:
 
 
 def _harden_original_payload(payload: str) -> str:
-    payload, removed = re.subn(
-        r"(?m)^\s*patch_module_compatibility\(\)\s*$",
-        "",
-        payload,
-        count=1,
-    )
-    if removed != 1:
-        raise RuntimeError("original module compatibility call was not found")
+    for call_name in ("patch_module_compatibility", "patch_method_design"):
+        payload, removed = re.subn(
+            rf"(?m)^\s*{call_name}\(\)\s*$",
+            "",
+            payload,
+            count=1,
+        )
+        if removed != 1:
+            raise RuntimeError(f"original {call_name} call was not found")
+
     for needle in (
         '''                    for paper in selected:
                         relation = (
@@ -271,16 +131,10 @@ def _persist_failure(rendered: str) -> None:
 
 
 def main() -> None:
-    _prepatch_literature_relation()
-    _prepatch_literature_metadata()
+    apply_all()
     original = _materialize_original()
     try:
-        # The original patch adds the helper before these remaining planning edits.
-        planning_text = _PLANNING.read_text(encoding="utf-8")
-        if "def _material_query_role_hint" not in planning_text:
-            pass
         runpy.run_path(str(original), run_name="__main__")
-        _prepatch_planning_queries()
     except BaseException:
         rendered = traceback.format_exc()
         _persist_failure(rendered)
