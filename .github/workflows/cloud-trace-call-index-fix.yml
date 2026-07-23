@@ -1,0 +1,105 @@
+name: Cloud Trace Call Index Fix
+
+on:
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tmp/trace-call-index-fix
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Apply trace-backed invocation index patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          shared = Path('src/paperagent/nodes/_shared.py')
+          text = shared.read_text(encoding='utf-8')
+          old = '''def llm_call_index(services: RuntimeServices, task: str) -> int:\n    calls = getattr(services.llm, "calls", [])\n    return sum(1 for call in calls if getattr(getattr(call, "key", None), "task", None) == task)\n'''
+          new = '''def llm_call_index(\n    services: RuntimeServices,\n    task: str,\n    state: PaperAgentState | None = None,\n) -> int:\n    """Return a monotonic logical invocation index for one LLM task.\n\n    Fake and some native providers expose an in-memory ``calls`` ledger, but the\n    OpenAI-compatible provider intentionally does not. Persisted trace events are\n    therefore the provider-independent source of truth across graph re-entry.\n    Taking the maximum preserves direct-provider unit tests that do not apply the\n    returned state patch between calls.\n    """\n\n    calls = getattr(services.llm, "calls", [])\n    provider_count = sum(\n        1 for call in calls if getattr(getattr(call, "key", None), "task", None) == task\n    )\n    trace_count = 0\n    if state is not None:\n        fixture_prefix = f"{task}/"\n        trace_count = sum(\n            1\n            for event in state.get("trace", [])\n            if event.event_type == "llm.requested"\n            and event.fixture_key is not None\n            and event.fixture_key.startswith(fixture_prefix)\n        )\n    return max(provider_count, trace_count)\n'''
+          if old not in text and 'Persisted trace events are' not in text:
+              raise SystemExit('llm_call_index anchor not found')
+          if old in text:
+              text = text.replace(old, new, 1)
+          text = text.replace(
+              '    call_index = llm_call_index(services, task)\n',
+              '    call_index = llm_call_index(services, task, state)\n',
+              1,
+          )
+          shared.write_text(text, encoding='utf-8')
+
+          tests = Path('tests/nodes/test_synthesis_method_quality_report.py')
+          test_text = tests.read_text(encoding='utf-8')
+          if 'real_provider_without_call_ledger' not in test_text:
+              test_text += '''\n\n@pytest.mark.asyncio\nasync def test_evidence_synthesis_node__real_provider_without_call_ledger__increments_invocation(\n    fixed_time, accepted_evidence_payload\n) -> None:\n    from dataclasses import replace\n\n    from paperagent.nodes.evidence_synthesis import evidence_synthesis_node\n    from paperagent.schemas import TokenUsage\n    from paperagent.state import apply_state_patch\n\n    class NoHistoryLLM:\n        provider_name = "openai"\n        model_name = "test-openai-compatible"\n        last_usage = TokenUsage(input_tokens=0, output_tokens=0)\n        last_latency_ms = 0\n\n        def __init__(self) -> None:\n            self.call_indexes: list[int] = []\n\n        async def generate_structured(\n            self,\n            *,\n            task: str,\n            scenario: str,\n            call_index: int,\n            fixture_version: str,\n            schema,\n            messages,\n        ):\n            del scenario, fixture_version, messages\n            self.call_indexes.append(call_index)\n            return schema.model_validate_json(load_llm_raw(task, "happy_path", 0))\n\n    state, services = _base_state(fixed_time, accepted_evidence_payload)\n    provider = NoHistoryLLM()\n    services = replace(services, llm=provider)\n    config = {"configurable": {"services": services, "scenario": "happy_path"}}\n\n    first = await evidence_synthesis_node(state, config)\n    state = apply_state_patch(state, first)\n    second = await evidence_synthesis_node(state, config)\n\n    assert provider.call_indexes == [0, 1]\n    assert first["trace"][1].fixture_key == "evidence_synthesis/happy_path/0/v0.1"\n    assert second["trace"][1].fixture_key == "evidence_synthesis/happy_path/1/v0.1"\n    assert second["synthesis"].feasibility == "feasible"\n'''
+          tests.write_text(test_text, encoding='utf-8')
+
+          workflow = Path('.github/workflows/runtime-output-recovery-ci.yml')
+          workflow_text = workflow.read_text(encoding='utf-8')
+          if 'src/paperagent/nodes/_shared.py' not in workflow_text:
+              workflow_text = workflow_text.replace(
+                  '      - "src/paperagent/nodes/planning.py"',
+                  '      - "src/paperagent/nodes/_shared.py"\n      - "src/paperagent/nodes/planning.py"',
+              )
+              workflow_text = workflow_text.replace(
+                  '            src/paperagent/nodes/planning.py \\',
+                  '            src/paperagent/nodes/_shared.py \\\n            src/paperagent/nodes/planning.py \\',
+              )
+          if 'tests/nodes/test_synthesis_method_quality_report.py' not in workflow_text:
+              workflow_text = workflow_text.replace(
+                  '      - "tests/nodes/test_planning_identity_priority.py"',
+                  '      - "tests/nodes/test_synthesis_method_quality_report.py"\n      - "tests/nodes/test_planning_identity_priority.py"',
+              )
+              workflow_text = workflow_text.replace(
+                  '            tests/nodes/test_planning_identity_priority.py \\',
+                  '            tests/nodes/test_synthesis_method_quality_report.py \\\n            tests/nodes/test_planning_identity_priority.py \\',
+              )
+          workflow.write_text(workflow_text, encoding='utf-8')
+          PY
+          ruff format \
+            src/paperagent/nodes/_shared.py \
+            tests/nodes/test_synthesis_method_quality_report.py
+      - name: Verify focused patch
+        run: |
+          ruff format --check \
+            src/paperagent/nodes/_shared.py \
+            tests/nodes/test_synthesis_method_quality_report.py
+          ruff check \
+            src/paperagent/nodes/_shared.py \
+            tests/nodes/test_synthesis_method_quality_report.py
+          python -m compileall -q src/paperagent
+          mypy --strict src/paperagent/nodes/_shared.py
+          pytest -q \
+            tests/nodes/test_synthesis_method_quality_report.py \
+            tests/nodes/test_evidence_synthesis_contract.py \
+            tests/providers/test_runtime.py \
+            tests/providers/test_openai_llm_runtime_limits.py
+      - name: Commit validated patch
+        run: |
+          if git diff --quiet; then
+            echo "No changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            src/paperagent/nodes/_shared.py \
+            tests/nodes/test_synthesis_method_quality_report.py \
+            .github/workflows/runtime-output-recovery-ci.yml
+          git commit -m "fix(runtime): isolate graph re-entry invocation budgets"
+          git push origin HEAD:tmp/trace-call-index-fix
