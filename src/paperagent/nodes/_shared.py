@@ -18,9 +18,35 @@ R = TypeVar("R", bound=BaseModel)
 _UNSET = object()
 
 
-def llm_call_index(services: RuntimeServices, task: str) -> int:
+def llm_call_index(
+    services: RuntimeServices,
+    task: str,
+    state: PaperAgentState | None = None,
+) -> int:
+    """Return a monotonic logical invocation index for one LLM task.
+
+    Fake and some native providers expose an in-memory ``calls`` ledger, but the
+    OpenAI-compatible provider intentionally does not. Persisted trace events are
+    therefore the provider-independent source of truth across graph re-entry.
+    Taking the maximum preserves direct-provider unit tests that do not apply the
+    returned state patch between calls.
+    """
+
     calls = getattr(services.llm, "calls", [])
-    return sum(1 for call in calls if getattr(getattr(call, "key", None), "task", None) == task)
+    provider_count = sum(
+        1 for call in calls if getattr(getattr(call, "key", None), "task", None) == task
+    )
+    trace_count = 0
+    if state is not None:
+        fixture_prefix = f"{task}/"
+        trace_count = sum(
+            1
+            for event in state.get("trace", [])
+            if event.event_type == "llm.requested"
+            and event.fixture_key is not None
+            and event.fixture_key.startswith(fixture_prefix)
+        )
+    return max(provider_count, trace_count)
 
 
 def search_call_index(services: RuntimeServices, query_id: str) -> int:
@@ -121,7 +147,7 @@ async def call_structured(
     prompt = get_prompt(task)
     selected_scenario = scenario or get_task_scenario(config, task)
     fixture_version = get_fixture_version(config)
-    call_index = llm_call_index(services, task)
+    call_index = llm_call_index(services, task, state)
     key = f"{task}/{selected_scenario}/{call_index}/{fixture_version}"
     messages = [
         Message(role="system", content=prompt.system),
