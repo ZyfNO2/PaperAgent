@@ -153,26 +153,42 @@ def _query_candidate_role(query: str) -> str | None:
         label="literature candidate relation block",
     )
 
-    old_metadata = """                        {"comparator_candidate": "inferred"}
-                        if relation == "comparator_role_query"
-                        else {}
-                    )
-                )
-"""
-    new_metadata = """                        {"comparator_candidate": "inferred"}
-                        if relation == "comparator_role_query"
+    old_metadata = """                **(
+                    {"baseline_candidate": "declared"}
+                    if relation == "declared_identity"
+                    else (
+                        {"baseline_candidate": "inferred"}
+                        if relation in {"parallel_via_dataset", "baseline_role_query"}
                         else (
-                            {"module_candidate": "inferred"}
-                            if relation
-                            in {
-                                "module_role_query",
-                                "parallel_method_query",
-                                "module_linked_by_focused_retrieval",
-                            }
+                            {"comparator_candidate": "inferred"}
+                            if relation == "comparator_role_query"
                             else {}
                         )
                     )
-                )
+                ),
+"""
+    new_metadata = """                **(
+                    {"baseline_candidate": "declared"}
+                    if relation == "declared_identity"
+                    else (
+                        {"baseline_candidate": "inferred"}
+                        if relation in {"parallel_via_dataset", "baseline_role_query"}
+                        else (
+                            {"comparator_candidate": "inferred"}
+                            if relation == "comparator_role_query"
+                            else (
+                                {"module_candidate": "inferred"}
+                                if relation
+                                in {
+                                    "module_role_query",
+                                    "parallel_method_query",
+                                    "module_linked_by_focused_retrieval",
+                                }
+                                else {}
+                            )
+                        )
+                    )
+                ),
 """
     text = _replace_exact(
         text,
