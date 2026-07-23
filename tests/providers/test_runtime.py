@@ -3,8 +3,11 @@ from __future__ import annotations
 import pytest
 from pydantic import SecretStr, ValidationError
 
+import paperagent.providers.runtime as runtime_module
+from paperagent.claw_runtime_evidence import provider_config_for_case
 from paperagent.errors import ProviderError as BaseProviderError
 from paperagent.providers.runtime import (
+    LLMProviderName,
     ProviderError,
     ProviderErrorCode,
     ProviderRuntimeConfig,
@@ -34,59 +37,103 @@ def test_runtime_config_requires_https_and_consistent_timeouts() -> None:
         make_config(max_output_tokens_per_call=20, max_output_tokens_per_task=10)
 
 
-def test_provider_error_is_compatible_with_existing_node_error_bridge() -> None:
+def test_provider_error_preserves_actual_provider() -> None:
     error = ProviderError(
         ProviderErrorCode.AUTHENTICATION,
         "authentication failed",
+        provider="openai",
         task="planning",
     )
 
     assert isinstance(error, BaseProviderError)
     assert error.error_code is ProviderErrorCode.AUTHENTICATION
     assert error.code == "LLM_AUTHENTICATION"
-    assert error.provider == "mistral"
+    assert error.provider == "openai"
     assert error.task == "planning"
 
 
-def test_budget_counts_physical_calls() -> None:
+def test_production_budget_enforces_call_ceiling() -> None:
     budget = TaskBudget(make_config(max_llm_calls_per_task=2))
     budget.reserve_call(task="planning")
     budget.reserve_call(task="planning")
 
-    with pytest.raises(ProviderError) as exc_info:
+    with pytest.raises(ProviderError) as caught:
         budget.reserve_call(task="planning")
 
-    assert exc_info.value.error_code is ProviderErrorCode.BUDGET_EXHAUSTED
+    assert caught.value.error_code is ProviderErrorCode.BUDGET_EXHAUSTED
     assert budget.calls == 2
 
 
-def test_budget_fails_closed_on_tokens_and_cost() -> None:
-    budget = TaskBudget(
+def test_production_budget_enforces_tokens_and_unknown_cost() -> None:
+    token_budget = TaskBudget(
         make_config(
             max_input_tokens_per_task=10,
             max_output_tokens_per_call=10,
             max_output_tokens_per_task=10,
-            max_estimated_cost_usd=0.01,
         )
     )
-
-    with pytest.raises(ProviderError) as input_error:
-        budget.record_usage(UsageRecord(input_tokens=11), task="planning")
-    assert input_error.value.error_code is ProviderErrorCode.BUDGET_EXHAUSTED
+    with pytest.raises(ProviderError) as token_error:
+        token_budget.record_usage(
+            UsageRecord(input_tokens=11, output_tokens=1, estimated_cost_usd=0.0),
+            task="planning",
+        )
+    assert token_error.value.error_code is ProviderErrorCode.BUDGET_EXHAUSTED
 
     cost_budget = TaskBudget(make_config(max_estimated_cost_usd=0.01))
     with pytest.raises(ProviderError) as cost_error:
-        cost_budget.record_usage(UsageRecord(estimated_cost_usd=0.02), task="planning")
+        cost_budget.record_usage(
+            UsageRecord(input_tokens=1, output_tokens=1, estimated_cost_usd=None),
+            task="planning",
+        )
     assert cost_error.value.error_code is ProviderErrorCode.BUDGET_EXHAUSTED
 
 
-def test_monetary_budget_fails_closed_when_usage_is_unknown() -> None:
-    budget = TaskBudget(make_config(max_estimated_cost_usd=0.01))
+def test_benchmark_case_config_disables_non_time_budget_limits() -> None:
+    config = make_config(
+        max_llm_calls_per_task=1,
+        max_input_tokens_per_task=1,
+        max_output_tokens_per_call=1,
+        max_output_tokens_per_task=1,
+        max_estimated_cost_usd=0.01,
+    )
+    benchmark_config = provider_config_for_case(
+        config,
+        selected_case_count=10,
+        max_logical_calls=2,
+    )
 
-    with pytest.raises(ProviderError, match="provider usage is unknown") as exc_info:
-        budget.record_usage(UsageRecord(), task="planning")
+    assert benchmark_config.enforce_task_budget_limits is False
+    assert benchmark_config.max_llm_calls_per_task == 2 * config.max_attempts
 
-    assert exc_info.value.error_code is ProviderErrorCode.BUDGET_EXHAUSTED
+    budget = TaskBudget(benchmark_config)
+    for _ in range(5):
+        budget.reserve_call(task="planning")
+    budget.record_usage(
+        UsageRecord(input_tokens=100, output_tokens=100, estimated_cost_usd=None),
+        task="planning",
+    )
+    assert budget.calls == 5
+
+
+def test_wall_clock_timeout_remains_enforced_when_budget_limits_are_disabled(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    times = iter((0.0, 2.0))
+    monkeypatch.setattr(runtime_module, "monotonic", lambda: next(times))
+    budget = TaskBudget(
+        make_config(
+            provider=LLMProviderName.OPENAI,
+            task_wall_clock_seconds=1.0,
+            enforce_task_budget_limits=False,
+        )
+    )
+
+    with pytest.raises(ProviderError) as caught:
+        budget.reserve_call(task="planning")
+
+    assert caught.value.error_code is ProviderErrorCode.READ_TIMEOUT
+    assert caught.value.provider == "openai"
+    assert caught.value.retryable is True
 
 
 def test_redaction_recurses_without_mutating_safe_values() -> None:
