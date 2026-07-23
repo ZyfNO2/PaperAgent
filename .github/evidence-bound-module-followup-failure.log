@@ -1,15 +1,15 @@
 Traceback (most recent call last):
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 54, in main
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 90, in main
     runpy.run_path(str(original), run_name="__main__")
   File "<frozen runpy>", line 291, in run_path
   File "<frozen runpy>", line 98, in _run_module_code
   File "<frozen runpy>", line 88, in _run_code
-  File "/tmp/paperagent-module-patch-pmlpdm90.py", line 1136, in <module>
+  File "/tmp/paperagent-module-patch-kj8ri8jb.py", line 1139, in <module>
     main()
-  File "/tmp/paperagent-module-patch-pmlpdm90.py", line 1124, in main
-    patch_module_compatibility()
-  File "/tmp/paperagent-module-patch-pmlpdm90.py", line 112, in patch_module_compatibility
+  File "/tmp/paperagent-module-patch-kj8ri8jb.py", line 1128, in main
+    patch_literature_adapter()
+  File "/tmp/paperagent-module-patch-kj8ri8jb.py", line 198, in patch_literature_adapter
     replace_once(
-  File "/tmp/paperagent-module-patch-pmlpdm90.py", line 19, in replace_once
+  File "/tmp/paperagent-module-patch-kj8ri8jb.py", line 23, in replace_once
     raise RuntimeError(f"{path}: expected one exact match, found {count}")
-RuntimeError: src/paperagent/module_compatibility.py: expected one exact match, found 0
+RuntimeError: src/paperagent/literature/adapter.py: expected one exact match, found 0
