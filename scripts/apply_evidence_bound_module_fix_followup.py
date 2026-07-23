@@ -11,6 +11,7 @@ _PATCH_SOURCE_COMMIT = "0533bf3d7e717064f998a63545c40131cf98f01c"
 _PATCH_PATH = "scripts/apply_evidence_bound_module_fix_followup.py"
 _FAILURE_LOG = Path(".github/evidence-bound-module-followup-failure.log")
 _LITERATURE_ADAPTER = Path("src/paperagent/literature/adapter.py")
+_PLANNING = Path("src/paperagent/nodes/planning.py")
 
 
 def _run(*args: str, check: bool = False) -> subprocess.CompletedProcess[str]:
@@ -126,6 +127,39 @@ def _prepatch_literature_metadata() -> None:
     _replace_exact(_LITERATURE_ADAPTER, old, new, "literature module metadata")
 
 
+def _prepatch_planning_queries() -> None:
+    _replace_exact(
+        _PLANNING,
+        '''        exact_title = identity.title.replace('"', " ").strip()
+        identity_gaps.append(
+''',
+        '''        exact_title = identity.title.replace('"', " ").strip()
+        role_hint = _material_query_role_hint(identity.reference)
+        identity_gaps.append(
+''',
+        "planning material role hint",
+    )
+    _replace_exact(
+        _PLANNING,
+        '''                query=f'"{exact_title}"',
+''',
+        '''                query=f'"{exact_title}"{role_hint}',
+''',
+        "planning exact-title role query",
+    )
+    _replace_exact(
+        _PLANNING,
+        '''                query=f'"{exact_title}" official implementation code repository',
+''',
+        '''                query=(
+                    f'"{exact_title}" official implementation code repository'
+                    f'{_material_query_role_hint(identity.reference)}'
+                ),
+''',
+        "planning repository role query",
+    )
+
+
 def _drop_replace_call(payload: str, needle: str) -> str:
     needle_index = payload.find(needle)
     if needle_index < 0:
@@ -134,7 +168,7 @@ def _drop_replace_call(payload: str, needle: str) -> str:
     if start < 0:
         raise RuntimeError("original replace_once start was not found")
     next_replace = payload.find("\n    replace_once(\n", needle_index + 1)
-    next_function = payload.find("\n\n\ndef patch_planning() -> None:\n", needle_index + 1)
+    next_function = payload.find("\n\n\ndef ", needle_index + 1)
     boundaries = [value for value in (next_replace, next_function) if value >= 0]
     if not boundaries:
         raise RuntimeError("original replace_once end was not found")
@@ -151,19 +185,23 @@ def _harden_original_payload(payload: str) -> str:
     )
     if removed != 1:
         raise RuntimeError("original module compatibility call was not found")
-    payload = _drop_replace_call(
-        payload,
+    for needle in (
         '''                    for paper in selected:
                         relation = (
 ''',
-    )
-    payload = _drop_replace_call(
-        payload,
         '''                                {"comparator_candidate": "inferred"}
                                 if relation == "comparator_role_query"
                                 else {}
 ''',
-    )
+        '''                    exact_title = identity.title.replace('"', " ").strip()
+                    identity_gaps.append(
+''',
+        '''                query=f'"{exact_title}"',
+''',
+        '''                query=f'"{exact_title}" official implementation code repository',
+''',
+    ):
+        payload = _drop_replace_call(payload, needle)
 
     old_helper = '''def replace_once(path: str, old: str, new: str) -> None:
     file = Path(path)
@@ -237,7 +275,12 @@ def main() -> None:
     _prepatch_literature_metadata()
     original = _materialize_original()
     try:
+        # The original patch adds the helper before these remaining planning edits.
+        planning_text = _PLANNING.read_text(encoding="utf-8")
+        if "def _material_query_role_hint" not in planning_text:
+            pass
         runpy.run_path(str(original), run_name="__main__")
+        _prepatch_planning_queries()
     except BaseException:
         rendered = traceback.format_exc()
         _persist_failure(rendered)
