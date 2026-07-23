@@ -1,15 +1,18 @@
 Traceback (most recent call last):
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 365, in main
-    runpy.run_path(str(original), run_name="__main__")
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 377, in main
+    runpy.run_path(str(helper), run_name="__main__")
   File "<frozen runpy>", line 291, in run_path
   File "<frozen runpy>", line 98, in _run_module_code
   File "<frozen runpy>", line 88, in _run_code
-  File "/tmp/paperagent-module-patch-siuterft.py", line 1137, in <module>
+  File "scripts/prepatch_method_design.py", line 30, in <module>
     main()
-  File "/tmp/paperagent-module-patch-siuterft.py", line 1129, in main
-    patch_benchmark_models()
-  File "/tmp/paperagent-module-patch-siuterft.py", line 696, in patch_benchmark_models
-    replace_once(
-  File "/tmp/paperagent-module-patch-siuterft.py", line 23, in replace_once
-    raise RuntimeError(f"{path}: expected one exact match, found {count}")
-RuntimeError: src/paperagent/claw_academic_benchmark.py: expected one exact match, found 0
+  File "scripts/prepatch_method_design.py", line 24, in main
+    runpy.run_path(str(path), run_name="__main__")
+  File "<frozen runpy>", line 291, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/tmp/paperagent-method-design-prepatch-l_b4y95z.py", line 397, in <module>
+  File "/tmp/paperagent-method-design-prepatch-l_b4y95z.py", line 389, in main
+  File "/tmp/paperagent-method-design-prepatch-l_b4y95z.py", line 357, in patch_driver_skip
+  File "/tmp/paperagent-method-design-prepatch-l_b4y95z.py", line 18, in replace_exact
+RuntimeError: driver method-design skip: expected one exact match, found 0
