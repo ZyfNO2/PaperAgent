@@ -12,6 +12,7 @@ _PATCH_PATH = "scripts/apply_evidence_bound_module_fix_followup.py"
 _FAILURE_LOG = Path(".github/evidence-bound-module-followup-failure.log")
 _LITERATURE_ADAPTER = Path("src/paperagent/literature/adapter.py")
 _PLANNING = Path("src/paperagent/nodes/planning.py")
+_SKIP_CALLS_FILE = Path("scripts/prepatch_skip_calls.txt")
 _TARGET_BRANCH = "fix/evidence-bound-module-contracts-v2"
 
 
@@ -272,13 +273,27 @@ def _material_query_role_hint(reference: str) -> str:
     print(f"patched by function boundary: {_PLANNING}")
 
 
-def _harden_original_payload(payload: str) -> str:
-    for call in (
+def _prepatch_helpers() -> tuple[Path, ...]:
+    return tuple(sorted(Path("scripts").glob("prepatch_*.py")))
+
+
+def _skipped_patch_calls() -> tuple[str, ...]:
+    calls = [
         "patch_module_compatibility",
         "patch_literature_adapter",
         "patch_planning",
         "patch_method_design",
-    ):
+    ]
+    if _SKIP_CALLS_FILE.exists():
+        for raw in _SKIP_CALLS_FILE.read_text(encoding="utf-8").splitlines():
+            call = raw.strip()
+            if call and not call.startswith("#") and call not in calls:
+                calls.append(call)
+    return tuple(calls)
+
+
+def _harden_original_payload(payload: str) -> str:
+    for call in _skipped_patch_calls():
         payload, removed = re.subn(
             rf"(?m)^\s*{call}\(\)\s*$",
             "",
@@ -358,7 +373,8 @@ def _persist_failure(rendered: str) -> None:
 def main() -> None:
     original: Path | None = None
     try:
-        runpy.run_path("scripts/prepatch_method_design.py", run_name="__main__")
+        for helper in _prepatch_helpers():
+            runpy.run_path(str(helper), run_name="__main__")
         _patch_literature_adapter()
         _patch_planning()
         original = _materialize_original()
