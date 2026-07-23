@@ -46,7 +46,7 @@ def _support(gap_id: str, claim: str) -> GapSupportAssessment:
     )
 
 
-def _state() -> PaperAgentState:
+def _legacy_state() -> PaperAgentState:
     baseline_gap = EvidenceGap(
         gap_id="baseline_comparison",
         description="baseline and strong comparison evidence",
@@ -171,6 +171,74 @@ def _state() -> PaperAgentState:
     )
 
 
+def _state() -> PaperAgentState:
+    state = _legacy_state()
+    evidence = state["evidence"]
+    ledger = state["evidence_ledger"]
+    synthesis = state["synthesis"]
+    assert evidence is not None
+    assert ledger is not None
+    assert synthesis is not None
+    baseline_item = evidence.items[0]
+    module_id = "ev-independent-feature-fusion"
+    module_item = baseline_item.model_copy(
+        update={
+            "evidence_id": module_id,
+            "title": "Independent Lightweight Feature Fusion for Small Object Detection",
+            "locator": "doi:10.1000/independent-feature-fusion",
+            "supports_gap_ids": ["failure_mechanism"],
+            "content_hash": "sha256:independent-feature-fusion",
+            "metadata": {
+                "doi": "10.1000/independent-feature-fusion",
+                "candidate_gap_ids": "failure_mechanism",
+                "license": "CC BY 4.0",
+                "relation": "direct_query",
+                "rank_score": "0.85",
+                "relevance_score": "0.90",
+            },
+        }
+    )
+    mechanism_supports = tuple(
+        support
+        for support in ledger.entries[0].gap_supports
+        if support.gap_id == "failure_mechanism"
+    )
+    module_entry = ledger.entries[0].model_copy(
+        update={
+            "evidence_id": module_id,
+            "gap_supports": mechanism_supports,
+            "supported_claims": ("independent feature fusion mechanism evidence",),
+        }
+    )
+    state["evidence"] = evidence.model_copy(
+        update={
+            "items": [baseline_item, module_item],
+            "accepted_ids": [_EVIDENCE_ID, module_id],
+            "identity_verified_ids": [_EVIDENCE_ID, module_id],
+            "coverage_by_gap": {"baseline_comparison": 1, "failure_mechanism": 2},
+        }
+    )
+    state["evidence_ledger"] = ledger.model_copy(
+        update={
+            "entries": (*ledger.entries, module_entry),
+            "accepted_ids": (_EVIDENCE_ID, module_id),
+            "coverage_by_gap": {"baseline_comparison": 1, "failure_mechanism": 2},
+        }
+    )
+    assessments = [
+        assessment.model_copy(
+            update={
+                "evidence_ids": [*assessment.evidence_ids, module_id]
+                if assessment.gap_id == "failure_mechanism"
+                else assessment.evidence_ids
+            }
+        )
+        for assessment in synthesis.gap_assessments
+    ]
+    state["synthesis"] = synthesis.model_copy(update={"gap_assessments": assessments})
+    return state
+
+
 def _draft(**updates: object) -> MethodDesignDraft:
     payload: dict[str, object] = {
         "problem_method_insight": (
@@ -190,6 +258,12 @@ def _draft(**updates: object) -> MethodDesignDraft:
         "module_proposed_role": "single causal small-object feature intervention",
         "input_semantics": "a shallow detector feature map containing fine spatial cues",
         "output_semantics": "a shape-compatible enhanced feature map for the baseline head",
+        "input_shape": "batch x channels x height x width at the shallow feature level",
+        "output_shape": "batch x channels x height x width with unchanged spatial axes",
+        "optimization_interaction": (
+            "train only the inserted module and downstream task head; keep upstream baseline "
+            "parameters frozen; backpropagate the primary task objective with unit loss weight"
+        ),
         "predicted_effect": "improve small-object recall and AP_small",
         "failure_mode": "extra high-resolution computation may erase the latency benefit",
         "compute_cost": "one bounded feature-fusion path with measured parameter and latency delta",
@@ -223,7 +297,7 @@ def test_flat_draft_builds_aligned_canonical_method_proposal() -> None:
     assert proposal.methodology_plan.modules[0].name == "shallow_feature_fusion"
     assert proposal.modules[0].module_id == "shallow_feature_fusion"
     assert proposal.stop_conditions == list(proposal.methodology_plan.stop_conditions)
-    assert set(proposal.evidence_ids) == {_EVIDENCE_ID}
+    assert set(proposal.evidence_ids) == {_EVIDENCE_ID, "ev-independent-feature-fusion"}
 
     arm_types = {experiment.arm_type for experiment in proposal.methodology_plan.experiments}
     assert arm_types == {
@@ -282,6 +356,17 @@ def test_non_vision_task_does_not_inherit_detector_specific_contracts() -> None:
             },
         }
     )
+    medical_module_item = evidence.items[1].model_copy(
+        update={
+            "title": "Independent Gated Multimodal Medical Representation Fusion",
+            "summary": (
+                "An independent fusion mechanism combines paired medical representations "
+                "under a switchable classification interface."
+            ),
+            "locator": "doi:10.1000/medical-fusion-module",
+            "content_hash": "sha256:medical-fusion-module",
+        }
+    )
     medical_state = cast(
         PaperAgentState,
         {
@@ -292,7 +377,7 @@ def test_non_vision_task_does_not_inherit_detector_specific_contracts() -> None:
                     "scope": "paired medical image representations with unresolved modalities",
                 }
             ),
-            "evidence": evidence.model_copy(update={"items": [medical_item]}),
+            "evidence": evidence.model_copy(update={"items": [medical_item, medical_module_item]}),
             "evidence_ledger": ledger,
             "synthesis": synthesis,
         },

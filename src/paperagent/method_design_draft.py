@@ -49,8 +49,29 @@ class MethodDesignDraft(FrozenModel):
     module_name: str = Field(min_length=2, max_length=120)
     module_original_role: str = Field(min_length=3)
     module_proposed_role: str = Field(min_length=3)
-    input_semantics: str = Field(min_length=5)
-    output_semantics: str = Field(min_length=5)
+    input_semantics: str = Field(
+        min_length=5,
+        description="Concrete semantic meaning of the value consumed by the module.",
+    )
+    output_semantics: str = Field(
+        min_length=5,
+        description="Concrete semantic meaning of the value emitted to the baseline stage.",
+    )
+    input_shape: str = Field(
+        min_length=5,
+        description="Concrete symbolic rank and axes, for example batch x sequence x hidden_size.",
+    )
+    output_shape: str = Field(
+        min_length=5,
+        description="Concrete symbolic rank and axes after the module.",
+    )
+    optimization_interaction: str = Field(
+        min_length=10,
+        description=(
+            "State trainable and frozen parameters, objective terms, gradient path, "
+            "and loss weighting."
+        ),
+    )
     predicted_effect: str = Field(min_length=5)
     failure_mode: str = Field(min_length=5)
     compute_cost: str = Field(min_length=3)
@@ -172,6 +193,19 @@ def _metadata_float(item: EvidenceItem, key: str, *, default: float) -> float:
         return default
 
 
+def _author_linked_repository_parent_ids(
+    candidates: tuple[EvidenceItem, ...],
+) -> set[str]:
+    return {
+        parent_id
+        for item in candidates
+        if item.source_type == "repository"
+        and item.metadata.get("relation") == "author_linked_from_verified_paper"
+        for parent_id in (item.metadata.get("parent_paper_id"),)
+        if parent_id
+    }
+
+
 def _select_inferred_baseline_evidence(
     candidates: tuple[EvidenceItem, ...],
 ) -> EvidenceItem | None:
@@ -186,7 +220,12 @@ def _select_inferred_baseline_evidence(
     )
     if not papers:
         return None
-    return max(papers, key=_baseline_evidence_rank)
+    repository_parent_ids = _author_linked_repository_parent_ids(candidates)
+    repository_backed = tuple(
+        item for item in papers if item.evidence_id.removeprefix("ev-") in repository_parent_ids
+    )
+    eligible = repository_backed or papers
+    return max(eligible, key=_baseline_evidence_rank)
 
 
 def _matches_declared_repository_lookup(
@@ -208,25 +247,15 @@ def _select_repository_backed_direct_baseline(
     *,
     declared_titles: tuple[str, ...] = (),
 ) -> EvidenceItem | None:
-    """Select a verified task paper with an accepted author-linked repository.
+    """Select an exact-query paper with an accepted author-linked repository."""
 
-    For a declared baseline miss, the fallback must originate from that exact-title lookup; an
-    arbitrary repository-backed task paper may not replace a user-declared identity.
-    """
-
-    repository_parent_ids: set[str] = {
-        parent_id
-        for item in candidates
-        if item.source_type == "repository"
-        and item.metadata.get("relation") == "author_linked_from_verified_paper"
-        for parent_id in (item.metadata.get("parent_paper_id"),)
-        if parent_id
-    }
+    repository_parent_ids = _author_linked_repository_parent_ids(candidates)
     papers = tuple(
         item
         for item in candidates
         if item.source_type == "paper"
-        and item.metadata.get("relation") == "direct_query"
+        and item.metadata.get("relation")
+        in {"direct_query", "declared_identity", "baseline_role_query"}
         and item.evidence_id.removeprefix("ev-") in repository_parent_ids
         and not _is_review_evidence(item.title, item.summary)
         and _matches_declared_repository_lookup(item, declared_titles)
@@ -321,16 +350,17 @@ def _select_module_evidence(
     *,
     baseline: EvidenceItem | None,
 ) -> EvidenceItem | None:
+    baseline_id = baseline.evidence_id if baseline is not None else None
     papers = tuple(
         item
         for item in candidates
         if item.source_type == "paper"
+        and item.evidence_id != baseline_id
         and item.metadata.get("comparator_candidate") != "inferred"
         and item.metadata.get("relation") != "comparator_role_query"
     )
     if not papers:
         return None
-    baseline_id = baseline.evidence_id if baseline is not None else None
     return max(
         papers,
         key=lambda item: _module_evidence_rank(
@@ -502,14 +532,17 @@ def _experiment(
         source_evidence_id=source_evidence_id,
         comparator=comparator,
         dataset=dataset,
-        split="freeze the official or documented train/validation/test split before the pilot",
+        split=(
+            f"Pre-register one immutable train/validation/test manifest for {dataset}, "
+            "including sample identifiers, timestamps where applicable, and content hashes."
+        ),
         preprocessing=(
-            "match input construction, preprocessing, normalization, post-processing, "
-            "and inference precision across arms"
+            f"Serialize one deterministic preprocessing manifest for {dataset}; record transform "
+            "versions, ordering, normalization constants, and inference precision for every arm."
         ),
         tuning_budget=(
-            "match epochs or steps, optimizer search space, input budget, early stopping, "
-            "and total compute"
+            "Evaluate at most 12 predeclared configurations per arm, select on validation data "
+            "only, and retrain each selected configuration with seeds 1, 2, and 3."
         ),
         metrics=metrics,
         seeds=(1, 2, 3),
@@ -568,7 +601,10 @@ def build_method_proposal(
     baseline_evidence = _select_baseline_evidence(list(request.user_material_refs), method_evidence)
     module_primary = _select_module_evidence(method_evidence, baseline=baseline_evidence)
     if module_primary is None:
-        raise ValueError("method canonicalization requires accepted paper evidence")
+        raise ValueError(
+            "method canonicalization requires independent accepted module paper evidence "
+            "distinct from the baseline"
+        )
     dataset_evidence = _select_dataset_evidence(request.question, accepted)
     evidence_text = _evidence_text(state)
     grounded_dataset = _grounded_optional(draft.reported_dataset, evidence_text)
@@ -739,27 +775,21 @@ def build_method_proposal(
         license=_metadata_text(module_primary.metadata, "license"),
         input_semantics=draft.input_semantics,
         output_semantics=draft.output_semantics,
-        input_shape=(
-            "task-specific representation at the selected insertion point; exact dimensions "
-            "are resolved after the baseline is frozen"
+        input_shape=draft.input_shape,
+        output_shape=draft.output_shape,
+        normalization=(
+            "Use the numeric normalization declared by the module source and record all "
+            "constants in the integration manifest."
         ),
-        output_shape="representation contract required by the downstream baseline stage",
-        normalization="inherit and freeze the baseline normalization contract",
         masks=(
             "inherit baseline target and padding masks; introduce no new mask semantics initially"
         ),
         ordering="insert one independently switchable module at the selected representation stage",
         trainable=True,
-        loss_terms=("inherit baseline task losses and weights for the first pilot",),
-        gradient_expectation=(
-            "verify non-zero finite gradients in the module and connected baseline path"
-        ),
-        parameter_update_scope=(
-            "train the candidate module and matched baseline parameters under the same budget"
-        ),
-        loss_scale=(
-            "keep baseline loss scaling unchanged unless a documented pilot failure requires repair"
-        ),
+        loss_terms=(f"Objective interaction: {draft.optimization_interaction}",),
+        gradient_expectation=f"Gradient contract: {draft.optimization_interaction}",
+        parameter_update_scope=f"Parameter update contract: {draft.optimization_interaction}",
+        loss_scale=f"Loss weighting contract: {draft.optimization_interaction}",
         compute_cost=draft.compute_cost,
         assumptions=_dedupe(
             (*plan_risks, "the selected insertion point preserves representation semantics")

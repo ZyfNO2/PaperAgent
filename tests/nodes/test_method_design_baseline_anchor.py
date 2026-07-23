@@ -240,7 +240,7 @@ def test_comparator_role_candidate_is_not_eligible_as_baseline() -> None:
     assert _select_inferred_baseline_evidence((comparator,)) is None
 
 
-def test_comparator_candidate_is_not_selected_as_module_source() -> None:
+def test_baseline_evidence_is_not_reused_as_module_source() -> None:
     baseline = _item(
         "baseline-module-source",
         "A Task-Matched Baseline and Mechanism Paper",
@@ -260,9 +260,7 @@ def test_comparator_candidate_is_not_selected_as_module_source() -> None:
             "rank_score": "0.99",
         },
     )
-    selected = _select_module_evidence((baseline, comparator), baseline=baseline)
-    assert selected is not None
-    assert selected.evidence_id == baseline.evidence_id
+    assert _select_module_evidence((baseline, comparator), baseline=baseline) is None
 
 
 def test_zero_relevance_dataset_parallel_candidate_yields_to_repository_backed_task_paper() -> None:
