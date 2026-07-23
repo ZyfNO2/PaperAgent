@@ -46,9 +46,7 @@ class SQLiteMemoryRepository:
         if not clean_content:
             raise ValueError("memory content must not be empty")
         evidence_ids = tuple(dict.fromkeys(evidence_unit_ids))
-        if len(self.corpus.get_evidence_units_by_id(project_id, evidence_ids)) != len(
-            evidence_ids
-        ):
+        if len(self.corpus.get_evidence_units_by_id(project_id, evidence_ids)) != len(evidence_ids):
             raise ValueError("memory references unknown evidence units")
         instant = now or utc_now()
         identifier = memory_id or f"mem-{uuid4().hex}"
@@ -140,9 +138,7 @@ class SQLiteMemoryRepository:
         self.corpus.get_project(project_id)
         where = "project_id = ?" if include_pending else "project_id = ? AND status = ?"
         params: tuple[object, ...] = (
-            (project_id,)
-            if include_pending
-            else (project_id, MemoryStatus.APPROVED.value)
+            (project_id,) if include_pending else (project_id, MemoryStatus.APPROVED.value)
         )
         with self.database.connect() as connection:
             rows = connection.execute(

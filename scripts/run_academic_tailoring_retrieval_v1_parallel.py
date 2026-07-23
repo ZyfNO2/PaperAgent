@@ -352,8 +352,7 @@ async def _run(args: argparse.Namespace) -> int:
                         "case_id": case_id,
                         "error_type": "CancelledAfterFatalProviderError",
                         "message": (
-                            "cancelled after another concurrent case hit a fatal "
-                            "provider error"
+                            "cancelled after another concurrent case hit a fatal provider error"
                         ),
                     }
                 )

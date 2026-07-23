@@ -221,8 +221,7 @@ def _ensure_user_material_identity_queries(
         if len(identity_queries) >= query_budget:
             break
         if any(
-            _query_contains_material_title(query, identity.title)
-            and "paper" in query.source_types
+            _query_contains_material_title(query, identity.title) and "paper" in query.source_types
             for query in plan.search_queries
         ):
             continue

@@ -38,9 +38,7 @@ class PaperIngestionService:
         if not raw_bytes:
             raise ValueError("paper file is empty")
         identifier = paper_id or f"paper-{uuid4().hex}"
-        version = self.repository.next_ingestion_version(
-            project_id=project_id, paper_id=identifier
-        )
+        version = self.repository.next_ingestion_version(project_id=project_id, paper_id=identifier)
         instant = now or utc_now()
         pages = self._extract_pages(source)
         clean_title = (title or self._infer_title(pages, source.stem)).strip()
@@ -136,8 +134,7 @@ class PaperIngestionService:
                 )
                 yield EvidenceUnit(
                     unit_id=(
-                        f"eu-{paper_id}-{ingestion_version}-{paragraph_number}-"
-                        f"{uuid4().hex[:8]}"
+                        f"eu-{paper_id}-{ingestion_version}-{paragraph_number}-{uuid4().hex[:8]}"
                     ),
                     project_id=project_id,
                     paper_id=paper_id,

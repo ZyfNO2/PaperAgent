@@ -29,8 +29,7 @@ from paperagent.schemas import Message, TokenUsage
 T = TypeVar("T", bound=BaseModel)
 
 _API_USER_AGENT = (
-    "PaperAgent/0.9 (OpenAI-compatible API client; "
-    "+https://github.com/ZyfNO2/PaperAgent)"
+    "PaperAgent/0.9 (OpenAI-compatible API client; +https://github.com/ZyfNO2/PaperAgent)"
 )
 _RETRY_BACKOFF_SECONDS: tuple[float, ...] = (0.5, 1.0, 2.0)
 _RATE_LIMIT_BACKOFF_SECONDS: tuple[float, ...] = (15.0, 30.0, 60.0)

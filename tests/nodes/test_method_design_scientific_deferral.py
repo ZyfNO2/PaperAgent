@@ -37,8 +37,7 @@ def test_deferral_classifier_maps_independent_evidence_failure() -> None:
 def test_deferral_classifier_maps_contract_failures() -> None:
     assert (
         classify_method_design_deferral(
-            "module_design_deferred: module_identity_not_supported, "
-            "module_relation_not_independent"
+            "module_design_deferred: module_identity_not_supported, module_relation_not_independent"
         )
         == "parallel_module_identity_missing"
     )
@@ -68,9 +67,7 @@ async def test_method_design_scientific_deferral_routes_to_report_without_runtim
             status="ready",
             problem_statement="test problem",
             scope="test scope",
-            evidence_gaps=[
-                EvidenceGap(gap_id="module", description="independent module evidence")
-            ],
+            evidence_gaps=[EvidenceGap(gap_id="module", description="independent module evidence")],
             search_queries=[
                 SearchQuery(
                     query_id="q-module",

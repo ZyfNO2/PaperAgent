@@ -75,9 +75,7 @@ def main() -> int:
         traces_by_id[trace.case_id] = trace
 
     prompts = [
-        row
-        for row in scorer._load_jsonl(args.prompts)
-        if str(row.get("case_id")) in cases_by_id
+        row for row in scorer._load_jsonl(args.prompts) if str(row.get("case_id")) in cases_by_id
     ]
     prompt_findings = scorer._scan_prompts(cases_by_id, prompts)
     prompt_cases = {finding.split(":", 1)[0] for finding in prompt_findings}
