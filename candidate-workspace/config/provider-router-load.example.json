@@ -1,0 +1,50 @@
+{
+  "max_total_attempts": 4,
+  "ewma_alpha": 0.2,
+  "pools": [
+    {
+      "pool_id": "primary-free-or-low-cost",
+      "endpoints": [
+        {
+          "endpoint_id": "nvidia-primary",
+          "vendor": "nvidia",
+          "protocol": "openai_chat_completions",
+          "base_url": "https://integrate.api.nvidia.com/v1",
+          "api_key_env": "NVIDIA_API_KEY_A",
+          "model_env": "NVIDIA_MODEL",
+          "native_json_schema": false,
+          "prompt_injected_schema": true,
+          "allow_schema_repair": true,
+          "max_concurrency": 4,
+          "requests_per_minute": 40,
+          "timeout_seconds": 60,
+          "max_output_tokens": 64,
+          "failure_threshold": 2,
+          "cooldown_seconds": 20
+        }
+      ]
+    },
+    {
+      "pool_id": "paid-fallback",
+      "endpoints": [
+        {
+          "endpoint_id": "mistral-fallback",
+          "vendor": "mistral",
+          "protocol": "mistral_chat_completions",
+          "base_url": "https://api.mistral.ai/v1",
+          "api_key_env": "MISTRAL_API_KEY",
+          "model_env": "MISTRAL_MODEL",
+          "native_json_schema": false,
+          "prompt_injected_schema": true,
+          "allow_schema_repair": true,
+          "max_concurrency": 2,
+          "requests_per_minute": 30,
+          "timeout_seconds": 60,
+          "max_output_tokens": 64,
+          "failure_threshold": 2,
+          "cooldown_seconds": 30
+        }
+      ]
+    }
+  ]
+}
