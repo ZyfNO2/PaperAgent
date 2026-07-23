@@ -54,6 +54,7 @@ class ProviderRuntimeConfig(BaseModel):
     max_llm_calls_per_task: int = Field(default=12, ge=1)
     task_wall_clock_seconds: float = Field(default=600.0, gt=0)
     max_estimated_cost_usd: float | None = Field(default=None, gt=0)
+    enforce_task_budget_limits: bool = True
     allow_schema_repair: bool = True
     native_json_schema: bool = True
     reasoning_effort: Literal["none", "minimal", "low", "medium", "high", "xhigh"] | None = None
@@ -100,13 +101,14 @@ class ProviderError(BaseProviderError):
         error_code: ProviderErrorCode,
         message: str,
         *,
+        provider: str = "mistral",
         task: str = "llm",
         retryable: bool = False,
         status_code: int | None = None,
     ) -> None:
         super().__init__(
             message,
-            provider="mistral",
+            provider=provider,
             task=task,
             retryable=retryable,
             code=f"LLM_{error_code.value.upper()}",
@@ -155,7 +157,12 @@ class TelemetrySink:
 
 
 class TaskBudget:
-    """Count every physical request or repair attempt against one task budget."""
+    """Track physical requests and optionally enforce per-task ceilings.
+
+    Production configs enforce call, token, and monetary limits by default. Benchmark
+    configs may disable those ceilings so missing provider telemetry remains observational.
+    Wall-clock timeout is always enforced.
+    """
 
     def __init__(self, config: ProviderRuntimeConfig) -> None:
         self._config = config
@@ -171,6 +178,11 @@ class TaskBudget:
 
     def reserve_call(self, *, task: str = "llm") -> None:
         self._check_time(task=task)
+        if (
+            self._config.enforce_task_budget_limits
+            and self._calls >= self._config.max_llm_calls_per_task
+        ):
+            self._raise_budget("maximum LLM calls per task exhausted", task=task)
         self._calls += 1
 
     def record_usage(self, usage: UsageRecord, *, task: str = "llm") -> None:
@@ -180,7 +192,29 @@ class TaskBudget:
             self._output_tokens += usage.output_tokens
         if usage.estimated_cost_usd is not None:
             self._estimated_cost_usd += usage.estimated_cost_usd
+
+        if self._config.enforce_task_budget_limits:
+            if self._input_tokens > self._config.max_input_tokens_per_task:
+                self._raise_budget("input token budget exhausted", task=task)
+            if self._output_tokens > self._config.max_output_tokens_per_task:
+                self._raise_budget("output token budget exhausted", task=task)
+            maximum = self._config.max_estimated_cost_usd
+            if maximum is not None and usage.estimated_cost_usd is None:
+                self._raise_budget(
+                    "monetary budget cannot be enforced because provider usage is unknown",
+                    task=task,
+                )
+            if maximum is not None and self._estimated_cost_usd > maximum:
+                self._raise_budget("estimated monetary budget exhausted", task=task)
         self._check_time(task=task)
+
+    def _raise_budget(self, message: str, *, task: str) -> None:
+        raise ProviderError(
+            ProviderErrorCode.BUDGET_EXHAUSTED,
+            message,
+            provider=self._config.provider.value,
+            task=task,
+        )
 
     def _check_time(self, *, task: str) -> None:
         elapsed = monotonic() - self._started_at
@@ -188,7 +222,9 @@ class TaskBudget:
             raise ProviderError(
                 ProviderErrorCode.READ_TIMEOUT,
                 "task wall-clock timeout exceeded",
+                provider=self._config.provider.value,
                 task=task,
+                retryable=True,
             )
 
 
