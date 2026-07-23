@@ -13,6 +13,7 @@ from evidence_bound_module_test_patch import apply_test_repairs
 
 _FAILURE_LOG = Path(".github/evidence-bound-module-followup-failure.log")
 _WRAPPER_DIR = Path("/tmp/paperagent-ci-wrappers")
+_FIX_BRANCH = os.environ.get("PAPERAGENT_FIX_BRANCH", "automation/evidence-bound-module-finalize")
 
 
 def _run(*args: str) -> None:
@@ -32,7 +33,7 @@ def _persist_failure(rendered: str) -> None:
     )
     _run("git", "add", str(_FAILURE_LOG))
     _run("git", "commit", "-m", "chore(ci): record module repair failure")
-    _run("git", "push", "origin", "HEAD:fix/evidence-bound-module-contracts")
+    _run("git", "push", "origin", f"HEAD:{_FIX_BRANCH}")
 
 
 def _write_executable(path: Path, content: str) -> None:
@@ -55,7 +56,7 @@ def _install_ci_wrappers() -> None:
   git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
   git add "$target_log"
   git commit -m "$message"
-  git push origin HEAD:fix/evidence-bound-module-contracts
+  git push origin "HEAD:${PAPERAGENT_FIX_BRANCH}"
 }
 '''
     _write_executable(
