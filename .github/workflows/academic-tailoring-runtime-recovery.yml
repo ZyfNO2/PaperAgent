@@ -9,7 +9,6 @@ on:
       - "scripts/run_academic_tailoring_retrieval_v1.py"
       - "src/paperagent/eval_runtime_reporting.py"
       - "src/paperagent/providers/runtime.py"
-      - "src/paperagent/nodes/_shared.py"
       - "src/paperagent/nodes/planning.py"
       - "src/paperagent/nodes/report.py"
       - "src/paperagent/method_design_draft.py"
@@ -42,8 +41,8 @@ jobs:
       PAPERAGENT_LLM_MAX_ATTEMPTS: "4"
       PAPERAGENT_LLM_MAX_CALLS: "100"
       PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE: "40"
-      # Budget is per logical graph invocation; graph re-entry receives a new call index.
-      PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "32000"
+      # Real recovery artifacts show repeated evidence-synthesis passes can exceed 32k.
+      PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "65536"
       PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "4096"
       PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "16384"
       PAPERAGENT_LLM_TASK_TIMEOUT: "900"
@@ -66,7 +65,6 @@ jobs:
           ruff check \
             src/paperagent/eval_runtime_reporting.py \
             src/paperagent/providers/runtime.py \
-            src/paperagent/nodes/_shared.py \
             src/paperagent/nodes/planning.py \
             src/paperagent/nodes/report.py \
             src/paperagent/method_design_draft.py \
@@ -76,7 +74,6 @@ jobs:
             scripts/score_academic_tailoring_retrieval_v2.py
           pytest -q \
             tests/providers/test_runtime.py \
-            tests/nodes/test_synthesis_method_quality_report.py \
             tests/nodes/test_planning_identity_priority.py \
             tests/nodes/test_method_design_baseline_anchor.py \
             tests/nodes/test_report_fallback.py \
@@ -206,4 +203,55 @@ jobs:
                       'baseline_name': baseline.get('name'),
                       'baseline_evidence_id': baseline.get('source_evidence_id'),
                       'module_names': [item.get('name') or item.get('module_id') for item in modules],
-                      'module_evidence_ids': [item.get('e
+                      'module_evidence_ids': [item.get('evidence_id') for item in modules],
+                      'trace_audit_passed': (state.get('trace_audit') or {}).get('passed'),
+                      'last_error_code': ((state.get('execution') or {}).get('last_error') or {}).get('code'),
+                  })
+          Path('build/runtime-recovery/llm-output-audit.json').write_text(
+              json.dumps(output, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          PY
+      - name: Write recovery summary
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          print('## Academic Tailoring Runtime Recovery')
+          summary_path = Path('build/runtime-recovery/candidate/execution-summary.json')
+          if not summary_path.is_file():
+              print('- Candidate summary: missing')
+              raise SystemExit(0)
+          summary = json.loads(summary_path.read_text(encoding='utf-8'))
+          print(f"- Run status: `{summary.get('run_status')}`")
+          print(f"- Attempted: `{len(summary.get('attempted_case_ids', []))}`")
+          print(f"- Completed: `{summary.get('completed')}`")
+          print(f"- Runtime errors: `{summary.get('runtime_errors')}`")
+          print(f"- Source SHA: `{summary.get('source_sha')}`")
+          for error in summary.get('errors', []):
+              print(
+                  '- Error: '
+                  f"`{error.get('case_id')}` / `{error.get('stage')}` / "
+                  f"`{error.get('error_code')}` / `{error.get('error_category')}`"
+              )
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-tailoring-runtime-recovery
+          path: build/runtime-recovery/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Enforce real-runtime and score acceptance
+        if: always()
+        shell: bash
+        run: |
+          test -f build/runtime-recovery/runtime-exit-code.txt
+          test "$(cat build/runtime-recovery/runtime-exit-code.txt)" = "0"
+          test -f build/runtime-recovery/candidate/execution-summary.json
+          test -f build/runtime-recovery/diagnostic-report.json
+          test -f build/runtime-recovery/scorer-exit-code.txt
+          test "$(cat build/runtime-recovery/scorer-exit-code.txt)" = "0"
