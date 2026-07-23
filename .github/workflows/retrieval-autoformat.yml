@@ -1,21 +1,20 @@
 name: Retrieval branch autoformat
 
 on:
-  push:
+  pull_request:
     branches:
-      - feat/retrieval-resilience-infrastructure
+      - fix/evidence-bound-module-contracts-local
 
 permissions:
   contents: write
 
 jobs:
   apply-ruff:
-    if: ${{ !contains(github.event.head_commit.message, 'style: apply ruff formatting') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: feat/retrieval-resilience-infrastructure
+          ref: ${{ github.event.pull_request.head.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -35,4 +34,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "style: apply ruff formatting"
-          git push origin HEAD:feat/retrieval-resilience-infrastructure
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
