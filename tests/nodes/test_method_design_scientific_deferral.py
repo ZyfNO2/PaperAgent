@@ -9,11 +9,13 @@ from paperagent.graph import _after_method_design
 from paperagent.method_design_deferral import classify_method_design_deferral
 from paperagent.schemas import (
     EvidenceBundle,
+    EvidenceGap,
     EvidenceSynthesis,
     ExecutionMeta,
     NodeErrorRecord,
     ResearchPlan,
     ResearchRequest,
+    SearchQuery,
 )
 
 
@@ -66,8 +68,16 @@ async def test_method_design_scientific_deferral_routes_to_report_without_runtim
             status="ready",
             problem_statement="test problem",
             scope="test scope",
-            evidence_gaps=[],
-            search_queries=[],
+            evidence_gaps=[
+                EvidenceGap(gap_id="module", description="independent module evidence")
+            ],
+            search_queries=[
+                SearchQuery(
+                    query_id="q-module",
+                    gap_id="module",
+                    query="independent module evidence",
+                )
+            ],
             success_criteria=["test criterion"],
             risks=[],
         ),
