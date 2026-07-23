@@ -60,9 +60,13 @@ def test_multiple_supplied_titles_take_priority_before_repository_supplements() 
 
     updated = _ensure_user_material_identity_queries(plan, request, query_budget=2)
 
+    expected_module_query = (
+        '"Anomaly Transformer: Time Series Anomaly Detection with Association Discrepancy" '
+        "parallel method module mechanism"
+    )
     assert [query.query for query in updated.search_queries] == [
         '"USAD: UnSupervised Anomaly Detection on Multivariate Time Series"',
-        '"Anomaly Transformer: Time Series Anomaly Detection with Association Discrepancy" parallel method module mechanism',
+        expected_module_query,
     ]
     assert all(query.source_types == ["paper", "web"] for query in updated.search_queries)
 
