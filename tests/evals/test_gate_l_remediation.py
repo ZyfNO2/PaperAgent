@@ -79,7 +79,7 @@ async def test_arxiv_escalation_is_used_only_after_primary_sources_are_insuffici
     query = SearchQuery(
         query_id="q1",
         gap_id="g1",
-        query="indirect prompt injection literature agents",
+        query="recent 2026 indirect prompt injection literature agents",
         source_types=["paper"],
     )
 

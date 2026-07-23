@@ -49,13 +49,17 @@ def _generic(value: str | None) -> bool:
     return any(template in folded for template in _GENERIC_TEMPLATES)
 
 
+def _identity_text(value: str) -> str:
+    return " ".join(re.findall(r"[a-z0-9]+", value.casefold()))
+
+
 def _identity_supported(module: ModuleCard, evidence: EvidenceItem) -> bool:
     aliases = evidence.metadata.get("module_aliases", "")
-    haystack = " ".join(
-        (evidence.title, evidence.summary, aliases, *evidence.metadata.values())
-    ).casefold()
-    identities = (module.name, module.original_role or "")
-    return any(value.strip() and value.strip().casefold() in haystack for value in identities)
+    haystack = _identity_text(
+        " ".join((evidence.title, evidence.summary, aliases, *evidence.metadata.values()))
+    )
+    identities = (_identity_text(module.name), _identity_text(module.original_role or ""))
+    return any(value and value in haystack for value in identities)
 
 
 def _shape_rank(value: str | None) -> int | None:

@@ -7,11 +7,11 @@ from typing import Any
 
 _REQUIRED_WEB_ASSETS = (
     "index.html",
-    "app.js",
-    "styles.css",
     "manifest.webmanifest",
     "service-worker.js",
     "icon.svg",
+    "css/tokens.css",
+    "js/app.js",
 )
 
 

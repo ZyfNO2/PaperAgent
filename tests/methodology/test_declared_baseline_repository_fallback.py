@@ -135,7 +135,9 @@ def test_declared_baseline_miss_uses_repository_backed_direct_paper() -> None:
         guardrail="latency and memory remain within the frozen baseline budget",
         module_name="temporal_feature_fusion",
         module_original_role="multiscale temporal representation fusion",
-        module_proposed_role="preserve anomaly evidence before reconstruction",
+        module_proposed_role=(
+            "preserve industrial monitoring anomaly evidence before reconstruction"
+        ),
         input_semantics="encoded industrial time-series features",
         output_semantics="fused features for the reconstruction head",
         insertion_point="immediately before the reconstruction head",

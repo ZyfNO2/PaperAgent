@@ -256,7 +256,7 @@ async def test_rate_limit_retries_then_succeeds(
     )
     assert result.answer == "retried"
     assert calls == 2
-    assert sleeps == [0.5]
+    assert sleeps == [15.0]
 
 
 @pytest.mark.asyncio

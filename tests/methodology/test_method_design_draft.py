@@ -182,7 +182,15 @@ def _state() -> PaperAgentState:
                     "on VisDrone2019."
                 ),
                 evidence_ids=[_EVIDENCE_ID],
-            )
+            ),
+            Claim(
+                claim_id="claim-shallow-feature-fusion",
+                text=(
+                    "The independently retrieved module paper supports shallow feature fusion "
+                    "for small-object detection."
+                ),
+                evidence_ids=[_MODULE_EVIDENCE_ID],
+            ),
         ],
         conflicts=[],
         feasibility="partially_feasible",

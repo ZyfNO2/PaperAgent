@@ -171,7 +171,7 @@ async def test_router_uses_only_first_two_providers_and_caps_limit() -> None:
         providers_per_lane=10,
     ).retrieve(plan(max_rounds=1))
     assert [result.provider for result in bundle.provider_results] == ["one", "two"]
-    assert limits == [10, 10]
+    assert limits == [100, 100]
 
 
 @pytest.mark.asyncio

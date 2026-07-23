@@ -190,7 +190,7 @@ async def test_all_attempted_academic_provider_failures_are_reported() -> None:
         )
 
     assert exc_info.value.code == "ALL_LITERATURE_PROVIDERS_FAILED"
-    assert service.calls == ["openalex", "semantic_scholar", "arxiv"]
+    assert service.calls == ["openalex", "semantic_scholar"]
     diagnostics = adapter.last_query_diagnostics("q-edge")
     assert diagnostics["stop_reason"] == "all_attempted_providers_failed"
 
@@ -240,7 +240,7 @@ async def test_provider_call_ceiling_stops_before_second_web_source() -> None:
     adapter = _adapter(service)
 
     candidates = await adapter.search(
-        query=_query("lightweight UAV small object detection VisDrone latency"),
+        query=_query("recent 2026 lightweight UAV small object detection VisDrone latency"),
         scenario="live",
         call_index=0,
         fixture_version="v1",
@@ -305,7 +305,8 @@ def test_query_policy_covers_identifier_recent_cjk_and_rejection_paths() -> None
 
     assert exact.primary_provider == "arxiv"
     assert exact.minimum_relevant_results == 1
-    assert recent.primary_provider == "arxiv"
+    assert recent.primary_provider == "openalex"
+    assert recent.escalation_providers == ("semantic_scholar", "arxiv")
     assert cjk.approved
     assert cjk.precision_risk == "low"
     assert not non_informative.approved

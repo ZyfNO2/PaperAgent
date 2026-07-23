@@ -214,11 +214,14 @@ async def test_search_tool_records_partial_provider_failure_without_dropping_suc
         service=LiteratureRetrievalService(
             providers=[
                 FakeProvider("openalex", [provider_result("openalex", "success", [raw])]),
-                FakeProvider("arxiv", [provider_result("arxiv", "timeout")]),
+                FakeProvider(
+                    "semantic_scholar",
+                    [provider_result("semantic_scholar", "timeout")],
+                ),
             ],
             verifier=VerificationService([]),
         ),
-        source_preferences=["openalex", "arxiv"],
+        source_preferences=["openalex", "semantic_scholar"],
     )
     services = RuntimeServices(
         FakeLLMProvider(fixtures={}),
@@ -253,6 +256,6 @@ async def test_search_tool_records_partial_provider_failure_without_dropping_suc
     assert len(patch["retrieval"].raw_candidates) == 1
     assert len(patch["retrieval"].tool_errors) == 1
     error = patch["retrieval"].tool_errors[0]
-    assert error.provider == "arxiv"
+    assert error.provider == "semantic_scholar"
     assert error.code == "TIMEOUT"
     assert error.retryable is True
