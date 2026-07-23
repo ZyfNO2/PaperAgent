@@ -6,6 +6,7 @@ import subprocess
 import traceback
 from pathlib import Path
 
+from evidence_bound_module_lint_patch import apply_lint_repairs
 from evidence_bound_module_prepatch import apply_all
 from evidence_bound_module_remaining_patch import apply_remaining
 
@@ -90,6 +91,7 @@ def main() -> None:
     try:
         apply_all()
         apply_remaining()
+        apply_lint_repairs()
         _install_ci_wrappers()
     except BaseException:
         rendered = traceback.format_exc()
