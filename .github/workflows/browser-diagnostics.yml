@@ -1,0 +1,39 @@
+name: Browser diagnostics
+
+on:
+  pull_request:
+    branches:
+      - fix/evidence-bound-module-contracts-local
+
+jobs:
+  diagnose-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project and Chromium
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev,browser]'
+          python -m playwright install --with-deps chromium
+      - name: Capture browser test output
+        run: |
+          set +e
+          PAPERAGENT_RUN_BROWSER=1 pytest -m browser -vv -s --tb=long \
+            > browser-diagnostics.txt 2>&1
+          status=$?
+          echo "$status" > browser-status.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: browser-diagnostics
+          path: |
+            browser-diagnostics.txt
+            browser-status.txt
+            test-results/
+          if-no-files-found: ignore
