@@ -804,9 +804,7 @@ def main() -> int:
     traces_by_id: dict[str, AcademicTailoringRunTrace] = {}
     for row in trace_rows:
         trace_payload = {
-            key: value
-            for key, value in row.items()
-            if key not in {"run_id", "provider", "model"}
+            key: value for key, value in row.items() if key not in {"run_id", "provider", "model"}
         }
         trace = AcademicTailoringRunTrace.model_validate(trace_payload)
         traces_by_id[trace.case_id] = trace
@@ -823,9 +821,7 @@ def main() -> int:
     attempted_case_ids = [str(value) for value in runtime_summary.get("attempted_case_ids", [])]
     if not runtime_summary.get("run_id"):
         raise ValueError("missing run_id")
-    artifact_run_ids = {
-        str(row.get("run_id", "")) for row in (*state_rows, *trace_rows)
-    }
+    artifact_run_ids = {str(row.get("run_id", "")) for row in (*state_rows, *trace_rows)}
     if artifact_run_ids and artifact_run_ids != {str(runtime_summary["run_id"])}:
         raise ValueError("artifact run_id mismatch")
     if not runtime_summary.get("source_sha"):

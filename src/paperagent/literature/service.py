@@ -374,9 +374,7 @@ class LiteratureRetrievalService:
     ) -> ProviderResult | None:
         if self._cache is None or self._stale_cache_max_age_seconds <= 0:
             return None
-        stale = self._cache.get_stale(
-            key, max_stale_seconds=self._stale_cache_max_age_seconds
-        )
+        stale = self._cache.get_stale(key, max_stale_seconds=self._stale_cache_max_age_seconds)
         if stale is None or stale.status not in {"success", "empty"}:
             return None
         return stale.model_copy(
@@ -448,9 +446,7 @@ class LiteratureRetrievalService:
         if self._cache is not None:
             self._cache.set(key, result)
         cache_status = "bypass" if self._retrieval_mode == "live" else "miss"
-        return result.model_copy(
-            update={"cache_status": cache_status, "retrieval_mode": "live"}
-        )
+        return result.model_copy(update={"cache_status": cache_status, "retrieval_mode": "live"})
 
     async def _run_provider(
         self,

@@ -163,11 +163,7 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
         escalation = ("openalex", "semantic_scholar")
     else:
         primary = "openalex"
-        escalation = (
-            ("semantic_scholar", "arxiv")
-            if recent
-            else ("semantic_scholar",)
-        )
+        escalation = ("semantic_scholar", "arxiv") if recent else ("semantic_scholar",)
 
     allow_web = approved and risk == "low" and "web" in query.source_types
     result_limit = 5 if risk == "low" else 6

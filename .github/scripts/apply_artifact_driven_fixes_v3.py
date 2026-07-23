@@ -38,9 +38,7 @@ def patch_graph_recursion_budget(v2: ModuleType) -> None:
     )
     v2.replace_once(
         path,
-        '                "human_review_policy": "block",\n'
-        "            }\n"
-        "        },\n",
+        '                "human_review_policy": "block",\n            }\n        },\n',
         '                "human_review_policy": "block",\n'
         "            },\n"
         '            "recursion_limit": recursion_limit,\n'

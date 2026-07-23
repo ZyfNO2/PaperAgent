@@ -72,9 +72,7 @@ class LiteratureProviderSettings(BaseModel):
     circuit_timeout_failures: int = Field(default=2, ge=1, le=10)
     circuit_rate_limit_failures: int = Field(default=2, ge=1, le=10)
     circuit_timeout_cooldown_seconds: float = Field(default=10 * 60, gt=0, le=24 * 60 * 60)
-    circuit_rate_limit_cooldown_seconds: float = Field(
-        default=15 * 60, gt=0, le=24 * 60 * 60
-    )
+    circuit_rate_limit_cooldown_seconds: float = Field(default=15 * 60, gt=0, le=24 * 60 * 60)
     enable_arxiv_fallback: bool = False
     enable_web_search: bool = False
     enable_duckduckgo: bool = True

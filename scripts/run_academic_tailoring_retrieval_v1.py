@@ -135,9 +135,7 @@ def _build_runtime_summary(
     return {
         "schema": "paperagent.academic-tailoring-retrieval.runtime-summary.v1",
         "run_id": run_id,
-        "source_sha": source_sha
-        or os.getenv("PAPERAGENT_SOURCE_SHA")
-        or os.getenv("GITHUB_SHA"),
+        "source_sha": source_sha or os.getenv("PAPERAGENT_SOURCE_SHA") or os.getenv("GITHUB_SHA"),
         "public_dataset_sha256": dataset.get("public_sha256"),
         "selected_case_ids": [str(case["case_id"]) for case in cases],
         "selected_case_count": len(cases),

@@ -177,18 +177,12 @@ def _serve(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
                         "PAPERAGENT_RETRIEVAL_CACHE",
                         ".paperagent/retrieval-cache.sqlite3",
                     ),
-                    fixture_directory=_optional_environment_value(
-                        "PAPERAGENT_RETRIEVAL_FIXTURES"
-                    ),
+                    fixture_directory=_optional_environment_value("PAPERAGENT_RETRIEVAL_FIXTURES"),
                     record_fixtures=(
-                        os.getenv("PAPERAGENT_RECORD_RETRIEVAL_FIXTURES", "0")
-                        .strip()
-                        .casefold()
+                        os.getenv("PAPERAGENT_RECORD_RETRIEVAL_FIXTURES", "0").strip().casefold()
                         in _TRUE_VALUES
                     ),
-                    provider_timeout_seconds=float(
-                        os.getenv("PAPERAGENT_PROVIDER_TIMEOUT", "10")
-                    ),
+                    provider_timeout_seconds=float(os.getenv("PAPERAGENT_PROVIDER_TIMEOUT", "10")),
                     arxiv_connect_timeout_seconds=float(
                         os.getenv("PAPERAGENT_ARXIV_CONNECT_TIMEOUT", "8")
                     ),
@@ -211,9 +205,7 @@ def _serve(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
                         os.getenv("PAPERAGENT_ENABLE_WEB_SEARCH", "0").strip().casefold()
                         in _TRUE_VALUES
                     ),
-                    max_provider_calls_total=int(
-                        os.getenv("PAPERAGENT_MAX_PROVIDER_CALLS", "48")
-                    ),
+                    max_provider_calls_total=int(os.getenv("PAPERAGENT_MAX_PROVIDER_CALLS", "48")),
                 ),
                 price_table=price_table,
             )

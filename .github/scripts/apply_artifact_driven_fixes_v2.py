@@ -25,7 +25,7 @@ def replace_once(path: str, old: str, new: str) -> None:
 
 def patch_dataset_relation_priority() -> None:
     old = code(
-        '''
+        """
         def _dataset_relation_names(
             query: str,
             papers: Iterable[PaperRecord],
@@ -44,10 +44,10 @@ def patch_dataset_relation_priority() -> None:
                     if name not in names:
                         names.append(name)
             return tuple(names)
-        '''
+        """
     )
     new = code(
-        '''
+        """
         def _dataset_relation_names(
             query: str,
             papers: Iterable[PaperRecord],
@@ -71,14 +71,14 @@ def patch_dataset_relation_priority() -> None:
                     if name not in names:
                         names.append(name)
             return tuple(names)
-        '''
+        """
     )
     replace_once("src/paperagent/literature/adapter.py", old, new)
 
 
 def patch_repository_backed_baseline() -> None:
     old = code(
-        '''
+        """
         def _select_inferred_baseline_evidence(
             candidates: tuple[EvidenceItem, ...],
         ) -> EvidenceItem | None:
@@ -92,10 +92,13 @@ def patch_repository_backed_baseline() -> None:
             if not papers:
                 return None
             return max(papers, key=_baseline_evidence_rank)
-        '''
+        """
     )
-    new = old + "\n\n" + code(
-        '''
+    new = (
+        old
+        + "\n\n"
+        + code(
+            '''
         def _select_repository_backed_direct_baseline(
             candidates: tuple[EvidenceItem, ...],
         ) -> EvidenceItem | None:
@@ -125,6 +128,7 @@ def patch_repository_backed_baseline() -> None:
                 return None
             return max(papers, key=_baseline_evidence_rank)
         '''
+        )
     )
     replace_once("src/paperagent/method_design_draft.py", old, new)
 
@@ -141,7 +145,7 @@ def patch_repository_backed_baseline() -> None:
 
 def patch_scorer_baseline_acceptance() -> None:
     helper = code(
-        '''
+        """
         def _has_author_linked_repository(
             baseline_source_item: dict[str, Any], accepted_items: list[dict[str, Any]]
         ) -> bool:
@@ -156,7 +160,7 @@ def patch_scorer_baseline_acceptance() -> None:
                 and item["metadata"].get("parent_paper_id") == source_paper_id
                 for item in accepted_items
             )
-        '''
+        """
     )
     marker = "def _baseline_identity_status(\n"
     path = Path("scripts/score_academic_tailoring_retrieval_v1.py")
@@ -169,13 +173,11 @@ def patch_scorer_baseline_acceptance() -> None:
     replace_once(
         str(path),
         "    baseline_targets: list[str],\n) -> str:\n",
-        "    baseline_targets: list[str],\n"
-        "    accepted_items: list[dict[str, Any]],\n"
-        ") -> str:\n",
+        "    baseline_targets: list[str],\n    accepted_items: list[dict[str, Any]],\n) -> str:\n",
     )
 
     old_condition = code(
-        '''
+        """
         if (
             case.get("case_type") == "title_only"
             and baseline_source_item.get("source_type") == "paper"
@@ -184,11 +186,11 @@ def patch_scorer_baseline_acceptance() -> None:
         ):
             return "evidence_bound_alternative"
         return "mismatch"
-        ''',
+        """,
         4,
     )
     new_condition = code(
-        '''
+        """
         if case.get("case_type") == "title_only" and baseline_source_item.get(
             "source_type"
         ) == "paper":
@@ -199,7 +201,7 @@ def patch_scorer_baseline_acceptance() -> None:
             ):
                 return "evidence_bound_alternative"
         return "mismatch"
-        ''',
+        """,
         4,
     )
     replace_once(str(path), old_condition, new_condition)
@@ -234,9 +236,7 @@ def patch_graph_recursion_budget() -> None:
     )
     replace_once(
         path,
-        '                "human_review_policy": "block",\n'
-        "            }\n"
-        "        },\n",
+        '                "human_review_policy": "block",\n            }\n        },\n',
         '                "human_review_policy": "block",\n'
         "            },\n"
         '            "recursion_limit": recursion_limit,\n'
@@ -279,7 +279,7 @@ def patch_runner_recursion_budget() -> None:
         '            "graph": {\n'
         '                **graph_budgets.model_dump(mode="json"),\n'
         '                "recursion_limit": graph_recursion_limit,\n'
-        '            },\n',
+        "            },\n",
     )
     replace_once(
         path,
@@ -324,8 +324,7 @@ def patch_tests() -> None:
     budget_path = "tests/evals/test_academic_tailoring_diagnostic_budgets.py"
     replace_once(
         budget_path,
-        "    assert args.max_evidence_items == 120\n"
-        "    assert args.provider_call_budget == 480\n",
+        "    assert args.max_evidence_items == 120\n    assert args.provider_call_budget == 480\n",
         "    assert args.max_evidence_items == 120\n"
         "    assert args.recursion_limit == 100\n"
         "    assert args.provider_call_budget == 480\n",
@@ -343,8 +342,7 @@ def patch_tests() -> None:
     )
     replace_once(
         budget_path,
-        "    assert args.max_evidence_items == 30\n"
-        "    assert args.provider_call_budget == 120\n",
+        "    assert args.max_evidence_items == 30\n    assert args.provider_call_budget == 120\n",
         "    assert args.max_evidence_items == 30\n"
         "    assert args.recursion_limit == 50\n"
         "    assert args.provider_call_budget == 120\n",
@@ -370,7 +368,7 @@ def patch_tests() -> None:
     marker = "def test_title_only_case_accepts_repo_backed_direct_baseline()"
     if marker not in text:
         text += "\n\n" + code(
-            '''
+            """
             def test_title_only_case_accepts_repo_backed_direct_baseline() -> None:
                 case = {
                     "case_type": "title_only",
@@ -405,14 +403,14 @@ def patch_tests() -> None:
                 )
 
                 assert status == "evidence_bound_alternative"
-            '''
+            """
         )
         diagnostics.write_text(text, encoding="utf-8")
 
     Path("tests/literature").mkdir(parents=True, exist_ok=True)
     Path("tests/literature/test_dataset_relation_priority.py").write_text(
         code(
-            '''
+            """
             from __future__ import annotations
 
             from types import SimpleNamespace
@@ -450,7 +448,7 @@ def patch_tests() -> None:
                 names = _dataset_relation_names("SWaT dataset anomaly detection", papers)
                 assert names[0] == "SWaT"
                 assert "WADI" in names
-            '''
+            """
         ),
         encoding="utf-8",
     )
@@ -458,7 +456,7 @@ def patch_tests() -> None:
     Path("tests/method").mkdir(parents=True, exist_ok=True)
     Path("tests/method/test_repo_backed_baseline.py").write_text(
         code(
-            '''
+            """
             from __future__ import annotations
 
             from types import SimpleNamespace
@@ -522,7 +520,7 @@ def patch_tests() -> None:
                     },
                 )
                 assert _select_repository_backed_direct_baseline((review, repository)) is None
-            '''
+            """
         ),
         encoding="utf-8",
     )

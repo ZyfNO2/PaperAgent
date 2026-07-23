@@ -13,8 +13,7 @@ from urllib.request import Request, urlopen
 
 SCHEMA = "paperagent.llm-provider-health.v1"
 _API_USER_AGENT = (
-    "PaperAgent/0.9 (OpenAI-compatible API client; "
-    "+https://github.com/ZyfNO2/PaperAgent)"
+    "PaperAgent/0.9 (OpenAI-compatible API client; +https://github.com/ZyfNO2/PaperAgent)"
 )
 _TOKEN_LIKE_RE = re.compile(r"(?i)\b(?:sk|oc|key|token)[-_][A-Za-z0-9._-]{8,}\b")
 

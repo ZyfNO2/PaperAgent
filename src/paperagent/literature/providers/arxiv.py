@@ -59,7 +59,7 @@ class ArxivProvider:
         started = utc_now()
         request_id = make_request_id(self.provider_name, lane, filters, limit)
         normalized_query = " ".join(lane.query.split())
-        escaped_query = normalized_query.replace('"', r'\"')
+        escaped_query = normalized_query.replace('"', r"\"")
         search_query = (
             f'ti:"{escaped_query}"' if lane.purpose == "baseline" else f"all:{normalized_query}"
         )
