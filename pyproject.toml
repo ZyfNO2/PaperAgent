@@ -67,6 +67,7 @@ markers = [
 target-version = "py311"
 line-length = 100
 src = ["src", "tests"]
+extend-exclude = [".github/scripts/apply_artifact_driven_fixes*.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
