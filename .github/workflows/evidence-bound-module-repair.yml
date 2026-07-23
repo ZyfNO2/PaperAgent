@@ -1,9 +1,9 @@
-name: Evidence-bound module repair
+name: Evidence-bound module repair v2
 
 on:
-  pull_request:
+  push:
     branches:
-      - master
+      - fix/evidence-bound-module-contracts-v2
 
 permissions:
   contents: write
@@ -12,7 +12,7 @@ jobs:
   patch-test-commit:
     if: ${{ github.actor != 'github-actions[bot]' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,9 +22,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Prepatch method-design contracts
-        run: python scripts/prepatch_method_design.py
 
       - name: Apply validated source patches
         run: python scripts/apply_evidence_bound_module_fix_followup.py
@@ -56,8 +53,8 @@ jobs:
       - name: Commit implementation
         run: |
           rm -f scripts/apply_evidence_bound_module_fix_followup.py
-          rm -f scripts/prepatch_method_design.py
-          rm -f scripts/prepatch_method_design.payload
+          rm -f scripts/prepatch_*
+          rm -f scripts/sitecustomize.py
           rm -f .github/workflows/evidence-bound-module-repair.yml
           rm -f .github/evidence-bound-module-followup-failure.log
           rm -f .github/prepatch-method-design-failure.log
