@@ -108,7 +108,9 @@ async def method_design_node(state: PaperAgentState, config: RunnableConfig) -> 
         return patch
 
     execution = patch.get("execution")
-    last_error = execution.last_error if execution is not None else None
+    if execution is None:
+        return patch
+    last_error = execution.last_error
     if last_error is None or last_error.code not in SCIENTIFIC_METHOD_DEFERRAL_CODES:
         return patch
 
