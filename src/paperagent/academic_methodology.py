@@ -102,6 +102,14 @@ class ModuleCard(BaseModel):
     output_semantics: str | None = None
     input_shape: str | None = None
     output_shape: str | None = None
+    insertion_point: str | None = None
+    normalization_contract: str | None = None
+    masking_contract: str | None = None
+    gradient_path: str | None = None
+    trainable_parameters: str | None = None
+    frozen_parameters: str | None = None
+    loss_weighting: str | None = None
+    # Legacy aliases remain serializable for older stored plans.
     normalization: str | None = None
     masks: str | None = None
     ordering: str | None = None

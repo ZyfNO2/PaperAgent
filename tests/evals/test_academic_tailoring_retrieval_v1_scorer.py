@@ -133,3 +133,16 @@ def test_dataset_mention_scores_partial_not_official_identity_credit() -> None:
     ]
     assert _accepted_asset_matches(assets, items) == 1
     assert _dataset_asset_score(assets, items) == 4
+
+
+def test_module_review_requires_parallel_role_and_explicit_compatibility() -> None:
+    review = SimpleNamespace(
+        evidence_id="ev-module",
+        accepted=True,
+        identity_verified=True,
+        relevance_passed=True,
+        role="parallel_method",
+        role_compatible=True,
+    )
+    assert review.role == "parallel_method"
+    assert review.role_compatible is True

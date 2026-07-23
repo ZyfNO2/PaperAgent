@@ -60,9 +60,7 @@ def _tokens(value: str) -> tuple[str, ...]:
 
 
 def _informative_tokens(value: str) -> set[str]:
-    return {
-        token for token in _tokens(value) if len(token) >= 3 and token not in _GENERIC_TOKENS
-    }
+    return {token for token in _tokens(value) if len(token) >= 3 and token not in _GENERIC_TOKENS}
 
 
 def _specific(value: str | None) -> bool:

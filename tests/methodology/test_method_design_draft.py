@@ -25,6 +25,7 @@ from paperagent.schemas.relevance import (
 from paperagent.state import PaperAgentState
 
 _EVIDENCE_ID = "ev-drone-detr"
+_MODULE_EVIDENCE_ID = "ev-shallow-feature-fusion"
 _SUMMARY = (
     "Drone-DETR is evaluated on the VisDrone2019 dataset for small object detection in UAV "
     "imagery. It uses lightweight feature fusion and reports mAP50 gains over RT-DETR-R18 "
@@ -88,7 +89,7 @@ def _state() -> PaperAgentState:
         locator="doi:10.3390/s24175496",
         retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
         verification_status="accepted",
-        supports_gap_ids=[baseline_gap.gap_id, mechanism_gap.gap_id],
+        supports_gap_ids=[baseline_gap.gap_id],
         summary=_SUMMARY,
         content_hash="sha256:drone-detr",
         provider="literature_retrieval",
@@ -97,13 +98,40 @@ def _state() -> PaperAgentState:
             "candidate_gap_ids": "baseline_comparison,failure_mechanism",
             "license": "CC BY 4.0",
             "baseline_candidate": "inferred",
-            "relation": "parallel_via_dataset",
+            "relation": "baseline_role_query",
             "rank_score": "0.90",
+            "relevance_score": "0.90",
         },
     )
-    support = (
-        _support(baseline_gap.gap_id, baseline_gap.description),
-        _support(mechanism_gap.gap_id, mechanism_gap.description),
+    module_item = EvidenceItem(
+        evidence_id=_MODULE_EVIDENCE_ID,
+        source_type="paper",
+        title="Shallow Feature Fusion for Small Object Detection",
+        locator="doi:10.1000/shallow-feature-fusion",
+        retrieved_at=datetime(2026, 7, 20, tzinfo=UTC),
+        verification_status="accepted",
+        supports_gap_ids=[mechanism_gap.gap_id],
+        summary=(
+            "Shallow feature fusion enhances fine spatial evidence before detector neck fusion "
+            "for small-object localization."
+        ),
+        content_hash="sha256:shallow-feature-fusion",
+        provider="literature_retrieval",
+        metadata={
+            "doi": "10.1000/shallow-feature-fusion",
+            "candidate_gap_ids": "failure_mechanism",
+            "license": "CC BY 4.0",
+            "module_candidate": "inferred",
+            "relation": "module_role_query",
+            "rank_score": "0.92",
+            "relevance_score": "0.92",
+        },
+    )
+    baseline_support = (_support(baseline_gap.gap_id, baseline_gap.description),)
+    module_support = (
+        _support(mechanism_gap.gap_id, mechanism_gap.description).model_copy(
+            update={"evidence_id": _MODULE_EVIDENCE_ID}
+        ),
     )
     ledger = EvidenceLedger(
         entries=(
@@ -111,14 +139,24 @@ def _state() -> PaperAgentState:
                 evidence_id=_EVIDENCE_ID,
                 identity_verified=True,
                 relevance_scope="direct",
-                gap_supports=support,
-                supported_claims=tuple(item.supported_claim or "" for item in support),
+                gap_supports=baseline_support,
+                supported_claims=tuple(item.supported_claim or "" for item in baseline_support),
                 limitations=("pilot reproduction remains required",),
                 accepted=True,
                 rejection_reasons=(),
             ),
+            EvidenceLedgerEntry(
+                evidence_id=_MODULE_EVIDENCE_ID,
+                identity_verified=True,
+                relevance_scope="direct",
+                gap_supports=module_support,
+                supported_claims=tuple(item.supported_claim or "" for item in module_support),
+                limitations=("causal contribution remains unverified",),
+                accepted=True,
+                rejection_reasons=(),
+            ),
         ),
-        accepted_ids=(_EVIDENCE_ID,),
+        accepted_ids=(_EVIDENCE_ID, _MODULE_EVIDENCE_ID),
         rejected_ids=(),
         coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
     )
@@ -134,7 +172,7 @@ def _state() -> PaperAgentState:
             GapAssessment(
                 gap_id=mechanism_gap.gap_id,
                 status="supported",
-                evidence_ids=[_EVIDENCE_ID],
+                evidence_ids=[_MODULE_EVIDENCE_ID],
                 summary="Feature fusion is linked to small-object localization limits.",
                 limitations=["causal contribution remains unverified"],
             ),
@@ -159,9 +197,9 @@ def _state() -> PaperAgentState:
             "request": ResearchRequest(question="轻量化无人机小目标检测"),
             "plan": plan,
             "evidence": EvidenceBundle(
-                items=[evidence_item],
-                accepted_ids=[_EVIDENCE_ID],
-                identity_verified_ids=[_EVIDENCE_ID],
+                items=[evidence_item, module_item],
+                accepted_ids=[_EVIDENCE_ID, _MODULE_EVIDENCE_ID],
+                identity_verified_ids=[_EVIDENCE_ID, _MODULE_EVIDENCE_ID],
                 coverage_by_gap={baseline_gap.gap_id: 1, mechanism_gap.gap_id: 1},
             ),
             "evidence_ledger": ledger,
@@ -189,6 +227,16 @@ def _draft(**updates: object) -> MethodDesignDraft:
         "module_proposed_role": "single causal small-object feature intervention",
         "input_semantics": "a shallow detector feature map containing fine spatial cues",
         "output_semantics": "a shape-compatible enhanced feature map for the baseline head",
+        "input_shape": "[B, C3, H/8, W/8] shallow detector feature map",
+        "output_shape": "[B, C3, H/8, W/8] enhanced feature map",
+        "insertion_point": "between the stride-8 backbone feature and first neck fusion block",
+        "normalization_contract": "apply source module normalization before neck fusion",
+        "masking_contract": "preserve detector target-validity masks without new padding masks",
+        "gradient_path": "detection losses backpropagate through neck fusion into this module",
+        "trainable_parameters": "feature-fusion convolution and channel-gating parameters",
+        "frozen_parameters": "none during the matched end-to-end detector pilot",
+        "loss_terms": ["classification loss", "box regression loss"],
+        "loss_weighting": "use frozen baseline classification and box-loss weights",
         "predicted_effect": "improve small-object recall and AP_small",
         "failure_mode": "extra high-resolution computation may erase the latency benefit",
         "compute_cost": "one bounded feature-fusion path with measured parameter and latency delta",
@@ -222,7 +270,7 @@ def test_flat_draft_builds_aligned_canonical_method_proposal() -> None:
     assert proposal.methodology_plan.modules[0].name == "shallow_feature_fusion"
     assert proposal.modules[0].module_id == "shallow_feature_fusion"
     assert proposal.stop_conditions == list(proposal.methodology_plan.stop_conditions)
-    assert set(proposal.evidence_ids) == {_EVIDENCE_ID}
+    assert set(proposal.evidence_ids) == {_EVIDENCE_ID, _MODULE_EVIDENCE_ID}
 
     arm_types = {experiment.arm_type for experiment in proposal.methodology_plan.experiments}
     assert arm_types == {
@@ -277,7 +325,31 @@ def test_non_vision_task_does_not_inherit_detector_specific_contracts() -> None:
             "locator": "doi:10.1007/s00500-024-09901-x",
             "metadata": {
                 "doi": "10.1007/s00500-024-09901-x",
-                "candidate_gap_ids": "baseline_comparison,failure_mechanism",
+                "candidate_gap_ids": "baseline_comparison",
+                "license": "CC BY 4.0",
+                "baseline_candidate": "inferred",
+                "relation": "baseline_role_query",
+                "rank_score": "0.90",
+                "relevance_score": "0.90",
+            },
+        }
+    )
+    medical_module_item = evidence.items[1].model_copy(
+        update={
+            "title": "Gated Multimodal Fusion for Medical Image Classification",
+            "summary": (
+                "Gated multimodal fusion combines paired medical modality representations "
+                "before a classification head."
+            ),
+            "locator": "doi:10.1000/gated-medical-fusion",
+            "metadata": {
+                "doi": "10.1000/gated-medical-fusion",
+                "candidate_gap_ids": "failure_mechanism",
+                "license": "CC BY 4.0",
+                "module_candidate": "inferred",
+                "relation": "module_role_query",
+                "rank_score": "0.92",
+                "relevance_score": "0.92",
             },
         }
     )
@@ -291,7 +363,7 @@ def test_non_vision_task_does_not_inherit_detector_specific_contracts() -> None:
                     "scope": "paired medical image representations with unresolved modalities",
                 }
             ),
-            "evidence": evidence.model_copy(update={"items": [medical_item]}),
+            "evidence": evidence.model_copy(update={"items": [medical_item, medical_module_item]}),
             "evidence_ledger": ledger,
             "synthesis": synthesis,
         },
@@ -307,6 +379,16 @@ def test_non_vision_task_does_not_inherit_detector_specific_contracts() -> None:
             module_proposed_role="single causal fusion intervention",
             input_semantics="paired modality representations",
             output_semantics="fused representation for the classification head",
+            input_shape="[B, M, D] paired modality embeddings",
+            output_shape="[B, D] projected fused representation",
+            insertion_point="after modality encoders and before the classification head",
+            normalization_contract="apply per-modality layer normalization before fusion",
+            masking_contract="apply the observed-modality availability mask at the fusion gate",
+            gradient_path="classification loss flows through the fusion gate and projections",
+            trainable_parameters="fusion gate and modality projection parameters",
+            frozen_parameters="modality encoder backbones during the first pilot",
+            loss_terms=["binary cross-entropy classification loss"],
+            loss_weighting="classification loss weight 1.0 with no auxiliary term",
         ),
     )
 
@@ -372,7 +454,7 @@ def test_unqualified_direct_paper_does_not_become_baseline() -> None:
         PaperAgentState,
         {
             **state,
-            "evidence": evidence.model_copy(update={"items": [direct_item]}),
+            "evidence": evidence.model_copy(update={"items": [direct_item, evidence.items[1]]}),
         },
     )
     proposal = build_method_proposal(
@@ -389,11 +471,11 @@ def test_unqualified_direct_paper_does_not_become_baseline() -> None:
     assert plan.baseline.baseline_parity_verified is False
     assert "unresolved task-matched baseline" in plan.baseline.name
     assert plan.research.baseline_readiness_confirmed is False
-    assert plan.modules[0].evidence_id == _EVIDENCE_ID
+    assert plan.modules[0].evidence_id == _MODULE_EVIDENCE_ID
     experiments = {experiment.name: experiment for experiment in plan.experiments}
     assert experiments["E0-frozen-baseline"].source_evidence_id is None
-    assert experiments["E1-single-module"].source_evidence_id == _EVIDENCE_ID
-    assert experiments["E2-full-method"].source_evidence_id == _EVIDENCE_ID
+    assert experiments["E1-single-module"].source_evidence_id == _MODULE_EVIDENCE_ID
+    assert experiments["E2-full-method"].source_evidence_id == _MODULE_EVIDENCE_ID
 
 
 def test_reported_comparator_requires_independent_paper_identity() -> None:

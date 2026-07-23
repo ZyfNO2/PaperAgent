@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from langchain_core.runnables import RunnableConfig
 
 from paperagent.errors import NodeError
@@ -186,6 +188,20 @@ def _query_contains_material_title(query: SearchQuery, title: str) -> bool:
     return bool(normalized_title and normalized_title in normalized_query)
 
 
+def _material_query_role_hint(reference: str) -> str:
+    match = re.search(r"\[declared role:(?P<role>[^\]]+)\]", reference, re.IGNORECASE)
+    if match is None:
+        return ""
+    role = match.group("role").casefold()
+    if any(token in role for token in ("parallel", "module", "mechanism", "平行", "模块")):
+        return " parallel method module"
+    if "baseline" in role or "基线" in role:
+        return " baseline"
+    if any(token in role for token in ("comparison", "comparator", "对比", "比较")):
+        return " comparator comparison"
+    return ""
+
+
 def _ensure_user_material_identity_queries(
     plan: ResearchPlan,
     request: ResearchRequest,
@@ -221,14 +237,14 @@ def _ensure_user_material_identity_queries(
         if len(identity_queries) >= query_budget:
             break
         if any(
-            _query_contains_material_title(query, identity.title)
-            and "paper" in query.source_types
+            _query_contains_material_title(query, identity.title) and "paper" in query.source_types
             for query in plan.search_queries
         ):
             continue
         gap_id = _unique_identifier(identity.gap_id, existing_gap_ids)
         query_id = _unique_identifier(identity.query_id, existing_query_ids)
         exact_title = identity.title.replace('"', " ").strip()
+        role_hint = _material_query_role_hint(identity.reference)
         identity_gaps.append(
             EvidenceGap(
                 gap_id=gap_id,
@@ -244,7 +260,7 @@ def _ensure_user_material_identity_queries(
             SearchQuery(
                 query_id=query_id,
                 gap_id=gap_id,
-                query=f'"{exact_title}"',
+                query=f'"{exact_title}"{role_hint}',
                 source_types=["paper", "web"],
             )
         )
@@ -266,7 +282,10 @@ def _ensure_user_material_identity_queries(
             SearchQuery(
                 query_id=repository_query_id,
                 gap_id=gap_id,
-                query=f'"{exact_title}" official implementation code repository',
+                query=(
+                    f'"{exact_title}" official implementation code repository'
+                    f"{_material_query_role_hint(identity.reference)}"
+                ),
                 source_types=["repository", "web"],
             )
         )

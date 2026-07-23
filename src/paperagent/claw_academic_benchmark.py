@@ -317,6 +317,7 @@ class ModuleTrace(FrozenModel):
     failure_mode: str | None = None
     implementation_switch: str | None = None
     role_compatible: bool | None = None
+    compatibility_reasons: tuple[str, ...] = ()
 
 
 class ExperimentTrace(FrozenModel):
