@@ -149,11 +149,14 @@ def _ensure_baseline_role_query(
     *,
     query_budget: int,
 ) -> ResearchPlan:
-    """Guarantee an explicit baseline retrieval role without displacing identity queries."""
+    """Guarantee an explicit reproducible-baseline retrieval lane."""
 
     if plan.status == "blocked" or not plan.search_queries:
         return plan
-    if any(_contains_baseline_role(query.query) for query in plan.search_queries):
+    if any(
+        not query.gap_id.startswith("user-material-") and _contains_baseline_role(query.query)
+        for query in plan.search_queries
+    ):
         return plan
 
     baseline_gap_ids = {
@@ -162,22 +165,56 @@ def _ensure_baseline_role_query(
         if _contains_baseline_role(f"{gap.gap_id} {gap.description}")
     }
     for index, query in enumerate(plan.search_queries):
-        if query.gap_id not in baseline_gap_ids:
+        if query.gap_id.startswith("user-material-") or query.gap_id not in baseline_gap_ids:
             continue
         rewritten = query.model_copy(
             update={
-                "query": f"{query.query} reproducible baseline comparator implementation",
+                "query": (f"{query.query} reproducible baseline comparator official implementation")
             }
         )
         queries = list(plan.search_queries)
         queries[index] = _runtime_source_types(rewritten)
         return plan.model_copy(update={"search_queries": queries})
 
-    del query_budget
-    risks = list(plan.risks)
-    if _BASELINE_QUERY_ABSENT_RISK not in risks:
-        risks.append(_BASELINE_QUERY_ABSENT_RISK)
-    return plan.model_copy(update={"risks": risks})
+    existing_gap_ids = {gap.gap_id for gap in plan.evidence_gaps}
+    existing_query_ids = {query.query_id for query in plan.search_queries}
+    gap_id = _unique_identifier("development-baseline", existing_gap_ids)
+    query_id = _unique_identifier("q-development-baseline", existing_query_ids)
+    context = " ".join((plan.problem_statement, plan.scope)).strip()
+    gap = EvidenceGap(
+        gap_id=gap_id,
+        description=(
+            "Identify an established task-matched development baseline with reproducible "
+            "evaluation evidence and an author-linked implementation."
+        ),
+        required=True,
+        minimum_accepted_items=1,
+    )
+    query = SearchQuery(
+        query_id=query_id,
+        gap_id=gap_id,
+        query=(f"{context} established reproducible baseline benchmark official implementation"),
+        source_types=["paper", "repository", "web"],
+    )
+    identity_gaps = [
+        item for item in plan.evidence_gaps if item.gap_id.startswith("user-material-")
+    ]
+    other_gaps = [
+        item for item in plan.evidence_gaps if not item.gap_id.startswith("user-material-")
+    ]
+    identity_queries = [
+        item for item in plan.search_queries if item.gap_id.startswith("user-material-")
+    ]
+    other_queries = [
+        item for item in plan.search_queries if not item.gap_id.startswith("user-material-")
+    ]
+    merged = plan.model_copy(
+        update={
+            "evidence_gaps": [*identity_gaps, gap, *other_gaps],
+            "search_queries": [*identity_queries, query, *other_queries],
+        }
+    )
+    return _normalize_plan_to_query_budget(merged, query_budget=query_budget)
 
 
 def _query_contains_material_title(query: SearchQuery, title: str) -> bool:
@@ -295,6 +332,132 @@ def _ensure_user_material_identity_queries(
     return _normalize_plan_to_query_budget(merged, query_budget=query_budget)
 
 
+_MODULE_QUERY_HINTS = (
+    "independent",
+    "parallel",
+    "module",
+    "adapter",
+    "fusion",
+    "attention",
+    "augmentation",
+    "独立",
+    "并行",
+    "模块",
+    "机制",
+)
+_DATASET_QUERY_HINTS = (
+    "dataset",
+    "corpus",
+    "evaluation protocol",
+    "split",
+    "数据集",
+    "评测协议",
+)
+
+
+def _plan_queries_contain(plan: ResearchPlan, hints: tuple[str, ...]) -> bool:
+    return any(
+        any(hint in f"{query.gap_id} {query.query}".casefold() for hint in hints)
+        for query in plan.search_queries
+    )
+
+
+def _append_methodology_asset(
+    plan: ResearchPlan,
+    *,
+    gap: EvidenceGap,
+    query: SearchQuery,
+    query_budget: int,
+) -> ResearchPlan:
+    identity_gaps = [
+        item for item in plan.evidence_gaps if item.gap_id.startswith("user-material-")
+    ]
+    other_gaps = [
+        item for item in plan.evidence_gaps if not item.gap_id.startswith("user-material-")
+    ]
+    identity_queries = [
+        item for item in plan.search_queries if item.gap_id.startswith("user-material-")
+    ]
+    other_queries = [
+        item for item in plan.search_queries if not item.gap_id.startswith("user-material-")
+    ]
+    merged = plan.model_copy(
+        update={
+            "evidence_gaps": [*identity_gaps, gap, *other_gaps],
+            "search_queries": [*identity_queries, query, *other_queries],
+        }
+    )
+    return _normalize_plan_to_query_budget(merged, query_budget=query_budget)
+
+
+def _ensure_methodology_asset_queries(
+    plan: ResearchPlan,
+    request: ResearchRequest,
+    *,
+    query_budget: int,
+) -> ResearchPlan:
+    """Add Gold-independent module and evaluation evidence lanes."""
+
+    if plan.status == "blocked" or not plan.search_queries:
+        return plan
+    existing_gap_ids = {gap.gap_id for gap in plan.evidence_gaps}
+    existing_query_ids = {query.query_id for query in plan.search_queries}
+    context = " ".join((request.question, plan.problem_statement, plan.scope)).strip()
+    current = plan
+
+    if not _plan_queries_contain(current, _MODULE_QUERY_HINTS):
+        gap_id = _unique_identifier("independent-parallel-method", existing_gap_ids)
+        query_id = _unique_identifier("q-independent-parallel-method", existing_query_ids)
+        current = _append_methodology_asset(
+            current,
+            gap=EvidenceGap(
+                gap_id=gap_id,
+                description=(
+                    "Find an independently attributable parallel method or mechanism with a "
+                    "concrete interface, objective, failure mode, and implementation source."
+                ),
+                required=True,
+                minimum_accepted_items=1,
+            ),
+            query=SearchQuery(
+                query_id=query_id,
+                gap_id=gap_id,
+                query=(
+                    f"{context} independent parallel method module interface objective "
+                    "official implementation"
+                ),
+                source_types=["paper", "repository", "web"],
+            ),
+            query_budget=query_budget,
+        )
+
+    if not _plan_queries_contain(current, _DATASET_QUERY_HINTS):
+        gap_id = _unique_identifier("dataset-evaluation-protocol", existing_gap_ids)
+        query_id = _unique_identifier("q-dataset-evaluation-protocol", existing_query_ids)
+        current = _append_methodology_asset(
+            current,
+            gap=EvidenceGap(
+                gap_id=gap_id,
+                description=(
+                    "Verify a task-matched dataset or evaluation protocol, including split, "
+                    "preprocessing, metrics, and leakage constraints."
+                ),
+                required=False,
+                minimum_accepted_items=1,
+            ),
+            query=SearchQuery(
+                query_id=query_id,
+                gap_id=gap_id,
+                query=(
+                    f"{context} dataset benchmark evaluation protocol split preprocessing metrics"
+                ),
+                source_types=["dataset", "paper", "web"],
+            ),
+            query_budget=query_budget,
+        )
+    return current
+
+
 async def planning_node(state: PaperAgentState, config: RunnableConfig) -> StatePatch:
     request = state.get("request")
     run = state.get("run")
@@ -341,8 +504,13 @@ async def planning_node(state: PaperAgentState, config: RunnableConfig) -> State
             with_materials,
             query_budget=query_budget,
         )
-        bounded = _normalize_plan_to_query_budget(
+        with_methodology_assets = _ensure_methodology_asset_queries(
             with_baseline_query,
+            request,
+            query_budget=query_budget,
+        )
+        bounded = _normalize_plan_to_query_budget(
+            with_methodology_assets,
             query_budget=query_budget,
         )
         patch["plan"] = _normalize_nonblocking_clarification(bounded)
