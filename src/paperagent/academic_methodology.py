@@ -867,21 +867,8 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
         )
     )
 
-    critical_failures = tuple(
-        item for item in checks if not item.passed and item.severity is AuditSeverity.CRITICAL
-    )
-    blocking_failures = tuple(
-        item
-        for item in checks
-        if not item.passed and item.severity in {AuditSeverity.CRITICAL, AuditSeverity.ERROR}
-    )
     reported_failures = tuple(item for item in checks if not item.passed)
-    if critical_failures:
-        verdict = AuditVerdict.NO_GO
-    elif blocking_failures:
-        verdict = AuditVerdict.REVISE
-    else:
-        verdict = AuditVerdict.GO
+    verdict = MethodAuditReport._verdict_from_checks(tuple(checks))
 
     missing_evidence = tuple(
         sorted(
