@@ -1,13 +1,9 @@
 name: Apply evidence-bound module fix
 
 on:
-  push:
-    branches:
-      - fix/evidence-bound-module-contracts
   pull_request:
     branches:
-      - master
-  workflow_dispatch:
+      - automation/evidence-bound-module-runner
 
 permissions:
   contents: write
