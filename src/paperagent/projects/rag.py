@@ -80,9 +80,9 @@ class HybridAcademicRetriever:
             semantic = _cosine(query_vector, _hashed_vector(tokens))
             phrase_bonus = 0.2 if clean_query.casefold() in unit.content.casefold() else 0.0
             keyword_bonus = 0.05 * len(set(query_tokens) & set(unit.keywords))
-            score = max(0.0, 0.65 * lexical + 0.35 * semantic + phrase_bonus + keyword_bonus)
-            if score <= 0:
+            if lexical <= 0 and phrase_bonus <= 0 and keyword_bonus <= 0:
                 continue
+            score = max(0.0, 0.65 * lexical + 0.35 * semantic + phrase_bonus + keyword_bonus)
             scored.append(
                 SearchHit(
                     unit=unit,
