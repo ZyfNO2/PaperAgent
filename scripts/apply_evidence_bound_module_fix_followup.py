@@ -64,21 +64,19 @@ def _prepatch_literature_metadata() -> None:
 
 
 def _drop_original_literature_metadata_patch(payload: str) -> str:
-    start_marker = '''    replace_once(
-        "src/paperagent/literature/adapter.py",
-        block(
-            '''\n                                {"comparator_candidate": "inferred"}
+    needle = '''                                {"comparator_candidate": "inferred"}
+                                if relation == "comparator_role_query"
+                                else {}
 '''
-    end_marker = '''    )
-
-
-def patch_planning() -> None:
-'''
-    start = payload.find(start_marker)
-    end = payload.find(end_marker, start)
+    needle_index = payload.find(needle)
+    if needle_index < 0:
+        raise RuntimeError("original literature metadata patch needle was not found")
+    start = payload.rfind("    replace_once(\n", 0, needle_index)
+    end_marker = "\n    )\n\n\ndef patch_planning() -> None:\n"
+    end = payload.find(end_marker, needle_index)
     if start < 0 or end < 0:
         raise RuntimeError("original literature metadata patch block was not found")
-    return payload[:start] + payload[end + len("    )\n\n\n") :]
+    return payload[:start] + "\n\ndef patch_planning() -> None:\n" + payload[end + len(end_marker) :]
 
 
 def _harden_original_payload(payload: str) -> str:
