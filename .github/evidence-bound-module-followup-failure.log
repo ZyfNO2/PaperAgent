@@ -1,15 +1,15 @@
 Traceback (most recent call last):
-  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 363, in main
+  File "/home/runner/work/PaperAgent/PaperAgent/scripts/apply_evidence_bound_module_fix_followup.py", line 365, in main
     runpy.run_path(str(original), run_name="__main__")
   File "<frozen runpy>", line 291, in run_path
   File "<frozen runpy>", line 98, in _run_module_code
   File "<frozen runpy>", line 88, in _run_code
-  File "/tmp/paperagent-module-patch-kl4k1wf2.py", line 1138, in <module>
+  File "/tmp/paperagent-module-patch-kq0ww2ny.py", line 1137, in <module>
     main()
-  File "/tmp/paperagent-module-patch-kl4k1wf2.py", line 1129, in main
-    patch_method_design()
-  File "/tmp/paperagent-module-patch-kl4k1wf2.py", line 369, in patch_method_design
+  File "/tmp/paperagent-module-patch-kq0ww2ny.py", line 1129, in main
+    patch_benchmark_models()
+  File "/tmp/paperagent-module-patch-kq0ww2ny.py", line 696, in patch_benchmark_models
     replace_once(
-  File "/tmp/paperagent-module-patch-kl4k1wf2.py", line 23, in replace_once
+  File "/tmp/paperagent-module-patch-kq0ww2ny.py", line 23, in replace_once
     raise RuntimeError(f"{path}: expected one exact match, found {count}")
-RuntimeError: src/paperagent/method_design_draft.py: expected one exact match, found 0
+RuntimeError: src/paperagent/claw_academic_benchmark.py: expected one exact match, found 0
