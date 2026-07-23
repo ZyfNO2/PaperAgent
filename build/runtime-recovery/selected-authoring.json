@@ -1,0 +1,637 @@
+{
+  "base_runtime": {
+    "branch": "feat/claw-live-search-runtime",
+    "commit": "bfc71bee0173231eb659efaf09259c3bb41816cd",
+    "note": "The dataset branch is stacked on the current leakage-remediated runtime. This authoring file contains Gold and must never be passed directly to the candidate executor.",
+    "repository": "ZyfNO2/PaperAgent"
+  },
+  "cases": [
+    {
+      "case_id": "atr-v1-003-nlp-bert-lora-clinc",
+      "case_type": "baseline_plus_parallel_paper",
+      "domain": "nlp",
+      "gold": {
+        "allowed_alternatives": [
+          "A maintained Hugging Face BERT implementation may be used operationally, but must not be mislabeled as the original official repository."
+        ],
+        "baseline_decision": {
+          "canonical": "BERT-base classifier with a linear intent head",
+          "freeze_requirements": [
+            "exact checkpoint",
+            "tokenizer and casing",
+            "10-shot sampler seed",
+            "OOS split",
+            "maximum length",
+            "optimizer and early-stop budget"
+          ],
+          "reproduction_status": "unknown until run"
+        },
+        "compatibility_judgment": {
+          "reject": "Saying LoRA is compatible merely because both systems use Transformers.",
+          "required_checks": [
+            "Inject trainable low-rank matrices into existing dense query/value projections without changing token order.",
+            "Freeze original BERT weights and verify only LoRA plus classifier parameters receive gradients.",
+            "Preserve attention mask, hidden size, residual path, tokenizer, and classification-head semantics.",
+            "Record rank, alpha scaling, dropout, target modules, and merge/unmerge behavior."
+          ],
+          "verdict": "compatible_with_adapter_contract"
+        },
+        "expected_assets": [
+          {
+            "arxiv": "1810.04805",
+            "authors": [
+              "Jacob Devlin",
+              "Ming-Wei Chang",
+              "Kenton Lee",
+              "Kristina Toutanova"
+            ],
+            "kind": "paper",
+            "role": "baseline",
+            "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+            "url": "https://arxiv.org/abs/1810.04805",
+            "venue": "NAACL",
+            "year": 2019
+          },
+          {
+            "kind": "repository",
+            "relation": "author organization implementation; archived read-only",
+            "role": "baseline reference code",
+            "title": "google-research/bert",
+            "url": "https://github.com/google-research/bert"
+          },
+          {
+            "arxiv": "2106.09685",
+            "authors": [
+              "Edward J. Hu",
+              "Yelong Shen",
+              "Phillip Wallis",
+              "Yuzhi Allen-Zhu",
+              "Yuanzhi Li",
+              "Shean Wang",
+              "Lu Wang",
+              "Weizhu Chen"
+            ],
+            "kind": "paper",
+            "role": "module source",
+            "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+            "url": "https://arxiv.org/abs/2106.09685",
+            "venue": "ICLR",
+            "year": 2022
+          },
+          {
+            "kind": "repository",
+            "relation": "official implementation",
+            "role": "module code",
+            "title": "microsoft/LoRA",
+            "url": "https://github.com/microsoft/LoRA"
+          },
+          {
+            "kind": "dataset",
+            "role": "official dataset repository",
+            "title": "CLINC150 / OOS-Eval",
+            "url": "https://github.com/clinc/oos-eval"
+          }
+        ],
+        "experiments": [
+          "Frozen BERT embeddings + linear head",
+          "Full BERT fine-tuning",
+          "BitFit bias-only tuning",
+          "LoRA Q,V with ranks 2,4,8,16",
+          "LoRA Q-only and V-only ablations",
+          "Classifier-head-only ablation",
+          "Five independent 10-shot samplings and seeds",
+          "Report macro-F1, accuracy, per-intent recall, OOS AUROC/FPR95, trainable parameters, peak memory, and time"
+        ],
+        "gap_analysis": [
+          "Full fine-tuning all BERT parameters with 10 examples per class can overfit and has high variance.",
+          "LoRA reduces trainable parameters but does not by itself solve OOS detection or class imbalance.",
+          "The original LoRA paper validates several Transformer families, but a BERT intent-classification integration still needs its own contract and experiment."
+        ],
+        "hard_failures": [
+          "Wrong BERT or LoRA identity.",
+          "Calling a third-party PEFT wrapper the official LoRA repository.",
+          "Claiming LoRA guarantees OOS detection.",
+          "Changing tokenizer/checkpoint between baselines.",
+          "Comparing different tuning budgets without disclosure."
+        ],
+        "minimal_method": [
+          "Start from a verified BERT-base intent classifier.",
+          "Add LoRA to query and value projections only.",
+          "Train LoRA matrices plus classification head.",
+          "Keep a switch producing exact frozen/full-fine-tune baselines.",
+          "Treat OOS scoring as a separate calibrated head or score, not an automatic consequence of LoRA."
+        ],
+        "reference_hypothesis": "For 10-shot CLINC150, adaptation updates are approximately low-rank in selected self-attention projections. LoRA on query and value projections should match or improve macro-F1 over full fine-tuning at lower trainable-parameter and optimizer-memory cost, without degrading OOS AUROC beyond a predefined guardrail.",
+        "stop_conditions": [
+          "LoRA gain disappears over multiple few-shot samplings.",
+          "Full fine-tuning wins under equal search budget and memory is not a project constraint.",
+          "OOS performance degrades beyond the guardrail.",
+          "Gradient audit shows frozen BERT parameters are updated."
+        ],
+        "task_definition": {
+          "dataset_note": "CLINC150/OOS contains in-scope intents and out-of-scope utterances; class and OOS protocols must remain distinct.",
+          "task": "Few-shot, 150-way in-domain intent classification with explicit out-of-scope evaluation."
+        }
+      },
+      "public_input": {
+        "supplied_materials": [
+          {
+            "declared_role": "baseline",
+            "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"
+          },
+          {
+            "declared_role": "parallel_module_source",
+            "title": "LoRA: Low-Rank Adaptation of Large Language Models"
+          }
+        ],
+        "user_input": "Baseline 是论文《BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding》。平行论文《LoRA: Low-Rank Adaptation of Large Language Models》通过低秩增量矩阵进行参数高效适配。请判断能否把 LoRA 接入 BERT，用于 CLINC150 的每类 10-shot 意图分类，并设计方法和实验。"
+      }
+    },
+    {
+      "case_id": "atr-v1-005-remote-oriented-small-edge",
+      "case_type": "baseline_with_condition",
+      "domain": "remote_sensing",
+      "gold": {
+        "allowed_alternatives": [
+          "A simpler tile-selection or coarse-to-fine cascade is acceptable if it is compared against the same fixed Oriented R-CNN protocol."
+        ],
+        "baseline_decision": {
+          "canonical": "Oriented R-CNN on a fixed DOTA split and tile policy",
+          "unknowns": [
+            "exact runnable environment",
+            "metric reproduction",
+            "hardware latency"
+          ]
+        },
+        "compatibility_judgment": {
+          "reject": "Copying the QueryDet detection head wholesale and calling it compatible with oriented proposals.",
+          "required_checks": [
+            "Query targets must represent candidate spatial regions, not axis-aligned final boxes.",
+            "Sparse features must preserve spatial coordinates required by oriented RPN/RoIAlign.",
+            "Rotated box parameterization, feature levels, stride, and NMS/merge semantics remain baseline-consistent.",
+            "Sparse operators and dense fallback must produce equivalent outputs on fully selected regions."
+          ],
+          "verdict": "requires_adapter_and_pilot"
+        },
+        "expected_assets": [
+          {
+            "arxiv": "2108.05699",
+            "authors": [
+              "Xingxing Xie",
+              "Gong Cheng",
+              "Jiabao Wang",
+              "Xiwen Yao",
+              "Junwei Han"
+            ],
+            "kind": "paper",
+            "role": "baseline",
+            "title": "Oriented R-CNN for Object Detection",
+            "url": "https://arxiv.org/abs/2108.05699",
+            "venue": "ICCV",
+            "year": 2021
+          },
+          {
+            "kind": "repository",
+            "relation": "paper-linked implementation",
+            "role": "baseline code",
+            "title": "jbwang1997/OBBDetection",
+            "url": "https://github.com/jbwang1997/OBBDetection"
+          },
+          {
+            "kind": "dataset",
+            "role": "official oriented aerial object detection dataset",
+            "title": "DOTA",
+            "url": "https://captain-whu.github.io/DOTA/"
+          },
+          {
+            "arxiv": "2103.09136",
+            "authors": [
+              "Chenhongyi Yang",
+              "Zehao Huang",
+              "Naiyan Wang"
+            ],
+            "kind": "paper",
+            "role": "sparse high-resolution mechanism source",
+            "title": "QueryDet: Cascaded Sparse Query for Accelerating High-Resolution Small Object Detection",
+            "url": "https://arxiv.org/abs/2103.09136",
+            "venue": "CVPR",
+            "year": 2022
+          },
+          {
+            "kind": "repository",
+            "relation": "official implementation",
+            "role": "module reference code",
+            "title": "ChenhongyiYang/QueryDet-PyTorch",
+            "url": "https://github.com/ChenhongyiYang/QueryDet-PyTorch"
+          }
+        ],
+        "experiments": [
+          "Dense Oriented R-CNN baseline",
+          "Lower input resolution baseline",
+          "Query head without sparse execution",
+          "Sparse routing at one FPN level",
+          "Sparse routing at multiple levels",
+          "Oracle routing upper bound using ground-truth regions",
+          "Report DOTA mAP, AP by object size/category, recall, duplicate detections, FLOPs, wall-clock latency, peak memory, and selected-region ratio"
+        ],
+        "gap_analysis": [
+          "High-resolution feature computation is expensive over large background regions.",
+          "QueryDet's sparse query mechanism was designed around feature-pyramid one-stage detection, not Oriented R-CNN's oriented RPN/RoI path.",
+          "DOTA results are highly sensitive to crop size, overlap, multiscale testing, and merge/NMS policy."
+        ],
+        "hard_failures": [
+          "Wrong Oriented R-CNN repository relation.",
+          "Using axis-aligned AP as the sole target metric.",
+          "Comparing different DOTA tiling/merge policies as model gains.",
+          "Claiming QueryDet directly supports oriented R-CNN without interface analysis."
+        ],
+        "minimal_method": [
+          "Freeze Oriented R-CNN and DOTA tiling/merge protocol.",
+          "Add a low-resolution objectness query head.",
+          "Use it only to gate selected high-resolution FPN locations.",
+          "Keep oriented RPN and oriented RoI head unchanged.",
+          "Provide a dense-mode switch for parity."
+        ],
+        "reference_hypothesis": "Small oriented objects occupy sparse regions of high-resolution aerial tiles. A coarse query head that selects regions for high-resolution feature refinement may reduce effective high-resolution computation while preserving small-object oriented AP, but only if the sparse routing is integrated before oriented proposal/refinement without changing tile and merge protocols.",
+        "stop_conditions": [
+          "Sparse path changes crop/overlap or test-time augmentation relative to baseline.",
+          "Accuracy gain comes from higher effective resolution rather than routing.",
+          "Latency is not measured on the target stack.",
+          "Sparse operator cannot preserve oriented-coordinate semantics."
+        ],
+        "task_definition": {
+          "constraints": [
+            "dense small objects",
+            "rotated boxes",
+            "fixed tiling/overlap policy",
+            "latency or FLOP guardrail"
+          ],
+          "task": "Oriented object detection on tiled high-resolution aerial images."
+        }
+      },
+      "public_input": {
+        "supplied_materials": [
+          {
+            "declared_role": "baseline",
+            "title": "Oriented R-CNN for Object Detection"
+          }
+        ],
+        "user_input": "以论文《Oriented R-CNN for Object Detection》为 Baseline，在 DOTA 密集小目标场景中降低高分辨率推理成本，同时保持旋转框检测精度。"
+      }
+    },
+    {
+      "case_id": "atr-v1-006-industrial-usad-anomaly-transformer",
+      "case_type": "baseline_plus_parallel_paper",
+      "domain": "industrial_fault",
+      "gold": {
+        "allowed_alternatives": [
+          "Use SMD/SMAP/MSL for code-accessible replication, but do not relabel them as industrial SWaT evidence."
+        ],
+        "baseline_decision": {
+          "canonical": "USAD under a frozen SWaT preprocessing, windowing, threshold, and event-scoring protocol",
+          "reproduction_status": "unknown"
+        },
+        "compatibility_judgment": {
+          "direct_graft_failure": [
+            "USAD latent semantics and Anomaly Transformer's temporal-token semantics differ.",
+            "Association discrepancy depends on prior/series associations and minimax optimization.",
+            "A reshape or added attention layer does not preserve the original mechanism."
+          ],
+          "permitted_adapter": "A separate temporal-attention branch trained with its own verified objective, followed by validation-only score calibration/fusion.",
+          "verdict": "direct_graft_no_go; separate_branch_revise_to_pilot"
+        },
+        "expected_assets": [
+          {
+            "arxiv": "2009.11387",
+            "authors": [
+              "Julien Audibert",
+              "Pietro Michiardi",
+              "Frédéric Guyard",
+              "Sébastien Marti",
+              "Maria A. Zuluaga"
+            ],
+            "kind": "paper",
+            "role": "baseline",
+            "title": "USAD: UnSupervised Anomaly Detection on Multivariate Time Series",
+            "url": "https://arxiv.org/abs/2009.11387",
+            "venue": "KDD",
+            "year": 2020
+          },
+          {
+            "kind": "repository",
+            "relation": "author-linked implementation",
+            "role": "baseline code",
+            "title": "manigalati/usad",
+            "url": "https://github.com/manigalati/usad"
+          },
+          {
+            "arxiv": "2110.02642",
+            "authors": [
+              "Jiehui Xu",
+              "Haixu Wu",
+              "Jianmin Wang",
+              "Mingsheng Long"
+            ],
+            "kind": "paper",
+            "role": "module source",
+            "title": "Anomaly Transformer: Time Series Anomaly Detection with Association Discrepancy",
+            "url": "https://arxiv.org/abs/2110.02642",
+            "venue": "ICLR",
+            "year": 2022
+          },
+          {
+            "kind": "repository",
+            "relation": "official implementation",
+            "role": "module code",
+            "title": "thuml/Anomaly-Transformer",
+            "url": "https://github.com/thuml/Anomaly-Transformer"
+          },
+          {
+            "kind": "dataset",
+            "role": "official industrial water-treatment dataset; access terms apply",
+            "title": "SWaT",
+            "url": "https://itrust.sutd.edu.sg/itrust-labs_datasets/dataset_info/"
+          }
+        ],
+        "experiments": [
+          "USAD baseline",
+          "Anomaly Transformer baseline",
+          "Simple average score fusion",
+          "Validation-tuned linear fusion",
+          "Random/untrained attention score negative control",
+          "Fusion without association discrepancy",
+          "Report point-wise and event-wise precision/recall/F1, AUROC/AUPRC, detection delay, false alarms per hour, and results with and without point adjustment"
+        ],
+        "gap_analysis": [
+          "USAD is an autoencoder/adversarial reconstruction architecture, not an attention encoder.",
+          "Association discrepancy is defined jointly with Anomaly-Attention and a minimax training objective.",
+          "Extracting only an attention tensor or discrepancy score would remove the mechanism's training contract."
+        ],
+        "hard_failures": [
+          "Claiming association discrepancy is a standalone attention layer.",
+          "Ignoring minimax training and prior/series association semantics.",
+          "Using test labels for threshold or fusion tuning.",
+          "Comparing incompatible point-adjustment protocols.",
+          "Claiming SWaT data are bundled in the repository when access is controlled."
+        ],
+        "minimal_method": [
+          "Freeze USAD reconstruction score and threshold protocol.",
+          "Train an independent Anomaly Transformer branch on the same training windows.",
+          "Normalize scores using training/validation data only.",
+          "Evaluate score fusion with a predeclared coefficient.",
+          "Do not claim an integrated USAD architecture until the branch independently helps."
+        ],
+        "reference_hypothesis": "A direct internal graft of Anomaly-Attention into USAD is not a minimal module transfer because it changes the encoder family and objective. A bounded pilot may instead compare a separate association-discrepancy branch or score-level fusion against USAD reconstruction, testing whether complementary temporal association evidence improves event-level detection under an unchanged protocol.",
+        "stop_conditions": [
+          "Direct graft cannot state a complete loss and gradient contract.",
+          "Fusion coefficient is tuned on the test set.",
+          "Gain exists only under point adjustment.",
+          "Independent Anomaly Transformer does not add complementary error coverage."
+        ],
+        "task_definition": {
+          "protocol_warning": "Point adjustment and threshold selection can dominate reported scores and must be fixed before comparison.",
+          "task": "Unsupervised multivariate time-series anomaly detection on SWaT."
+        }
+      },
+      "public_input": {
+        "supplied_materials": [
+          {
+            "declared_role": "baseline",
+            "title": "USAD: UnSupervised Anomaly Detection on Multivariate Time Series"
+          },
+          {
+            "declared_role": "parallel_module_source",
+            "title": "Anomaly Transformer: Time Series Anomaly Detection with Association Discrepancy"
+          }
+        ],
+        "user_input": "Baseline 是论文《USAD: UnSupervised Anomaly Detection on Multivariate Time Series》。平行论文《Anomaly Transformer: Time Series Anomaly Detection with Association Discrepancy》提出 Anomaly-Attention 和 association discrepancy。请判断能否将该机制接入 USAD，用于 SWaT 工业控制系统异常检测。"
+      }
+    },
+    {
+      "case_id": "atr-v1-010-rec-coldstart-sequential",
+      "case_type": "title_only",
+      "domain": "recommender_systems",
+      "gold": {
+        "allowed_alternatives": [
+          "Amazon review metadata may replace MovieLens if licenses, timestamps, content availability, and preprocessing are fully verified."
+        ],
+        "baseline_decision": {
+          "canonical": "SASRec for warm/short-history sequential behavior, paired with a content-aware cold-start baseline such as DropoutNet",
+          "reason": "SASRec alone cannot recommend truly unseen item IDs without a content-to-item representation path.",
+          "reproduction_status": "unknown"
+        },
+        "compatibility_judgment": {
+          "recommended": [
+            "Map item content/tag features to the same semantic space as SASRec item embeddings.",
+            "During training, randomly replace some collaborative item embeddings with content-derived embeddings.",
+            "At inference, unseen items use content-derived embeddings."
+          ],
+          "reject": "Claiming SASRec handles cold-start items by merely shortening user histories.",
+          "required_checks": [
+            "Content features are available before the item first appears.",
+            "No future interaction statistics enter content features.",
+            "Item ID, padding ID, and mask semantics remain distinct.",
+            "Candidate generation includes cold items."
+          ],
+          "verdict": "conditionally_compatible"
+        },
+        "expected_assets": [
+          {
+            "arxiv": "1808.09781",
+            "authors": [
+              "Wang-Cheng Kang",
+              "Julian McAuley"
+            ],
+            "kind": "paper",
+            "role": "sequential baseline candidate",
+            "title": "Self-Attentive Sequential Recommendation",
+            "url": "https://arxiv.org/abs/1808.09781",
+            "venue": "ICDM",
+            "year": 2018
+          },
+          {
+            "kind": "repository",
+            "relation": "official implementation",
+            "role": "sequential baseline code",
+            "title": "kang205/SASRec",
+            "url": "https://github.com/kang205/SASRec"
+          },
+          {
+            "arxiv": "1904.06690",
+            "authors": [
+              "Fei Sun",
+              "Jun Liu",
+              "Jian Wu",
+              "Changhua Pei",
+              "Xiao Lin",
+              "Wenwu Ou",
+              "Peng Jiang"
+            ],
+            "doi": "10.1145/3357384.3357895",
+            "kind": "paper",
+            "role": "strong sequential comparison",
+            "title": "BERT4Rec: Sequential Recommendation with Bidirectional Encoder Representations from Transformer",
+            "url": "https://arxiv.org/abs/1904.06690",
+            "venue": "CIKM",
+            "year": 2019
+          },
+          {
+            "kind": "repository",
+            "relation": "official author repository",
+            "role": "comparison code",
+            "title": "FeiSun/BERT4Rec",
+            "url": "https://github.com/FeiSun/BERT4Rec"
+          },
+          {
+            "authors": [
+              "Maksims Volkovs",
+              "Guangwei Yu",
+              "Tomi Poutanen"
+            ],
+            "kind": "paper",
+            "role": "cold-start mechanism source",
+            "title": "DropoutNet: Addressing Cold Start in Recommender Systems",
+            "url": "https://papers.neurips.cc/paper_files/paper/2017/hash/dbd22ba3bd0df8f385bdac3e9f8be207-Abstract.html",
+            "venue": "NeurIPS",
+            "year": 2017
+          },
+          {
+            "kind": "repository",
+            "relation": "official implementation",
+            "role": "cold-start code",
+            "title": "layer6ai-labs/DropoutNet",
+            "url": "https://github.com/layer6ai-labs/DropoutNet"
+          },
+          {
+            "kind": "dataset",
+            "role": "stable interaction and tag benchmark",
+            "title": "MovieLens 20M",
+            "url": "https://grouplens.org/datasets/movielens/20m/"
+          },
+          {
+            "kind": "dataset",
+            "role": "item content-side features",
+            "title": "MovieLens Tag Genome",
+            "url": "https://grouplens.org/datasets/movielens/tag-genome/"
+          }
+        ],
+        "experiments": [
+          "Popularity/content-only baseline",
+          "Warm SASRec",
+          "SASRec with random embedding initialization for cold items",
+          "Content-mapped cold embeddings",
+          "Content mapping + embedding dropout",
+          "Dropout probability ablation",
+          "Warm, short-history-user, and cold-item strata reported separately",
+          "BERT4Rec as strong sequential comparison under equal data/tuning budget",
+          "Report Recall@K, NDCG@K, MRR, coverage, warm/cold gap, and latency"
+        ],
+        "gap_analysis": [
+          "ID-only SASRec has no learned embedding for a new item.",
+          "Short-history users have weak sequential context.",
+          "MovieLens stable datasets contain ratings/tags, but cold-start splits must be constructed without temporal or identity leakage.",
+          "Warm-start metrics can conceal complete failure on cold items."
+        ],
+        "hard_failures": [
+          "Treating random holdout as a true new-item cold-start test.",
+          "Claiming ID-only SASRec can score unseen item IDs without an embedding construction path.",
+          "Leaking future tags/interactions into cold-item content.",
+          "Reporting only aggregate metrics that hide cold strata.",
+          "Calling MovieLens latest mutable data a stable research benchmark."
+        ],
+        "minimal_method": [
+          "Freeze SASRec warm baseline and chronological split.",
+          "Train a content-to-item embedding mapper.",
+          "Evaluate content-only cold-item recommendation.",
+          "Add embedding dropout/replacement during SASRec training.",
+          "Only then add a separate short-history user adaptation."
+        ],
+        "reference_hypothesis": "A content encoder trained to predict or initialize the SASRec item embedding, combined with item-embedding dropout inspired by DropoutNet, should improve Recall@K and NDCG@K on temporally held-out cold items while preserving warm-item performance. A short-history user branch may use pooled content/history features, but should be evaluated separately.",
+        "stop_conditions": [
+          "Cold items appear in training interactions.",
+          "Content/tag features use future interaction-derived statistics.",
+          "Candidate set excludes cold items.",
+          "Improvement is only on warm users/items.",
+          "SASRec/BERT4Rec comparison uses unequal convergence budgets."
+        ],
+        "task_definition": {
+          "required_distinction": "Warm sequential recommendation, new-item cold start, and new/short-history user evaluation are separate protocols.",
+          "task": "Next-item recommendation under item cold start and short-history user conditions."
+        }
+      },
+      "public_input": {
+        "supplied_materials": [],
+        "user_input": "带内容侧信息的冷启动序列推荐：同时处理新物品和短历史用户"
+      }
+    }
+  ],
+  "cases_sha256": "362d74fe319a069dd7c36a32f9f930cf09ea14e738721eb4383ed478f939ca68",
+  "created_at": "2026-07-21",
+  "dataset_id": "academic_tailoring_retrieval_v1",
+  "distribution": {
+    "baseline_plus_parallel_paper": 3,
+    "baseline_with_condition": 3,
+    "domains": [
+      "computer_vision",
+      "time_series",
+      "nlp",
+      "medical_imaging",
+      "remote_sensing",
+      "industrial_fault",
+      "graph_learning",
+      "bioinformatics",
+      "acoustics",
+      "recommender_systems"
+    ],
+    "title_only": 4,
+    "total": 10
+  },
+  "execution_boundary": {
+    "candidate_visible_fields": [
+      "case_id",
+      "case_type",
+      "domain",
+      "public_input"
+    ],
+    "forbidden": [
+      "Reading gold.expected_assets, gold.baseline_decision, gold.reference_hypothesis, gold.compatibility_judgment, gold.experiments, or gold.hard_failures during candidate execution.",
+      "Branching production behavior on case_id, domain labels, paper titles, or benchmark-specific topic tables.",
+      "Treating repository existence as baseline reproduction.",
+      "Treating shape alignment as semantic compatibility."
+    ],
+    "gold_only_fields": [
+      "gold"
+    ],
+    "required_projection": "Before execution, create a gold-independent BenchmarkInput containing only public_input.user_input plus supplied paper titles and user-declared roles."
+  },
+  "language": "zh-CN",
+  "rubric": {
+    "hard_failures": [
+      "fabricated_citation",
+      "fabricated_metric",
+      "fabricated_repository",
+      "wrong_paper_identity",
+      "unofficial_repository_presented_as_official",
+      "unsupported_compatibility",
+      "no_real_retrieval",
+      "evidence_role_mismatch",
+      "repository_exists_claimed_as_reproduced",
+      "future_or_test_leakage",
+      "benchmark_leakage"
+    ],
+    "scoring_policy": "Use fact anchors and role-bound evidence, not exact-string matching. A hard failure makes the case fail regardless of soft score.",
+    "weights": {
+      "baseline_selection": 15,
+      "dataset_truth_and_task_fit": 10,
+      "experiment_and_ablation_design": 10,
+      "falsifiable_hypothesis": 5,
+      "gap_analysis": 10,
+      "module_provenance_and_role": 10,
+      "paper_identity_and_citation_truth": 15,
+      "repository_truth_and_relation": 10,
+      "semantic_and_interface_compatibility": 15
+    }
+  },
+  "schema": "paperagent.academic-tailoring-retrieval.authoring.v1",
+  "status": "public_development_authoring_set"
+}

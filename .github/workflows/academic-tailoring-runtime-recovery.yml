@@ -40,9 +40,10 @@ jobs:
       PAPERAGENT_LLM_TOTAL_TIMEOUT: "360"
       PAPERAGENT_LLM_MAX_ATTEMPTS: "4"
       PAPERAGENT_LLM_MAX_CALLS: "100"
-      PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE: "40"
-      # Real recovery artifacts show repeated evidence-synthesis passes can exceed 32k.
-      PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "65536"
+       PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE: "40"
+       # Budget is enforced per logical graph invocation.
+       # Graph re-entry receives a new call_index and an independent task budget.
+       PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "32000"
       PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "4096"
       PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "16384"
       PAPERAGENT_LLM_TASK_TIMEOUT: "900"

@@ -1,0 +1,304 @@
+{
+  "authoring_sha256": "6ab5aa20b2440d0ad9c71451389d745ac5f7eb252a8eb3a4dff8eff1b92110e1",
+  "average_score": 14.4,
+  "cases": [
+    {
+      "case_id": "atr-v1-001-cv-crack-fewshot",
+      "dimensions": {},
+      "hard_failures": [
+        "runtime_error_or_missing_trace"
+      ],
+      "minimum_score": 80,
+      "score": 0,
+      "status": "failed"
+    },
+    {
+      "case_id": "atr-v1-002-timeseries-patchtst-missing",
+      "dimensions": {},
+      "hard_failures": [
+        "runtime_error_or_missing_trace"
+      ],
+      "minimum_score": 80,
+      "score": 0,
+      "status": "failed"
+    },
+    {
+      "case_id": "atr-v1-003-nlp-bert-lora-clinc",
+      "case_type": "baseline_plus_parallel_paper",
+      "dimensions": {
+        "baseline_selection": 15,
+        "dataset_truth_and_task_fit": 0,
+        "experiment_and_ablation_design": 7,
+        "falsifiable_hypothesis": 5,
+        "gap_analysis": 10,
+        "module_provenance_and_role": 10,
+        "paper_identity_and_citation_truth": 15,
+        "repository_truth_and_relation": 7,
+        "semantic_and_interface_compatibility": 0
+      },
+      "domain": "nlp",
+      "hard_failures": [
+        "module_compatibility_not_independently_verified"
+      ],
+      "matched_assets": {
+        "datasets": [
+          0,
+          1
+        ],
+        "papers": [
+          2,
+          2
+        ],
+        "repositories": [
+          1,
+          2
+        ]
+      },
+      "minimum_score": 80,
+      "observed_decision": "REVISE",
+      "score": 69,
+      "scoring_audit": {
+        "accepted_dataset_count": 0,
+        "accepted_repository_count": 3,
+        "accepted_verified_evidence_count": 10,
+        "baseline_identity_status": "exact_target",
+        "baseline_name": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+        "baseline_source_title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+        "baseline_target_match": true,
+        "baseline_targets": [
+          "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"
+        ],
+        "evidence_backed_module_count": 1,
+        "evidence_bound_alternative_baseline": false,
+        "retrieval_pipeline": {
+          "accepted_verified_count": 10,
+          "candidate_count": 10,
+          "failure_stage": null,
+          "identity_rejected_count": 0,
+          "identity_verified_count": 10,
+          "relevance_passed_count": 10,
+          "relevance_rejected_count": 0,
+          "review_rejected_count": 0,
+          "state_accepted_count": 10,
+          "state_trace_mismatch_count": 0,
+          "trace_accepted_count": 10
+        },
+        "role_bound_module_evidence_ids": [
+          "ev-paper-b85d9dbf9c291e185af0"
+        ],
+        "role_bound_paper_asset_matches": 2,
+        "task_specific_experiment_count": 0,
+        "verified_module_contract_count": 0
+      },
+      "scoring_policy": "role_bound_semantic_v2",
+      "status": "failed"
+    },
+    {
+      "case_id": "atr-v1-004-medical-ham10000-small",
+      "dimensions": {},
+      "hard_failures": [
+        "runtime_error_or_missing_trace"
+      ],
+      "minimum_score": 80,
+      "score": 0,
+      "status": "failed"
+    },
+    {
+      "case_id": "atr-v1-005-remote-oriented-small-edge",
+      "case_type": "baseline_with_condition",
+      "dimensions": {
+        "baseline_selection": 15,
+        "dataset_truth_and_task_fit": 0,
+        "experiment_and_ablation_design": 5,
+        "falsifiable_hypothesis": 0,
+        "gap_analysis": 6,
+        "module_provenance_and_role": 0,
+        "paper_identity_and_citation_truth": 10,
+        "repository_truth_and_relation": 7,
+        "semantic_and_interface_compatibility": 0
+      },
+      "domain": "remote_sensing",
+      "hard_failures": [
+        "baseline_reused_as_module_evidence",
+        "module_compatibility_not_independently_verified"
+      ],
+      "matched_assets": {
+        "datasets": [
+          0,
+          1
+        ],
+        "papers": [
+          1,
+          2
+        ],
+        "repositories": [
+          1,
+          2
+        ]
+      },
+      "minimum_score": 80,
+      "observed_decision": "REVISE",
+      "score": 43,
+      "scoring_audit": {
+        "accepted_dataset_count": 0,
+        "accepted_repository_count": 1,
+        "accepted_verified_evidence_count": 2,
+        "baseline_identity_status": "exact_target",
+        "baseline_name": "Oriented R-CNN for Object Detection",
+        "baseline_source_title": "Oriented R-CNN for Object Detection",
+        "baseline_target_match": true,
+        "baseline_targets": [
+          "Oriented R-CNN for Object Detection"
+        ],
+        "evidence_backed_module_count": 1,
+        "evidence_bound_alternative_baseline": false,
+        "retrieval_pipeline": {
+          "accepted_verified_count": 2,
+          "candidate_count": 2,
+          "failure_stage": null,
+          "identity_rejected_count": 0,
+          "identity_verified_count": 2,
+          "relevance_passed_count": 2,
+          "relevance_rejected_count": 0,
+          "review_rejected_count": 0,
+          "state_accepted_count": 2,
+          "state_trace_mismatch_count": 0,
+          "trace_accepted_count": 2
+        },
+        "role_bound_module_evidence_ids": [],
+        "role_bound_paper_asset_matches": 1,
+        "task_specific_experiment_count": 0,
+        "verified_module_contract_count": 0
+      },
+      "scoring_policy": "role_bound_semantic_v2",
+      "status": "failed"
+    },
+    {
+      "case_id": "atr-v1-006-industrial-usad-anomaly-transformer",
+      "dimensions": {},
+      "hard_failures": [
+        "runtime_error_or_missing_trace"
+      ],
+      "minimum_score": 80,
+      "score": 0,
+      "status": "failed"
+    },
+    {
+      "case_id": "atr-v1-007-graph-graphsage-gat-ppi",
+      "dimensions": {},
+      "hard_failures": [
+        "runtime_error_or_missing_trace"
+      ],
+      "minimum_score": 80,
+      "score": 0,
+      "status": "failed"
+    },
+    {
+      "case_id": "atr-v1-008-bio-protein-function-lowlabel",
+      "dimensions": {},
+      "hard_failures": [
+        "runtime_error_or_missing_trace"
+      ],
+      "minimum_score": 80,
+      "score": 0,
+      "status": "failed"
+    },
+    {
+      "case_id": "atr-v1-009-audio-panns-mimii-domain",
+      "dimensions": {},
+      "hard_failures": [
+        "runtime_error_or_missing_trace"
+      ],
+      "minimum_score": 80,
+      "score": 0,
+      "status": "failed"
+    },
+    {
+      "case_id": "atr-v1-010-rec-coldstart-sequential",
+      "case_type": "title_only",
+      "dimensions": {
+        "baseline_selection": 0,
+        "dataset_truth_and_task_fit": 0,
+        "experiment_and_ablation_design": 7,
+        "falsifiable_hypothesis": 0,
+        "gap_analysis": 10,
+        "module_provenance_and_role": 10,
+        "paper_identity_and_citation_truth": 5,
+        "repository_truth_and_relation": 0,
+        "semantic_and_interface_compatibility": 0
+      },
+      "domain": "recommender_systems",
+      "hard_failures": [
+        "module_compatibility_not_independently_verified",
+        "wrong_paper_identity"
+      ],
+      "matched_assets": {
+        "datasets": [
+          0,
+          2
+        ],
+        "papers": [
+          0,
+          3
+        ],
+        "repositories": [
+          0,
+          3
+        ]
+      },
+      "minimum_score": 80,
+      "observed_decision": "REVISE",
+      "score": 32,
+      "scoring_audit": {
+        "accepted_dataset_count": 0,
+        "accepted_repository_count": 0,
+        "accepted_verified_evidence_count": 8,
+        "baseline_identity_status": "mismatch",
+        "baseline_name": "Cold-start Sequential Recommendation via Meta Learner",
+        "baseline_source_title": "Cold-start Sequential Recommendation via Meta Learner",
+        "baseline_target_match": false,
+        "baseline_targets": [
+          "SASRec for warm/short-history sequential behavior, paired with a content-aware cold-start baseline such as DropoutNet",
+          "Self-Attentive Sequential Recommendation"
+        ],
+        "evidence_backed_module_count": 1,
+        "evidence_bound_alternative_baseline": true,
+        "retrieval_pipeline": {
+          "accepted_verified_count": 8,
+          "candidate_count": 10,
+          "failure_stage": null,
+          "identity_rejected_count": 0,
+          "identity_verified_count": 10,
+          "relevance_passed_count": 10,
+          "relevance_rejected_count": 0,
+          "review_rejected_count": 2,
+          "state_accepted_count": 8,
+          "state_trace_mismatch_count": 0,
+          "trace_accepted_count": 8
+        },
+        "role_bound_module_evidence_ids": [
+          "ev-paper-4fe17c4acdb1f778581d"
+        ],
+        "role_bound_paper_asset_matches": 0,
+        "task_specific_experiment_count": 0,
+        "verified_module_contract_count": 0
+      },
+      "scoring_policy": "role_bound_semantic_v2",
+      "status": "failed"
+    }
+  ],
+  "dataset_id": "academic_tailoring_retrieval_v1",
+  "evaluation_mode": "deterministic_development_diagnostic_not_formal_scientific_acceptance",
+  "failed": 10,
+  "hard_failure_case_count": 10,
+  "hard_failure_count": 12,
+  "hard_failure_label_count": 12,
+  "minimum_score": 80,
+  "passed": 0,
+  "prompt_leakage_findings": [],
+  "report_sha256": "eab57824c5bfbbe2f919f17da2a87291f25ad8b5375a6394f8958525e1c0942e",
+  "runtime_errors": [],
+  "runtime_source_sha": "627264e6c57c579d932c3db5a2bad83fab6aa9b1",
+  "schema": "paperagent.academic-tailoring-retrieval.diagnostic-report.v1",
+  "total": 10
+}
