@@ -1,0 +1,74 @@
+name: Temporary Planning Asset Repair
+
+on:
+  push:
+    branches: [fix/semantic-tailoring-role-bound-scoring]
+    paths: [".github/workflows/tmp-planning-assets-repair.yml"]
+  pull_request:
+    branches: [master]
+    paths: [".github/workflows/tmp-planning-assets-repair.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/semantic-tailoring-role-bound-scoring
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Apply planning repair
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path("src/paperagent/nodes/planning.py")
+          text = path.read_text(encoding="utf-8")
+
+          pattern = r"def _ensure_baseline_role_query\(.*?(?=def _query_contains_material_title\()"
+          replacement = '''def _ensure_baseline_role_query(\n    plan: ResearchPlan,\n    *,\n    query_budget: int,\n) -> ResearchPlan:\n    """Guarantee an explicit reproducible-baseline retrieval lane."""\n\n    if plan.status == "blocked" or not plan.search_queries:\n        return plan\n    if any(_contains_baseline_role(query.query) for query in plan.search_queries):\n        return plan\n\n    baseline_gap_ids = {\n        gap.gap_id\n        for gap in plan.evidence_gaps\n        if _contains_baseline_role(f"{gap.gap_id} {gap.description}")\n    }\n    for index, query in enumerate(plan.search_queries):\n        if query.gap_id not in baseline_gap_ids:\n            continue\n        rewritten = query.model_copy(\n            update={\n                "query": (\n                    f"{query.query} reproducible baseline comparator official implementation"\n                )\n            }\n        )\n        queries = list(plan.search_queries)\n        queries[index] = _runtime_source_types(rewritten)\n        return plan.model_copy(update={"search_queries": queries})\n\n    existing_gap_ids = {gap.gap_id for gap in plan.evidence_gaps}\n    existing_query_ids = {query.query_id for query in plan.search_queries}\n    gap_id = _unique_identifier("development-baseline", existing_gap_ids)\n    query_id = _unique_identifier("q-development-baseline", existing_query_ids)\n    context = " ".join((plan.problem_statement, plan.scope)).strip()\n    gap = EvidenceGap(\n        gap_id=gap_id,\n        description=(\n            "Identify an established task-matched development baseline with reproducible "\n            "evaluation evidence and an author-linked implementation."\n        ),\n        required=True,\n        minimum_accepted_items=1,\n    )\n    query = SearchQuery(\n        query_id=query_id,\n        gap_id=gap_id,\n        query=(\n            f"{context} established reproducible baseline benchmark official implementation"\n        ),\n        source_types=["paper", "repository", "web"],\n    )\n    identity_gaps = [\n        item for item in plan.evidence_gaps if item.gap_id.startswith("user-material-")\n    ]\n    other_gaps = [\n        item for item in plan.evidence_gaps if not item.gap_id.startswith("user-material-")\n    ]\n    identity_queries = [\n        item for item in plan.search_queries if item.gap_id.startswith("user-material-")\n    ]\n    other_queries = [\n        item for item in plan.search_queries if not item.gap_id.startswith("user-material-")\n    ]\n    merged = plan.model_copy(\n        update={\n            "evidence_gaps": [*identity_gaps, gap, *other_gaps],\n            "search_queries": [*identity_queries, query, *other_queries],\n        }\n    )\n    return _normalize_plan_to_query_budget(merged, query_budget=query_budget)\n\n\n'''
+          text, count = re.subn(pattern, replacement, text, count=1, flags=re.DOTALL)
+          if count != 1:
+              raise RuntimeError("baseline function mismatch")
+
+          marker = "async def planning_node(state: PaperAgentState, config: RunnableConfig) -> StatePatch:\n"
+          helper = '''_MODULE_QUERY_HINTS = (\n    "independent",\n    "parallel",\n    "module",\n    "adapter",\n    "fusion",\n    "attention",\n    "augmentation",\n    "独立",\n    "并行",\n    "模块",\n    "机制",\n)\n_DATASET_QUERY_HINTS = (\n    "dataset",\n    "benchmark",\n    "corpus",\n    "evaluation protocol",\n    "split",\n    "数据集",\n    "基准",\n    "评测协议",\n)\n\n\ndef _plan_queries_contain(plan: ResearchPlan, hints: tuple[str, ...]) -> bool:\n    return any(\n        any(hint in f"{query.gap_id} {query.query}".casefold() for hint in hints)\n        for query in plan.search_queries\n    )\n\n\ndef _append_methodology_asset(\n    plan: ResearchPlan,\n    *,\n    gap: EvidenceGap,\n    query: SearchQuery,\n    query_budget: int,\n) -> ResearchPlan:\n    identity_gaps = [\n        item for item in plan.evidence_gaps if item.gap_id.startswith("user-material-")\n    ]\n    other_gaps = [\n        item for item in plan.evidence_gaps if not item.gap_id.startswith("user-material-")\n    ]\n    identity_queries = [\n        item for item in plan.search_queries if item.gap_id.startswith("user-material-")\n    ]\n    other_queries = [\n        item for item in plan.search_queries if not item.gap_id.startswith("user-material-")\n    ]\n    merged = plan.model_copy(\n        update={\n            "evidence_gaps": [*identity_gaps, gap, *other_gaps],\n            "search_queries": [*identity_queries, query, *other_queries],\n        }\n    )\n    return _normalize_plan_to_query_budget(merged, query_budget=query_budget)\n\n\ndef _ensure_methodology_asset_queries(\n    plan: ResearchPlan,\n    request: ResearchRequest,\n    *,\n    query_budget: int,\n) -> ResearchPlan:\n    """Add Gold-independent module and evaluation evidence lanes."""\n\n    if plan.status == "blocked" or not plan.search_queries:\n        return plan\n    existing_gap_ids = {gap.gap_id for gap in plan.evidence_gaps}\n    existing_query_ids = {query.query_id for query in plan.search_queries}\n    context = " ".join((request.question, plan.problem_statement, plan.scope)).strip()\n    current = plan\n\n    if not _plan_queries_contain(current, _MODULE_QUERY_HINTS):\n        gap_id = _unique_identifier("independent-parallel-method", existing_gap_ids)\n        query_id = _unique_identifier("q-independent-parallel-method", existing_query_ids)\n        current = _append_methodology_asset(\n            current,\n            gap=EvidenceGap(\n                gap_id=gap_id,\n                description=(\n                    "Find an independently attributable parallel method or mechanism with a "\n                    "concrete interface, objective, failure mode, and implementation source."\n                ),\n                required=True,\n                minimum_accepted_items=1,\n            ),\n            query=SearchQuery(\n                query_id=query_id,\n                gap_id=gap_id,\n                query=(\n                    f"{context} independent parallel method module interface objective "\n                    "official implementation"\n                ),\n                source_types=["paper", "repository", "web"],\n            ),\n            query_budget=query_budget,\n        )\n\n    if not _plan_queries_contain(current, _DATASET_QUERY_HINTS):\n        gap_id = _unique_identifier("dataset-evaluation-protocol", existing_gap_ids)\n        query_id = _unique_identifier("q-dataset-evaluation-protocol", existing_query_ids)\n        current = _append_methodology_asset(\n            current,\n            gap=EvidenceGap(\n                gap_id=gap_id,\n                description=(\n                    "Verify a task-matched dataset or evaluation protocol, including split, "\n                    "preprocessing, metrics, and leakage constraints."\n                ),\n                required=False,\n                minimum_accepted_items=1,\n            ),\n            query=SearchQuery(\n                query_id=query_id,\n                gap_id=gap_id,\n                query=(\n                    f"{context} dataset benchmark evaluation protocol split preprocessing metrics"\n                ),\n                source_types=["dataset", "paper", "web"],\n            ),\n            query_budget=query_budget,\n        )\n    return current\n\n\n'''
+          if text.count(marker) != 1:
+              raise RuntimeError("planning node marker mismatch")
+          text = text.replace(marker, helper + marker, 1)
+
+          old = '''        with_baseline_query = _ensure_baseline_role_query(\n            with_materials,\n            query_budget=query_budget,\n        )\n        bounded = _normalize_plan_to_query_budget(\n            with_baseline_query,\n            query_budget=query_budget,\n        )\n'''
+          new = '''        with_baseline_query = _ensure_baseline_role_query(\n            with_materials,\n            query_budget=query_budget,\n        )\n        with_methodology_assets = _ensure_methodology_asset_queries(\n            with_baseline_query,\n            request,\n            query_budget=query_budget,\n        )\n        bounded = _normalize_plan_to_query_budget(\n            with_methodology_assets,\n            query_budget=query_budget,\n        )\n'''
+          if text.count(old) != 1:
+              raise RuntimeError("planning invocation mismatch")
+          text = text.replace(old, new, 1)
+          path.write_text(text, encoding="utf-8")
+
+          test = Path("tests/nodes/test_planning_methodology_assets.py")
+          test.write_text('''from __future__ import annotations\n\nfrom paperagent.nodes.planning import (\n    _ensure_baseline_role_query,\n    _ensure_methodology_asset_queries,\n)\nfrom paperagent.schemas import EvidenceGap, ResearchPlan, ResearchRequest, SearchQuery\n\n\ndef _plan() -> ResearchPlan:\n    return ResearchPlan(\n        status="ready",\n        problem_statement="reduce inference cost while preserving task accuracy",\n        scope="bounded reproducible pilot",\n        evidence_gaps=[EvidenceGap(gap_id="g1", description="general task evidence")],\n        search_queries=[\n            SearchQuery(\n                query_id="q1",\n                gap_id="g1",\n                query="general task evidence",\n                source_types=["paper"],\n            )\n        ],\n    )\n\n\ndef test_planner_adds_baseline_module_and_dataset_lanes() -> None:\n    request = ResearchRequest(question="design a task-matched incremental method")\n    with_baseline = _ensure_baseline_role_query(_plan(), query_budget=10)\n    updated = _ensure_methodology_asset_queries(with_baseline, request, query_budget=10)\n    query_text = "\\n".join(query.query.casefold() for query in updated.search_queries)\n    assert "established reproducible baseline" in query_text\n    assert "independent parallel method" in query_text\n    assert "dataset benchmark evaluation protocol" in query_text\n\n\ndef test_identity_lane_remains_ahead_of_generated_methodology_lanes() -> None:\n    plan = _plan().model_copy(\n        update={\n            "evidence_gaps": [\n                EvidenceGap(\n                    gap_id="user-material-baseline",\n                    description="verify declared baseline identity",\n                ),\n                *_plan().evidence_gaps,\n            ],\n            "search_queries": [\n                SearchQuery(\n                    query_id="q-user-material-baseline",\n                    gap_id="user-material-baseline",\n                    query='"Declared Baseline"',\n                    source_types=["paper", "web"],\n                ),\n                *_plan().search_queries,\n            ],\n        }\n    )\n    updated = _ensure_baseline_role_query(plan, query_budget=4)\n    assert updated.search_queries[0].gap_id == "user-material-baseline"\n    assert any("reproducible baseline" in item.query for item in updated.search_queries)\n''', encoding="utf-8")
+          PY
+      - name: Install and verify
+        run: |
+          python -m pip install -q -e '.[dev]'
+          ruff format src/paperagent/nodes/planning.py tests/nodes/test_planning_methodology_assets.py
+          ruff check src/paperagent/nodes/planning.py tests/nodes/test_planning_methodology_assets.py
+          mypy --strict src/paperagent/nodes/planning.py
+          pytest -q tests/nodes/test_planning_methodology_assets.py tests/nodes/test_planning_identity_priority.py
+      - name: Commit planning repair
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "paperagent-repair-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/paperagent/nodes/planning.py tests/nodes/test_planning_methodology_assets.py
+          git commit -m "fix(planning): guarantee methodology evidence lanes"
+          git push origin HEAD:fix/semantic-tailoring-role-bound-scoring
