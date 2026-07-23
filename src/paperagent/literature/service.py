@@ -393,8 +393,7 @@ class LiteratureRetrievalService:
         provider = call.provider
         key = self._cache_key(provider, call.lane, filters)
         cache = self._cache
-        use_cache = cache is not None and self._retrieval_mode != "live"
-        if use_cache:
+        if cache is not None and self._retrieval_mode != "live":
             cached = cache.get(key)
             if cached is not None:
                 return self._cached_copy(cached, offline=self._retrieval_mode == "offline")
