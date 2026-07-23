@@ -89,10 +89,27 @@ def _query_candidate_role(query: str) -> str | None:
         label="literature query role classifier",
     )
 
-    start_marker = "        candidates: list[SearchCandidate] = []\n"
-    extend_marker = "            candidates.extend(\n"
-    start = text.index(start_marker)
-    extend = text.index(extend_marker, start)
+    old_relation_block = """        candidates: list[SearchCandidate] = []
+        for paper in selected:
+            relation = (
+                "declared_identity"
+                if required_title is not None
+                and _exact_title_match(paper.canonical_title, required_title)
+                else (
+                    "parallel_via_dataset"
+                    if paper.paper_id in relation_paper_ids
+                    else (
+                        "baseline_role_query"
+                        if _query_candidate_role(query.query) == "baseline"
+                        else (
+                            "comparator_role_query"
+                            if _query_candidate_role(query.query) == "comparator"
+                            else "direct_query"
+                        )
+                    )
+                )
+            )
+"""
     relation_block = """        candidates: list[SearchCandidate] = []
         query_role = _query_candidate_role(query.query)
         for paper in selected:
@@ -129,7 +146,12 @@ def _query_candidate_role(query: str) -> str | None:
                 )
             )
 """
-    text = text[:start] + relation_block + text[extend:]
+    text = _replace_exact(
+        text,
+        old_relation_block,
+        relation_block,
+        label="literature candidate relation block",
+    )
 
     old_metadata = """                        {"comparator_candidate": "inferred"}
                         if relation == "comparator_role_query"
@@ -241,16 +263,18 @@ def _persist_failure(rendered: str) -> None:
 
 
 def main() -> None:
-    _patch_literature_adapter()
-    original = _materialize_original()
+    original: Path | None = None
     try:
+        _patch_literature_adapter()
+        original = _materialize_original()
         runpy.run_path(str(original), run_name="__main__")
     except BaseException:
         rendered = traceback.format_exc()
         _persist_failure(rendered)
         raise
     finally:
-        original.unlink(missing_ok=True)
+        if original is not None:
+            original.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":
