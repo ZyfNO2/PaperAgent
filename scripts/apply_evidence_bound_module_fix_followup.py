@@ -11,6 +11,7 @@ _PATCH_SOURCE_COMMIT = "0533bf3d7e717064f998a63545c40131cf98f01c"
 _PATCH_PATH = "scripts/apply_evidence_bound_module_fix_followup.py"
 _FAILURE_LOG = Path(".github/evidence-bound-module-followup-failure.log")
 _LITERATURE_ADAPTER = Path("src/paperagent/literature/adapter.py")
+_PLANNING = Path("src/paperagent/nodes/planning.py")
 _TARGET_BRANCH = "fix/evidence-bound-module-contracts-v2"
 
 
@@ -200,8 +201,83 @@ def _query_candidate_role(query: str) -> str | None:
     print(f"patched by function boundary: {_LITERATURE_ADAPTER}")
 
 
+def _patch_planning() -> None:
+    text = _PLANNING.read_text(encoding="utf-8")
+    text = _replace_exact(
+        text,
+        "from __future__ import annotations\n\nfrom langchain_core.runnables import RunnableConfig\n",
+        "from __future__ import annotations\n\nimport re\n\nfrom langchain_core.runnables import RunnableConfig\n",
+        label="planning re import",
+    )
+
+    old_title_helper = """def _query_contains_material_title(query: SearchQuery, title: str) -> bool:
+    normalized_title = " ".join(title.replace('"', " ").split()).casefold()
+    normalized_query = " ".join(query.query.replace('"', " ").split()).casefold()
+    return bool(normalized_title and normalized_title in normalized_query)
+"""
+    new_title_helper = """def _query_contains_material_title(query: SearchQuery, title: str) -> bool:
+    normalized_title = " ".join(title.replace('"', " ").split()).casefold()
+    normalized_query = " ".join(query.query.replace('"', " ").split()).casefold()
+    return bool(normalized_title and normalized_title in normalized_query)
+
+
+def _material_query_role_hint(reference: str) -> str:
+    match = re.search(r"\\[declared role:(?P<role>[^\\]]+)\\]", reference, re.IGNORECASE)
+    if match is None:
+        return ""
+    role = match.group("role").casefold()
+    if any(token in role for token in ("parallel", "module", "mechanism", "平行", "模块")):
+        return " parallel method module"
+    if "baseline" in role or "基线" in role:
+        return " baseline"
+    if any(token in role for token in ("comparison", "comparator", "对比", "比较")):
+        return " comparator comparison"
+    return ""
+"""
+    text = _replace_exact(
+        text,
+        old_title_helper,
+        new_title_helper,
+        label="planning material role helper",
+    )
+
+    text = _replace_exact(
+        text,
+        """        exact_title = identity.title.replace('"', " ").strip()
+        identity_gaps.append(
+""",
+        """        exact_title = identity.title.replace('"', " ").strip()
+        role_hint = _material_query_role_hint(identity.reference)
+        identity_gaps.append(
+""",
+        label="planning material role hint assignment",
+    )
+    text = _replace_exact(
+        text,
+        "                query=f'\"{exact_title}\"',\n",
+        "                query=f'\"{exact_title}\"{role_hint}',\n",
+        label="planning exact-title role query",
+    )
+    text = _replace_exact(
+        text,
+        "                query=f'\"{exact_title}\" official implementation code repository',\n",
+        """                query=(
+                    f'\"{exact_title}\" official implementation code repository'
+                    f'{_material_query_role_hint(identity.reference)}'
+                ),
+""",
+        label="planning repository role query",
+    )
+    _PLANNING.write_text(text, encoding="utf-8")
+    print(f"patched by function boundary: {_PLANNING}")
+
+
 def _harden_original_payload(payload: str) -> str:
-    for call in ("patch_module_compatibility", "patch_literature_adapter"):
+    for call in (
+        "patch_module_compatibility",
+        "patch_literature_adapter",
+        "patch_planning",
+    ):
         payload, removed = re.subn(
             rf"(?m)^\s*{call}\(\)\s*$",
             "",
@@ -282,6 +358,7 @@ def main() -> None:
     original: Path | None = None
     try:
         _patch_literature_adapter()
+        _patch_planning()
         original = _materialize_original()
         runpy.run_path(str(original), run_name="__main__")
     except BaseException:
