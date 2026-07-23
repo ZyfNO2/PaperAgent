@@ -1,0 +1,33 @@
+name: Retrieval test diagnostics
+
+on:
+  pull_request:
+    branches:
+      - fix/evidence-bound-module-contracts-local
+
+jobs:
+  capture-pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]'
+      - name: Capture full offline test output
+        run: |
+          set +e
+          pytest -ra --maxfail=30 > pytest-diagnostics.txt 2>&1
+          status=$?
+          echo "$status" > pytest-status.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: retrieval-pytest-diagnostics
+          path: |
+            pytest-diagnostics.txt
+            pytest-status.txt
