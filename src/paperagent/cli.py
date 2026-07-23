@@ -20,6 +20,7 @@ from paperagent.literature.factory import LiteratureProviderSettings
 from paperagent.llm_smoke import run_llm_smoke
 from paperagent.plugins.cli import configure_plugin_parser, run_plugin_cli
 from paperagent.pricing import load_price_table
+from paperagent.projects.cli import configure_memory_rag_parser, run_memory_rag_cli
 from paperagent.provider_smoke import run_provider_smoke
 from paperagent.providers.config import load_provider_config
 from paperagent.providers.openai_llm import OpenAILLMProvider
@@ -39,8 +40,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="paperagent",
         description=(
-            "PaperAgent bounded research utilities with v0.6 real LLM support, "
-            "v0.7 local plugins, and the v0.8 academic method auditor."
+            "PaperAgent bounded research utilities with local project memory, academic RAG, "
+            "real LLM support, local plugins, and the academic method auditor."
         ),
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -121,6 +122,7 @@ def build_parser() -> argparse.ArgumentParser:
     llm_smoke.add_argument("--timeout", type=_non_negative_float, default=60.0)
     llm_smoke.add_argument("--question", default=None)
 
+    configure_memory_rag_parser(subparsers)
     configure_plugin_parser(subparsers)
     return parser
 
@@ -226,6 +228,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(list(argv) if argv is not None else None)
     command = cast(str, args.command)
+    memory_rag_result = run_memory_rag_cli(args)
+    if memory_rag_result is not None:
+        return memory_rag_result
     if command == "serve":
         return _serve(parser, args)
     if command == "diagnostics":
