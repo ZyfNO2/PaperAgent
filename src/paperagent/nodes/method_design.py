@@ -3,12 +3,17 @@ from __future__ import annotations
 from langchain_core.runnables import RunnableConfig
 
 from paperagent.errors import NodeError
+from paperagent.method_design_deferral import (
+    SCIENTIFIC_METHOD_DEFERRAL_CODES,
+    classify_method_design_deferral,
+)
 from paperagent.method_design_draft import MethodDesignDraft, build_method_proposal
 from paperagent.method_evidence import accepted_evidence_ledger, bind_method_evidence
 from paperagent.nodes._shared import call_structured
 from paperagent.runtime import get_services
-from paperagent.schemas import MethodProposal
+from paperagent.schemas import MethodProposal, QualityDecision
 from paperagent.state import PaperAgentState, StatePatch
+from paperagent.telemetry import make_event
 
 NODE = "method_design_node"
 
@@ -35,9 +40,11 @@ async def method_design_node(state: PaperAgentState, config: RunnableConfig) -> 
         try:
             method = build_method_proposal(state, draft)
         except ValueError as exc:
+            message = str(exc)
+            scientific_reason = classify_method_design_deferral(message)
             raise NodeError(
-                code="METHOD_CANONICALIZATION_FAILED",
-                message=str(exc),
+                code=scientific_reason or "METHOD_CANONICALIZATION_FAILED",
+                message=message,
                 node=NODE,
             ) from exc
         return bind(method)
@@ -98,4 +105,29 @@ async def method_design_node(state: PaperAgentState, config: RunnableConfig) -> 
     if result is not None:
         patch["method"] = result
         patch["methodology_audit"] = None
+        return patch
+
+    execution = patch.get("execution")
+    last_error = execution.last_error if execution is not None else None
+    if last_error is None or last_error.code not in SCIENTIFIC_METHOD_DEFERRAL_CODES:
+        return patch
+
+    scientific_quality = QualityDecision(
+        verdict="blocked",
+        reason_codes=[last_error.code],
+    )
+    patch["quality"] = scientific_quality
+    patch["execution"] = execution.model_copy(update={"status": "blocked"})
+    patch["trace"] = [
+        *patch.get("trace", []),
+        make_event(
+            services,
+            state,
+            node="quality_gate_node",
+            event_type="route.decided",
+            status="decided",
+            route="blocked",
+            output_payload={"quality": scientific_quality},
+        ),
+    ]
     return patch
