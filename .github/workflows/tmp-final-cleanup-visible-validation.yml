@@ -25,31 +25,42 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Extract finalization steps
         run: |
-          python -m pip install -q pyyaml
           python - <<'PY'
           from pathlib import Path
-          import yaml
 
-          workflow = yaml.safe_load(
-              Path('.github/workflows/tmp-final-semantic-repair-cleanup.yml').read_text(
-                  encoding='utf-8'
-              )
+          text = Path(
+              '.github/workflows/tmp-final-semantic-repair-cleanup.yml'
+          ).read_text(encoding='utf-8')
+
+          boundaries = (
+              (
+                  '      - name: Apply final workflow coverage and cleanup\n',
+                  '      - name: Install project and YAML parser\n',
+              ),
+              (
+                  '      - name: Install project and YAML parser\n',
+                  '      - name: Validate workflow syntax\n',
+              ),
+              (
+                  '      - name: Validate workflow syntax\n',
+                  '      - name: Format, lint, types, and focused regressions\n',
+              ),
+              (
+                  '      - name: Format, lint, types, and focused regressions\n',
+                  '      - name: Commit finalized repair\n',
+              ),
           )
-          steps = workflow['jobs']['finalize']['steps']
-          selected = [
-              step for step in steps
-              if step.get('name') in {
-                  'Apply final workflow coverage and cleanup',
-                  'Install project and YAML parser',
-                  'Validate workflow syntax',
-                  'Format, lint, types, and focused regressions',
-              }
-          ]
-          if len(selected) != 4:
-              raise SystemExit(f'expected 4 executable validation steps, got {len(selected)}')
-          for index, step in enumerate(selected, start=1):
+          for index, (start_marker, end_marker) in enumerate(boundaries, start=1):
+              start = text.index(start_marker)
+              run_start = text.index('        run: |\n', start) + len('        run: |\n')
+              end = text.index(end_marker, run_start)
+              lines = text[run_start:end].splitlines()
+              script = '\n'.join(
+                  line[10:] if line.startswith('          ') else line
+                  for line in lines
+              ) + '\n'
               Path(f'/tmp/finalize-{index}.sh').write_text(
-                  step['run'] + '\n',
+                  script,
                   encoding='utf-8',
               )
           PY
