@@ -30,12 +30,12 @@ def provider_config_for_case(
     selected_case_count: int,
     max_logical_calls: int | None = None,
 ) -> ProviderRuntimeConfig:
-    """Create isolated per-case physical-request and monetary budgets.
+    """Create an isolated benchmark provider config for one case.
 
-    Graph execution counts logical LLM calls, while a provider budget counts every physical
-    request, including schema-repair attempts. The physical limit therefore reserves the configured
-    number of attempts for every allowed logical call. A configured monetary ceiling is interpreted
-    as the full-run ceiling and divided evenly across cases, providing a conservative aggregate cap.
+    Graph execution still bounds logical workflow steps, retrieval rounds, and wall-clock
+    duration. Provider call/token/cost ceilings are disabled for diagnostic evaluation so
+    incomplete or unavailable usage telemetry cannot terminate a case. Telemetry remains
+    recorded and reported for post-run inspection.
     """
 
     if selected_case_count < 1:
@@ -43,8 +43,9 @@ def provider_config_for_case(
     if max_logical_calls is not None and max_logical_calls < 1:
         raise ValueError("max_logical_calls must be positive")
     logical_limit = max_logical_calls or config.max_llm_calls_per_task
-    updates: dict[str, int | float] = {
+    updates: dict[str, int | float | bool] = {
         "max_llm_calls_per_task": logical_limit * config.max_attempts,
+        "enforce_task_budget_limits": False,
     }
     maximum = config.max_estimated_cost_usd
     if maximum is not None:
