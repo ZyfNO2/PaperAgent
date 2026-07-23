@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - fix/evidence-bound-module-contracts
+  pull_request:
+    branches:
+      - master
   workflow_dispatch:
 
 permissions:
@@ -63,6 +66,7 @@ jobs:
       - name: Commit implementation
         run: |
           rm -f scripts/evidence_bound_module_patch.b64
+          rm -f .github/evidence-bound-module-trigger.txt
           rm -f .github/workflows/apply-evidence-bound-module-fix.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
