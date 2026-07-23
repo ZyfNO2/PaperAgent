@@ -12,6 +12,16 @@ from paperagent.state import PaperAgentState, StatePatch
 
 NODE = "method_design_node"
 
+_MODULE_CONTRACT_REQUIREMENTS = (
+    "Use one independently retrieved accepted module-lane paper that is distinct from the baseline.",
+    "Bind the module name and original role to the selected paper title, summary, or verified metadata.",
+    "State the exact baseline insertion point; do not use generic phrases such as selected representation stage.",
+    "Specify input and output semantics and explicit tensor ranks/shapes, or an explicit projection path.",
+    "Specify normalization and masking behavior for the target task rather than inheriting unspecified defaults.",
+    "Specify gradient path, trainable parameters, frozen parameters, loss terms, and numeric loss weighting separately.",
+    "Defer the module design when any required interface contract is unsupported by accepted evidence.",
+)
+
 
 async def method_design_node(state: PaperAgentState, config: RunnableConfig) -> StatePatch:
     plan = state.get("plan")
@@ -35,11 +45,13 @@ async def method_design_node(state: PaperAgentState, config: RunnableConfig) -> 
         try:
             method = build_method_proposal(state, draft)
         except ValueError as exc:
-            raise NodeError(
-                code="METHOD_CANONICALIZATION_FAILED",
-                message=str(exc),
-                node=NODE,
-            ) from exc
+            message = str(exc)
+            code = (
+                "MODULE_DESIGN_DEFERRED"
+                if message.startswith("module_design_deferred:")
+                else "METHOD_CANONICALIZATION_FAILED"
+            )
+            raise NodeError(code=code, message=message, node=NODE) from exc
         return bind(method)
 
     def validate(method: MethodProposal) -> None:
@@ -65,6 +77,7 @@ async def method_design_node(state: PaperAgentState, config: RunnableConfig) -> 
             assessment.model_dump(mode="json") for assessment in synthesis.gap_assessments
         ],
         "accepted_evidence_ledger": accepted_evidence_ledger(evidence),
+        "module_contract_requirements": list(_MODULE_CONTRACT_REQUIREMENTS),
         "constraints": request.required_constraints if request is not None else [],
         "risks": plan.risks,
         "clarification_question": plan.clarification_question,
