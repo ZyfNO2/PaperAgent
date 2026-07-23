@@ -2,18 +2,20 @@ from __future__ import annotations
 
 import asyncio
 import json
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Protocol
+from typing import Literal, Protocol
 
-from paperagent.literature.cache import CacheKey, InMemoryProviderCache
+from paperagent.literature.cache import CacheKey, ProviderCache
 from paperagent.literature.coverage import audit_coverage
 from paperagent.literature.merge import merge_provider_results
 from paperagent.literature.normalize import normalized_text
 from paperagent.literature.providers.base import LiteratureProvider, make_request_id, utc_now
 from paperagent.literature.ranking import rank_papers
+from paperagent.literature.resilience import ProviderCircuitBreaker
 from paperagent.literature.verification import VerificationService
+from paperagent.providers.request_rate_limit import shared_request_rate_limiter
 from paperagent.schemas.literature import (
     CoverageReport,
     LiteratureBundle,
@@ -24,6 +26,8 @@ from paperagent.schemas.literature import (
     QueryLane,
     RetrievalMetrics,
 )
+
+RetrievalMode = Literal["offline", "cache_first", "live"]
 
 
 class FocusedQueryRewriter(Protocol):
@@ -71,18 +75,26 @@ class LiteratureRetrievalService:
         *,
         providers: Sequence[LiteratureProvider],
         verifier: VerificationService,
-        cache: InMemoryProviderCache | None = None,
+        cache: ProviderCache | None = None,
         rewriter: FocusedQueryRewriter | None = None,
         total_deadline_seconds: float = 25.0,
         providers_per_lane: int = 2,
         results_per_request: int = 10,
         candidate_limit: int = 30,
         final_limit: int = 12,
-        provider_concurrency: int = 2,
+        provider_concurrency: int | Mapping[str, int] = 2,
+        request_rates_per_minute: Mapping[str, int] | None = None,
+        circuit_breaker: ProviderCircuitBreaker | None = None,
+        retrieval_mode: RetrievalMode = "cache_first",
+        stale_cache_max_age_seconds: float = 30 * 24 * 60 * 60,
         max_provider_calls: int | None = 48,
     ) -> None:
         if max_provider_calls is not None and max_provider_calls < 1:
             raise ValueError("max_provider_calls must be positive or None")
+        if retrieval_mode not in {"offline", "cache_first", "live"}:
+            raise ValueError("retrieval_mode must be offline, cache_first, or live")
+        if stale_cache_max_age_seconds < 0:
+            raise ValueError("stale_cache_max_age_seconds must be non-negative")
         self._providers = {provider.provider_name: provider for provider in providers}
         self._provider_order = [provider.provider_name for provider in providers]
         self._verifier = verifier
@@ -90,12 +102,22 @@ class LiteratureRetrievalService:
         self._rewriter = rewriter
         self._deadline = total_deadline_seconds
         self._providers_per_lane = min(2, providers_per_lane)
-        self._results_per_request = min(10, results_per_request)
+        self._results_per_request = min(100, results_per_request)
         self._candidate_limit = min(30, candidate_limit)
         self._final_limit = min(12, final_limit)
+        concurrency_by_provider = (
+            dict(provider_concurrency)
+            if isinstance(provider_concurrency, Mapping)
+            else {name: provider_concurrency for name in self._providers}
+        )
         self._semaphores = {
-            name: asyncio.Semaphore(provider_concurrency) for name in self._providers
+            name: asyncio.Semaphore(max(1, concurrency_by_provider.get(name, 1)))
+            for name in self._providers
         }
+        self._request_rates_per_minute = dict(request_rates_per_minute or {})
+        self._circuit_breaker = circuit_breaker or ProviderCircuitBreaker()
+        self._retrieval_mode = retrieval_mode
+        self._stale_cache_max_age_seconds = stale_cache_max_age_seconds
         self._inflight: dict[CacheKey, asyncio.Task[ProviderResult]] = {}
         self._inflight_lock = asyncio.Lock()
         self._max_provider_calls = max_provider_calls
@@ -105,6 +127,15 @@ class LiteratureRetrievalService:
     @property
     def provider_names(self) -> tuple[str, ...]:
         return tuple(self._provider_order)
+
+    def close(self) -> None:
+        if self._cache is not None:
+            self._cache.close()
+        self._verifier.close()
+
+    @property
+    def retrieval_mode(self) -> RetrievalMode:
+        return self._retrieval_mode
 
     def provider_call_budget(self) -> dict[str, int | None]:
         maximum = self._max_provider_calls
@@ -139,15 +170,24 @@ class LiteratureRetrievalService:
             or all(result.status in {"failed", "timeout", "rate_limited"} for result in all_results)
         ):
             coverage = coverage.model_copy(update={"retry_recommendation": "blocked"})
+        no_remote_call_codes = {
+            "OFFLINE_CACHE_MISS",
+            "PROVIDER_CALL_BUDGET_EXHAUSTED",
+            "PROVIDER_CIRCUIT_OPEN",
+        }
         metrics = RetrievalMetrics(
             rounds=rounds,
             provider_calls=sum(
                 result.cache_status in {"miss", "bypass"}
-                and result.error_code != "PROVIDER_CALL_BUDGET_EXHAUSTED"
+                and result.error_code not in no_remote_call_codes
                 for result in all_results
             ),
             query_rewrite_calls=rewrite_calls,
-            cache_hits=sum(result.cache_status == "hit" for result in all_results),
+            cache_hits=sum(
+                result.cache_status
+                in {"hit", "stale_hit", "negative_hit", "offline_hit", "coalesced"}
+                for result in all_results
+            ),
         )
         return LiteratureBundle(
             papers=papers,
@@ -266,6 +306,87 @@ class LiteratureRetrievalService:
             error_message="task-level external provider call budget exhausted",
         )
 
+    def _offline_miss_result(
+        self,
+        provider: LiteratureProvider,
+        lane: QueryLane,
+        filters: LiteratureFilters,
+    ) -> ProviderResult:
+        now = utc_now()
+        return ProviderResult(
+            provider=provider.provider_name,
+            request_id=make_request_id(
+                provider.provider_name,
+                lane,
+                filters,
+                self._results_per_request,
+            ),
+            status="failed",
+            started_at=now,
+            finished_at=now,
+            cache_status="bypass",
+            retrieval_mode="offline_fixture",
+            error_code="OFFLINE_CACHE_MISS",
+            error_message="offline retrieval mode forbids a live provider request",
+        )
+
+    def _circuit_open_result(
+        self,
+        provider: LiteratureProvider,
+        lane: QueryLane,
+        filters: LiteratureFilters,
+        retry_at: datetime,
+    ) -> ProviderResult:
+        now = utc_now()
+        return ProviderResult(
+            provider=provider.provider_name,
+            request_id=make_request_id(
+                provider.provider_name,
+                lane,
+                filters,
+                self._results_per_request,
+            ),
+            status="rate_limited",
+            started_at=now,
+            finished_at=now,
+            cache_status="bypass",
+            retry_at=retry_at,
+            error_code="PROVIDER_CIRCUIT_OPEN",
+            error_message="provider circuit is open; live request skipped",
+        )
+
+    @staticmethod
+    def _cached_copy(result: ProviderResult, *, offline: bool) -> ProviderResult:
+        cache_status = (
+            "negative_hit"
+            if result.status in {"failed", "timeout", "rate_limited"}
+            else ("offline_hit" if offline else "hit")
+        )
+        retrieval_mode = "offline_fixture" if offline else "cache"
+        return result.model_copy(
+            update={"cache_status": cache_status, "retrieval_mode": retrieval_mode}
+        )
+
+    def _stale_fallback(
+        self,
+        key: CacheKey,
+        live_result: ProviderResult,
+    ) -> ProviderResult | None:
+        if self._cache is None or self._stale_cache_max_age_seconds <= 0:
+            return None
+        stale = self._cache.get_stale(
+            key, max_stale_seconds=self._stale_cache_max_age_seconds
+        )
+        if stale is None or stale.status not in {"success", "empty"}:
+            return None
+        return stale.model_copy(
+            update={
+                "cache_status": "stale_hit",
+                "retrieval_mode": "stale_cache",
+                "live_error_code": live_result.error_code,
+            }
+        )
+
     async def _call_provider(
         self,
         call: _ProviderCall,
@@ -273,29 +394,24 @@ class LiteratureRetrievalService:
     ) -> ProviderResult:
         provider = call.provider
         key = self._cache_key(provider, call.lane, filters)
-        if self._cache is None:
-            if not await self._reserve_provider_call():
-                return self._budget_exhausted_result(provider, call.lane, filters)
-            async with self._semaphores[provider.provider_name]:
-                result = await provider.search(
-                    lane=call.lane,
-                    filters=filters,
-                    limit=self._results_per_request,
-                )
-            return result.model_copy(update={"cache_status": "bypass"})
-        cached = self._cache.get(key)
-        if cached is not None:
-            return cached.model_copy(update={"cache_status": "hit"})
-        async with self._inflight_lock:
+        use_cache = self._cache is not None and self._retrieval_mode != "live"
+        if use_cache:
             cached = self._cache.get(key)
             if cached is not None:
-                return cached.model_copy(update={"cache_status": "hit"})
+                return self._cached_copy(cached, offline=self._retrieval_mode == "offline")
+        if self._retrieval_mode == "offline":
+            return self._offline_miss_result(provider, call.lane, filters)
+        if self._cache is None:
+            return await self._execute_live(provider, call.lane, filters, key)
+
+        async with self._inflight_lock:
+            cached = self._cache.get(key) if self._retrieval_mode != "live" else None
+            if cached is not None:
+                return self._cached_copy(cached, offline=False)
             task = self._inflight.get(key)
             owner = task is None
             if task is None:
-                if not await self._reserve_provider_call():
-                    return self._budget_exhausted_result(provider, call.lane, filters)
-                task = asyncio.create_task(self._run_provider(provider, call.lane, filters))
+                task = asyncio.create_task(self._execute_live(provider, call.lane, filters, key))
                 self._inflight[key] = task
         try:
             result = await task
@@ -304,9 +420,37 @@ class LiteratureRetrievalService:
                 async with self._inflight_lock:
                     self._inflight.pop(key, None)
         if owner:
-            self._cache.set(key, result)
-            return result.model_copy(update={"cache_status": "miss"})
+            return result
         return result.model_copy(update={"cache_status": "coalesced"})
+
+    async def _execute_live(
+        self,
+        provider: LiteratureProvider,
+        lane: QueryLane,
+        filters: LiteratureFilters,
+        key: CacheKey,
+    ) -> ProviderResult:
+        retry_at = await self._circuit_breaker.before_call(provider.provider_name)
+        if retry_at is not None:
+            blocked = self._circuit_open_result(provider, lane, filters, retry_at)
+            return self._stale_fallback(key, blocked) or blocked
+        if not await self._reserve_provider_call():
+            return self._budget_exhausted_result(provider, lane, filters)
+        result = await self._run_provider(provider, lane, filters)
+        await self._circuit_breaker.record(provider.provider_name, result)
+        stale = (
+            self._stale_fallback(key, result)
+            if result.status in {"failed", "timeout", "rate_limited"}
+            else None
+        )
+        if stale is not None:
+            return stale
+        if self._cache is not None:
+            self._cache.set(key, result)
+        cache_status = "bypass" if self._retrieval_mode == "live" else "miss"
+        return result.model_copy(
+            update={"cache_status": cache_status, "retrieval_mode": "live"}
+        )
 
     async def _run_provider(
         self,
@@ -315,6 +459,13 @@ class LiteratureRetrievalService:
         filters: LiteratureFilters,
     ) -> ProviderResult:
         async with self._semaphores[provider.provider_name]:
+            requests_per_minute = self._request_rates_per_minute.get(provider.provider_name)
+            if requests_per_minute is not None:
+                limiter = shared_request_rate_limiter(
+                    namespace=f"literature:{provider.provider_name}",
+                    requests_per_minute=requests_per_minute,
+                )
+                await limiter.acquire()
             return await provider.search(
                 lane=lane,
                 filters=filters,
