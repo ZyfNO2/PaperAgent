@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import runpy
 import subprocess
 import tempfile
@@ -16,8 +17,16 @@ def _run(*args: str, check: bool = False) -> subprocess.CompletedProcess[str]:
 
 
 def _harden_original_payload(payload: str) -> str:
-    payload = payload.replace("    patch_module_compatibility()\n", "")
-    old_helper = """def replace_once(path: str, old: str, new: str) -> None:
+    payload, removed = re.subn(
+        r"(?m)^\s*patch_module_compatibility\(\)\s*$",
+        "",
+        payload,
+        count=1,
+    )
+    if removed != 1:
+        raise RuntimeError("original module compatibility call was not found")
+
+    old_helper = '''def replace_once(path: str, old: str, new: str) -> None:
     file = Path(path)
     text = file.read_text(encoding="utf-8")
     if new in text:
@@ -28,8 +37,8 @@ def _harden_original_payload(payload: str) -> str:
         raise RuntimeError(f"{path}: expected one exact match, found {count}")
     file.write_text(text.replace(old, new), encoding="utf-8")
     print(f"patched: {path}")
-"""
-    new_helper = """def replace_once(path: str, old: str, new: str) -> None:
+'''
+    new_helper = '''def replace_once(path: str, old: str, new: str) -> None:
     file = Path(path)
     text = file.read_text(encoding="utf-8")
     if new in text:
@@ -44,7 +53,7 @@ def _harden_original_payload(payload: str) -> str:
         raise RuntimeError(f"{path}: expected one exact match, found {count}")
     file.write_text(text.replace(old, new), encoding="utf-8")
     print(f"patched: {path}")
-"""
+'''
     if old_helper not in payload:
         raise RuntimeError("original patch helper shape changed")
     return payload.replace(old_helper, new_helper)
