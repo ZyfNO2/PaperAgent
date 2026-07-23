@@ -7,7 +7,7 @@ import os
 import sqlite3
 from collections.abc import Sequence
 from pathlib import Path
-from typing import cast
+from typing import Literal, cast
 
 import uvicorn
 
@@ -33,6 +33,14 @@ def _non_negative_float(value: str) -> float:
     if parsed < 0:
         raise argparse.ArgumentTypeError("value must be non-negative")
     return parsed
+
+
+def _optional_environment_value(name: str, default: str | None = None) -> str | None:
+    value = os.getenv(name, default)
+    if value is None:
+        return None
+    stripped = value.strip()
+    return stripped or None
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -153,17 +161,59 @@ def _serve(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
             )
             price_path = cast(Path | None, args.llm_price_table)
             price_table = load_price_table(price_path) if price_path is not None else None
+            retrieval_mode = cast(
+                Literal["offline", "cache_first", "live"],
+                os.getenv("PAPERAGENT_RETRIEVAL_MODE", "cache_first"),
+            )
             executor = build_real_task_executor(
                 provider_config,
                 literature_settings=LiteratureProviderSettings(
                     contact_email=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
+                    openalex_api_key=os.getenv("OPENALEX_API_KEY"),
                     semantic_scholar_api_key=os.getenv("SEMANTIC_SCHOLAR_API_KEY"),
                     tavily_api_key=os.getenv("TAVILY_API_KEY"),
+                    retrieval_mode=retrieval_mode,
+                    cache_database_path=_optional_environment_value(
+                        "PAPERAGENT_RETRIEVAL_CACHE",
+                        ".paperagent/retrieval-cache.sqlite3",
+                    ),
+                    fixture_directory=_optional_environment_value(
+                        "PAPERAGENT_RETRIEVAL_FIXTURES"
+                    ),
+                    record_fixtures=(
+                        os.getenv("PAPERAGENT_RECORD_RETRIEVAL_FIXTURES", "0")
+                        .strip()
+                        .casefold()
+                        in _TRUE_VALUES
+                    ),
+                    provider_timeout_seconds=float(
+                        os.getenv("PAPERAGENT_PROVIDER_TIMEOUT", "10")
+                    ),
+                    arxiv_connect_timeout_seconds=float(
+                        os.getenv("PAPERAGENT_ARXIV_CONNECT_TIMEOUT", "8")
+                    ),
+                    arxiv_read_timeout_seconds=float(
+                        os.getenv("PAPERAGENT_ARXIV_READ_TIMEOUT", "30")
+                    ),
+                    results_per_provider_request=int(
+                        os.getenv("PAPERAGENT_RESULTS_PER_PROVIDER_REQUEST", "10")
+                    ),
+                    openalex_requests_per_minute=int(
+                        os.getenv("PAPERAGENT_OPENALEX_REQUESTS_PER_MINUTE", "120")
+                    ),
+                    semantic_scholar_requests_per_minute=int(
+                        os.getenv("PAPERAGENT_S2_REQUESTS_PER_MINUTE", "48")
+                    ),
+                    arxiv_requests_per_minute=int(
+                        os.getenv("PAPERAGENT_ARXIV_REQUESTS_PER_MINUTE", "18")
+                    ),
                     enable_web_search=(
                         os.getenv("PAPERAGENT_ENABLE_WEB_SEARCH", "0").strip().casefold()
                         in _TRUE_VALUES
                     ),
-                    max_provider_calls_total=int(os.getenv("PAPERAGENT_MAX_PROVIDER_CALLS", "48")),
+                    max_provider_calls_total=int(
+                        os.getenv("PAPERAGENT_MAX_PROVIDER_CALLS", "48")
+                    ),
                 ),
                 price_table=price_table,
             )
