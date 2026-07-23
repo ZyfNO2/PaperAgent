@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from xml.etree import ElementTree
 
+import httpx
+
 from paperagent.literature.normalize import canonical_arxiv_id
 from paperagent.literature.providers.base import (
     AsyncHTTPTransport,
@@ -10,6 +12,7 @@ from paperagent.literature.providers.base import (
     make_request_id,
     response_failure,
     response_success,
+    transport_exception_result,
     utc_now,
 )
 from paperagent.schemas.literature import (
@@ -24,17 +27,27 @@ _ATOM = "{http://www.w3.org/2005/Atom}"
 
 class ArxivProvider:
     provider_name = "arxiv"
-    contract_version = "atom-2026-01"
+    contract_version = "atom-2026-07"
     endpoint = "https://export.arxiv.org/api/query"
 
     def __init__(
         self,
         *,
         transport: AsyncHTTPTransport | None = None,
-        timeout_seconds: float = 10.0,
+        timeout_seconds: float | None = None,
+        connect_timeout_seconds: float = 8.0,
+        read_timeout_seconds: float = 30.0,
     ) -> None:
         self._transport = transport or HttpxTransport()
-        self._timeout = timeout_seconds
+        if timeout_seconds is not None:
+            connect_timeout_seconds = timeout_seconds
+            read_timeout_seconds = timeout_seconds
+        self._timeout = httpx.Timeout(
+            connect=connect_timeout_seconds,
+            read=read_timeout_seconds,
+            write=read_timeout_seconds,
+            pool=connect_timeout_seconds,
+        )
 
     async def search(
         self,
@@ -46,37 +59,26 @@ class ArxivProvider:
         started = utc_now()
         request_id = make_request_id(self.provider_name, lane, filters, limit)
         normalized_query = " ".join(lane.query.split())
-        escaped_query = normalized_query.replace('"', r"\"")
+        escaped_query = normalized_query.replace('"', r'\"')
         search_query = (
             f'ti:"{escaped_query}"' if lane.purpose == "baseline" else f"all:{normalized_query}"
         )
         params: dict[str, str | int] = {
             "search_query": search_query,
             "start": 0,
-            "max_results": min(limit, 10),
+            "max_results": min(limit, 100),
             "sortBy": "relevance",
         }
         try:
             response = await self._transport.get(
                 self.endpoint, params=params, timeout=self._timeout
             )
-        except TimeoutError:
-            return response_failure(
-                provider=self.provider_name,
-                request_id=request_id,
-                started_at=started,
-                status="timeout",
-                code="TIMEOUT",
-                message="arXiv request timed out",
-            )
         except Exception as exc:
-            return response_failure(
+            return transport_exception_result(
                 provider=self.provider_name,
                 request_id=request_id,
                 started_at=started,
-                status="failed",
-                code="TRANSPORT_ERROR",
-                message=str(exc),
+                exc=exc,
             )
         failure = http_failure_result(
             provider=self.provider_name,
