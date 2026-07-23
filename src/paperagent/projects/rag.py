@@ -6,7 +6,7 @@ import re
 from collections import Counter
 from collections.abc import Iterable
 
-from paperagent.projects.models import EvidenceUnit, SearchHit
+from paperagent.projects.models import SearchHit
 from paperagent.projects.repository import SQLiteProjectRepository
 
 _TOKEN_PATTERN = re.compile(r"[A-Za-z][A-Za-z0-9_+.-]{1,}|[\u4e00-\u9fff]")
