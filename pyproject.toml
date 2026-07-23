@@ -39,7 +39,13 @@ release = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-paperagent = ["prompts/v0_1/*.md", "web/assets/*"]
+paperagent = [
+  "prompts/v0_1/*.md",
+  "web/assets/*",
+  "web/assets/css/*",
+  "web/assets/js/*",
+  "web/assets/js/views/*",
+]
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-markers"
