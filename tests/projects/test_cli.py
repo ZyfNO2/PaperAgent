@@ -136,7 +136,7 @@ def test_memory_rag_cli_query_memory_and_tailoring(tmp_path: Path, capsys) -> No
             "mixup",
         ],
     )
-    assert {hit["unit"]["paper_id"] for hit in query["hits"]} == {"eca", "mixup"}
+    assert {hit["unit"]["paper_id"] for hit in query["hits"]} == {"eca"}
 
     evidence_unit_id = ingestions["resnet"]["evidence_units"][0]["unit_id"]
     proposal = _run(

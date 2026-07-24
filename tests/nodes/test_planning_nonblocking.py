@@ -126,5 +126,7 @@ def test_supplied_title_does_not_exceed_query_budget() -> None:
     )
 
     assert normalized.status == "ready"
-    assert normalized.evidence_gaps == original.evidence_gaps
-    assert normalized.search_queries == original.search_queries
+    assert len(normalized.evidence_gaps) == 1
+    assert normalized.evidence_gaps[0].gap_id == "user-material-01-identity"
+    assert len(normalized.search_queries) == 1
+    assert normalized.search_queries[0].gap_id == normalized.evidence_gaps[0].gap_id

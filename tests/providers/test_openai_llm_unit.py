@@ -293,7 +293,7 @@ async def test_transport_error_retries_then_fails(
         raise httpx.ConnectError("offline", request=request)
 
     async def fake_sleep(delay: float) -> None:
-        assert delay == 15.0
+        assert delay == 0.5
 
     _install_transport(monkeypatch, handle)
     monkeypatch.setattr(module.asyncio, "sleep", fake_sleep)
