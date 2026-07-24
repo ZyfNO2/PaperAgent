@@ -192,9 +192,7 @@ def test_memory_rag_cli_query_memory_and_tailoring(tmp_path: Path, capsys) -> No
         "Use ResNet as the frozen baseline."
     ]
 
-    plan = _run(
-        parser,
-        capsys,
+    tailor_args = parser.parse_args(
         [
             "tailor",
             "--database",
@@ -211,9 +209,12 @@ def test_memory_rag_cli_query_memory_and_tailoring(tmp_path: Path, capsys) -> No
             "Attention and mixup should improve robustness without changing the backbone contract.",
             "--evidence-query",
             "residual attention robustness",
-        ],
+        ]
     )
-    assert plan["decision"] == "REVISE"
+    assert run_memory_rag_cli(tailor_args) == 3
+    plan = json.loads(capsys.readouterr().out)
+    assert plan["decision"] == "BLOCKED"
+    assert plan["reason_code"] == "compatibility_contract_not_independently_verified"
     assert {module["paper_id"] for module in plan["modules"]} == {"eca", "mixup"}
     assert plan["citations"]
 
