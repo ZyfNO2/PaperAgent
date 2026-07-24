@@ -83,4 +83,9 @@ def test_executor_signature_cannot_receive_gold_case() -> None:
         "search",
         "max_llm_calls",
         "task_id",
+        "max_retrieval_rounds",
+        "max_queries_per_round",
+        "max_method_repairs",
+        "max_evidence_items",
+        "recursion_limit",
     )
