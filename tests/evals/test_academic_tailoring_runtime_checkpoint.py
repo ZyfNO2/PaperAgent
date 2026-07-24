@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 from types import ModuleType
 
+from paperagent.schemas import RunBudgets
+
 SCRIPT = Path(__file__).parents[2] / "scripts" / "run_academic_tailoring_retrieval_v1.py"
 
 
@@ -30,11 +32,17 @@ def test_runtime_summary_tracks_partial_progress_without_false_pass() -> None:
         leakage_passed=True,
         leakage_findings=[],
         allow_gold_in_workspace=False,
+        graph_budgets=RunBudgets(max_llm_calls=4),
+        graph_recursion_limit=32,
+        provider_call_budget_total=8,
+        provider_call_budgets_by_case=(4, 4),
+        provider_config={"provider": "fake", "model": "fixture"},
     )
 
     assert summary["completed"] == 1
     assert summary["attempted_case_ids"] == ["a"]
     assert summary["not_run_case_ids"] == ["b"]
+    assert summary["budget_profile"]["graph"]["max_llm_calls"] == 4
     assert summary["passed"] is False
 
 
