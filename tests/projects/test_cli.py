@@ -136,7 +136,7 @@ def test_memory_rag_cli_query_memory_and_tailoring(tmp_path: Path, capsys) -> No
             "mixup",
         ],
     )
-    assert {hit["unit"]["paper_id"] for hit in query["hits"]} == {"eca"}
+    assert {hit["unit"]["paper_id"] for hit in query["hits"]} == {"eca", "mixup"}
 
     evidence_unit_id = ingestions["resnet"]["evidence_units"][0]["unit_id"]
     proposal = _run(
@@ -211,10 +211,10 @@ def test_memory_rag_cli_query_memory_and_tailoring(tmp_path: Path, capsys) -> No
             "residual attention robustness",
         ]
     )
-    assert run_memory_rag_cli(tailor_args) == 3
+    assert run_memory_rag_cli(tailor_args) == 0
     plan = json.loads(capsys.readouterr().out)
-    assert plan["decision"] == "BLOCKED"
-    assert plan["reason_code"] == "module_design_deferred:insufficient_independent_evidence"
+    assert plan["decision"] == "REVISE"
+    assert plan["reason_code"] == "compatibility_contract_not_independently_verified"
     assert {module["paper_id"] for module in plan["modules"]} == {"eca", "mixup"}
     assert plan["citations"]
 

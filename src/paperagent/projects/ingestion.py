@@ -149,7 +149,11 @@ class PaperIngestionService:
 
     @staticmethod
     def _keywords(content: str) -> tuple[str, ...]:
-        tokens = [token.casefold() for token in _TOKEN_PATTERN.findall(content)]
+        tokens = []
+        for token in _TOKEN_PATTERN.findall(content):
+            cleaned = token.rstrip(".").casefold()
+            if cleaned:
+                tokens.append(cleaned)
         counts: dict[str, int] = {}
         for token in tokens:
             counts[token] = counts.get(token, 0) + 1

@@ -14,7 +14,12 @@ _VECTOR_SIZE = 128
 
 
 def _tokens(text: str) -> tuple[str, ...]:
-    return tuple(token.casefold() for token in _TOKEN_PATTERN.findall(text))
+    tokens = []
+    for token in _TOKEN_PATTERN.findall(text):
+        cleaned = token.rstrip(".").casefold()
+        if cleaned:
+            tokens.append(cleaned)
+    return tuple(tokens)
 
 
 def _hashed_vector(tokens: Iterable[str]) -> tuple[float, ...]:
