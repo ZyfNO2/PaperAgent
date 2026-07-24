@@ -1,0 +1,139 @@
+name: CLAW Case 001 Live Retrieval
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: claw-case-001-live-retrieval
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL }}
+      SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Run one rate-limited live retrieval probe
+        id: probe
+        shell: bash
+        run: |
+          set +e
+          out="build/claw-case-001-live"
+          mkdir -p "$out"
+          python scripts/probe_claw_case_retrieval.py \
+            --case-id at-001-uav-small-object-lightweight \
+            --provider-call-budget 3 \
+            --verification-call-budget 8 \
+            --output "$out/result.json" \
+            > "$out/stdout.log" 2> "$out/stderr.log"
+          status=$?
+          printf '%s\n' "$status" > "$out/exit-code.txt"
+          cat "$out/stdout.log"
+          if [[ -s "$out/stderr.log" ]]; then
+            cat "$out/stderr.log" >&2
+          fi
+          exit "$status"
+      - name: Upload Case 001 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: claw-case-001-live-${{ github.run_id }}
+          path: build/claw-case-001-live/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Persist reviewable probe result temporarily
+        if: always()
+        shell: bash
+        run: |
+          source_file="build/claw-case-001-live/result.json"
+          target_file="evals/claw_academic_tailoring_v1/live-probes/case-001-latest.json"
+          prepared_file="/tmp/case-001-latest.json"
+          if [[ ! -f "$source_file" ]]; then
+            exit 0
+          fi
+          python - "$source_file" "$prepared_file" <<'PY'
+          import json
+          import os
+          import sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          payload["workflow_run_id"] = int(os.environ["GITHUB_RUN_ID"])
+          payload["workflow_head_sha"] = os.environ["GITHUB_SHA"]
+          with open(sys.argv[2], "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, ensure_ascii=False, indent=2, sort_keys=True)
+              handle.write("\n")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin "$GITHUB_REF_NAME"
+          git checkout -B "$GITHUB_REF_NAME" "origin/$GITHUB_REF_NAME"
+          mkdir -p "$(dirname "$target_file")"
+          cp "$prepared_file" "$target_file"
+          git add "$target_file"
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore(eval): persist Case 001 live probe [skip ci]"
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:$GITHUB_REF_NAME"; then
+              exit 0
+            fi
+            git fetch origin "$GITHUB_REF_NAME"
+            git rebase "origin/$GITHUB_REF_NAME"
+          done
+          exit 1
+      - name: Publish Case 001 status to Draft PR
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          pr_number=$(gh pr list \
+            --head "$GITHUB_REF_NAME" \
+            --state open \
+            --json number \
+            --jq '.[0].number // empty')
+          if [[ -z "$pr_number" ]]; then
+            exit 0
+          fi
+          result_file="build/claw-case-001-live/result.json"
+          if [[ -f "$result_file" ]]; then
+            summary=$(python - "$result_file" <<'PY'
+          import json
+          import sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          diagnostics = payload.get("diagnostics", {})
+          provider_budget = payload.get("provider_call_budget", {})
+          verification_budget = payload.get("verification_call_budget", {})
+          print(
+              "passed={passed}; providers={providers}; discovery_calls={discovery}; "
+              "verification_calls={verification}; returned={returned}; stop={stop}".format(
+                  passed=payload.get("passed"),
+                  providers=",".join(diagnostics.get("attempted_providers", [])),
+                  discovery=provider_budget.get("used"),
+                  verification=verification_budget.get("used"),
+                  returned=len(payload.get("results", [])),
+                  stop=diagnostics.get("stop_reason"),
+              )
+          )
+          PY
+          )
+          else
+            summary="probe failed before result.json was produced"
+          fi
+          gh pr comment "$pr_number" --body "Case 001 live retrieval probe\n\n- Run: $GITHUB_RUN_ID\n- Head: \`$GITHUB_SHA\`\n- $summary\n- Artifact: \`claw-case-001-live-$GITHUB_RUN_ID\`"

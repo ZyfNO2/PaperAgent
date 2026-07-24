@@ -1,0 +1,146 @@
+name: Academic Eval Opencode Preflight
+
+on:
+  push:
+    branches:
+      - fix/academic-eval-diagnostics-baseline-binding
+    paths:
+      - ".github/workflows/academic-eval-opencode-preflight.yml"
+      - "scripts/check_llm_provider_health.py"
+      - "scripts/run_academic_tailoring_retrieval_v1.py"
+      - "scripts/score_academic_tailoring_retrieval_v1.py"
+      - "src/paperagent/claw_benchmark_runtime.py"
+      - "src/paperagent/nodes/planning.py"
+      - "src/paperagent/providers/openai_llm.py"
+      - "tests/evals/**"
+      - "tests/nodes/**"
+      - "tests/providers/**"
+      - "tests/scripts/test_check_llm_provider_health.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: academic-eval-opencode-preflight
+  cancel-in-progress: true
+
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+      PAPERAGENT_OPENAI_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Credential check
+        id: credential
+        continue-on-error: true
+        run: test -n "$OPENCODE_API_KEY"
+
+      - name: Install project
+        id: install
+        continue-on-error: true
+        run: python -m pip install -q -e '.[dev]'
+
+      - name: Compile and focused tests
+        id: offline
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python -m py_compile \
+            scripts/check_llm_provider_health.py \
+            scripts/run_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/claw_benchmark_runtime.py \
+            src/paperagent/nodes/planning.py \
+            src/paperagent/providers/openai_llm.py
+          pytest -q \
+            tests/nodes/test_intake_planning.py \
+            tests/nodes/test_planning_identity_priority.py \
+            tests/evals/test_academic_tailoring_runtime_fail_fast.py \
+            tests/evals/test_academic_tailoring_diagnostic_budgets.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_scorer.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_diagnostics.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
+            tests/providers/test_openai_llm_headers.py \
+            tests/scripts/test_check_llm_provider_health.py
+
+      - name: Probe Mimo with bounded retries
+        id: mimo
+        if: steps.credential.outcome == 'success' && steps.install.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python scripts/check_llm_provider_health.py \
+            --provider openai \
+            --model mimo-v2.5-free \
+            --base-url https://opencode.ai/zen/v1 \
+            --api-key-env OPENCODE_API_KEY \
+            --probe-mode chat \
+            --timeout-seconds 180 \
+            --max-attempts 3 \
+            --retry-delay-seconds 10 \
+            --output build/opencode-preflight/mimo.json
+
+      - name: Probe Laguna with bounded retries
+        id: laguna
+        if: steps.credential.outcome == 'success' && steps.install.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python scripts/check_llm_provider_health.py \
+            --provider openai \
+            --model laguna-s-2.1-free \
+            --base-url https://opencode.ai/zen/v1 \
+            --api-key-env OPENCODE_API_KEY \
+            --probe-mode chat \
+            --timeout-seconds 180 \
+            --max-attempts 2 \
+            --retry-delay-seconds 10 \
+            --output build/opencode-preflight/laguna.json
+
+      - name: Report preflight
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          short_sha="${GITHUB_SHA:0:7}"
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          cat > /tmp/opencode-preflight.md <<EOF
+          Opencode preflight for commit \`$short_sha\`: [open run]($run_url)
+
+          | Step | Outcome |
+          |---|---|
+          | OPENCODE_API_KEY present | \`${{ steps.credential.outcome }}\` |
+          | Install project | \`${{ steps.install.outcome }}\` |
+          | Compile + focused tests | \`${{ steps.offline.outcome }}\` |
+          | mimo-v2.5-free probe (3 attempts) | \`${{ steps.mimo.outcome }}\` |
+          | laguna-s-2.1-free probe (2 attempts) | \`${{ steps.laguna.outcome }}\` |
+          EOF
+          gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body-file /tmp/opencode-preflight.md
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-eval-opencode-preflight
+          path: build/opencode-preflight/
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Enforce preflight
+        if: always()
+        shell: bash
+        run: |
+          test "${{ steps.credential.outcome }}" = "success"
+          test "${{ steps.install.outcome }}" = "success"
+          test "${{ steps.offline.outcome }}" = "success"
+          test "${{ steps.mimo.outcome }}" = "success" -o "${{ steps.laguna.outcome }}" = "success"

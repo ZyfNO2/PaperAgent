@@ -1,0 +1,49 @@
+{
+  "schema_version": "0.1",
+  "gap_assessments": [
+    {
+      "gap_id": "gap-support",
+      "status": "partial",
+      "evidence_ids": [
+        "ev-support-001"
+      ],
+      "summary": "Claim-level support rate is a minimal metric.",
+      "limitations": [
+        "Labels require review",
+        "One more source is required before the mechanism claim is stable"
+      ]
+    },
+    {
+      "gap_id": "gap-ablation",
+      "status": "supported",
+      "evidence_ids": [
+        "ev-ablation-001"
+      ],
+      "summary": "Three context conditions form a minimal ablation.",
+      "limitations": [
+        "Distribution shift remains uncovered"
+      ]
+    }
+  ],
+  "verified_findings": [
+    {
+      "claim_id": "claim-support-rate",
+      "text": "Claim support rate is a minimal metric.",
+      "evidence_ids": [
+        "ev-support-001"
+      ]
+    },
+    {
+      "claim_id": "claim-context-ablation",
+      "text": "Three context conditions separate error sources.",
+      "evidence_ids": [
+        "ev-ablation-001"
+      ]
+    }
+  ],
+  "conflicts": [],
+  "feasibility": "feasible",
+  "limitations": [
+    "Synthetic fixtures only prove workflow execution"
+  ]
+}

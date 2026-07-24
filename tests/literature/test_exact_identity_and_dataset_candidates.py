@@ -1,0 +1,318 @@
+from __future__ import annotations
+
+from types import SimpleNamespace
+
+from paperagent.literature.adapter import (
+    LiteratureSearchAdapter,
+    _dataset_names_from_text,
+    _dataset_relation_names,
+    _exact_title_match,
+    _looks_like_dataset_name,
+    _query_candidate_role,
+    _query_seeks_baseline_role,
+    _query_seeks_comparator_role,
+    _quoted_title,
+)
+from paperagent.schemas import SearchQuery
+from paperagent.schemas.literature import PaperRecord, RankFeatures, SourceRecord
+
+
+def _paper(title: str, abstract: str = "") -> PaperRecord:
+    return PaperRecord(
+        paper_id="paper-test",
+        canonical_title=title,
+        abstract=abstract,
+        doi="10.1000/test",
+        urls=[],
+        source_records=[SourceRecord(provider="openalex", provider_record_id="x", request_id="r")],
+        verification_status="verified",
+        rank_features=RankFeatures(
+            relevance=1.0,
+            gap_coverage=1.0,
+            metadata_verification=1.0,
+            recency_fit=1.0,
+            diversity=1.0,
+            citation_tiebreaker=1.0,
+            score=1.0,
+        ),
+    )
+
+
+def test_quoted_identity_requires_exact_title_before_provider_stop() -> None:
+    required = _quoted_title(
+        '"PANNs: Large-Scale Pretrained Audio Neural Networks for Audio Pattern Recognition"'
+    )
+    assert required is not None
+    assert _exact_title_match(required, required)
+    assert not _exact_title_match(
+        "Dynamic Training Strategies for Domain Generalization in Self-Supervised "
+        "Anomaly Sound Detection",
+        required,
+    )
+
+
+def test_dataset_candidate_is_explicitly_linked_to_verified_paper_mention() -> None:
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q",
+        gap_id="g",
+        query="MIMII dataset evaluation protocol low SNR",
+        source_types=["paper", "dataset"],
+    )
+    candidates = adapter._candidates(
+        query,
+        _paper("Industrial sound evaluation", "Experiments use the MIMII dataset under noise."),
+        False,
+    )
+    datasets = [item for item in candidates if item.source_type == "dataset"]
+    assert len(datasets) == 1
+    assert datasets[0].title == "MIMII"
+    assert datasets[0].metadata["relation"] == "dataset_named_in_verified_paper"
+
+
+def test_model_name_is_not_promoted_to_dataset_without_dataset_context() -> None:
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q-model-dataset",
+        gap_id="g-model-dataset",
+        query="Evaluate PANNs on the MIMII dataset under low SNR",
+        source_types=["paper", "dataset"],
+    )
+    candidates = adapter._candidates(
+        query,
+        _paper(
+            "PANNs: Large-Scale Pretrained Audio Neural Networks",
+            "The PANNs model is evaluated on the MIMII dataset.",
+        ),
+        False,
+    )
+    dataset_titles = [item.title for item in candidates if item.source_type == "dataset"]
+    assert dataset_titles == ["MIMII"]
+
+
+def test_dataset_can_be_discovered_from_parallel_paper_text() -> None:
+    names = _dataset_relation_names(
+        "compare robust anomaly detection methods",
+        (
+            _paper(
+                "A Parallel Industrial Anomaly Method",
+                "We evaluate the method on the MIMII dataset and report low-SNR results.",
+            ),
+        ),
+    )
+    assert names == ("MIMII",)
+
+
+def test_dataset_relation_candidate_survives_missing_provider_abstract() -> None:
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q-linked-dataset",
+        gap_id="g-linked-dataset",
+        query="Evaluate PANNs on the MIMII dataset under low SNR",
+        source_types=["paper", "dataset"],
+    )
+    candidates = adapter._candidates(
+        query,
+        _paper("A verified industrial evaluation paper"),
+        False,
+        relation="parallel_via_dataset",
+        linked_dataset_names=("MIMII",),
+    )
+    datasets = [item for item in candidates if item.source_type == "dataset"]
+    assert len(datasets) == 1
+    assert datasets[0].title == "MIMII"
+    assert datasets[0].metadata["relation"] == "dataset_linked_by_focused_retrieval"
+    assert datasets[0].metadata["verification_scope"] == "retrieval_relation"
+
+
+def test_dataset_entity_precision_rejects_descriptive_words() -> None:
+    text = (
+        "We use a specific dataset, a large-scale dataset, and this dataset for evaluation. "
+        "Results are also reported on the AudioSet dataset and MIMII benchmark."
+    )
+    assert _dataset_names_from_text(text) == ("AudioSet", "MIMII")
+    assert not _looks_like_dataset_name("specific")
+    assert not _looks_like_dataset_name("large-scale")
+    assert _looks_like_dataset_name("CLINC150")
+    assert _looks_like_dataset_name("SWaT")
+
+
+def test_dataset_relation_query_keeps_dataset_anchor_not_model_title() -> None:
+    names = _dataset_relation_names(
+        "PANNs pretrained audio baseline performance MIMII dataset",
+        (_paper("PANNs: Large-Scale Pretrained Audio Neural Networks"),),
+    )
+    assert names == ("MIMII",)
+
+
+def test_dataset_relation_query_rejects_model_only_anchors() -> None:
+    names = _dataset_relation_names(
+        "BERT LoRA text classification compatibility",
+        (
+            _paper("BERT: Pre-training of Deep Bidirectional Transformers"),
+            _paper("LoRA: Low-Rank Adaptation of Large Language Models"),
+        ),
+    )
+    assert names == ()
+
+
+def test_dataset_relation_relevance_accepts_verified_dataset_title() -> None:
+    paper = _paper("MIMII Dataset: Sound Dataset for Machine Investigation")
+    paper = paper.model_copy(
+        update={
+            "rank_features": paper.rank_features.model_copy(
+                update={"relevance": 0.01, "score": 0.01}
+            )
+        }
+    )
+    assert LiteratureSearchAdapter._passes_relation_relevance(
+        paper,
+        dataset_name="MIMII",
+    )
+
+
+def test_relation_providers_defer_rate_limited_source() -> None:
+    providers = LiteratureSearchAdapter._relation_providers(
+        ("semantic_scholar", "openalex", "arxiv")
+    )
+    assert providers == ("openalex", "arxiv", "semantic_scholar")
+
+
+def test_relation_provider_order_respects_configured_availability() -> None:
+    providers = LiteratureSearchAdapter._relation_providers(("arxiv", "semantic_scholar"))
+    assert providers == ("arxiv", "semantic_scholar")
+
+
+def test_relation_provider_order_supports_openalex_only_configuration() -> None:
+    providers = LiteratureSearchAdapter._relation_providers(("openalex",))
+    assert providers == ("openalex",)
+
+
+def test_context_free_dataset_tokens_reject_models_and_metrics() -> None:
+    assert (
+        _dataset_relation_names(
+            "PatchTST missing data forecasting SNR AUC F1",
+            (_paper("A Time Series is Worth 64 Words"),),
+        )
+        == ()
+    )
+    assert _dataset_relation_names(
+        "GraphSAGE PPI inductive node classification Micro-F1",
+        (_paper("Inductive Representation Learning on Large Graphs"),),
+    ) == ("PPI",)
+    assert (
+        _dataset_relation_names(
+            "DeepGO protein function prediction low annotation coverage",
+            (_paper("DeepGOPlus: improved protein function prediction from sequence"),),
+        )
+        == ()
+    )
+
+
+def test_compound_f1_variants_are_not_dataset_anchors() -> None:
+    assert _dataset_relation_names(
+        "PPI node classification Macro-F1 Weighted-F1",
+        (_paper("Inductive Representation Learning on Large Graphs"),),
+    ) == ("PPI",)
+
+
+def test_explicit_camelcase_dataset_context_remains_supported() -> None:
+    assert _dataset_relation_names(
+        "Evaluate on AudioSet dataset under device shift",
+        (),
+    ) == ("AudioSet",)
+
+
+def test_direct_query_paper_is_not_a_baseline_candidate() -> None:
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q-direct",
+        gap_id="g-direct",
+        query="few-shot industrial anomaly method",
+        source_types=["paper"],
+    )
+    candidate = adapter._candidate(query, _paper("A Relevant Neighbor Method"), False)
+    assert candidate.metadata["relation"] == "direct_query"
+    assert "baseline_candidate" not in candidate.metadata
+
+
+def test_dataset_parallel_paper_is_an_inferred_baseline_candidate() -> None:
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q-parallel",
+        gap_id="g-parallel",
+        query="MIMII dataset baseline comparison",
+        source_types=["paper", "dataset"],
+    )
+    candidate = adapter._candidate(
+        query,
+        _paper("A Task-Matched MIMII Comparator"),
+        False,
+        relation="parallel_via_dataset",
+    )
+    assert candidate.metadata["baseline_candidate"] == "inferred"
+
+
+def test_declared_identity_remains_a_declared_baseline_candidate() -> None:
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q-declared",
+        gap_id="g-declared",
+        query='"Exact Baseline Paper"',
+        source_types=["paper"],
+    )
+    candidate = adapter._candidate(
+        query,
+        _paper("Exact Baseline Paper"),
+        False,
+        relation="declared_identity",
+    )
+    assert candidate.metadata["baseline_candidate"] == "declared"
+
+
+def test_explicit_baseline_role_queries_are_propagated() -> None:
+    assert _query_seeks_baseline_role("task-matched baseline implementation")
+    assert not _query_seeks_baseline_role("strong comparator under matched compute")
+    assert not _query_seeks_baseline_role("retrieve a reproducible comparison method")
+    assert not _query_seeks_baseline_role("analyze the failure mechanism")
+
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q-baseline-role",
+        gap_id="g-baseline-role",
+        query="task-matched baseline implementation comparison",
+        source_types=["paper"],
+    )
+    candidate = adapter._candidate(
+        query,
+        _paper("A Reproducible Task-Matched Comparator"),
+        False,
+        relation="baseline_role_query",
+    )
+    assert candidate.metadata["relation"] == "baseline_role_query"
+    assert candidate.metadata["baseline_candidate"] == "inferred"
+
+
+def test_baseline_and_comparator_queries_have_distinct_roles() -> None:
+    assert _query_candidate_role("reproducible development baseline") == "baseline"
+    assert _query_candidate_role("strong comparator under matched compute") == "comparator"
+    assert _query_candidate_role("comparison against recent methods") == "comparator"
+    assert _query_candidate_role("failure mechanism analysis") is None
+    assert _query_seeks_baseline_role("基线复现")
+    assert _query_seeks_comparator_role("强模型对比")
+
+    adapter = LiteratureSearchAdapter(service=SimpleNamespace(provider_names=[]))
+    query = SearchQuery(
+        query_id="q-comparator-role",
+        gap_id="g-comparator-role",
+        query="strong comparator under matched compute",
+        source_types=["paper"],
+    )
+    candidate = adapter._candidate(
+        query,
+        _paper("A Strong Matched Comparator"),
+        False,
+        relation="comparator_role_query",
+    )
+    assert candidate.metadata["comparator_candidate"] == "inferred"
+    assert "baseline_candidate" not in candidate.metadata

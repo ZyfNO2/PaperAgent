@@ -1,0 +1,1447 @@
+{
+  "schema": "paperagent.academic-tailoring-retrieval.authoring.v1",
+  "dataset_id": "academic_tailoring_retrieval_v1",
+  "status": "public_development_authoring_set",
+  "language": "zh-CN",
+  "created_at": "2026-07-21",
+  "base_runtime": {
+    "repository": "ZyfNO2/PaperAgent",
+    "branch": "feat/claw-live-search-runtime",
+    "commit": "bfc71bee0173231eb659efaf09259c3bb41816cd",
+    "note": "The dataset branch is stacked on the current leakage-remediated runtime. This authoring file contains Gold and must never be passed directly to the candidate executor."
+  },
+  "execution_boundary": {
+    "candidate_visible_fields": [
+      "case_id",
+      "case_type",
+      "domain",
+      "public_input"
+    ],
+    "gold_only_fields": [
+      "gold"
+    ],
+    "required_projection": "Before execution, create a gold-independent BenchmarkInput containing only public_input.user_input plus supplied paper titles and user-declared roles.",
+    "forbidden": [
+      "Reading gold.expected_assets, gold.baseline_decision, gold.reference_hypothesis, gold.compatibility_judgment, gold.experiments, or gold.hard_failures during candidate execution.",
+      "Branching production behavior on case_id, domain labels, paper titles, or benchmark-specific topic tables.",
+      "Treating repository existence as baseline reproduction.",
+      "Treating shape alignment as semantic compatibility."
+    ]
+  },
+  "distribution": {
+    "total": 10,
+    "title_only": 4,
+    "baseline_with_condition": 3,
+    "baseline_plus_parallel_paper": 3,
+    "domains": [
+      "computer_vision",
+      "time_series",
+      "nlp",
+      "medical_imaging",
+      "remote_sensing",
+      "industrial_fault",
+      "graph_learning",
+      "bioinformatics",
+      "acoustics",
+      "recommender_systems"
+    ]
+  },
+  "rubric": {
+    "weights": {
+      "paper_identity_and_citation_truth": 15,
+      "baseline_selection": 15,
+      "dataset_truth_and_task_fit": 10,
+      "repository_truth_and_relation": 10,
+      "gap_analysis": 10,
+      "module_provenance_and_role": 10,
+      "semantic_and_interface_compatibility": 15,
+      "falsifiable_hypothesis": 5,
+      "experiment_and_ablation_design": 10
+    },
+    "hard_failures": [
+      "fabricated_citation",
+      "fabricated_metric",
+      "fabricated_repository",
+      "wrong_paper_identity",
+      "unofficial_repository_presented_as_official",
+      "unsupported_compatibility",
+      "no_real_retrieval",
+      "evidence_role_mismatch",
+      "repository_exists_claimed_as_reproduced",
+      "future_or_test_leakage",
+      "benchmark_leakage"
+    ],
+    "scoring_policy": "Use fact anchors and role-bound evidence, not exact-string matching. A hard failure makes the case fail regardless of soft score."
+  },
+  "cases": [
+    {
+      "case_id": "atr-v1-001-cv-crack-fewshot",
+      "case_type": "title_only",
+      "domain": "computer_vision",
+      "public_input": {
+        "user_input": "基于深度学习的室外小样本道路裂缝分割方法研究",
+        "supplied_materials": []
+      },
+      "gold": {
+        "task_definition": {
+          "input": "Outdoor road RGB images.",
+          "output": "Pixel-aligned binary crack masks.",
+          "task": "Binary semantic segmentation, not image classification or box detection.",
+          "conditions": [
+            "few labeled target-domain masks",
+            "thin elongated structures",
+            "outdoor illumination and surface-domain shift"
+          ]
+        },
+        "expected_assets": [
+          {
+            "kind": "paper",
+            "title": "A Convolutional-Transformer Network for Crack Segmentation with Boundary Awareness",
+            "authors": [
+              "Huaqi Tao",
+              "Bingxi Liu",
+              "Jinqiang Cui",
+              "Hong Zhang"
+            ],
+            "year": 2023,
+            "venue": "ICIP",
+            "arxiv": "2302.11728",
+            "url": "https://arxiv.org/abs/2302.11728",
+            "role": "direct baseline candidate"
+          },
+          {
+            "kind": "repository",
+            "title": "HqiTao/CT-crackseg",
+            "url": "https://github.com/HqiTao/CT-crackseg",
+            "relation": "official author-linked implementation",
+            "role": "baseline code"
+          },
+          {
+            "kind": "paper",
+            "title": "A Few-Shot Attention Recurrent Residual U-Net for Crack Segmentation",
+            "year": 2023,
+            "arxiv": "2303.01582",
+            "url": "https://arxiv.org/abs/2303.01582",
+            "role": "few-shot adaptation evidence"
+          },
+          {
+            "kind": "dataset",
+            "title": "Crack500",
+            "url": "https://github.com/fyangneil/pavement-crack-detection",
+            "role": "public crack segmentation dataset; split must be grouped by original image/scene"
+          },
+          {
+            "kind": "dataset",
+            "title": "DeepCrack",
+            "url": "https://github.com/yhlleo/DeepCrack",
+            "role": "public crack segmentation dataset"
+          },
+          {
+            "kind": "dataset",
+            "title": "CrackMap",
+            "url": "https://github.com/ikatsamenis/CrackMap",
+            "role": "outdoor road crack dataset used by the few-shot paper"
+          }
+        ],
+        "baseline_decision": {
+          "canonical": "CT-CrackSeg",
+          "reason": [
+            "Direct task match for pixel-level crack segmentation.",
+            "Paper, author-linked code, training/evaluation entry points, and public datasets are discoverable.",
+            "Boundary Awareness Module has explicit thin-boundary semantics."
+          ],
+          "reproduction_status": "unknown until environment, commit, split, seed policy, and metric are actually executed"
+        },
+        "gap_analysis": [
+          "Few labels create overfitting risk during full-network fine-tuning.",
+          "Outdoor target domains differ in camera, illumination, pavement material, stains, markings, and crack width.",
+          "Patch-level random splitting can leak crops from the same source image across train and test."
+        ],
+        "reference_hypothesis": "Under target-road domain shift, boundary-feature mismatch is a major error source. Selecting a small number of low-confidence target images for expert mask correction and updating only the decoder/BAM should improve target Dice and boundary F-score over frozen, random-K-shot, and equal-budget full fine-tuning, while source-domain Dice remains within a predefined degradation guardrail.",
+        "compatibility_judgment": {
+          "verdict": "conditionally_compatible",
+          "recommended": "Use the few-shot paper as an adaptation-policy source, not as a drop-in encoder replacement.",
+          "reject": "Replacing CT-CrackSeg with the full R2AU-Net while claiming a single few-shot module effect."
+        },
+        "minimal_method": [
+          "Freeze and record the exact CT-CrackSeg baseline path.",
+          "Run target-pool inference and select K uncertain images.",
+          "Obtain corrected masks for K images.",
+          "Fine-tune decoder, BAM, and segmentation head only.",
+          "Replay a fixed amount of source data.",
+          "Keep a configuration switch that restores exact baseline behavior."
+        ],
+        "experiments": [
+          "E0 frozen CT-CrackSeg",
+          "E1 random K-shot full fine-tuning",
+          "E2 random K-shot decoder+BAM fine-tuning with source replay",
+          "E3 uncertainty-selected K-shot decoder+BAM fine-tuning with replay",
+          "E4 E3 without BAM updates",
+          "E5 E3 without source replay",
+          "K in {1,3,6,12}; at least three seeds",
+          "Report Dice, IoU, precision, recall, boundary F-score, trainable parameters, annotation count, training time, and source-domain degradation"
+        ],
+        "stop_conditions": [
+          "Baseline cannot be executed under a frozen protocol.",
+          "Train/test crops share an original image or acquisition scene.",
+          "Uncertainty selection does not beat random selection.",
+          "Gain disappears under matched resolution and tuning budget.",
+          "Method requires many labels and no longer satisfies the few-shot condition."
+        ],
+        "allowed_alternatives": [
+          "DeepCrack or a ResNet34-U-Net may be selected if paper/code relation, protocol, and reproducibility are better justified than CT-CrackSeg."
+        ],
+        "hard_failures": [
+          "Treating the task as classification or box detection without justification.",
+          "Claiming CT-CrackSeg is reproduced because the repository exists.",
+          "Using patch-random splits that leak source images.",
+          "Claiming the few-shot paper proves the proposed CT-CrackSeg integration will work."
+        ]
+      }
+    },
+    {
+      "case_id": "atr-v1-002-timeseries-patchtst-missing",
+      "case_type": "baseline_with_condition",
+      "domain": "time_series",
+      "public_input": {
+        "user_input": "以论文《A Time Series is Worth 64 Words: Long-term Forecasting with Transformers》为 Baseline，在历史传感器观测存在 30% 随机缺失和连续块缺失的条件下，改进多变量长时序预测能力。",
+        "supplied_materials": [
+          {
+            "title": "A Time Series is Worth 64 Words: Long-term Forecasting with Transformers",
+            "declared_role": "baseline"
+          }
+        ]
+      },
+      "gold": {
+        "task_definition": {
+          "task": "Multivariate long-horizon forecasting from partially observed historical windows.",
+          "constraint": "Missingness is injected only into the historical input; future ground truth must never be visible to the imputer."
+        },
+        "expected_assets": [
+          {
+            "kind": "paper",
+            "title": "A Time Series is Worth 64 Words: Long-term Forecasting with Transformers",
+            "authors": [
+              "Yuqi Nie",
+              "Nam H. Nguyen",
+              "Phanwadee Sinthong",
+              "Jayant Kalagnanam"
+            ],
+            "year": 2023,
+            "venue": "ICLR",
+            "arxiv": "2211.14730",
+            "url": "https://arxiv.org/abs/2211.14730",
+            "role": "baseline"
+          },
+          {
+            "kind": "repository",
+            "title": "yuqinie98/PatchTST",
+            "url": "https://github.com/yuqinie98/PatchTST",
+            "relation": "official implementation",
+            "role": "baseline code"
+          },
+          {
+            "kind": "paper",
+            "title": "SAITS: Self-Attention-based Imputation for Time Series",
+            "authors": [
+              "Wenjie Du",
+              "David Cote",
+              "Yan Liu"
+            ],
+            "year": 2023,
+            "venue": "Expert Systems with Applications",
+            "doi": "10.1016/j.eswa.2023.119619",
+            "arxiv": "2202.08516",
+            "url": "https://arxiv.org/abs/2202.08516",
+            "role": "imputation module source"
+          },
+          {
+            "kind": "repository",
+            "title": "WenjieDu/SAITS",
+            "url": "https://github.com/WenjieDu/SAITS",
+            "relation": "official implementation",
+            "role": "imputation code"
+          },
+          {
+            "kind": "dataset",
+            "title": "ETT",
+            "url": "https://github.com/zhouhaoyi/ETDataset",
+            "role": "official public forecasting data source"
+          }
+        ],
+        "baseline_decision": {
+          "canonical": "PatchTST supervised forecasting implementation",
+          "verified_facts": [
+            "patch tokenization",
+            "channel independence",
+            "official repository exists"
+          ],
+          "unknowns": [
+            "current-environment execution",
+            "NaN behavior",
+            "paper metric reproduction"
+          ]
+        },
+        "gap_analysis": [
+          "Zero or mean filling can turn missing patterns into false local patch structure.",
+          "PatchTST channel independence does not explicitly exploit cross-variable information for imputation.",
+          "Block missingness can remove most observations from one or more patch tokens."
+        ],
+        "reference_hypothesis": "If forecast degradation is caused by corrupted historical patch structure, a history-only SAITS front end should improve future MSE/MAE under random and block missingness relative to zero, mean, and linear interpolation. Any gain obtained by reading the forecast horizon or test-set statistics is invalid.",
+        "compatibility_judgment": {
+          "verdict": "conditionally_compatible",
+          "recommended_path": "historical window + missing mask -> SAITS -> imputed historical window -> PatchTST",
+          "not_recommended_first": "Insert SAITS DMSA blocks directly inside the PatchTST encoder.",
+          "semantic_reason": [
+            "SAITS tokens represent multivariate time points and explicitly consume missing masks.",
+            "PatchTST tokens represent per-channel temporal patches.",
+            "A transpose or projection solves dimensions but not token meaning, normalization, or mask contracts."
+          ]
+        },
+        "minimal_method": [
+          "Freeze the original PatchTST data split and preprocessing.",
+          "Generate training missingness only from observed training values.",
+          "Train SAITS on historical windows and freeze it.",
+          "Train PatchTST on SAITS outputs.",
+          "Only after two-stage success, test joint optimization with forecast plus imputation loss."
+        ],
+        "experiments": [
+          "Complete-history PatchTST oracle",
+          "Zero fill + PatchTST",
+          "Mean fill + PatchTST",
+          "Linear interpolation + PatchTST",
+          "Frozen SAITS -> PatchTST",
+          "Joint SAITS + PatchTST",
+          "Random missing rates 10%, 30%, 50%",
+          "Block lengths 6, 12, 24 time steps",
+          "Report forecast MSE/MAE and imputation MAE/RMSE separately, plus latency and memory"
+        ],
+        "stop_conditions": [
+          "Imputer accesses forecast targets.",
+          "Scaler uses validation/test statistics.",
+          "SAITS does not beat linear interpolation.",
+          "Improvement exists only for one artificial missingness pattern.",
+          "Complete-data performance collapses."
+        ],
+        "allowed_alternatives": [
+          "BRITS may replace SAITS if its official identity and history-only protocol are verified."
+        ],
+        "hard_failures": [
+          "Wrong PatchTST paper or repository identity.",
+          "Calling the repository an empirical reproduction.",
+          "Using future labels to impute history.",
+          "Declaring internal DMSA compatibility from shape alone.",
+          "Merging imputation and forecasting metrics into one unsupported score."
+        ]
+      }
+    },
+    {
+      "case_id": "atr-v1-003-nlp-bert-lora-clinc",
+      "case_type": "baseline_plus_parallel_paper",
+      "domain": "nlp",
+      "public_input": {
+        "user_input": "Baseline 是论文《BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding》。平行论文《LoRA: Low-Rank Adaptation of Large Language Models》通过低秩增量矩阵进行参数高效适配。请判断能否把 LoRA 接入 BERT，用于 CLINC150 的每类 10-shot 意图分类，并设计方法和实验。",
+        "supplied_materials": [
+          {
+            "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+            "declared_role": "baseline"
+          },
+          {
+            "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+            "declared_role": "parallel_module_source"
+          }
+        ]
+      },
+      "gold": {
+        "task_definition": {
+          "task": "Few-shot, 150-way in-domain intent classification with explicit out-of-scope evaluation.",
+          "dataset_note": "CLINC150/OOS contains in-scope intents and out-of-scope utterances; class and OOS protocols must remain distinct."
+        },
+        "expected_assets": [
+          {
+            "kind": "paper",
+            "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+            "authors": [
+              "Jacob Devlin",
+              "Ming-Wei Chang",
+              "Kenton Lee",
+              "Kristina Toutanova"
+            ],
+            "year": 2019,
+            "venue": "NAACL",
+            "arxiv": "1810.04805",
+            "url": "https://arxiv.org/abs/1810.04805",
+            "role": "baseline"
+          },
+          {
+            "kind": "repository",
+            "title": "google-research/bert",
+            "url": "https://github.com/google-research/bert",
+            "relation": "author organization implementation; archived read-only",
+            "role": "baseline reference code"
+          },
+          {
+            "kind": "paper",
+            "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+            "authors": [
+              "Edward J. Hu",
+              "Yelong Shen",
+              "Phillip Wallis",
+              "Yuzhi Allen-Zhu",
+              "Yuanzhi Li",
+              "Shean Wang",
+              "Lu Wang",
+              "Weizhu Chen"
+            ],
+            "year": 2022,
+            "venue": "ICLR",
+            "arxiv": "2106.09685",
+            "url": "https://arxiv.org/abs/2106.09685",
+            "role": "module source"
+          },
+          {
+            "kind": "repository",
+            "title": "microsoft/LoRA",
+            "url": "https://github.com/microsoft/LoRA",
+            "relation": "official implementation",
+            "role": "module code"
+          },
+          {
+            "kind": "dataset",
+            "title": "CLINC150 / OOS-Eval",
+            "url": "https://github.com/clinc/oos-eval",
+            "role": "official dataset repository"
+          }
+        ],
+        "baseline_decision": {
+          "canonical": "BERT-base classifier with a linear intent head",
+          "freeze_requirements": [
+            "exact checkpoint",
+            "tokenizer and casing",
+            "10-shot sampler seed",
+            "OOS split",
+            "maximum length",
+            "optimizer and early-stop budget"
+          ],
+          "reproduction_status": "unknown until run"
+        },
+        "gap_analysis": [
+          "Full fine-tuning all BERT parameters with 10 examples per class can overfit and has high variance.",
+          "LoRA reduces trainable parameters but does not by itself solve OOS detection or class imbalance.",
+          "The original LoRA paper validates several Transformer families, but a BERT intent-classification integration still needs its own contract and experiment."
+        ],
+        "reference_hypothesis": "For 10-shot CLINC150, adaptation updates are approximately low-rank in selected self-attention projections. LoRA on query and value projections should match or improve macro-F1 over full fine-tuning at lower trainable-parameter and optimizer-memory cost, without degrading OOS AUROC beyond a predefined guardrail.",
+        "compatibility_judgment": {
+          "verdict": "compatible_with_adapter_contract",
+          "required_checks": [
+            "Inject trainable low-rank matrices into existing dense query/value projections without changing token order.",
+            "Freeze original BERT weights and verify only LoRA plus classifier parameters receive gradients.",
+            "Preserve attention mask, hidden size, residual path, tokenizer, and classification-head semantics.",
+            "Record rank, alpha scaling, dropout, target modules, and merge/unmerge behavior."
+          ],
+          "reject": "Saying LoRA is compatible merely because both systems use Transformers."
+        },
+        "minimal_method": [
+          "Start from a verified BERT-base intent classifier.",
+          "Add LoRA to query and value projections only.",
+          "Train LoRA matrices plus classification head.",
+          "Keep a switch producing exact frozen/full-fine-tune baselines.",
+          "Treat OOS scoring as a separate calibrated head or score, not an automatic consequence of LoRA."
+        ],
+        "experiments": [
+          "Frozen BERT embeddings + linear head",
+          "Full BERT fine-tuning",
+          "BitFit bias-only tuning",
+          "LoRA Q,V with ranks 2,4,8,16",
+          "LoRA Q-only and V-only ablations",
+          "Classifier-head-only ablation",
+          "Five independent 10-shot samplings and seeds",
+          "Report macro-F1, accuracy, per-intent recall, OOS AUROC/FPR95, trainable parameters, peak memory, and time"
+        ],
+        "stop_conditions": [
+          "LoRA gain disappears over multiple few-shot samplings.",
+          "Full fine-tuning wins under equal search budget and memory is not a project constraint.",
+          "OOS performance degrades beyond the guardrail.",
+          "Gradient audit shows frozen BERT parameters are updated."
+        ],
+        "allowed_alternatives": [
+          "A maintained Hugging Face BERT implementation may be used operationally, but must not be mislabeled as the original official repository."
+        ],
+        "hard_failures": [
+          "Wrong BERT or LoRA identity.",
+          "Calling a third-party PEFT wrapper the official LoRA repository.",
+          "Claiming LoRA guarantees OOS detection.",
+          "Changing tokenizer/checkpoint between baselines.",
+          "Comparing different tuning budgets without disclosure."
+        ]
+      }
+    },
+    {
+      "case_id": "atr-v1-004-medical-ham10000-small",
+      "case_type": "title_only",
+      "domain": "medical_imaging",
+      "public_input": {
+        "user_input": "小样本且类别不均衡条件下的皮肤镜病变多分类与可解释性审计",
+        "supplied_materials": []
+      },
+      "gold": {
+        "task_definition": {
+          "task": "Seven-class dermoscopic image classification with audit-oriented explanations.",
+          "claim_boundary": "No clinical effectiveness claim without external validation and prospective evidence."
+        },
+        "expected_assets": [
+          {
+            "kind": "paper",
+            "title": "The HAM10000 dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions",
+            "authors": [
+              "Philipp Tschandl",
+              "Cliff Rosendahl",
+              "Harald Kittler"
+            ],
+            "year": 2018,
+            "venue": "Scientific Data",
+            "arxiv": "1803.10417",
+            "url": "https://arxiv.org/abs/1803.10417",
+            "role": "dataset paper"
+          },
+          {
+            "kind": "dataset",
+            "title": "HAM10000",
+            "url": "https://www.isic-archive.com/",
+            "role": "official ISIC-hosted dermoscopy dataset"
+          },
+          {
+            "kind": "paper",
+            "title": "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks",
+            "authors": [
+              "Mingxing Tan",
+              "Quoc V. Le"
+            ],
+            "year": 2019,
+            "venue": "ICML",
+            "arxiv": "1905.11946",
+            "url": "https://arxiv.org/abs/1905.11946",
+            "role": "baseline architecture candidate"
+          },
+          {
+            "kind": "repository",
+            "title": "tensorflow/tpu EfficientNet",
+            "url": "https://github.com/tensorflow/tpu/tree/master/models/official/efficientnet",
+            "relation": "paper-linked implementation",
+            "role": "baseline reference code"
+          },
+          {
+            "kind": "paper",
+            "title": "Focal Loss for Dense Object Detection",
+            "authors": [
+              "Tsung-Yi Lin",
+              "Priya Goyal",
+              "Ross Girshick",
+              "Kaiming He",
+              "Piotr Dollar"
+            ],
+            "year": 2017,
+            "venue": "ICCV",
+            "arxiv": "1708.02002",
+            "url": "https://arxiv.org/abs/1708.02002",
+            "role": "imbalance-objective source"
+          },
+          {
+            "kind": "paper",
+            "title": "Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization",
+            "year": 2017,
+            "venue": "ICCV",
+            "arxiv": "1610.02391",
+            "url": "https://arxiv.org/abs/1610.02391",
+            "role": "explanation-audit source"
+          }
+        ],
+        "baseline_decision": {
+          "canonical": "ImageNet-pretrained EfficientNet-B0 with a seven-class head",
+          "reason": [
+            "task-compatible",
+            "moderate compute",
+            "paper-linked implementation"
+          ],
+          "reproduction_status": "unknown"
+        },
+        "gap_analysis": [
+          "HAM10000 is class-imbalanced and contains repeated images/lesions, so lesion-level or patient-level grouping is required.",
+          "Small-data fine-tuning can overfit augmentation artifacts.",
+          "Grad-CAM is an audit tool and not causal proof or an automatic performance module."
+        ],
+        "reference_hypothesis": "Under lesion-grouped splits, class-balanced or focal optimization should improve macro-F1 and minority sensitivity relative to standard cross-entropy, while calibration and majority-class performance stay within guardrails. Grad-CAM plus randomization/occlusion checks should be used only to audit evidence localization.",
+        "compatibility_judgment": {
+          "verdict": "conditionally_compatible",
+          "notes": [
+            "Focal loss changes the objective and is compatible with a softmax classifier if alpha/gamma and class sampling are controlled.",
+            "Grad-CAM attaches to convolutional feature maps for post-hoc audit; it is not an independent training contribution unless explicitly used as supervision."
+          ]
+        },
+        "minimal_method": [
+          "Create lesion-grouped train/validation/test splits.",
+          "Freeze preprocessing and EfficientNet-B0 baseline.",
+          "Test one imbalance intervention at a time.",
+          "Run calibration and explanation sanity checks.",
+          "Avoid clinical-deployment wording."
+        ],
+        "experiments": [
+          "Cross-entropy baseline",
+          "Class-weighted cross-entropy",
+          "Focal loss",
+          "Balanced sampler with standard loss",
+          "Focal loss alpha/gamma ablation",
+          "Grad-CAM model-parameter randomization and occlusion sanity tests",
+          "Report macro-F1, balanced accuracy, per-class sensitivity/specificity, one-vs-rest AUC, ECE, and confidence intervals"
+        ],
+        "stop_conditions": [
+          "Same lesion/patient appears across splits.",
+          "Minority gain comes only from threshold tuning on the test set.",
+          "Explanation maps fail randomization or are presented as causal evidence.",
+          "Clinical claims are made without external validation."
+        ],
+        "allowed_alternatives": [
+          "ResNet50 is acceptable if its code, pretrained weights, and compute fit are better documented."
+        ],
+        "hard_failures": [
+          "Random image split with lesion duplicates across partitions.",
+          "Fabricated clinical metric or diagnosis claim.",
+          "Treating Grad-CAM as proof of medical correctness.",
+          "Calling a repository result a reproduced HAM10000 result without running it."
+        ]
+      }
+    },
+    {
+      "case_id": "atr-v1-005-remote-oriented-small-edge",
+      "case_type": "baseline_with_condition",
+      "domain": "remote_sensing",
+      "public_input": {
+        "user_input": "以论文《Oriented R-CNN for Object Detection》为 Baseline，在 DOTA 密集小目标场景中降低高分辨率推理成本，同时保持旋转框检测精度。",
+        "supplied_materials": [
+          {
+            "title": "Oriented R-CNN for Object Detection",
+            "declared_role": "baseline"
+          }
+        ]
+      },
+      "gold": {
+        "task_definition": {
+          "task": "Oriented object detection on tiled high-resolution aerial images.",
+          "constraints": [
+            "dense small objects",
+            "rotated boxes",
+            "fixed tiling/overlap policy",
+            "latency or FLOP guardrail"
+          ]
+        },
+        "expected_assets": [
+          {
+            "kind": "paper",
+            "title": "Oriented R-CNN for Object Detection",
+            "authors": [
+              "Xingxing Xie",
+              "Gong Cheng",
+              "Jiabao Wang",
+              "Xiwen Yao",
+              "Junwei Han"
+            ],
+            "year": 2021,
+            "venue": "ICCV",
+            "arxiv": "2108.05699",
+            "url": "https://arxiv.org/abs/2108.05699",
+            "role": "baseline"
+          },
+          {
+            "kind": "repository",
+            "title": "jbwang1997/OBBDetection",
+            "url": "https://github.com/jbwang1997/OBBDetection",
+            "relation": "paper-linked implementation",
+            "role": "baseline code"
+          },
+          {
+            "kind": "dataset",
+            "title": "DOTA",
+            "url": "https://captain-whu.github.io/DOTA/",
+            "role": "official oriented aerial object detection dataset"
+          },
+          {
+            "kind": "paper",
+            "title": "QueryDet: Cascaded Sparse Query for Accelerating High-Resolution Small Object Detection",
+            "authors": [
+              "Chenhongyi Yang",
+              "Zehao Huang",
+              "Naiyan Wang"
+            ],
+            "year": 2022,
+            "venue": "CVPR",
+            "arxiv": "2103.09136",
+            "url": "https://arxiv.org/abs/2103.09136",
+            "role": "sparse high-resolution mechanism source"
+          },
+          {
+            "kind": "repository",
+            "title": "ChenhongyiYang/QueryDet-PyTorch",
+            "url": "https://github.com/ChenhongyiYang/QueryDet-PyTorch",
+            "relation": "official implementation",
+            "role": "module reference code"
+          }
+        ],
+        "baseline_decision": {
+          "canonical": "Oriented R-CNN on a fixed DOTA split and tile policy",
+          "unknowns": [
+            "exact runnable environment",
+            "metric reproduction",
+            "hardware latency"
+          ]
+        },
+        "gap_analysis": [
+          "High-resolution feature computation is expensive over large background regions.",
+          "QueryDet's sparse query mechanism was designed around feature-pyramid one-stage detection, not Oriented R-CNN's oriented RPN/RoI path.",
+          "DOTA results are highly sensitive to crop size, overlap, multiscale testing, and merge/NMS policy."
+        ],
+        "reference_hypothesis": "Small oriented objects occupy sparse regions of high-resolution aerial tiles. A coarse query head that selects regions for high-resolution feature refinement may reduce effective high-resolution computation while preserving small-object oriented AP, but only if the sparse routing is integrated before oriented proposal/refinement without changing tile and merge protocols.",
+        "compatibility_judgment": {
+          "verdict": "requires_adapter_and_pilot",
+          "required_checks": [
+            "Query targets must represent candidate spatial regions, not axis-aligned final boxes.",
+            "Sparse features must preserve spatial coordinates required by oriented RPN/RoIAlign.",
+            "Rotated box parameterization, feature levels, stride, and NMS/merge semantics remain baseline-consistent.",
+            "Sparse operators and dense fallback must produce equivalent outputs on fully selected regions."
+          ],
+          "reject": "Copying the QueryDet detection head wholesale and calling it compatible with oriented proposals."
+        },
+        "minimal_method": [
+          "Freeze Oriented R-CNN and DOTA tiling/merge protocol.",
+          "Add a low-resolution objectness query head.",
+          "Use it only to gate selected high-resolution FPN locations.",
+          "Keep oriented RPN and oriented RoI head unchanged.",
+          "Provide a dense-mode switch for parity."
+        ],
+        "experiments": [
+          "Dense Oriented R-CNN baseline",
+          "Lower input resolution baseline",
+          "Query head without sparse execution",
+          "Sparse routing at one FPN level",
+          "Sparse routing at multiple levels",
+          "Oracle routing upper bound using ground-truth regions",
+          "Report DOTA mAP, AP by object size/category, recall, duplicate detections, FLOPs, wall-clock latency, peak memory, and selected-region ratio"
+        ],
+        "stop_conditions": [
+          "Sparse path changes crop/overlap or test-time augmentation relative to baseline.",
+          "Accuracy gain comes from higher effective resolution rather than routing.",
+          "Latency is not measured on the target stack.",
+          "Sparse operator cannot preserve oriented-coordinate semantics."
+        ],
+        "allowed_alternatives": [
+          "A simpler tile-selection or coarse-to-fine cascade is acceptable if it is compared against the same fixed Oriented R-CNN protocol."
+        ],
+        "hard_failures": [
+          "Wrong Oriented R-CNN repository relation.",
+          "Using axis-aligned AP as the sole target metric.",
+          "Comparing different DOTA tiling/merge policies as model gains.",
+          "Claiming QueryDet directly supports oriented R-CNN without interface analysis."
+        ]
+      }
+    },
+    {
+      "case_id": "atr-v1-006-industrial-usad-anomaly-transformer",
+      "case_type": "baseline_plus_parallel_paper",
+      "domain": "industrial_fault",
+      "public_input": {
+        "user_input": "Baseline 是论文《USAD: UnSupervised Anomaly Detection on Multivariate Time Series》。平行论文《Anomaly Transformer: Time Series Anomaly Detection with Association Discrepancy》提出 Anomaly-Attention 和 association discrepancy。请判断能否将该机制接入 USAD，用于 SWaT 工业控制系统异常检测。",
+        "supplied_materials": [
+          {
+            "title": "USAD: UnSupervised Anomaly Detection on Multivariate Time Series",
+            "declared_role": "baseline"
+          },
+          {
+            "title": "Anomaly Transformer: Time Series Anomaly Detection with Association Discrepancy",
+            "declared_role": "parallel_module_source"
+          }
+        ]
+      },
+      "gold": {
+        "task_definition": {
+          "task": "Unsupervised multivariate time-series anomaly detection on SWaT.",
+          "protocol_warning": "Point adjustment and threshold selection can dominate reported scores and must be fixed before comparison."
+        },
+        "expected_assets": [
+          {
+            "kind": "paper",
+            "title": "USAD: UnSupervised Anomaly Detection on Multivariate Time Series",
+            "authors": [
+              "Julien Audibert",
+              "Pietro Michiardi",
+              "Frédéric Guyard",
+              "Sébastien Marti",
+              "Maria A. Zuluaga"
+            ],
+            "year": 2020,
+            "venue": "KDD",
+            "arxiv": "2009.11387",
+            "url": "https://arxiv.org/abs/2009.11387",
+            "role": "baseline"
+          },
+          {
+            "kind": "repository",
+            "title": "manigalati/usad",
+            "url": "https://github.com/manigalati/usad",
+            "relation": "author-linked implementation",
+            "role": "baseline code"
+          },
+          {
+            "kind": "paper",
+            "title": "Anomaly Transformer: Time Series Anomaly Detection with Association Discrepancy",
+            "authors": [
+              "Jiehui Xu",
+              "Haixu Wu",
+              "Jianmin Wang",
+              "Mingsheng Long"
+            ],
+            "year": 2022,
+            "venue": "ICLR",
+            "arxiv": "2110.02642",
+            "url": "https://arxiv.org/abs/2110.02642",
+            "role": "module source"
+          },
+          {
+            "kind": "repository",
+            "title": "thuml/Anomaly-Transformer",
+            "url": "https://github.com/thuml/Anomaly-Transformer",
+            "relation": "official implementation",
+            "role": "module code"
+          },
+          {
+            "kind": "dataset",
+            "title": "SWaT",
+            "url": "https://itrust.sutd.edu.sg/itrust-labs_datasets/dataset_info/",
+            "role": "official industrial water-treatment dataset; access terms apply"
+          }
+        ],
+        "baseline_decision": {
+          "canonical": "USAD under a frozen SWaT preprocessing, windowing, threshold, and event-scoring protocol",
+          "reproduction_status": "unknown"
+        },
+        "gap_analysis": [
+          "USAD is an autoencoder/adversarial reconstruction architecture, not an attention encoder.",
+          "Association discrepancy is defined jointly with Anomaly-Attention and a minimax training objective.",
+          "Extracting only an attention tensor or discrepancy score would remove the mechanism's training contract."
+        ],
+        "reference_hypothesis": "A direct internal graft of Anomaly-Attention into USAD is not a minimal module transfer because it changes the encoder family and objective. A bounded pilot may instead compare a separate association-discrepancy branch or score-level fusion against USAD reconstruction, testing whether complementary temporal association evidence improves event-level detection under an unchanged protocol.",
+        "compatibility_judgment": {
+          "verdict": "direct_graft_no_go; separate_branch_revise_to_pilot",
+          "direct_graft_failure": [
+            "USAD latent semantics and Anomaly Transformer's temporal-token semantics differ.",
+            "Association discrepancy depends on prior/series associations and minimax optimization.",
+            "A reshape or added attention layer does not preserve the original mechanism."
+          ],
+          "permitted_adapter": "A separate temporal-attention branch trained with its own verified objective, followed by validation-only score calibration/fusion."
+        },
+        "minimal_method": [
+          "Freeze USAD reconstruction score and threshold protocol.",
+          "Train an independent Anomaly Transformer branch on the same training windows.",
+          "Normalize scores using training/validation data only.",
+          "Evaluate score fusion with a predeclared coefficient.",
+          "Do not claim an integrated USAD architecture until the branch independently helps."
+        ],
+        "experiments": [
+          "USAD baseline",
+          "Anomaly Transformer baseline",
+          "Simple average score fusion",
+          "Validation-tuned linear fusion",
+          "Random/untrained attention score negative control",
+          "Fusion without association discrepancy",
+          "Report point-wise and event-wise precision/recall/F1, AUROC/AUPRC, detection delay, false alarms per hour, and results with and without point adjustment"
+        ],
+        "stop_conditions": [
+          "Direct graft cannot state a complete loss and gradient contract.",
+          "Fusion coefficient is tuned on the test set.",
+          "Gain exists only under point adjustment.",
+          "Independent Anomaly Transformer does not add complementary error coverage."
+        ],
+        "allowed_alternatives": [
+          "Use SMD/SMAP/MSL for code-accessible replication, but do not relabel them as industrial SWaT evidence."
+        ],
+        "hard_failures": [
+          "Claiming association discrepancy is a standalone attention layer.",
+          "Ignoring minimax training and prior/series association semantics.",
+          "Using test labels for threshold or fusion tuning.",
+          "Comparing incompatible point-adjustment protocols.",
+          "Claiming SWaT data are bundled in the repository when access is controlled."
+        ]
+      }
+    },
+    {
+      "case_id": "atr-v1-007-graph-graphsage-gat-ppi",
+      "case_type": "baseline_plus_parallel_paper",
+      "domain": "graph_learning",
+      "public_input": {
+        "user_input": "Baseline 是论文《Inductive Representation Learning on Large Graphs》。平行论文《Graph Attention Networks》使用 masked self-attention 为不同邻居分配不同权重。请判断能否把该注意力聚合机制接入 GraphSAGE，用于未见 PPI 图上的归纳式节点分类，并设计最小方法、接口方案和实验。",
+        "supplied_materials": [
+          {
+            "title": "Inductive Representation Learning on Large Graphs",
+            "declared_role": "baseline"
+          },
+          {
+            "title": "Graph Attention Networks",
+            "declared_role": "parallel_module_source"
+          }
+        ]
+      },
+      "gold": {
+        "task_definition": {
+          "task": "Inductive multi-label node classification on completely unseen PPI graphs.",
+          "split": "Train, validation, and test graphs must remain graph-disjoint."
+        },
+        "expected_assets": [
+          {
+            "kind": "paper",
+            "title": "Inductive Representation Learning on Large Graphs",
+            "authors": [
+              "William L. Hamilton",
+              "Rex Ying",
+              "Jure Leskovec"
+            ],
+            "year": 2017,
+            "venue": "NeurIPS",
+            "arxiv": "1706.02216",
+            "url": "https://arxiv.org/abs/1706.02216",
+            "role": "baseline"
+          },
+          {
+            "kind": "repository",
+            "title": "williamleif/GraphSAGE",
+            "url": "https://github.com/williamleif/GraphSAGE",
+            "relation": "official author repository",
+            "role": "baseline code"
+          },
+          {
+            "kind": "paper",
+            "title": "Graph Attention Networks",
+            "authors": [
+              "Petar Veličković",
+              "Guillem Cucurull",
+              "Arantxa Casanova",
+              "Adriana Romero",
+              "Pietro Liò",
+              "Yoshua Bengio"
+            ],
+            "year": 2018,
+            "venue": "ICLR",
+            "arxiv": "1710.10903",
+            "url": "https://arxiv.org/abs/1710.10903",
+            "role": "module source"
+          },
+          {
+            "kind": "repository",
+            "title": "PetarV-/GAT",
+            "url": "https://github.com/PetarV-/GAT",
+            "relation": "official author repository",
+            "role": "module code"
+          },
+          {
+            "kind": "dataset",
+            "title": "GraphSAGE PPI",
+            "url": "https://snap.stanford.edu/graphsage/",
+            "role": "paper-linked multi-graph PPI benchmark"
+          }
+        ],
+        "baseline_decision": {
+          "canonical": "GraphSAGE mean aggregator with fixed neighbor sampling and sigmoid multi-label loss",
+          "reproduction_status": "unknown"
+        },
+        "gap_analysis": [
+          "Uniform mean aggregation may dilute a small number of informative protein neighbors.",
+          "GraphSAGE observes sampled neighborhoods; GAT normalization over sampled neighbors differs from full-neighborhood attention.",
+          "Self-loop handling and multi-head output width alter semantics and parameter count."
+        ],
+        "reference_hypothesis": "At equal sampling, depth, width, tuning budget, and parameter count, learned local attention over GraphSAGE's sampled neighborhood should improve unseen-graph micro-F1 if unequal neighbor relevance is the mechanism. If gains vanish under parameter matching or full-neighborhood controls, the mechanism is unsupported.",
+        "compatibility_judgment": {
+          "verdict": "conditionally_compatible",
+          "recommended": "Replace the GraphSAGE aggregator with sampled-neighborhood attention while retaining the inductive sampling pipeline.",
+          "reject": "Stacking a complete GAT after GraphSAGE and attributing all gain to the aggregator.",
+          "required_checks": [
+            "Softmax is restricted to valid sampled neighbors.",
+            "Padding neighbors are masked.",
+            "Self representation path is explicit.",
+            "No node-ID embeddings that break unseen-graph induction.",
+            "Multi-head concat/average width matches the next layer.",
+            "Sigmoid multi-label loss is preserved."
+          ]
+        },
+        "minimal_method": [
+          "Implement one-head sampled attention aggregator.",
+          "Verify attention sums and padding masks.",
+          "Verify baseline parity when disabled.",
+          "Add multi-head mode only after the single-head pilot.",
+          "Keep graph-disjoint splits."
+        ],
+        "experiments": [
+          "GraphSAGE mean",
+          "GraphSAGE pool",
+          "Original GAT under its own full-neighborhood protocol",
+          "Single-head Attention-GraphSAGE",
+          "Parameter-matched multi-head Attention-GraphSAGE",
+          "Uniform-weight control",
+          "Random-attention control",
+          "Full-neighborhood attention on a feasible subset",
+          "Fanout and resampling ablations",
+          "Report micro-F1, macro-F1, mean/std over seeds, runtime, memory, and attention entropy"
+        ],
+        "stop_conditions": [
+          "Test graphs or node IDs leak into training.",
+          "Gain disappears under parameter matching.",
+          "Padding participates in softmax.",
+          "Only one fanout or one seed works.",
+          "Sampling and full-neighborhood results contradict the proposed mechanism without explanation."
+        ],
+        "allowed_alternatives": [
+          "A modern PyG reimplementation is acceptable if repository relation is labeled third-party and baseline parity is demonstrated."
+        ],
+        "hard_failures": [
+          "Calling GAT transductive-only.",
+          "Ignoring sampled-neighborhood normalization.",
+          "Using identity embeddings on unseen test graphs.",
+          "Declaring compatibility from output dimension alone.",
+          "Changing graph splits or loss protocol."
+        ]
+      }
+    },
+    {
+      "case_id": "atr-v1-008-bio-protein-function-lowlabel",
+      "case_type": "title_only",
+      "domain": "bioinformatics",
+      "public_input": {
+        "user_input": "低标注条件下基于蛋白质序列的 Gene Ontology 多标签功能预测",
+        "supplied_materials": []
+      },
+      "gold": {
+        "task_definition": {
+          "task": "Multi-label protein function prediction from amino-acid sequence.",
+          "ontology": "Gene Ontology labels with hierarchical dependencies.",
+          "critical_split": "Homology-aware or time-based split; random sequence split is insufficient."
+        },
+        "expected_assets": [
+          {
+            "kind": "paper",
+            "title": "DeepGOPlus: improved protein function prediction from sequence",
+            "authors": [
+              "Maxat Kulmanov",
+              "Robert Hoehndorf"
+            ],
+            "year": 2020,
+            "venue": "Bioinformatics",
+            "doi": "10.1093/bioinformatics/btz595",
+            "url": "https://doi.org/10.1093/bioinformatics/btz595",
+            "role": "direct baseline candidate"
+          },
+          {
+            "kind": "repository",
+            "title": "bio-ontology-research-group/deepgoplus",
+            "url": "https://github.com/bio-ontology-research-group/deepgoplus",
+            "relation": "official implementation",
+            "role": "baseline code and paper-linked data"
+          },
+          {
+            "kind": "paper",
+            "title": "Evolutionary-scale prediction of atomic-level protein structure with a language model",
+            "authors": [
+              "Zeming Lin",
+              "Halil Akin",
+              "Roshan Rao",
+              "Brian Hie",
+              "et al."
+            ],
+            "year": 2023,
+            "venue": "Science",
+            "doi": "10.1126/science.ade2574",
+            "url": "https://doi.org/10.1126/science.ade2574",
+            "role": "ESM-2 model source"
+          },
+          {
+            "kind": "repository",
+            "title": "facebookresearch/esm",
+            "url": "https://github.com/facebookresearch/esm",
+            "relation": "official FAIR model repository; archived read-only",
+            "role": "pretrained sequence representation code"
+          },
+          {
+            "kind": "dataset",
+            "title": "DeepGOPlus training/testing data",
+            "url": "http://deepgoplus.bio2vec.net/data/",
+            "role": "paper-published data"
+          },
+          {
+            "kind": "resource",
+            "title": "Gene Ontology",
+            "url": "https://geneontology.org/",
+            "role": "ontology and annotation source"
+          },
+          {
+            "kind": "benchmark",
+            "title": "CAFA",
+            "url": "https://biofunctionprediction.org/cafa/",
+            "role": "community protein-function evaluation framework"
+          }
+        ],
+        "baseline_decision": {
+          "canonical": "DeepGOPlus as the reproducible task baseline; frozen ESM-2 embeddings as a representation alternative",
+          "reason": [
+            "DeepGOPlus directly implements sequence-to-GO prediction and publishes code/data.",
+            "ESM-2 supplies pretrained sequence features but is not itself a complete GO predictor."
+          ],
+          "reproduction_status": "unknown"
+        },
+        "gap_analysis": [
+          "Random splits can place close homologs across train and test, inflating generalization.",
+          "GO labels are highly imbalanced, multi-label, and hierarchically constrained.",
+          "Large ESM-2 variants may violate compute constraints; low-label gains can be confounded by pretrained data overlap."
+        ],
+        "reference_hypothesis": "Under a homology-aware split, frozen ESM-2 residue/sequence embeddings with a small hierarchy-aware classifier should improve macro AUPR and rare-term recall over DeepGOPlus sequence features in the low-label regime, without increasing ontology-consistency violations. The claim must exclude close-homolog leakage.",
+        "compatibility_judgment": {
+          "verdict": "conditionally_compatible",
+          "recommended": "Use ESM-2 as a frozen feature encoder feeding a GO classifier; retain DeepGOPlus as a full task baseline.",
+          "required_checks": [
+            "Protein sequence tokenization and maximum-length handling.",
+            "Pooling from residue representations to protein representation.",
+            "GO label version and ontology propagation rules.",
+            "Frozen versus fine-tuned encoder and gradient audit.",
+            "Homology clustering and split provenance."
+          ]
+        },
+        "minimal_method": [
+          "Freeze a DeepGOPlus baseline and data/GO release.",
+          "Generate embeddings with a compute-feasible ESM-2 checkpoint.",
+          "Train a lightweight multi-label classifier.",
+          "Add a hierarchy-consistency constraint only after the embedding baseline.",
+          "Evaluate on label fractions such as 1%, 5%, 10%, and 100%."
+        ],
+        "experiments": [
+          "Sequence-similarity/DeepGOPlus baseline",
+          "Frozen ESM-2 + linear classifier",
+          "Frozen ESM-2 + MLP",
+          "ESM-2 + hierarchy-consistency objective",
+          "Random split diagnostic versus homology-aware split",
+          "Embedding checkpoint size ablation",
+          "Report Fmax, Smin where applicable, micro/macro AUPR, rare-term recall, hierarchy violations, compute, and confidence intervals"
+        ],
+        "stop_conditions": [
+          "Close homologs cross partitions.",
+          "GO releases differ across systems.",
+          "Gain exists only on random split.",
+          "Compute requirement exceeds project constraints.",
+          "Pretrained representation is called a reproduced end-to-end function predictor without a trained head."
+        ],
+        "allowed_alternatives": [
+          "ProtT5 embeddings are acceptable if paper, model, license, and compute are verified."
+        ],
+        "hard_failures": [
+          "Random split presented as biological generalization.",
+          "Ignoring GO hierarchy and label-version identity.",
+          "Claiming ESM-2 alone outputs GO labels.",
+          "Fabricating CAFA metrics or data access.",
+          "Treating archived repository status as failed identity or as reproduction."
+        ]
+      }
+    },
+    {
+      "case_id": "atr-v1-009-audio-panns-mimii-domain",
+      "case_type": "baseline_with_condition",
+      "domain": "acoustics",
+      "public_input": {
+        "user_input": "以论文《PANNs: Large-Scale Pretrained Audio Neural Networks for Audio Pattern Recognition》为 Baseline，在 MIMII 工业机器声音存在低信噪比和设备域偏移时，设计少样本异常声音识别方法。",
+        "supplied_materials": [
+          {
+            "title": "PANNs: Large-Scale Pretrained Audio Neural Networks for Audio Pattern Recognition",
+            "declared_role": "baseline"
+          }
+        ]
+      },
+      "gold": {
+        "task_definition": {
+          "task": "Few-shot industrial machine anomalous-sound recognition or anomaly scoring under noise/domain shift.",
+          "ambiguity_to_resolve": "Supervised anomaly classification versus one-class anomalous sound detection."
+        },
+        "expected_assets": [
+          {
+            "kind": "paper",
+            "title": "PANNs: Large-Scale Pretrained Audio Neural Networks for Audio Pattern Recognition",
+            "authors": [
+              "Qiuqiang Kong",
+              "Yin Cao",
+              "Turab Iqbal",
+              "Yuxuan Wang",
+              "Wenwu Wang",
+              "Mark D. Plumbley"
+            ],
+            "year": 2020,
+            "venue": "IEEE/ACM TASLP",
+            "arxiv": "1912.10211",
+            "url": "https://arxiv.org/abs/1912.10211",
+            "role": "baseline"
+          },
+          {
+            "kind": "repository",
+            "title": "qiuqiangkong/audioset_tagging_cnn",
+            "url": "https://github.com/qiuqiangkong/audioset_tagging_cnn",
+            "relation": "official implementation and pretrained models",
+            "role": "baseline code"
+          },
+          {
+            "kind": "dataset_paper",
+            "title": "MIMII Dataset: Sound Dataset for Malfunctioning Industrial Machine Investigation and Inspection",
+            "authors": [
+              "Harsh Purohit",
+              "Ryo Tanabe",
+              "Kenji Ichige",
+              "Takashi Endo",
+              "Yuki Nikaido",
+              "Kaori Suefusa",
+              "Yohei Kawaguchi"
+            ],
+            "year": 2019,
+            "arxiv": "1909.09347",
+            "url": "https://arxiv.org/abs/1909.09347",
+            "role": "dataset identity"
+          },
+          {
+            "kind": "dataset",
+            "title": "MIMII",
+            "url": "https://zenodo.org/records/3384388",
+            "role": "official Zenodo release"
+          },
+          {
+            "kind": "dataset_paper",
+            "title": "MIMII DUE",
+            "year": 2021,
+            "arxiv": "2105.02702",
+            "url": "https://arxiv.org/abs/2105.02702",
+            "role": "explicit source/target domain-shift evidence"
+          },
+          {
+            "kind": "paper",
+            "title": "SpecAugment: A Simple Data Augmentation Method for Automatic Speech Recognition",
+            "year": 2019,
+            "venue": "Interspeech",
+            "arxiv": "1904.08779",
+            "url": "https://arxiv.org/abs/1904.08779",
+            "role": "time-frequency masking evidence"
+          }
+        ],
+        "baseline_decision": {
+          "canonical": "PANN CNN14 embeddings or logits with a task-specific MIMII head",
+          "clarification": "PANNs is pretrained audio representation/tagging, not an off-the-shelf industrial anomaly detector.",
+          "reproduction_status": "unknown"
+        },
+        "gap_analysis": [
+          "AudioSet pretraining classes and industrial anomaly labels do not share identical semantics.",
+          "Low SNR and device/domain shift change background and machine acoustics.",
+          "Few abnormal examples make full encoder fine-tuning unstable.",
+          "MIMII and MIMII DUE protocols should not be mixed without explicit mapping."
+        ],
+        "reference_hypothesis": "Frozen PANN embeddings plus a small machine-specific head should outperform training from scratch in few-shot settings. Adding noise-matched augmentation and limited high-layer unfreezing should improve target-domain AUC without degrading source-domain AUC beyond a guardrail; SpecAugment must be validated because masking can also erase fault signatures.",
+        "compatibility_judgment": {
+          "verdict": "conditionally_compatible",
+          "recommended": "Use PANNs as a pretrained encoder; attach a supervised or one-class head matching the clarified task.",
+          "required_checks": [
+            "Waveform sample rate and log-mel frontend match pretrained PANN settings.",
+            "Clip length, channel handling, and normalization are fixed.",
+            "Device/machine IDs remain split according to the domain protocol.",
+            "Augmentations do not use target test audio statistics."
+          ]
+        },
+        "minimal_method": [
+          "Freeze PANN frontend and encoder.",
+          "Train a small machine-specific head on source plus K target labeled examples.",
+          "Test additive noise augmentation separately from time/frequency masking.",
+          "Unfreeze only the final PANN block after frozen-encoder pilot."
+        ],
+        "experiments": [
+          "Log-mel CNN trained from scratch",
+          "Frozen PANN + linear head",
+          "Frozen PANN + MLP head",
+          "PANN + noise augmentation",
+          "PANN + SpecAugment",
+          "PANN + both augmentations",
+          "Final-block unfreezing",
+          "K in {1,5,10} per anomaly type where labels permit",
+          "Report source/target ROC-AUC, partial AUC, F1 at validation-selected threshold, false alarms, latency, and seed variance"
+        ],
+        "stop_conditions": [
+          "Task remains ambiguous between supervised classification and unsupervised ASD.",
+          "Sample-rate/frontend mismatch invalidates pretrained weights.",
+          "Target test data are used to design augmentation noise or thresholds.",
+          "Augmentation erases short anomaly signatures.",
+          "Gain occurs only on source domain."
+        ],
+        "allowed_alternatives": [
+          "Use MIMII DG when domain generalization, rather than few-shot target adaptation, is the exact task."
+        ],
+        "hard_failures": [
+          "Calling PANNs an industrial anomaly model without a task head.",
+          "Mixing MIMII, MIMII DUE, and MIMII DG protocols as one dataset.",
+          "Using target test recordings for noise augmentation or threshold tuning.",
+          "Claiming SpecAugment is guaranteed to preserve fault cues."
+        ]
+      }
+    },
+    {
+      "case_id": "atr-v1-010-rec-coldstart-sequential",
+      "case_type": "title_only",
+      "domain": "recommender_systems",
+      "public_input": {
+        "user_input": "带内容侧信息的冷启动序列推荐：同时处理新物品和短历史用户",
+        "supplied_materials": []
+      },
+      "gold": {
+        "task_definition": {
+          "task": "Next-item recommendation under item cold start and short-history user conditions.",
+          "required_distinction": "Warm sequential recommendation, new-item cold start, and new/short-history user evaluation are separate protocols."
+        },
+        "expected_assets": [
+          {
+            "kind": "paper",
+            "title": "Self-Attentive Sequential Recommendation",
+            "authors": [
+              "Wang-Cheng Kang",
+              "Julian McAuley"
+            ],
+            "year": 2018,
+            "venue": "ICDM",
+            "arxiv": "1808.09781",
+            "url": "https://arxiv.org/abs/1808.09781",
+            "role": "sequential baseline candidate"
+          },
+          {
+            "kind": "repository",
+            "title": "kang205/SASRec",
+            "url": "https://github.com/kang205/SASRec",
+            "relation": "official implementation",
+            "role": "sequential baseline code"
+          },
+          {
+            "kind": "paper",
+            "title": "BERT4Rec: Sequential Recommendation with Bidirectional Encoder Representations from Transformer",
+            "authors": [
+              "Fei Sun",
+              "Jun Liu",
+              "Jian Wu",
+              "Changhua Pei",
+              "Xiao Lin",
+              "Wenwu Ou",
+              "Peng Jiang"
+            ],
+            "year": 2019,
+            "venue": "CIKM",
+            "arxiv": "1904.06690",
+            "doi": "10.1145/3357384.3357895",
+            "url": "https://arxiv.org/abs/1904.06690",
+            "role": "strong sequential comparison"
+          },
+          {
+            "kind": "repository",
+            "title": "FeiSun/BERT4Rec",
+            "url": "https://github.com/FeiSun/BERT4Rec",
+            "relation": "official author repository",
+            "role": "comparison code"
+          },
+          {
+            "kind": "paper",
+            "title": "DropoutNet: Addressing Cold Start in Recommender Systems",
+            "authors": [
+              "Maksims Volkovs",
+              "Guangwei Yu",
+              "Tomi Poutanen"
+            ],
+            "year": 2017,
+            "venue": "NeurIPS",
+            "url": "https://papers.neurips.cc/paper_files/paper/2017/hash/dbd22ba3bd0df8f385bdac3e9f8be207-Abstract.html",
+            "role": "cold-start mechanism source"
+          },
+          {
+            "kind": "repository",
+            "title": "layer6ai-labs/DropoutNet",
+            "url": "https://github.com/layer6ai-labs/DropoutNet",
+            "relation": "official implementation",
+            "role": "cold-start code"
+          },
+          {
+            "kind": "dataset",
+            "title": "MovieLens 20M",
+            "url": "https://grouplens.org/datasets/movielens/20m/",
+            "role": "stable interaction and tag benchmark"
+          },
+          {
+            "kind": "dataset",
+            "title": "MovieLens Tag Genome",
+            "url": "https://grouplens.org/datasets/movielens/tag-genome/",
+            "role": "item content-side features"
+          }
+        ],
+        "baseline_decision": {
+          "canonical": "SASRec for warm/short-history sequential behavior, paired with a content-aware cold-start baseline such as DropoutNet",
+          "reason": "SASRec alone cannot recommend truly unseen item IDs without a content-to-item representation path.",
+          "reproduction_status": "unknown"
+        },
+        "gap_analysis": [
+          "ID-only SASRec has no learned embedding for a new item.",
+          "Short-history users have weak sequential context.",
+          "MovieLens stable datasets contain ratings/tags, but cold-start splits must be constructed without temporal or identity leakage.",
+          "Warm-start metrics can conceal complete failure on cold items."
+        ],
+        "reference_hypothesis": "A content encoder trained to predict or initialize the SASRec item embedding, combined with item-embedding dropout inspired by DropoutNet, should improve Recall@K and NDCG@K on temporally held-out cold items while preserving warm-item performance. A short-history user branch may use pooled content/history features, but should be evaluated separately.",
+        "compatibility_judgment": {
+          "verdict": "conditionally_compatible",
+          "recommended": [
+            "Map item content/tag features to the same semantic space as SASRec item embeddings.",
+            "During training, randomly replace some collaborative item embeddings with content-derived embeddings.",
+            "At inference, unseen items use content-derived embeddings."
+          ],
+          "required_checks": [
+            "Content features are available before the item first appears.",
+            "No future interaction statistics enter content features.",
+            "Item ID, padding ID, and mask semantics remain distinct.",
+            "Candidate generation includes cold items."
+          ],
+          "reject": "Claiming SASRec handles cold-start items by merely shortening user histories."
+        },
+        "minimal_method": [
+          "Freeze SASRec warm baseline and chronological split.",
+          "Train a content-to-item embedding mapper.",
+          "Evaluate content-only cold-item recommendation.",
+          "Add embedding dropout/replacement during SASRec training.",
+          "Only then add a separate short-history user adaptation."
+        ],
+        "experiments": [
+          "Popularity/content-only baseline",
+          "Warm SASRec",
+          "SASRec with random embedding initialization for cold items",
+          "Content-mapped cold embeddings",
+          "Content mapping + embedding dropout",
+          "Dropout probability ablation",
+          "Warm, short-history-user, and cold-item strata reported separately",
+          "BERT4Rec as strong sequential comparison under equal data/tuning budget",
+          "Report Recall@K, NDCG@K, MRR, coverage, warm/cold gap, and latency"
+        ],
+        "stop_conditions": [
+          "Cold items appear in training interactions.",
+          "Content/tag features use future interaction-derived statistics.",
+          "Candidate set excludes cold items.",
+          "Improvement is only on warm users/items.",
+          "SASRec/BERT4Rec comparison uses unequal convergence budgets."
+        ],
+        "allowed_alternatives": [
+          "Amazon review metadata may replace MovieLens if licenses, timestamps, content availability, and preprocessing are fully verified."
+        ],
+        "hard_failures": [
+          "Treating random holdout as a true new-item cold-start test.",
+          "Claiming ID-only SASRec can score unseen item IDs without an embedding construction path.",
+          "Leaking future tags/interactions into cold-item content.",
+          "Reporting only aggregate metrics that hide cold strata.",
+          "Calling MovieLens latest mutable data a stable research benchmark."
+        ]
+      }
+    }
+  ],
+  "cases_sha256": "362d74fe319a069dd7c36a32f9f930cf09ea14e738721eb4383ed478f939ca68"
+}

@@ -1,0 +1,68 @@
+name: Academic Eval Fix Observer
+
+on:
+  push:
+    branches:
+      - fix/academic-eval-diagnostics-baseline-binding
+    paths:
+      - ".github/workflows/academic-eval-fix-observer.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: academic-eval-fix-observer
+  cancel-in-progress: true
+
+jobs:
+  observe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/academic-eval-diagnostics-baseline-binding
+          fetch-depth: 0
+
+      - name: Inspect v3 artifact-driven run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          run_id=29927935738
+          printf '[{"databaseId":%s}]\n' "$run_id" > /tmp/run.json
+          gh run view "$run_id" --repo "$GITHUB_REPOSITORY" \
+            --json databaseId,status,conclusion,url,headSha,jobs > /tmp/run-detail.json
+          set +e
+          gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --log-failed > /tmp/failed.log 2>&1
+          set -e
+
+      - name: Persist observer output
+        shell: bash
+        run: |
+          mkdir -p cloud-status
+          cp /tmp/run.json cloud-status/artifact-driven-run-list.json
+          cp /tmp/run-detail.json cloud-status/artifact-driven-run.json
+          tail -n 160 /tmp/failed.log > cloud-status/artifact-driven-failed.log
+          git config user.name "paperagent-cloud-observer"
+          git config user.email "actions@users.noreply.github.com"
+          git add cloud-status/
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore(ci): record v3 artifact fix status"
+          git pull --rebase origin fix/academic-eval-diagnostics-baseline-binding
+          git push origin HEAD:fix/academic-eval-diagnostics-baseline-binding
+
+      - name: Comment observer result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body \
+            "Artifact-driven v3 observer persisted run \`29927935738\` to \`cloud-status/\`."

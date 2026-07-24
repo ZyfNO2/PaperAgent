@@ -1,0 +1,49 @@
+name: Lock Case 001 E2E Trigger Once
+
+on:
+  push:
+    branches:
+      - feat/claw-live-search-runtime
+    paths:
+      - ".github/workflows/lock-case-001-e2e-trigger-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/claw-live-search-runtime
+      - name: Restrict Case 001 to explicit marker pushes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path(".github/workflows/claw-case-001-end-to-end.yml")
+          text = path.read_text(encoding="utf-8")
+          start = text.index("on:\n")
+          end = text.index("permissions:\n")
+          trigger = '''on:
+  push:
+    branches:
+      - feat/claw-live-search-runtime
+    paths:
+      - ".case001-e2e-trigger"
+  workflow_dispatch:
+
+'''
+          text = text[:start] + trigger + text[end:]
+          text = text.replace("  cancel-in-progress: false", "  cancel-in-progress: true", 1)
+          path.write_text(text, encoding="utf-8")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/claw-case-001-end-to-end.yml
+          git commit -m "ci(eval): require explicit Case 001 trigger"
+          git pull --rebase origin feat/claw-live-search-runtime
+          git push origin HEAD:feat/claw-live-search-runtime

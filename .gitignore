@@ -1,0 +1,39 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+.venv/
+.env
+.env.*
+!.env.example
+
+# Local scratch / temporary artifacts (pytest tmp, patch drafts, logs)
+tmp/
+
+# Third-party plugin/tool working dirs (not part of the project)
+.codely-cli/
+.understand-anything/
+
+# Runtime data (traces, runs, built dist) — apps/ holds per-app state, not source
+apps/
+
+# Build artifacts and distribution
+build/
+dist/
+*.whl
+
+# Runtime data
+*.db
+*.db.backup
+
+# UI design source files
+paperagent-ui.design/
+
+# Coverage output
+cov-err.txt
+cov-out.txt

@@ -1,0 +1,226 @@
+name: GLM-5.2 Parallel Hedged Live Test
+
+on:
+  push:
+    branches:
+      - fix/parallel-hedged-glm52
+    paths:
+      - "src/paperagent/providers/**"
+      - "scripts/run_academic_tailoring_retrieval_v1_parallel.py"
+      - "tests/providers/**"
+      - ".github/workflows/glm52-parallel-hedged-live-test.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: glm52-parallel-hedged-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Test hedging and OpenAI-compatible structured output controls
+        run: |
+          pytest -q \
+            tests/providers/test_hedged_llm_provider.py \
+            tests/providers/test_openai_compatible_structured_output.py \
+            tests/providers/test_provider_compat_config.py \
+            tests/providers/test_openai_llm_runtime_limits.py \
+            tests/evals/test_academic_tailoring_runtime_checkpoint.py \
+            tests/evals/test_academic_tailoring_runtime_fail_fast.py
+      - name: Lint changed Python files
+        run: |
+          ruff check \
+            src/paperagent/providers/config.py \
+            src/paperagent/providers/hedged.py \
+            src/paperagent/providers/openai_llm.py \
+            src/paperagent/providers/structured_output.py \
+            src/paperagent/providers/runtime_factory.py \
+            scripts/run_academic_tailoring_retrieval_v1_parallel.py \
+            tests/providers/test_hedged_llm_provider.py \
+            tests/providers/test_openai_compatible_structured_output.py \
+            tests/providers/test_provider_compat_config.py
+      - name: Type-check provider package
+        run: mypy src/paperagent/providers
+
+  prepare-public-inputs:
+    needs: offline-validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create Gold-free candidate input
+        run: |
+          python scripts/project_academic_tailoring_retrieval_v1.py \
+            --authoring evals/academic_tailoring_retrieval_v1/dataset-authoring.json \
+            --output build/academic-tailoring-retrieval-v1/public-dataset.json \
+            --report build/academic-tailoring-retrieval-v1/boundary-report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: parallel-hedged-public-inputs
+          path: build/academic-tailoring-retrieval-v1/
+          if-no-files-found: error
+          retention-days: 14
+
+  candidate-live-run:
+    needs: prepare-public-inputs
+    concurrency:
+      group: paperagent-nvidia-glm52
+      cancel-in-progress: false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+      PAPERAGENT_OPENAI_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+      PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL || 'Z1015558261@outlook.com' }}
+      SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+      TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+      PAPERAGENT_LLM_PROVIDER: openai
+      PAPERAGENT_LLM_MODEL: z-ai/glm-5.2
+      PAPERAGENT_LLM_BASE_URL: https://integrate.api.nvidia.com/v1
+      PAPERAGENT_LLM_CONNECT_TIMEOUT: "15"
+      PAPERAGENT_LLM_READ_TIMEOUT: "300"
+      PAPERAGENT_LLM_TOTAL_TIMEOUT: "360"
+      PAPERAGENT_LLM_MAX_ATTEMPTS: "4"
+      PAPERAGENT_LLM_MAX_CALLS: "100"
+      PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE: "39"
+      PAPERAGENT_LLM_MAX_HEDGED_REQUESTS: "2"
+      PAPERAGENT_LLM_HEDGE_DELAY_SECONDS: "12"
+      PAPERAGENT_CASE_CONCURRENCY: "4"
+      PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "160000"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "4096"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "65536"
+      PAPERAGENT_LLM_TASK_TIMEOUT: "900"
+      PAPERAGENT_LLM_NATIVE_JSON_SCHEMA: "1"
+      PAPERAGENT_LLM_ALLOW_SCHEMA_REPAIR: "1"
+      PAPERAGENT_RUN_REAL_LLM: "1"
+      PAPERAGENT_RUN_REAL_PROVIDER: "1"
+      PAPERAGENT_ENABLE_WEB_SEARCH: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - uses: actions/download-artifact@v4
+        with:
+          name: parallel-hedged-public-inputs
+          path: downloaded-public
+      - name: Require non-empty NVIDIA credential
+        run: test -n "$NVIDIA_API_KEY"
+      - name: Probe NVIDIA GLM-5.2 model access
+        run: |
+          python scripts/check_llm_provider_health.py \
+            --provider openai \
+            --model z-ai/glm-5.2 \
+            --base-url https://integrate.api.nvidia.com/v1 \
+            --api-key-env NVIDIA_API_KEY \
+            --probe-mode chat \
+            --timeout-seconds 120 \
+            --output build/academic-tailoring-retrieval-v1/llm-health.json
+      - name: Build isolated candidate workspace
+        run: |
+          rm -rf candidate-workspace
+          mkdir -p candidate-workspace/scripts candidate-workspace/input
+          cp -R src candidate-workspace/src
+          cp -R config candidate-workspace/config
+          cp pyproject.toml README.md candidate-workspace/
+          cp scripts/run_academic_tailoring_retrieval_v1.py candidate-workspace/scripts/
+          cp scripts/run_academic_tailoring_retrieval_v1_parallel.py candidate-workspace/scripts/
+          cp downloaded-public/public-dataset.json candidate-workspace/input/
+          test ! -e candidate-workspace/evals/academic_tailoring_retrieval_v1/dataset-authoring.json
+          ! find candidate-workspace -name dataset-authoring.json -print -quit | grep -q .
+      - name: Install isolated candidate
+        working-directory: candidate-workspace
+        run: python -m pip install -q -e '.[dev]'
+      - name: Execute 10 cases with four-way concurrency and delayed hedging
+        id: runtime
+        working-directory: candidate-workspace
+        shell: bash
+        run: |
+          set +e
+          python scripts/run_academic_tailoring_retrieval_v1_parallel.py \
+            --dataset input/public-dataset.json \
+            --output-dir build/academic-tailoring-retrieval-v1/candidate \
+            --max-cases 10 \
+            --max-llm-calls 10 \
+            --provider-call-budget 240 \
+            --case-concurrency 4 \
+            --enable-web-search \
+            --llm-provider openai \
+            --llm-model z-ai/glm-5.2 \
+            --llm-base-url https://integrate.api.nvidia.com/v1
+          status=$?
+          echo "$status" > build/academic-tailoring-retrieval-v1/candidate/runtime-exit-code.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: parallel-hedged-candidate-run
+          path: candidate-workspace/build/academic-tailoring-retrieval-v1/candidate/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Enforce candidate runtime status
+        if: always()
+        run: |
+          test "$(cat candidate-workspace/build/academic-tailoring-retrieval-v1/candidate/runtime-exit-code.txt)" = "0"
+
+  score-and-audit:
+    needs: candidate-live-run
+    if: needs.candidate-live-run.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          name: parallel-hedged-candidate-run
+          path: candidate-run
+      - name: Score outside candidate boundary
+        id: score
+        shell: bash
+        run: |
+          set +e
+          python scripts/score_academic_tailoring_retrieval_v1.py \
+            --authoring evals/academic_tailoring_retrieval_v1/dataset-authoring.json \
+            --states candidate-run/states.jsonl \
+            --traces candidate-run/run-traces.jsonl \
+            --prompts candidate-run/prompt-log.jsonl \
+            --runtime-summary candidate-run/execution-summary.json \
+            --output build/academic-tailoring-retrieval-v1/diagnostic-report.json \
+            --minimum-score 80 \
+            --require-pass
+          status=$?
+          echo "$status" > build/academic-tailoring-retrieval-v1/score-exit-code.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: parallel-hedged-diagnostic-report
+          path: build/academic-tailoring-retrieval-v1/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce diagnostic gate
+        if: always()
+        run: |
+          test "$(cat build/academic-tailoring-retrieval-v1/score-exit-code.txt)" = "0"

@@ -1,0 +1,52 @@
+smoke	Select completed smoke	﻿2026-07-22T14:36:59.7373031Z ##[group]Run mimo_status="1"
+smoke	Select completed smoke	2026-07-22T14:36:59.7373393Z ^[[36;1mmimo_status="1"^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7373676Z ^[[36;1mlaguna_status=""^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7373933Z ^[[36;1mif [ "$mimo_status" = "0" ]; then^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7374226Z ^[[36;1m  model="mimo-v2.5-free"^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7374569Z ^[[36;1m  run_dir="candidate-smoke/build/opencode-smoke/mimo"^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7374937Z ^[[36;1melif [ "$laguna_status" = "0" ]; then^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7375237Z ^[[36;1m  model="laguna-s-2.1-free"^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7375565Z ^[[36;1m  run_dir="candidate-smoke/build/opencode-smoke/laguna"^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7375899Z ^[[36;1melse^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7376167Z ^[[36;1m  echo "Neither model completed the smoke run" >&2^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7376481Z ^[[36;1m  exit 1^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7376684Z ^[[36;1mfi^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7376912Z ^[[36;1mecho "model=$model" >> "$GITHUB_OUTPUT"^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7377519Z ^[[36;1mecho "run_dir=$run_dir" >> "$GITHUB_OUTPUT"^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7378035Z ^[[36;1mprintf '{"selected_model":"%s","mimo_runtime_status":"%s","laguna_runtime_status":"%s"}\n' \^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7378524Z ^[[36;1m  "$model" "$mimo_status" "$laguna_status" \^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7378866Z ^[[36;1m  > build/opencode-smoke/model-selection.json^[[0m
+smoke	Select completed smoke	2026-07-22T14:36:59.7441840Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+smoke	Select completed smoke	2026-07-22T14:36:59.7442200Z env:
+smoke	Select completed smoke	2026-07-22T14:36:59.7442720Z   OPENCODE_API_KEY: ***
+smoke	Select completed smoke	2026-07-22T14:36:59.7443186Z   PAPERAGENT_OPENAI_API_KEY: ***
+smoke	Select completed smoke	2026-07-22T14:36:59.7443493Z   PAPERAGENT_CONTACT_EMAIL: Z1015558261@outlook.com
+smoke	Select completed smoke	2026-07-22T14:36:59.7443809Z   SEMANTIC_SCHOLAR_API_KEY: 
+smoke	Select completed smoke	2026-07-22T14:36:59.7444055Z   TAVILY_API_KEY: 
+smoke	Select completed smoke	2026-07-22T14:36:59.7444287Z   PAPERAGENT_LLM_PROVIDER: deepseek
+smoke	Select completed smoke	2026-07-22T14:36:59.7444617Z   PAPERAGENT_LLM_BASE_URL: https://opencode.ai/zen/v1
+smoke	Select completed smoke	2026-07-22T14:36:59.7444947Z   PAPERAGENT_LLM_REASONING_EFFORT: 
+smoke	Select completed smoke	2026-07-22T14:36:59.7445220Z   PAPERAGENT_LLM_NATIVE_JSON_SCHEMA: 0
+smoke	Select completed smoke	2026-07-22T14:36:59.7445501Z   PAPERAGENT_LLM_ALLOW_SCHEMA_REPAIR: 1
+smoke	Select completed smoke	2026-07-22T14:36:59.7445793Z   PAPERAGENT_LLM_CONNECT_TIMEOUT: 15
+smoke	Select completed smoke	2026-07-22T14:36:59.7446090Z   PAPERAGENT_LLM_READ_TIMEOUT: 600
+smoke	Select completed smoke	2026-07-22T14:36:59.7446358Z   PAPERAGENT_LLM_TOTAL_TIMEOUT: 660
+smoke	Select completed smoke	2026-07-22T14:36:59.7446620Z   PAPERAGENT_LLM_TASK_TIMEOUT: 3600
+smoke	Select completed smoke	2026-07-22T14:36:59.7446888Z   PAPERAGENT_LLM_MAX_ATTEMPTS: 3
+smoke	Select completed smoke	2026-07-22T14:36:59.7447297Z   PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE: 20
+smoke	Select completed smoke	2026-07-22T14:36:59.7447625Z   PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: 524288
+smoke	Select completed smoke	2026-07-22T14:36:59.7447993Z   PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: 32768
+smoke	Select completed smoke	2026-07-22T14:36:59.7448313Z   PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: 524288
+smoke	Select completed smoke	2026-07-22T14:36:59.7448620Z   PAPERAGENT_LLM_MAX_CALLS: 60
+smoke	Select completed smoke	2026-07-22T14:36:59.7448877Z   PAPERAGENT_RUN_REAL_LLM: 1
+smoke	Select completed smoke	2026-07-22T14:36:59.7449130Z   PAPERAGENT_RUN_REAL_PROVIDER: 1
+smoke	Select completed smoke	2026-07-22T14:36:59.7449393Z   PAPERAGENT_ENABLE_WEB_SEARCH: 1
+smoke	Select completed smoke	2026-07-22T14:36:59.7449707Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.13/x64
+smoke	Select completed smoke	2026-07-22T14:36:59.7450139Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib/pkgconfig
+smoke	Select completed smoke	2026-07-22T14:36:59.7450774Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+smoke	Select completed smoke	2026-07-22T14:36:59.7451154Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+smoke	Select completed smoke	2026-07-22T14:36:59.7451531Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+smoke	Select completed smoke	2026-07-22T14:36:59.7451904Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib
+smoke	Select completed smoke	2026-07-22T14:36:59.7452233Z ##[endgroup]
+smoke	Select completed smoke	2026-07-22T14:36:59.7538258Z Neither model completed the smoke run
+smoke	Select completed smoke	2026-07-22T14:36:59.7550197Z ##[error]Process completed with exit code 1.

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f3ef">
+    <meta
+      name="description"
+      content="PaperAgent — AI 科研工作台：研究问题、文献证据、Baseline、方法设计、实验与质量门。"
+    >
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src 'self'; img-src 'self' data:; manifest-src 'self'; script-src 'self'; style-src 'self'; worker-src 'self'"
+    >
+    <title>PaperAgent · 科研工作台</title>
+    <link rel="manifest" href="/app/manifest.webmanifest">
+    <link rel="icon" href="/app-static/icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/app-static/css/tokens.css">
+    <link rel="stylesheet" href="/app-static/css/base.css">
+    <link rel="stylesheet" href="/app-static/css/components.css">
+    <link rel="stylesheet" href="/app-static/css/pages.css">
+    <link rel="stylesheet" href="/app-static/css/intro.css">
+    <script src="/app-static/js/data.js" defer></script>
+    <script src="/app-static/js/ui.js" defer></script>
+    <script src="/app-static/js/intro.js" defer></script>
+    <script src="/app-static/js/views/core.js" defer></script>
+    <script src="/app-static/js/views/research.js" defer></script>
+    <script src="/app-static/js/views/design.js" defer></script>
+    <script src="/app-static/js/views/review.js" defer></script>
+    <script src="/app-static/js/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+
+    <div class="app-shell" id="app-shell">
+      <!-- 左侧导航 -->
+      <nav class="app-nav" id="app-nav" aria-label="主导航">
+        <div class="nav-brand">
+          <span class="brand-mark" aria-hidden="true">P</span>
+          <span class="brand-text">
+            <strong>PaperAgent</strong>
+            <small>RESEARCH WORKBENCH</small>
+          </span>
+        </div>
+        <div class="nav-scroll" id="nav-scroll"><!-- 由 app.js 渲染 --></div>
+        <div class="nav-footer">
+          <button class="btn btn-ghost btn-sm btn-block" id="nav-collapse-btn" type="button" aria-label="折叠导航">
+            <span aria-hidden="true">⇤</span> <span>折叠导航</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- 顶部状态栏 -->
+      <header class="app-topbar">
+        <div class="topbar-title">
+          <div class="breadcrumb" id="breadcrumb">工作台</div>
+          <h1 id="page-title">总览</h1>
+        </div>
+        <div class="topbar-spacer"></div>
+        <span class="badge badge-demo" id="demo-badge" title="所有数据为前端演示数据">Demo</span>
+        <div class="topbar-project">
+          <select class="select" id="project-switcher" aria-label="切换当前项目"></select>
+        </div>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="切换深浅色主题"></button>
+      </header>
+
+      <!-- 主内容区 -->
+      <main class="app-main" id="main-content">
+        <div class="app-main-inner" id="view-root" tabindex="-1"></div>
+      </main>
+    </div>
+
+    <!-- 全局挂载点 -->
+    <div id="modal-root"></div>
+    <div id="drawer-root"></div>
+    <div class="toast-stack" id="toast-root" aria-live="polite"></div>
+
+    <noscript>
+      <div class="noscript">此工作台需要 JavaScript；PaperAgent API 本身仍可独立使用。</div>
+    </noscript>
+  </body>
+</html>

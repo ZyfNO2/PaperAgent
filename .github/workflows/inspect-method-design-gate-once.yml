@@ -1,0 +1,38 @@
+name: Inspect Method Design Gate Once
+
+on:
+  push:
+    branches:
+      - feat/claw-live-search-runtime
+    paths:
+      - ".github/workflows/inspect-method-design-gate-once.yml"
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/claw-live-search-runtime
+      - name: Persist latest method-design gate status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          target="evals/claw_academic_tailoring_v1/live-probes/method-design-draft-run-latest.json"
+          mkdir -p "$(dirname "$target")"
+          gh api \
+            "repos/${GITHUB_REPOSITORY}/actions/runs?branch=feat/claw-live-search-runtime&event=push&per_page=100" \
+            --jq '[.workflow_runs[] | select(.name == "Method Design Draft Offline Gate")][0] | {id,status,conclusion,head_sha,created_at,updated_at,html_url}' \
+            > "$target"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$target"
+          git commit -m "chore(method): persist draft run [skip ci]"
+          git pull --rebase origin feat/claw-live-search-runtime
+          git push origin HEAD:feat/claw-live-search-runtime

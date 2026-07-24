@@ -1,0 +1,2774 @@
+{
+  "budget_contract": {
+    "cases_per_shard": 5,
+    "llm_estimated_cost_usd_total_maximum": 1.0,
+    "max_parallel_shards": 2,
+    "search_provider_calls_total_maximum": 200,
+    "shards": 4
+  },
+  "file_sha256": {
+    "execution-summary.json": "b11b5a8db24dc71dcdbca3b888099cc2a0800a5a488190429bade80e1272c483",
+    "report.json": "1848bbb3355029bb27faf54bc76d80f3bd0f2b9a57fb060d18238b8d6258a2c0",
+    "run-traces.jsonl": "e6e2fd69ff3e0983fb4ffc1343260cc3371d745ffb3dfa06188a09e8fac66f54",
+    "states.jsonl": "8b81317960832e8c29791f42f1f51dca612a1bbcc026f83fb3f1e1e358d0b7bd"
+  },
+  "original_20_status": "development benchmark / contaminated evaluation set",
+  "outcomes": {
+    "aggregate_scoring": "failure",
+    "artifact_download": "success",
+    "preflight": "success",
+    "shards": "success"
+  },
+  "passed": false,
+  "schema": "paperagent.claw-paid-full-20.manifest.v4",
+  "source_sha": "d746b7a0e7e8b148c159e1f1ad856394159774b5",
+  "summary": {
+    "completed": 20,
+    "completed_case_ids": [
+      "at-001-uav-small-object-lightweight",
+      "at-002-edge-road-crack-detection",
+      "at-003-skin-lesion-explainability",
+      "at-004-steel-surface-defect",
+      "at-005-remote-sensing-dense-small-objects",
+      "at-006-low-light-pedestrian",
+      "at-007-camera-action-quality",
+      "at-008-mobile-hand-gesture",
+      "at-009-multimodal-medical-fusion",
+      "at-010-chinese-long-document-classification",
+      "at-011-few-shot-intent-detection",
+      "at-012-enterprise-rag",
+      "at-013-professional-qa-hallucination",
+      "at-014-gnn-fraud-detection",
+      "at-015-multibehavior-recommendation",
+      "at-016-anomaly-transformer-supplied",
+      "at-017-mobilenetv3-plant-disease-supplied",
+      "at-018-yolox-tinydet-supplied",
+      "at-019-unet-unspecified-medical-segmentation",
+      "at-020-lightgcn-contrastive-supplied"
+    ],
+    "errors": [],
+    "original_20_status": "development benchmark / contaminated evaluation set",
+    "passed": false,
+    "preflight_result": "success",
+    "report": {
+      "average_score": 81.5,
+      "by_tag": {
+        "agricultural_ai": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "ambiguous_input": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "backbone_role_verification": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "baseline_role_verification": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "compatibility_audit": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "computer_vision": {
+          "failed": 4,
+          "passed": 0,
+          "total": 4
+        },
+        "few_shot": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "geometry_ambiguity": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "goal_ambiguity": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "graph_machine_learning": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "hallucination": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "high_stakes": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "human_computer_interaction": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "human_motion": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "industrial_ai": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "information_retrieval": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "insufficient_problem_definition": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "llm_reliability": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "long_context": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "medical_ai": {
+          "failed": 3,
+          "passed": 0,
+          "total": 3
+        },
+        "medical_claim_boundary": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "medical_multimodal": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "missing_material_identity": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "modality_ambiguity": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "multi_behavior": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "multimodal_ambiguity": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "nlp": {
+          "failed": 2,
+          "passed": 0,
+          "total": 2
+        },
+        "no_supplied_paper": {
+          "failed": 15,
+          "passed": 0,
+          "total": 15
+        },
+        "one_supplied_paper": {
+          "failed": 3,
+          "passed": 0,
+          "total": 3
+        },
+        "output_ambiguity": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "rag": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "recommender_systems": {
+          "failed": 2,
+          "passed": 0,
+          "total": 2
+        },
+        "remote_sensing": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "security_boundary": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "task_ambiguity": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "temporal_leakage": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "time_series": {
+          "failed": 1,
+          "passed": 0,
+          "total": 1
+        },
+        "two_supplied_papers": {
+          "failed": 2,
+          "passed": 0,
+          "total": 2
+        }
+      },
+      "cases": [
+        {
+          "case_id": "at-001-uav-small-object-lightweight",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 85,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 6,
+              "findings": [
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "computer_vision",
+            "no_supplied_paper",
+            "ambiguous_input"
+          ]
+        },
+        {
+          "case_id": "at-002-edge-road-crack-detection",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 85,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 6,
+              "findings": [
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "computer_vision",
+            "no_supplied_paper",
+            "output_ambiguity"
+          ]
+        },
+        {
+          "case_id": "at-003-skin-lesion-explainability",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            },
+            {
+              "code": "TRACE_CONTRACT_FAILURE",
+              "details": "trace audit failed: NOT_EVALUATED, FINAL_OUTCOME_AND_REPORT_PRESENT"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 83,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 8,
+              "findings": [],
+              "passed": true,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 3,
+              "findings": [
+                "clarification count must remain between one and two",
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "medical_ai",
+            "no_supplied_paper",
+            "medical_claim_boundary"
+          ]
+        },
+        {
+          "case_id": "at-004-steel-surface-defect",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 48,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 8,
+              "findings": [
+                "unknown facts were not recorded"
+              ],
+              "passed": false,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 0,
+              "findings": [
+                "retrieval role baseline is missing",
+                "retrieval role gap is missing",
+                "retrieval role parallel_method is missing",
+                "retrieval role risk is missing",
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "no evidence reviews were recorded"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 3,
+              "findings": [
+                "clarification count must remain between one and two",
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 4,
+              "findings": [
+                "baseline card is missing",
+                "baseline source is not accepted evidence",
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 0,
+              "findings": [
+                "falsifiable hypothesis is missing condition, limitation, mechanism, intervention, metric, or guardrail"
+              ],
+              "passed": false,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 1,
+              "findings": [
+                "experiment matrix fields are incomplete",
+                "baseline experiment arm is missing",
+                "strong-comparison experiment arm is missing",
+                "stop conditions are missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "industrial_ai",
+            "no_supplied_paper",
+            "task_ambiguity"
+          ]
+        },
+        {
+          "case_id": "at-005-remote-sensing-dense-small-objects",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            },
+            {
+              "code": "TRACE_CONTRACT_FAILURE",
+              "details": "trace audit failed: NOT_EVALUATED, FINAL_OUTCOME_AND_REPORT_PRESENT"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 81,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 6,
+              "findings": [
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 3,
+              "findings": [
+                "clarification count must remain between one and two",
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "remote_sensing",
+            "no_supplied_paper",
+            "geometry_ambiguity"
+          ]
+        },
+        {
+          "case_id": "at-006-low-light-pedestrian",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 87,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 8,
+              "findings": [],
+              "passed": true,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "computer_vision",
+            "no_supplied_paper",
+            "multimodal_ambiguity"
+          ]
+        },
+        {
+          "case_id": "at-007-camera-action-quality",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 85,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 6,
+              "findings": [
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "human_motion",
+            "no_supplied_paper",
+            "goal_ambiguity"
+          ]
+        },
+        {
+          "case_id": "at-008-mobile-hand-gesture",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 87,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 8,
+              "findings": [],
+              "passed": true,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "human_computer_interaction",
+            "no_supplied_paper",
+            "modality_ambiguity"
+          ]
+        },
+        {
+          "case_id": "at-009-multimodal-medical-fusion",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 81,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 6,
+              "findings": [
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 3,
+              "findings": [
+                "clarification count must remain between one and two",
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "medical_ai",
+            "no_supplied_paper",
+            "medical_multimodal"
+          ]
+        },
+        {
+          "case_id": "at-010-chinese-long-document-classification",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 85,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 6,
+              "findings": [
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "nlp",
+            "no_supplied_paper",
+            "long_context"
+          ]
+        },
+        {
+          "case_id": "at-011-few-shot-intent-detection",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 59,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 5,
+              "findings": [
+                "retrieval role parallel_method is missing",
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "no evidence reviews were recorded"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 4,
+              "findings": [
+                "baseline card is missing",
+                "baseline source is not accepted evidence",
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 0,
+              "findings": [
+                "falsifiable hypothesis is missing condition, limitation, mechanism, intervention, metric, or guardrail"
+              ],
+              "passed": false,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 1,
+              "findings": [
+                "experiment matrix fields are incomplete",
+                "baseline experiment arm is missing",
+                "strong-comparison experiment arm is missing",
+                "stop conditions are missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "nlp",
+            "no_supplied_paper",
+            "few_shot"
+          ]
+        },
+        {
+          "case_id": "at-012-enterprise-rag",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 83,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 8,
+              "findings": [],
+              "passed": true,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 3,
+              "findings": [
+                "clarification count must remain between one and two",
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "information_retrieval",
+            "no_supplied_paper",
+            "rag",
+            "security_boundary"
+          ]
+        },
+        {
+          "case_id": "at-013-professional-qa-hallucination",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 81,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 6,
+              "findings": [
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 3,
+              "findings": [
+                "clarification count must remain between one and two",
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "llm_reliability",
+            "no_supplied_paper",
+            "hallucination",
+            "high_stakes"
+          ]
+        },
+        {
+          "case_id": "at-014-gnn-fraud-detection",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 85,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 6,
+              "findings": [
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "graph_machine_learning",
+            "no_supplied_paper",
+            "temporal_leakage"
+          ]
+        },
+        {
+          "case_id": "at-015-multibehavior-recommendation",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            },
+            {
+              "code": "TRACE_CONTRACT_FAILURE",
+              "details": "trace audit failed: FINAL_OUTCOME_AND_REPORT_PRESENT"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 85,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 6,
+              "findings": [
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 5,
+              "findings": [
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "recommender_systems",
+            "no_supplied_paper",
+            "multi_behavior"
+          ]
+        },
+        {
+          "case_id": "at-016-anomaly-transformer-supplied",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            },
+            {
+              "code": "TRACE_CONTRACT_FAILURE",
+              "details": "trace audit failed: FINAL_OUTCOME_AND_REPORT_PRESENT"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 86,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 8,
+              "findings": [],
+              "passed": true,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 4,
+              "findings": [
+                "one or more candidates skipped relevance review",
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "time_series",
+            "one_supplied_paper",
+            "baseline_role_verification"
+          ]
+        },
+        {
+          "case_id": "at-017-mobilenetv3-plant-disease-supplied",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            },
+            {
+              "code": "TRACE_CONTRACT_FAILURE",
+              "details": "trace audit failed: NOT_EVALUATED, FINAL_OUTCOME_AND_REPORT_PRESENT"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 84,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 6,
+              "findings": [
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 4,
+              "findings": [
+                "one or more candidates skipped relevance review",
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "agricultural_ai",
+            "one_supplied_paper",
+            "backbone_role_verification"
+          ]
+        },
+        {
+          "case_id": "at-018-yolox-tinydet-supplied",
+          "decision_matches": false,
+          "expected_decision": "REVISE_TO_PILOT",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 86,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 8,
+              "findings": [],
+              "passed": true,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 4,
+              "findings": [
+                "one or more candidates skipped relevance review",
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 2,
+              "findings": [
+                "expected REVISE_TO_PILOT, observed REVISE"
+              ],
+              "passed": false,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "computer_vision",
+            "two_supplied_papers",
+            "compatibility_audit"
+          ]
+        },
+        {
+          "case_id": "at-019-unet-unspecified-medical-segmentation",
+          "decision_matches": true,
+          "expected_decision": "REVISE",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 87,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 6,
+              "findings": [
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 4,
+              "findings": [
+                "one or more candidates skipped relevance review",
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 5,
+              "findings": [],
+              "passed": true,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "medical_ai",
+            "one_supplied_paper",
+            "insufficient_problem_definition"
+          ]
+        },
+        {
+          "case_id": "at-020-lightgcn-contrastive-supplied",
+          "decision_matches": true,
+          "expected_decision": "REVISE",
+          "hard_failures": [
+            {
+              "code": "HIDDEN_STRONGER_BASELINE_OR_NEGATIVE_RESULT",
+              "details": "stronger baselines or negative results were not preserved"
+            }
+          ],
+          "minimum_score": 80,
+          "observed_decision": "REVISE",
+          "score": 87,
+          "stages": [
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "parse_user_input"
+            },
+            {
+              "available": 8,
+              "earned": 6,
+              "findings": [
+                "retrieval role strong_comparison is missing"
+              ],
+              "passed": false,
+              "stage": "exploratory_retrieval"
+            },
+            {
+              "available": 7,
+              "earned": 4,
+              "findings": [
+                "one or more candidates skipped relevance review",
+                "core accepted evidence lacks full-text review"
+              ],
+              "passed": false,
+              "stage": "relevance_review"
+            },
+            {
+              "available": 10,
+              "earned": 7,
+              "findings": [
+                "clarification did not target a declared high-impact unknown"
+              ],
+              "passed": false,
+              "stage": "clarification_gate"
+            },
+            {
+              "available": 15,
+              "earned": 11,
+              "findings": [
+                "baseline freeze contract is incomplete"
+              ],
+              "passed": false,
+              "stage": "freeze_baseline"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "gap_hypothesis"
+            },
+            {
+              "available": 15,
+              "earned": 15,
+              "findings": [],
+              "passed": true,
+              "stage": "module_compatibility"
+            },
+            {
+              "available": 10,
+              "earned": 10,
+              "findings": [],
+              "passed": true,
+              "stage": "minimal_stitch"
+            },
+            {
+              "available": 5,
+              "earned": 4,
+              "findings": [
+                "strong-comparison experiment arm is missing"
+              ],
+              "passed": false,
+              "stage": "experiment_matrix"
+            },
+            {
+              "available": 5,
+              "earned": 5,
+              "findings": [],
+              "passed": true,
+              "stage": "decision"
+            }
+          ],
+          "status": "failed",
+          "tags": [
+            "recommender_systems",
+            "two_supplied_papers",
+            "missing_material_identity"
+          ]
+        }
+      ],
+      "dataset_digest": "9311285d569e95f7c6cf5aaf2bf21a32269c0a58dd35bc529411b2abd6310eeb",
+      "decision_accuracy": 0.1,
+      "failed": 20,
+      "hard_failure_count": 25,
+      "passed": 0,
+      "report_digest": "e3ed3665ad7bc80d9b74e25fac8067a6e9fb75dac6da11494c0c85d01741b8e3",
+      "schema": "paperagent.claw-academic-report.v1",
+      "source_commit": "60a577a3d8d6701a8d212604572e846cc8a41e2f",
+      "source_repository": "ZyfNO2/PaperClaw",
+      "total": 20
+    },
+    "schema": "paperagent.claw-paid-full-20.parallel-summary.v1",
+    "shard_result": "success",
+    "shard_summaries": [
+      {
+        "actions_artifact_name": null,
+        "completed": 5,
+        "completed_case_ids": [
+          "at-001-uav-small-object-lightweight",
+          "at-002-edge-road-crack-detection",
+          "at-003-skin-lesion-explainability",
+          "at-004-steel-surface-defect",
+          "at-005-remote-sensing-dense-small-objects"
+        ],
+        "errors": [],
+        "llm": {
+          "configured_full_run_max_cost_usd": 0.25,
+          "configured_per_case_max_cost_usd": 0.05,
+          "cost_estimate_complete": true,
+          "estimated_cost_usd": 0.0394353,
+          "failed_attempts": 4,
+          "input_tokens": 126794,
+          "logical_calls": 26,
+          "model": "mistral-small-latest",
+          "output_tokens": 34027,
+          "price_table_loaded": true,
+          "price_table_version": "mistral-public-api-2026-07-21",
+          "provider": "mistral",
+          "provider_attempts": 26,
+          "provider_instances": 5,
+          "successful_attempts": 22,
+          "usage_complete": true,
+          "within_configured_cost": true
+        },
+        "output_files": {
+          "execution_summary": "execution-summary.json",
+          "report": null,
+          "run_traces": "run-traces.jsonl",
+          "states": "states.jsonl"
+        },
+        "passed": false,
+        "provider_call_budget": {
+          "cases": [
+            {
+              "case_id": "at-001-uav-small-object-lightweight",
+              "maximum": 10,
+              "remaining": 1,
+              "used": 9
+            },
+            {
+              "case_id": "at-002-edge-road-crack-detection",
+              "maximum": 10,
+              "remaining": 0,
+              "used": 10
+            },
+            {
+              "case_id": "at-003-skin-lesion-explainability",
+              "maximum": 10,
+              "remaining": 0,
+              "used": 10
+            },
+            {
+              "case_id": "at-004-steel-surface-defect",
+              "maximum": 10,
+              "remaining": 10,
+              "used": 0
+            },
+            {
+              "case_id": "at-005-remote-sensing-dense-small-objects",
+              "maximum": 10,
+              "remaining": 3,
+              "used": 7
+            }
+          ],
+          "complete": true,
+          "configured_total": 50,
+          "remaining": 14,
+          "used": 36,
+          "within_configured_total": true
+        },
+        "report_status": "not_generated",
+        "runtime_failures": [],
+        "schema": "paperagent.claw-paid-full-runtime-summary.v1",
+        "search_mode": "literature",
+        "selected_case_count": 5,
+        "selected_cases": [
+          "at-001-uav-small-object-lightweight",
+          "at-002-edge-road-crack-detection",
+          "at-003-skin-lesion-explainability",
+          "at-004-steel-surface-defect",
+          "at-005-remote-sensing-dense-small-objects"
+        ],
+        "source_sha": "d746b7a0e7e8b148c159e1f1ad856394159774b5",
+        "static_leakage_audit": {
+          "findings": [],
+          "passed": true
+        },
+        "web_search_enabled": false,
+        "workflow_name": "CLAW Paid Full 20 E2E",
+        "workflow_run_id": "29782768075"
+      },
+      {
+        "actions_artifact_name": null,
+        "completed": 5,
+        "completed_case_ids": [
+          "at-006-low-light-pedestrian",
+          "at-007-camera-action-quality",
+          "at-008-mobile-hand-gesture",
+          "at-009-multimodal-medical-fusion",
+          "at-010-chinese-long-document-classification"
+        ],
+        "errors": [],
+        "llm": {
+          "configured_full_run_max_cost_usd": 0.25,
+          "configured_per_case_max_cost_usd": 0.05,
+          "cost_estimate_complete": true,
+          "estimated_cost_usd": 0.0319425,
+          "failed_attempts": 0,
+          "input_tokens": 94446,
+          "logical_calls": 27,
+          "model": "mistral-small-latest",
+          "output_tokens": 29626,
+          "price_table_loaded": true,
+          "price_table_version": "mistral-public-api-2026-07-21",
+          "provider": "mistral",
+          "provider_attempts": 27,
+          "provider_instances": 5,
+          "successful_attempts": 27,
+          "usage_complete": true,
+          "within_configured_cost": true
+        },
+        "output_files": {
+          "execution_summary": "execution-summary.json",
+          "report": null,
+          "run_traces": "run-traces.jsonl",
+          "states": "states.jsonl"
+        },
+        "passed": false,
+        "provider_call_budget": {
+          "cases": [
+            {
+              "case_id": "at-006-low-light-pedestrian",
+              "maximum": 10,
+              "remaining": 0,
+              "used": 10
+            },
+            {
+              "case_id": "at-007-camera-action-quality",
+              "maximum": 10,
+              "remaining": 1,
+              "used": 9
+            },
+            {
+              "case_id": "at-008-mobile-hand-gesture",
+              "maximum": 10,
+              "remaining": 0,
+              "used": 10
+            },
+            {
+              "case_id": "at-009-multimodal-medical-fusion",
+              "maximum": 10,
+              "remaining": 0,
+              "used": 10
+            },
+            {
+              "case_id": "at-010-chinese-long-document-classification",
+              "maximum": 10,
+              "remaining": 0,
+              "used": 10
+            }
+          ],
+          "complete": true,
+          "configured_total": 50,
+          "remaining": 1,
+          "used": 49,
+          "within_configured_total": true
+        },
+        "report_status": "not_generated",
+        "runtime_failures": [],
+        "schema": "paperagent.claw-paid-full-runtime-summary.v1",
+        "search_mode": "literature",
+        "selected_case_count": 5,
+        "selected_cases": [
+          "at-006-low-light-pedestrian",
+          "at-007-camera-action-quality",
+          "at-008-mobile-hand-gesture",
+          "at-009-multimodal-medical-fusion",
+          "at-010-chinese-long-document-classification"
+        ],
+        "source_sha": "d746b7a0e7e8b148c159e1f1ad856394159774b5",
+        "static_leakage_audit": {
+          "findings": [],
+          "passed": true
+        },
+        "web_search_enabled": false,
+        "workflow_name": "CLAW Paid Full 20 E2E",
+        "workflow_run_id": "29782768075"
+      },
+      {
+        "actions_artifact_name": null,
+        "completed": 5,
+        "completed_case_ids": [
+          "at-011-few-shot-intent-detection",
+          "at-012-enterprise-rag",
+          "at-013-professional-qa-hallucination",
+          "at-014-gnn-fraud-detection",
+          "at-015-multibehavior-recommendation"
+        ],
+        "errors": [],
+        "llm": {
+          "configured_full_run_max_cost_usd": 0.25,
+          "configured_per_case_max_cost_usd": 0.05,
+          "cost_estimate_complete": true,
+          "estimated_cost_usd": 0.02558775,
+          "failed_attempts": 2,
+          "input_tokens": 72269,
+          "logical_calls": 19,
+          "model": "mistral-small-latest",
+          "output_tokens": 24579,
+          "price_table_loaded": true,
+          "price_table_version": "mistral-public-api-2026-07-21",
+          "provider": "mistral",
+          "provider_attempts": 19,
+          "provider_instances": 5,
+          "successful_attempts": 17,
+          "usage_complete": true,
+          "within_configured_cost": true
+        },
+        "output_files": {
+          "execution_summary": "execution-summary.json",
+          "report": null,
+          "run_traces": "run-traces.jsonl",
+          "states": "states.jsonl"
+        },
+        "passed": false,
+        "provider_call_budget": {
+          "cases": [
+            {
+              "case_id": "at-011-few-shot-intent-detection",
+              "maximum": 10,
+              "remaining": 0,
+              "used": 10
+            },
+            {
+              "case_id": "at-012-enterprise-rag",
+              "maximum": 10,
+              "remaining": 0,
+              "used": 10
+            },
+            {
+              "case_id": "at-013-professional-qa-hallucination",
+              "maximum": 10,
+              "remaining": 0,
+              "used": 10
+            },
+            {
+              "case_id": "at-014-gnn-fraud-detection",
+              "maximum": 10,
+              "remaining": 0,
+              "used": 10
+            },
+            {
+              "case_id": "at-015-multibehavior-recommendation",
+              "maximum": 10,
+              "remaining": 1,
+              "used": 9
+            }
+          ],
+          "complete": true,
+          "configured_total": 50,
+          "remaining": 1,
+          "used": 49,
+          "within_configured_total": true
+        },
+        "report_status": "not_generated",
+        "runtime_failures": [],
+        "schema": "paperagent.claw-paid-full-runtime-summary.v1",
+        "search_mode": "literature",
+        "selected_case_count": 5,
+        "selected_cases": [
+          "at-011-few-shot-intent-detection",
+          "at-012-enterprise-rag",
+          "at-013-professional-qa-hallucination",
+          "at-014-gnn-fraud-detection",
+          "at-015-multibehavior-recommendation"
+        ],
+        "source_sha": "d746b7a0e7e8b148c159e1f1ad856394159774b5",
+        "static_leakage_audit": {
+          "findings": [],
+          "passed": true
+        },
+        "web_search_enabled": false,
+        "workflow_name": "CLAW Paid Full 20 E2E",
+        "workflow_run_id": "29782768075"
+      },
+      {
+        "actions_artifact_name": null,
+        "completed": 5,
+        "completed_case_ids": [
+          "at-016-anomaly-transformer-supplied",
+          "at-017-mobilenetv3-plant-disease-supplied",
+          "at-018-yolox-tinydet-supplied",
+          "at-019-unet-unspecified-medical-segmentation",
+          "at-020-lightgcn-contrastive-supplied"
+        ],
+        "errors": [],
+        "llm": {
+          "configured_full_run_max_cost_usd": 0.25,
+          "configured_per_case_max_cost_usd": 0.05,
+          "cost_estimate_complete": true,
+          "estimated_cost_usd": 0.0408462,
+          "failed_attempts": 4,
+          "input_tokens": 141704,
+          "logical_calls": 25,
+          "model": "mistral-small-latest",
+          "output_tokens": 32651,
+          "price_table_loaded": true,
+          "price_table_version": "mistral-public-api-2026-07-21",
+          "provider": "mistral",
+          "provider_attempts": 25,
+          "provider_instances": 5,
+          "successful_attempts": 21,
+          "usage_complete": true,
+          "within_configured_cost": true
+        },
+        "output_files": {
+          "execution_summary": "execution-summary.json",
+          "report": null,
+          "run_traces": "run-traces.jsonl",
+          "states": "states.jsonl"
+        },
+        "passed": false,
+        "provider_call_budget": {
+          "cases": [
+            {
+              "case_id": "at-016-anomaly-transformer-supplied",
+              "maximum": 10,
+              "remaining": 2,
+              "used": 8
+            },
+            {
+              "case_id": "at-017-mobilenetv3-plant-disease-supplied",
+              "maximum": 10,
+              "remaining": 1,
+              "used": 9
+            },
+            {
+              "case_id": "at-018-yolox-tinydet-supplied",
+              "maximum": 10,
+              "remaining": 0,
+              "used": 10
+            },
+            {
+              "case_id": "at-019-unet-unspecified-medical-segmentation",
+              "maximum": 10,
+              "remaining": 1,
+              "used": 9
+            },
+            {
+              "case_id": "at-020-lightgcn-contrastive-supplied",
+              "maximum": 10,
+              "remaining": 0,
+              "used": 10
+            }
+          ],
+          "complete": true,
+          "configured_total": 50,
+          "remaining": 4,
+          "used": 46,
+          "within_configured_total": true
+        },
+        "report_status": "not_generated",
+        "runtime_failures": [],
+        "schema": "paperagent.claw-paid-full-runtime-summary.v1",
+        "search_mode": "literature",
+        "selected_case_count": 5,
+        "selected_cases": [
+          "at-016-anomaly-transformer-supplied",
+          "at-017-mobilenetv3-plant-disease-supplied",
+          "at-018-yolox-tinydet-supplied",
+          "at-019-unet-unspecified-medical-segmentation",
+          "at-020-lightgcn-contrastive-supplied"
+        ],
+        "source_sha": "d746b7a0e7e8b148c159e1f1ad856394159774b5",
+        "static_leakage_audit": {
+          "findings": [],
+          "passed": true
+        },
+        "web_search_enabled": false,
+        "workflow_name": "CLAW Paid Full 20 E2E",
+        "workflow_run_id": "29782768075"
+      }
+    ],
+    "source_sha": "d746b7a0e7e8b148c159e1f1ad856394159774b5",
+    "workflow_run_id": "29782768075"
+  },
+  "workflow_run_id": "29782768075"
+}

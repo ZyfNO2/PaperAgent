@@ -1,0 +1,123 @@
+name: Academic Eval Artifact-Driven Fixes
+
+on:
+  push:
+    branches:
+      - fix/academic-eval-diagnostics-baseline-binding
+    paths:
+      - ".github/workflows/academic-eval-artifact-driven-fixes.yml"
+      - ".github/scripts/apply_artifact_driven_fixes_v4.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: academic-eval-artifact-driven-fixes
+  cancel-in-progress: true
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/academic-eval-diagnostics-baseline-binding
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Apply exact patches
+        run: python .github/scripts/apply_artifact_driven_fixes_v4.py
+
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+
+      - name: Format patched files
+        run: |
+          ruff format \
+            scripts/run_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/claw_benchmark_runtime.py \
+            src/paperagent/literature/adapter.py \
+            src/paperagent/method_design_draft.py \
+            tests/evals/test_academic_tailoring_diagnostic_budgets.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_diagnostics.py \
+            tests/literature/test_dataset_relation_priority.py \
+            tests/method/test_repo_backed_baseline.py
+
+      - name: Lint patched files
+        run: |
+          ruff check \
+            scripts/run_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/claw_benchmark_runtime.py \
+            src/paperagent/literature/adapter.py \
+            src/paperagent/method_design_draft.py \
+            tests/evals/test_academic_tailoring_diagnostic_budgets.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_diagnostics.py \
+            tests/literature/test_dataset_relation_priority.py \
+            tests/method/test_repo_backed_baseline.py
+
+      - name: Run focused regression tests
+        run: |
+          pytest -q \
+            tests/evals/test_academic_tailoring_diagnostic_budgets.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_scorer.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_diagnostics.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
+            tests/literature/test_dataset_relation_priority.py \
+            tests/method/test_repo_backed_baseline.py \
+            tests/nodes/test_intake_planning.py \
+            tests/nodes/test_planning_identity_priority.py
+
+      - name: Run production leakage audit
+        run: |
+          python - <<'PY'
+          from paperagent.benchmark_leakage_audit import audit_benchmark_execution_boundary
+
+          result = audit_benchmark_execution_boundary()
+          print(result.model_dump_json(indent=2))
+          if not result.passed:
+              raise SystemExit(result.findings)
+          PY
+
+      - name: Commit tested fixes
+        shell: bash
+        run: |
+          git config user.name "paperagent-cloud-dev"
+          git config user.email "actions@users.noreply.github.com"
+          git add \
+            scripts/run_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/claw_benchmark_runtime.py \
+            src/paperagent/literature/adapter.py \
+            src/paperagent/method_design_draft.py \
+            tests/evals/test_academic_tailoring_diagnostic_budgets.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_diagnostics.py \
+            tests/literature/test_dataset_relation_priority.py \
+            tests/method/test_repo_backed_baseline.py
+          if git diff --cached --quiet; then
+            echo "No patch changes to commit"
+            exit 0
+          fi
+          git commit -m "fix(eval): bind repo-backed baselines and explicit datasets"
+          git pull --rebase origin fix/academic-eval-diagnostics-baseline-binding
+          git push origin HEAD:fix/academic-eval-diagnostics-baseline-binding
+
+      - name: Comment result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body \
+            "Artifact-driven v4 fix workflow finished with job status \`${{ job.status }}\`: [open run]($run_url)."

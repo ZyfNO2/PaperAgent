@@ -1,0 +1,89 @@
+name: Academic Eval Smoke Observer
+
+on:
+  push:
+    branches:
+      - fix/academic-eval-diagnostics-baseline-binding
+    paths:
+      - ".github/workflows/academic-eval-smoke-observer.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: academic-eval-smoke-observer
+  cancel-in-progress: true
+
+jobs:
+  observe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 190
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/academic-eval-diagnostics-baseline-binding
+          fetch-depth: 0
+
+      - name: Observe latest smoke
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          rows="$(gh run list \
+            --repo "$GITHUB_REPOSITORY" \
+            --workflow academic-eval-opencode-smoke.yml \
+            --branch fix/academic-eval-diagnostics-baseline-binding \
+            --limit 1 \
+            --json databaseId,status,conclusion,url,headSha)"
+          echo "$rows" > /tmp/smoke-list.json
+          run_id="$(python -c 'import json; r=json.load(open("/tmp/smoke-list.json")); print(r[0]["databaseId"] if r else "")')"
+          if [ -z "$run_id" ]; then
+            echo '{"error":"no smoke run found"}' > /tmp/smoke-run.json
+            : > /tmp/smoke-failed.log
+            exit 1
+          fi
+          for _ in $(seq 1 1000); do
+            status="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --json status --jq .status)"
+            if [ "$status" = "completed" ]; then
+              break
+            fi
+            sleep 10
+          done
+          gh run view "$run_id" --repo "$GITHUB_REPOSITORY" \
+            --json databaseId,status,conclusion,url,headSha,jobs > /tmp/smoke-run.json
+          set +e
+          gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --log-failed > /tmp/smoke-failed.log 2>&1
+          set -e
+
+      - name: Persist smoke status
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p cloud-status
+          cp /tmp/smoke-list.json cloud-status/post-fix-smoke-list.json || true
+          cp /tmp/smoke-run.json cloud-status/post-fix-smoke-run.json || true
+          tail -n 200 /tmp/smoke-failed.log > cloud-status/post-fix-smoke-failed.log || true
+          git config user.name "paperagent-cloud-observer"
+          git config user.email "actions@users.noreply.github.com"
+          git add cloud-status/
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore(ci): record post-fix smoke status"
+          git pull --rebase origin fix/academic-eval-diagnostics-baseline-binding
+          git push origin HEAD:fix/academic-eval-diagnostics-baseline-binding
+
+      - name: Comment smoke observer result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          run_url="$(python -c 'import json, pathlib; p=pathlib.Path("/tmp/smoke-run.json"); d=json.loads(p.read_text()) if p.exists() else {}; print(d.get("url", ""))')"
+          conclusion="$(python -c 'import json, pathlib; p=pathlib.Path("/tmp/smoke-run.json"); d=json.loads(p.read_text()) if p.exists() else {}; print(d.get("conclusion", d.get("error", "unknown")))')"
+          gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body \
+            "Post-fix smoke observer persisted status \`$conclusion\` to \`cloud-status/\`. ${run_url:+Run: $run_url}"

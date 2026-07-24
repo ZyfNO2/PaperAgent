@@ -1,0 +1,316 @@
+from __future__ import annotations
+
+import re
+
+from langchain_core.runnables import RunnableConfig
+
+from paperagent.academic_methodology import (
+    METHOD_AUDIT_POLICY_VERSION,
+    METHOD_PLAN_CONTRACT_VERSION,
+    AuditVerdict,
+    ExperimentArmType,
+    MethodAuditReport,
+    audit_method_plan,
+    method_plan_fingerprint,
+)
+from paperagent.nodes._shared import execution_with
+from paperagent.outcome import derive_final_outcome
+from paperagent.runtime import get_option, get_services
+from paperagent.schemas import EvidenceBundle, QualityDecision, RetrievalState
+from paperagent.state import PaperAgentState, StatePatch
+from paperagent.telemetry import make_event
+
+NODE = "quality_gate_node"
+
+
+def _has_threshold(text: str) -> bool:
+    return bool(re.search(r"(?:\d+(?:\.\d+)?|>=|<=|>|<)", text))
+
+
+def _audit_reason_code(check_id: str) -> str:
+    normalized = re.sub(r"[^A-Z0-9]+", "_", check_id.upper()).strip("_")
+    return f"Q_METHOD_AUDIT_{normalized}"
+
+
+def _current_methodology_audit(state: PaperAgentState) -> MethodAuditReport | None:
+    method = state.get("method")
+    if method is None:
+        return None
+    methodology_audit = state.get("methodology_audit")
+    expected_fingerprint = method_plan_fingerprint(method.methodology_plan)
+    if (
+        methodology_audit is None
+        or methodology_audit.plan_fingerprint != expected_fingerprint
+        or methodology_audit.contract_version != METHOD_PLAN_CONTRACT_VERSION
+        or methodology_audit.policy_version != METHOD_AUDIT_POLICY_VERSION
+    ):
+        return audit_method_plan(method.methodology_plan)
+    return methodology_audit
+
+
+def _concrete(value: str | None) -> bool:
+    if value is None:
+        return False
+    normalized = value.strip().casefold()
+    return bool(normalized) and not any(
+        marker in normalized
+        for marker in ("unresolved", "not yet", "to be selected", "before the pilot", "unknown")
+    )
+
+
+def _production_pilot_recommendation(
+    state: PaperAgentState,
+    decision: QualityDecision,
+) -> tuple[bool, str | None]:
+    """Return a pilot decision only from concrete, accepted, production artifacts."""
+
+    method = state.get("method")
+    ledger = state.get("evidence_ledger")
+    if decision.verdict not in {"repair_method", "blocked"}:
+        return False, None
+    if method is None or ledger is None or decision.invalid_evidence_ids:
+        return False, None
+    plan = method.methodology_plan
+    accepted = set(ledger.accepted_ids)
+    baseline = plan.baseline
+    if (
+        baseline.source_evidence_id not in accepted
+        or not _concrete(baseline.name)
+        or not _concrete(baseline.dataset)
+    ):
+        return False, None
+    if not plan.modules or any(module.evidence_id not in accepted for module in plan.modules):
+        return False, None
+    strong = [
+        experiment
+        for experiment in plan.experiments
+        if experiment.arm_type is ExperimentArmType.STRONG_COMPARISON
+        and experiment.source_evidence_id in accepted
+        and _concrete(experiment.comparator)
+    ]
+    if not strong:
+        return False, None
+    pilot = next(
+        (
+            experiment
+            for experiment in plan.experiments
+            if experiment.arm_type in {ExperimentArmType.SINGLE_MODULE, ExperimentArmType.FULL}
+            and _concrete(experiment.dataset)
+            and experiment.metrics
+            and _concrete(experiment.stopping_criteria)
+        ),
+        None,
+    )
+    if pilot is None:
+        return False, None
+    scope = (
+        f"dataset={pilot.dataset}; metrics={', '.join(pilot.metrics)}; "
+        f"comparator={strong[0].comparator}; stop={pilot.stopping_criteria}"
+    )
+    return True, scope
+
+
+def evaluate_quality(
+    state: PaperAgentState,
+    *,
+    methodology_audit: MethodAuditReport | None = None,
+) -> QualityDecision:
+    plan = state.get("plan")
+    if plan is None:
+        return QualityDecision(verdict="blocked", reason_codes=["Q_MISSING_PLAN"])
+    evidence = state.get("evidence", EvidenceBundle())
+    retrieval = state.get("retrieval", RetrievalState())
+    missing = [
+        gap.gap_id
+        for gap in plan.evidence_gaps
+        if gap.required and evidence.coverage_by_gap.get(gap.gap_id, 0) < gap.minimum_accepted_items
+    ]
+    if missing:
+        if retrieval.round < retrieval.max_rounds and not retrieval.budget_exhausted:
+            return QualityDecision(
+                verdict="repair_retrieval",
+                reason_codes=["Q_MISSING_REQUIRED_GAP", "Q_INSUFFICIENT_COVERAGE"],
+                repair_target="retrieval",
+                missing_gap_ids=missing,
+            )
+        return QualityDecision(
+            verdict="blocked",
+            reason_codes=["Q_RETRIEVAL_BUDGET_EXHAUSTED"],
+            missing_gap_ids=missing,
+        )
+    synthesis = state.get("synthesis")
+    method = state.get("method")
+    if synthesis is None or method is None:
+        return QualityDecision(verdict="blocked", reason_codes=["Q_MISSING_ARTIFACT"])
+    methodology_audit = methodology_audit or _current_methodology_audit(state)
+    if methodology_audit is None:
+        return QualityDecision(verdict="blocked", reason_codes=["Q_MISSING_METHODOLOGY_AUDIT"])
+    required_gap_ids = {gap.gap_id for gap in plan.evidence_gaps if gap.required}
+    weak_gap_ids = sorted(
+        assessment.gap_id
+        for assessment in synthesis.gap_assessments
+        if assessment.gap_id in required_gap_ids and assessment.status != "supported"
+    )
+    if weak_gap_ids:
+        if retrieval.round < retrieval.max_rounds and not retrieval.budget_exhausted:
+            return QualityDecision(
+                verdict="repair_retrieval",
+                reason_codes=["Q_SYNTHESIS_GAP_WEAK"],
+                repair_target="retrieval",
+                missing_gap_ids=weak_gap_ids,
+            )
+        return QualityDecision(
+            verdict="blocked",
+            reason_codes=["Q_RETRIEVAL_BUDGET_EXHAUSTED", "Q_SYNTHESIS_GAP_WEAK"],
+            missing_gap_ids=weak_gap_ids,
+        )
+    accepted = set(evidence.accepted_ids)
+    canonical_evidence_ids = {item.evidence_id for item in method.methodology_plan.evidence}
+    invalid = (
+        synthesis.referenced_evidence_ids() | set(method.evidence_ids) | canonical_evidence_ids
+    ) - accepted
+    execution = state.get("execution")
+    run = state.get("run")
+    max_repairs = run.budgets.max_method_repairs if run is not None else 1
+    repair_count = execution.repair_count if execution else 0
+    if invalid:
+        if repair_count < max_repairs:
+            return QualityDecision(
+                verdict="repair_method",
+                reason_codes=["Q_UNKNOWN_EVIDENCE_ID"],
+                repair_target="method",
+                invalid_evidence_ids=sorted(invalid),
+            )
+        return QualityDecision(
+            verdict="blocked",
+            reason_codes=["Q_REPAIR_BUDGET_EXHAUSTED", "Q_UNKNOWN_EVIDENCE_ID"],
+            invalid_evidence_ids=sorted(invalid),
+        )
+
+    audit_failures = [
+        _audit_reason_code(check_id) for check_id in methodology_audit.trace.failed_check_ids
+    ]
+    if methodology_audit.verdict is AuditVerdict.NO_GO:
+        return QualityDecision(
+            verdict="blocked",
+            reason_codes=["Q_METHODOLOGY_NO_GO", *audit_failures],
+        )
+    if methodology_audit.verdict is AuditVerdict.REVISE:
+        if repair_count < max_repairs:
+            return QualityDecision(
+                verdict="repair_method",
+                reason_codes=["Q_METHODOLOGY_REVISE", *audit_failures],
+                repair_target="method",
+            )
+        return QualityDecision(
+            verdict="blocked",
+            reason_codes=[
+                "Q_REPAIR_BUDGET_EXHAUSTED",
+                "Q_METHODOLOGY_REVISE",
+                *audit_failures,
+            ],
+        )
+
+    method_missing: list[str] = []
+    if not method.baseline.name.strip():
+        method_missing.append("Q_MISSING_BASELINE")
+    if not _has_threshold(method.falsifiable_hypothesis):
+        method_missing.append("Q_MISSING_HYPOTHESIS")
+    if not method.minimum_key_experiment.metrics or not _has_threshold(
+        method.minimum_key_experiment.success_threshold
+    ):
+        method_missing.append("Q_MISSING_EXPERIMENT")
+    if not method.ablations:
+        method_missing.append("Q_MISSING_ABLATION")
+    if not method.stop_conditions:
+        method_missing.append("Q_MISSING_STOP_CONDITION")
+    if method_missing:
+        if repair_count < max_repairs:
+            return QualityDecision(
+                verdict="repair_method",
+                reason_codes=method_missing,
+                repair_target="method",
+            )
+        return QualityDecision(
+            verdict="blocked",
+            reason_codes=["Q_REPAIR_BUDGET_EXHAUSTED", *method_missing],
+        )
+    if any("human decision required" in risk.lower() for risk in method.risks):
+        return QualityDecision(
+            verdict="human_review",
+            reason_codes=["Q_HUMAN_DECISION_REQUIRED"],
+            human_question="A human decision is required before continuing.",
+        )
+    return QualityDecision(verdict="pass", reason_codes=[])
+
+
+async def quality_gate_node(state: PaperAgentState, config: RunnableConfig) -> StatePatch:
+    services = get_services(config)
+    methodology_audit = _current_methodology_audit(state)
+    decision = evaluate_quality(state, methodology_audit=methodology_audit)
+    pilot_recommended, pilot_scope = _production_pilot_recommendation(state, decision)
+    decision = decision.model_copy(
+        update={
+            "pilot_recommended": pilot_recommended,
+            "pilot_scope": pilot_scope,
+        }
+    )
+    increment = 1 if decision.verdict == "repair_method" else 0
+    execution = execution_with(
+        state,
+        node=NODE,
+        repair_increment=increment,
+        repair_target=decision.repair_target,
+    )
+    outcome_state: PaperAgentState = {
+        **state,
+        "quality": decision,
+        "methodology_audit": methodology_audit,
+        "execution": execution,
+    }
+    final_outcome = derive_final_outcome(outcome_state)
+    trace = [
+        make_event(
+            services,
+            state,
+            node=NODE,
+            event_type="node.started",
+            status="started",
+        ),
+        make_event(
+            services,
+            state,
+            node=NODE,
+            event_type="route.decided",
+            status="decided",
+            route=decision.verdict,
+            output_payload={"quality": decision, "final_outcome": final_outcome},
+        ),
+        make_event(
+            services,
+            state,
+            node=NODE,
+            event_type="node.completed",
+            status="completed",
+            output_payload={"quality": decision, "final_outcome": final_outcome},
+        ),
+    ]
+    return {
+        "quality": decision,
+        "methodology_audit": methodology_audit,
+        "final_outcome": final_outcome,
+        "execution": execution,
+        "trace": trace,
+    }
+
+
+def quality_route(state: PaperAgentState, config: RunnableConfig) -> str:
+    quality = state.get("quality")
+    if quality is None:
+        raise ValueError("quality decision is required")
+    if (
+        quality.verdict == "human_review"
+        and get_option(config, "human_review_policy", "interrupt") == "block"
+    ):
+        return "blocked"
+    return quality.verdict

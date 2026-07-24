@@ -1,0 +1,19 @@
+{
+  "strategy_id": "strict-precision",
+  "provider": "REPLACE_WITH_PROVIDER",
+  "model": "REPLACE_WITH_MODEL",
+  "base_url": "REPLACE_WITH_HTTPS_BASE_URL",
+  "price_table": "REPLACE_WITH_PRICE_TABLE_PATH",
+  "environment": {
+    "PAPERAGENT_LLM_MAX_CALLS": "8",
+    "PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK": "12000",
+    "PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK": "8000",
+    "PAPERAGENT_LLM_TASK_TIMEOUT": "240"
+  },
+  "literature": {
+    "provider_timeout_seconds": 8,
+    "round_deadline_seconds": 20,
+    "enable_arxiv_fallback": false
+  },
+  "objective": "Prefer verified high-precision evidence and calibrated blocking over broad recall."
+}

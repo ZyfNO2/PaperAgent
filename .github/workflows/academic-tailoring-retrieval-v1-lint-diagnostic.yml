@@ -1,0 +1,60 @@
+name: Academic Tailoring Retrieval v1 Lint Diagnostic
+
+on:
+  push:
+    branches:
+      - eval/academic-tailoring-retrieval-v1-live-test
+    paths:
+      - ".github/workflows/academic-tailoring-retrieval-v1-lint-diagnostic.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Capture Ruff output
+        shell: bash
+        run: |
+          mkdir -p artifacts/evaluation/academic_tailoring_retrieval_v1/lint
+          set +e
+          ruff format --check \
+            scripts/project_academic_tailoring_retrieval_v1.py \
+            scripts/run_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/nodes/planning.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
+            tests/nodes/test_intake_planning.py \
+            > artifacts/evaluation/academic_tailoring_retrieval_v1/lint/format.txt 2>&1
+          format_exit=$?
+          ruff check \
+            scripts/project_academic_tailoring_retrieval_v1.py \
+            scripts/run_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/nodes/planning.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py \
+            tests/nodes/test_intake_planning.py \
+            > artifacts/evaluation/academic_tailoring_retrieval_v1/lint/check.txt 2>&1
+          check_exit=$?
+          printf '{"format_exit":%s,"check_exit":%s,"source_sha":"%s"}\n' \
+            "$format_exit" "$check_exit" "$GITHUB_SHA" \
+            > artifacts/evaluation/academic_tailoring_retrieval_v1/lint/summary.json
+          exit 0
+      - name: Commit diagnostics
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add artifacts/evaluation/academic_tailoring_retrieval_v1/lint
+          git commit -m "test(eval): record retrieval v1 Ruff diagnostics [skip ci]"
+          git push origin "HEAD:$GITHUB_REF_NAME"

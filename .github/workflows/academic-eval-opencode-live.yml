@@ -1,0 +1,307 @@
+name: Academic Eval Opencode Diagnostic
+
+on:
+  push:
+    branches:
+      - fix/academic-eval-diagnostics-baseline-binding
+    paths:
+      - ".github/workflows/academic-eval-opencode-live.yml"
+      - "config/academic-tailoring-mimo-diagnostic.env.example"
+      - "evals/academic_tailoring_retrieval_v1/**"
+      - "scripts/check_llm_provider_health.py"
+      - "scripts/project_academic_tailoring_retrieval_v1.py"
+      - "scripts/run_academic_tailoring_retrieval_v1.py"
+      - "scripts/score_academic_tailoring_retrieval_v1.py"
+      - "src/paperagent/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: academic-eval-opencode-diagnostic
+  cancel-in-progress: true
+
+jobs:
+  opencode-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+      PAPERAGENT_OPENAI_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+      PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL || 'Z1015558261@outlook.com' }}
+      SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+      TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+      PAPERAGENT_LLM_PROVIDER: deepseek
+      PAPERAGENT_LLM_BASE_URL: https://opencode.ai/zen/v1
+      PAPERAGENT_LLM_REASONING_EFFORT: ""
+      PAPERAGENT_LLM_NATIVE_JSON_SCHEMA: "0"
+      PAPERAGENT_LLM_ALLOW_SCHEMA_REPAIR: "1"
+      PAPERAGENT_LLM_CONNECT_TIMEOUT: "15"
+      PAPERAGENT_LLM_READ_TIMEOUT: "600"
+      PAPERAGENT_LLM_TOTAL_TIMEOUT: "660"
+      PAPERAGENT_LLM_TASK_TIMEOUT: "3600"
+      PAPERAGENT_LLM_MAX_ATTEMPTS: "3"
+      PAPERAGENT_LLM_MAX_REQUESTS_PER_MINUTE: "20"
+      PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "524288"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "32768"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "524288"
+      PAPERAGENT_LLM_MAX_CALLS: "60"
+      PAPERAGENT_RUN_REAL_LLM: "1"
+      PAPERAGENT_RUN_REAL_PROVIDER: "1"
+      PAPERAGENT_ENABLE_WEB_SEARCH: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Announce diagnostic start
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          short_sha="${GITHUB_SHA:0:7}"
+          gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body \
+            "Opencode diagnostic started for commit \`$short_sha\`. Primary: \`mimo-v2.5-free\`; runtime fallback: \`laguna-s-2.1-free\`; secret: \`OPENCODE_API_KEY\`."
+
+      - name: Require Opencode credential
+        run: test -n "$OPENCODE_API_KEY"
+
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+
+      - name: Run focused offline validation
+        run: |
+          python -m py_compile \
+            scripts/run_academic_tailoring_retrieval_v1.py \
+            scripts/score_academic_tailoring_retrieval_v1.py \
+            src/paperagent/claw_benchmark_runtime.py \
+            src/paperagent/nodes/planning.py
+          pytest -q \
+            tests/nodes/test_intake_planning.py \
+            tests/nodes/test_planning_identity_priority.py \
+            tests/evals/test_academic_tailoring_runtime_fail_fast.py \
+            tests/evals/test_academic_tailoring_diagnostic_budgets.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_scorer.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_diagnostics.py \
+            tests/evals/test_academic_tailoring_retrieval_v1_boundary.py
+
+      - name: Probe Mimo and Laguna
+        id: probes
+        shell: bash
+        run: |
+          set +e
+          mkdir -p build/opencode-health
+          python scripts/check_llm_provider_health.py \
+            --provider openai \
+            --model mimo-v2.5-free \
+            --base-url https://opencode.ai/zen/v1 \
+            --api-key-env OPENCODE_API_KEY \
+            --probe-mode chat \
+            --timeout-seconds 180 \
+            --output build/opencode-health/mimo.json
+          mimo_status=$?
+          python scripts/check_llm_provider_health.py \
+            --provider openai \
+            --model laguna-s-2.1-free \
+            --base-url https://opencode.ai/zen/v1 \
+            --api-key-env OPENCODE_API_KEY \
+            --probe-mode chat \
+            --timeout-seconds 180 \
+            --output build/opencode-health/laguna.json
+          laguna_status=$?
+          echo "mimo_status=$mimo_status" >> "$GITHUB_OUTPUT"
+          echo "laguna_status=$laguna_status" >> "$GITHUB_OUTPUT"
+          test "$mimo_status" = "0" || test "$laguna_status" = "0"
+
+      - name: Create Gold-free public inputs
+        run: |
+          python scripts/project_academic_tailoring_retrieval_v1.py \
+            --authoring evals/academic_tailoring_retrieval_v1/dataset-authoring.json \
+            --output build/academic-tailoring-retrieval-v1/public-dataset.json \
+            --report build/academic-tailoring-retrieval-v1/boundary-report.json
+
+      - name: Build isolated candidate workspace
+        run: |
+          rm -rf candidate-workspace
+          mkdir -p candidate-workspace/scripts candidate-workspace/input
+          cp -R src candidate-workspace/src
+          cp -R config candidate-workspace/config
+          cp pyproject.toml README.md candidate-workspace/
+          cp scripts/run_academic_tailoring_retrieval_v1.py candidate-workspace/scripts/
+          cp build/academic-tailoring-retrieval-v1/public-dataset.json candidate-workspace/input/
+          test ! -e candidate-workspace/evals/academic_tailoring_retrieval_v1/dataset-authoring.json
+          ! find candidate-workspace -name dataset-authoring.json -print -quit | grep -q .
+          (cd candidate-workspace && python -m pip install -q -e '.[dev]')
+
+      - name: Run Mimo primary diagnostic
+        id: mimo
+        if: steps.probes.outputs.mimo_status == '0'
+        working-directory: candidate-workspace
+        shell: bash
+        run: |
+          set +e
+          mkdir -p build/academic-tailoring-retrieval-v1/mimo
+          PAPERAGENT_LLM_MODEL=mimo-v2.5-free \
+          python scripts/run_academic_tailoring_retrieval_v1.py \
+            --dataset input/public-dataset.json \
+            --output-dir build/academic-tailoring-retrieval-v1/mimo \
+            --max-cases 10 \
+            --max-llm-calls 20 \
+            --max-retrieval-rounds 4 \
+            --max-queries-per-round 10 \
+            --max-method-repairs 3 \
+            --max-evidence-items 120 \
+            --provider-call-budget 480 \
+            --enable-web-search \
+            --llm-provider deepseek \
+            --llm-model mimo-v2.5-free \
+            --llm-base-url https://opencode.ai/zen/v1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "$status" > build/academic-tailoring-retrieval-v1/mimo/runtime-exit-code.txt
+          exit 0
+
+      - name: Run Laguna fallback diagnostic
+        id: laguna
+        if: >-
+          always() &&
+          steps.probes.outputs.laguna_status == '0' &&
+          (steps.probes.outputs.mimo_status != '0' || steps.mimo.outputs.status != '0')
+        working-directory: candidate-workspace
+        shell: bash
+        run: |
+          set +e
+          mkdir -p build/academic-tailoring-retrieval-v1/laguna
+          PAPERAGENT_LLM_MODEL=laguna-s-2.1-free \
+          python scripts/run_academic_tailoring_retrieval_v1.py \
+            --dataset input/public-dataset.json \
+            --output-dir build/academic-tailoring-retrieval-v1/laguna \
+            --max-cases 10 \
+            --max-llm-calls 20 \
+            --max-retrieval-rounds 4 \
+            --max-queries-per-round 10 \
+            --max-method-repairs 3 \
+            --max-evidence-items 120 \
+            --provider-call-budget 480 \
+            --enable-web-search \
+            --llm-provider deepseek \
+            --llm-model laguna-s-2.1-free \
+            --llm-base-url https://opencode.ai/zen/v1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "$status" > build/academic-tailoring-retrieval-v1/laguna/runtime-exit-code.txt
+          exit 0
+
+      - name: Select completed candidate run
+        id: selected
+        shell: bash
+        run: |
+          mimo_status="${{ steps.mimo.outputs.status }}"
+          laguna_status="${{ steps.laguna.outputs.status }}"
+          if [ "$mimo_status" = "0" ]; then
+            model="mimo-v2.5-free"
+            run_dir="candidate-workspace/build/academic-tailoring-retrieval-v1/mimo"
+          elif [ "$laguna_status" = "0" ]; then
+            model="laguna-s-2.1-free"
+            run_dir="candidate-workspace/build/academic-tailoring-retrieval-v1/laguna"
+          else
+            echo "Neither Mimo nor Laguna completed the diagnostic run" >&2
+            exit 1
+          fi
+          echo "model=$model" >> "$GITHUB_OUTPUT"
+          echo "run_dir=$run_dir" >> "$GITHUB_OUTPUT"
+          printf '{"selected_model":"%s","mimo_runtime_status":"%s","laguna_runtime_status":"%s"}\n' \
+            "$model" "$mimo_status" "$laguna_status" \
+            > build/academic-tailoring-retrieval-v1/model-selection.json
+
+      - name: Score selected run outside candidate boundary
+        shell: bash
+        run: |
+          mkdir -p build/academic-tailoring-retrieval-v1/scored
+          python scripts/score_academic_tailoring_retrieval_v1.py \
+            --authoring evals/academic_tailoring_retrieval_v1/dataset-authoring.json \
+            --states "${{ steps.selected.outputs.run_dir }}/states.jsonl" \
+            --traces "${{ steps.selected.outputs.run_dir }}/run-traces.jsonl" \
+            --prompts "${{ steps.selected.outputs.run_dir }}/prompt-log.jsonl" \
+            --runtime-summary "${{ steps.selected.outputs.run_dir }}/execution-summary.json" \
+            --output build/academic-tailoring-retrieval-v1/scored/diagnostic-report.json \
+            --minimum-score 80
+
+      - name: Publish concise result summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report = json.loads(
+              Path("build/academic-tailoring-retrieval-v1/scored/diagnostic-report.json").read_text()
+          )
+          selection = json.loads(
+              Path("build/academic-tailoring-retrieval-v1/model-selection.json").read_text()
+          )
+          lines = [
+              "## Opencode academic-tailoring diagnostic",
+              "",
+              f"- Selected model: `{selection['selected_model']}`",
+              f"- Passed: **{report['passed']}/{report['total']}**",
+              f"- Average score: **{report['average_score']}**",
+              f"- Hard-failure cases: **{report['hard_failure_case_count']}**",
+              f"- Hard-failure labels: **{report['hard_failure_label_count']}**",
+              "",
+              "| Case | Score | Status | Retrieval failure stage | Hard failures |",
+              "|---|---:|---|---|---|",
+          ]
+          for case in report["cases"]:
+              audit = case.get("scoring_audit", {})
+              pipeline = audit.get("retrieval_pipeline", {})
+              stage = pipeline.get("failure_stage") or "none"
+              failures = ", ".join(case.get("hard_failures", [])) or "none"
+              lines.append(
+                  f"| {case['case_id']} | {case['score']} | {case['status']} | {stage} | {failures} |"
+              )
+          summary = "\n".join(lines) + "\n"
+          Path("build/academic-tailoring-retrieval-v1/summary.md").write_text(summary)
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as handle:
+              handle.write(summary)
+          PY
+
+      - name: Comment final diagnostic status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          short_sha="${GITHUB_SHA:0:7}"
+          if [ -f build/academic-tailoring-retrieval-v1/summary.md ]; then
+            {
+              echo "Opencode diagnostic completed for commit \`$short_sha\`."
+              echo
+              cat build/academic-tailoring-retrieval-v1/summary.md
+            } > /tmp/opencode-diagnostic-comment.md
+          else
+            cat > /tmp/opencode-diagnostic-comment.md <<EOF
+          Opencode diagnostic did not reach scoring for commit \`$short_sha\`.
+
+          Workflow conclusion at comment time: \`${{ job.status }}\`. Inspect the uploaded partial artifacts or job logs for the first failed step.
+          EOF
+          fi
+          gh pr comment 41 --repo "$GITHUB_REPOSITORY" --body-file /tmp/opencode-diagnostic-comment.md
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academic-eval-opencode-diagnostic
+          path: |
+            build/opencode-health/
+            build/academic-tailoring-retrieval-v1/
+            candidate-workspace/build/academic-tailoring-retrieval-v1/
+          if-no-files-found: warn
+          retention-days: 30

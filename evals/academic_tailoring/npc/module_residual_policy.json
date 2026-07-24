@@ -1,0 +1,30 @@
+{
+  "source_paper_id": "SYN-C",
+  "insertion_point": "the interface following baseline feature encoding",
+  "proposed_role": "refine decisions with high uncertainty",
+  "host_input_semantics": "baseline features and ordered action values",
+  "host_output_semantics": "refined values with the same action order",
+  "semantic_mapping": "source and host share action identifiers and value order",
+  "adapter": "calibrated bounded projection",
+  "predicted_effect": "improve task success in shifted scenarios",
+  "failure_mode": "calibration may be inaccurate",
+  "input_shape": "batch x feature_dim plus batch x action_vocabulary",
+  "output_shape": "batch x action_vocabulary",
+  "normalization": "use frozen encoder statistics and temperature-calibrated uncertainty",
+  "masks": "respect the semantic action mask before residual action selection",
+  "ordering": "preserve the baseline action ontology order",
+  "trainable": true,
+  "loss_terms": [
+    "bounded_residual_policy_loss",
+    "uncertainty_calibration_loss"
+  ],
+  "assumptions": [
+    "uncertainty calibration uses only the training split",
+    "residual magnitude is bounded"
+  ],
+  "implementation_switch": "enable_uncertainty_residual",
+  "gradient_expectation": "gradients update the residual and calibration heads but do not enter the frozen baseline encoder",
+  "parameter_update_scope": "residual policy and uncertainty calibration parameters only",
+  "loss_scale": "residual loss weight 1.0 and calibration loss weight 0.1",
+  "baseline_parity_behavior": "disabling enable_uncertainty_residual returns the unchanged frozen baseline action values"
+}
