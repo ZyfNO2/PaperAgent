@@ -7,11 +7,22 @@ from typing import Any
 
 _REQUIRED_WEB_ASSETS = (
     "index.html",
-    "app.js",
-    "styles.css",
     "manifest.webmanifest",
     "service-worker.js",
     "icon.svg",
+    "css/tokens.css",
+    "css/base.css",
+    "css/components.css",
+    "css/pages.css",
+    "css/intro.css",
+    "js/data.js",
+    "js/ui.js",
+    "js/intro.js",
+    "js/views/core.js",
+    "js/views/research.js",
+    "js/views/design.js",
+    "js/views/review.js",
+    "js/app.js",
 )
 
 
