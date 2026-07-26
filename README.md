@@ -1,117 +1,147 @@
 # PaperAgent
 
-PaperAgent `v0.5.1` is a bounded research-workflow release candidate for local single-user use and
-trusted-network evaluation. It combines the frozen v0.1 workflow, v0.2 literature retrieval, v0.3
-durable task API, v0.4 review/export layer, and v0.5 package-served PWA shell with an executable demo,
-readiness checks, wheel packaging, and a minimal container.
+PaperAgent 是面向**学术研究任务执行**的领域 Agent。它负责把研究问题转化为可审计的证据检索、方法设计、审查与导出流程，而不是重复实现通用 Agent Runtime。
 
-## Current status
+当前开发主线围绕：
 
 ```text
-Package version: v0.5.1
-Workflow engine contract: v0.1 (frozen)
-Literature retrieval contract: v0.2
-Task API contract: v0.3
-Review/export contract: v0.4
-Web shell contract: v0.5
-Release contract: v0.5.1
-Stage: consolidated integration candidate
-Deployment boundary: local single user / trusted network
+Research Request
+  -> Project / Task Context
+  -> Query Planning and Academic Retrieval
+  -> Evidence Normalization and Verification
+  -> Baseline / Module / Gap Reasoning
+  -> Method Design or Audit
+  -> Human Review
+  -> Structured Export
 ```
 
-The consolidated development candidate additionally implements the v0.6 real-LLM offline MVP, the
-v0.7 controlled local plugin runtime, the v0.8 deterministic academic method auditor, backend and
-interview hardening, and synthetic academic-tailoring evaluation. The published package metadata
-remains `0.5.1`. Live Mistral scientific quality, real-paper reproduction, and human scientific review
-remain external acceptance conditions rather than completed claims.
+## 与 PaperClaw 的职责边界
 
-## Run the deterministic demo
+| 项目 | 主要职责 |
+|---|---|
+| **PaperClaw** | 通用 Agent Runtime、项目工作区、文件索引、长期 Memory、Artifact 版本、工具权限、扩展机制、任务与多 Agent 基础设施 |
+| **PaperAgent** | 学术问题理解、论文证据检索、Query 改写、baseline 与模块分析、方法设计、实验与消融规划、学术审查、研究结果导出 |
+
+PaperAgent 可以调用 PaperClaw 提供的项目知识、Memory、Artifact 和受限工具能力，但不应再次建设一套平行的通用运行时。
+
+## 当前状态
+
+```text
+Default branch: master
+Package metadata: 0.5.1
+Deployment boundary: local single user / trusted network
+Current roadmap: Plan/PaperAgent_Agentic_Multimodal_RAG_Development_Plan.md
+```
+
+当前代码树已经包含或保留以下能力：
+
+- bounded LangGraph 研究工作流；
+- OpenAlex、Semantic Scholar 与 arXiv 学术检索适配；
+- Crossref 与 DataCite DOI 校验；
+- 多 Provider 结果合并、排序、覆盖度、缓存、重试与调用预算；
+- 对宽泛 Query 的拒绝、学术源优先与受控 Web fallback；
+- baseline、comparator、dataset relation 与作者关联仓库证据识别；
+- 结构化 LLM Provider、输出修复、预算与遥测；
+- SQLite 任务、结果、错误、事件与 Review 持久化；
+- 幂等提交、Polling、SSE、取消与重启失败关闭；
+- JSON、Markdown 与 BibTeX 导出；
+- 本地 PWA、CLI、readiness、diagnostics 与 metrics；
+- 受控插件运行时；
+- academic-method-tailoring 方法设计与审计流程；
+- 离线确定性 Demo、合成评测和真实 Provider 验收入口。
+
+> 注意：确定性 Demo、Mock/Fake Provider 和合成 benchmark 只能证明控制流与产品契约，不能证明真实论文质量。
+
+## PaperAgent 应继续实现的能力
+
+### P0：核心学术闭环
+
+- 用户提供单篇或多篇论文后的稳定建档与项目绑定；
+- PDF 章节、表格、图、公式、算法和引用位置的结构化解析；
+- 面向实验方法、数据集、指标和结果的字段级检索；
+- Query classification、decomposition、rewrite 与 retrieval routing；
+- claim -> evidence locator -> source document 的可追溯链；
+- baseline card、module card、compatibility matrix 与 experiment matrix；
+- 对证据不足、冲突或不可复现方案的 REVISE / NO-GO 判定；
+- 人工确认后的 Methodology、实验计划和研究报告导出。
+
+### P1：质量与评测
+
+- 真实论文集上的检索 Recall、MRR、nDCG 和 citation grounding；
+- 表格数值、实验配置和结论抽取的字段级准确率；
+- baseline 选择、模块归因和消融设计的人工专家评测；
+- Query 改写前后的质量、延迟、调用次数与成本对比；
+- contamination、跨领域误召回和错误仓库关联检测；
+- 真实 LLM、真实论文与人工科学审查验收。
+
+### P2：轻量 Coding Worker
+
+仅服务论文理解与方法验证：
+
+- 读取论文配套 GitHub 仓库；
+- 定位模型、损失、数据加载和训练入口；
+- 对照论文与代码实现；
+- 提取配置、超参数和运行命令；
+- 生成最小实验 Patch；
+- 运行 shape、forward、gradient、tiny-batch 等定向验证；
+- 输出明确的 verified / pending / blocked Handoff。
+
+PaperAgent 不应优先承担通用 IDE、复杂 CI/CD、长期多分支开发或大型应用重构。
+
+## 当前主要缺口
+
+- README、包版本与开发能力仍存在版本语义差异；
+- 尚未形成统一的 PaperClaw <-> PaperAgent 集成契约；
+- 文件导入、论文解析与研究项目 Memory 需要形成一条端到端产品路径；
+- 当前检索仍明显依赖外部 Provider，可用性和限流会影响流程；
+- 缺少面向用户已提供论文的“本地材料优先”模式；
+- 真实科学质量、真实论文复现和人工专家验收尚不能标记为完成；
+- 不具备公开多用户服务需要的认证、租户隔离、配额和滥用控制。
+
+## 推荐架构
+
+```text
+PaperClaw
+  |-- Project Workspace / File Index
+  |-- User and Project Memory
+  |-- Artifact Revision Store
+  |-- Tool and Extension Permissions
+  |-- Task / Trace / Multi-Agent Runtime
+  `-- Narrow Coding Worker
+             |
+             v
+PaperAgent
+  |-- Research Intent and Query Rewrite
+  |-- Academic Retrieval and Evidence Ledger
+  |-- Paper / Dataset / Repository Relations
+  |-- Baseline and Module Reasoning
+  |-- Compatibility and Novelty Audit
+  |-- Experiment and Ablation Design
+  `-- Review and Academic Export
+```
+
+## 快速运行
 
 ```bash
 python -m pip install -e '.[dev,release]'
 paperagent serve
 ```
 
-Open `http://127.0.0.1:8000/app`.
+浏览器访问：
 
-The built-in executor produces synthetic, deterministic evidence for product-contract testing. It
-exercises task submission, progress, review guards, favorites, and exports without credentials. It is
-not a scientific answer and does not call an LLM.
+```text
+http://127.0.0.1:8000/app
+```
 
-The CLI refuses a non-loopback bind unless `--allow-public-bind` is supplied. That flag is an explicit
-operator acknowledgement only; it does not add authentication or tenant isolation.
-
-## One-command interview demonstration
+确定性演示：
 
 ```bash
 python scripts/interview_demo.py --output interview-demo-summary.json
 ```
 
-This credential-free script demonstrates asynchronous submission, idempotency reuse and conflict,
-durable events, Review, deterministic export, the academic-method plugin, schema versioning, runtime
-diagnostics, and metrics against a temporary SQLite database.
+该演示不会调用真实 LLM，也不能作为科学质量证据。
 
-Supporting material:
-
-- [architecture overview](docs/architecture/OVERVIEW.md)
-- [request lifecycle](docs/architecture/REQUEST_LIFECYCLE.md)
-- [failure model](docs/architecture/FAILURE_MODEL.md)
-- [consolidated code review](docs/review/CONSOLIDATED_CODE_REVIEW.md)
-- [consolidated acceptance plan](docs/acceptance/CONSOLIDATED_ACCEPTANCE_PLAN.md)
-- [project pitch](docs/interview/PROJECT_PITCH.md)
-- [backend Q&A](docs/interview/BACKEND_QA.md)
-- [Agent Q&A](docs/interview/AGENT_QA.md)
-- [incident cases](docs/interview/INCIDENT_CASES.md)
-- [demo runbook](docs/interview/DEMO_SCRIPT.md)
-
-## Development-branch plugins
-
-```bash
-paperagent plugins list
-paperagent plugins inspect academic-method-tailoring
-paperagent plugins run academic-method-tailoring \
-  --operation audit \
-  --input examples/v0_8/go-plan.json \
-  --output method-audit.json
-```
-
-External Python entry points are never loaded automatically. They require an exact
-`--enable-external-plugin <entry-point-name>` authorization for the current command. This authorization
-is not sandboxing; an authorized installed plugin executes local Python code in the PaperAgent process.
-
-An independently packaged example is available in [`examples/external_plugin`](examples/external_plugin).
-
-## Runtime diagnostics
-
-```bash
-paperagent diagnostics --database paperagent.db
-curl http://127.0.0.1:8000/v1/diagnostics/runtime
-curl http://127.0.0.1:8000/metrics
-```
-
-Diagnostics expose low-cardinality task, event, database, and schema metadata. They do not return
-research requests, idempotency keys, provider credentials, prompts, or model response bodies.
-
-## Live provider smoke
-
-```bash
-PAPERAGENT_CONTACT_EMAIL=you@example.com \
-  paperagent provider-smoke --timeout 20
-```
-
-This checks OpenAlex and arXiv discovery plus Crossref and DataCite DOI verification.
-
-## Container
-
-```bash
-docker build -t paperagent:0.5.1 .
-docker run --rm -p 8000:8000 -v paperagent-data:/data paperagent:0.5.1
-```
-
-The image runs as an unprivileged user, stores SQLite state in `/data`, and exposes `/readyz` for
-SQLite integrity, schema compatibility, executor, and packaged-asset checks.
-
-## Main routes
+## 主要接口
 
 ```text
 GET  /app
@@ -130,23 +160,7 @@ GET  /healthz
 GET  /readyz
 ```
 
-## Implemented v0.5.1 MVP scope
-
-- bounded LangGraph workflow and frozen schema/prompt/fixture contracts;
-- OpenAlex, Semantic Scholar, and arXiv discovery adapters;
-- Crossref and DataCite DOI verification;
-- deterministic merge, ranking, coverage, cache, and retry budgets;
-- SQLite task/result/error/event persistence and single-process execution;
-- idempotent submission, Polling, SSE, cancellation, and fail-closed restart semantics;
-- durable paper review decisions, stable pagination, and deterministic exports;
-- responsive package-local PWA shell with restrictive CSP and shell-only caching;
-- deterministic credential-free demo executor;
-- localhost-first CLI, readiness diagnostics, wheel installation, and Docker packaging.
-
-The browser contains no Agent, retrieval, ranking, prompt, or provider logic. All workflow decisions
-remain in the Python service.
-
-## Automated release gates
+## 验证
 
 ```bash
 python -m pip install -e '.[dev,release]'
@@ -157,49 +171,16 @@ pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
 python -m build --wheel
 ```
 
-The release workflow additionally runs:
+真实 Provider、真实 LLM、浏览器和容器测试需要对应网络、凭据或运行环境，必须与离线测试分别报告。
 
-- Python 3.11 and 3.12 verification;
-- installed-wheel CLI, plugin, and packaged-web smoke;
-- headless Chromium submit → progress → review → export smoke;
-- live OpenAlex, arXiv, Crossref, and DataCite smoke;
-- Docker build and readiness smoke.
+## 安全与部署边界
 
-Contract and benchmark utilities:
+当前版本适用于本地单用户或可信网络评估。它没有完整的：
 
-```bash
-python scripts/export_openapi.py --output build/openapi.json
-python scripts/repository_benchmark.py --tasks 500 --output build/repository-benchmark.json
-```
+- 身份认证；
+- 多租户隔离；
+- 公网配额与滥用控制；
+- 对授权 Python 插件的强沙箱；
+- 生产级 Secret 管理。
 
-## Security and product boundary
-
-This release has no authentication, user accounts, tenant isolation, quotas, payments, or public
-abuse controls. Do not expose it as an unauthenticated public multi-user service. The deterministic
-demo does not establish scientific quality, real-LLM quality, or production scalability.
-
-See the expanded [threat model](docs/security/THREAT_MODEL.md) and
-[benchmark methodology](docs/benchmarks/BASELINE.md).
-
-## Development contracts
-
-- [consolidated code review](docs/review/CONSOLIDATED_CODE_REVIEW.md)
-- [consolidated acceptance plan](docs/acceptance/CONSOLIDATED_ACCEPTANCE_PLAN.md)
-- [v0.6-v0.8 delivery roadmap](docs/ROADMAP_V0_6_V0_8.md)
-- [combined v0.6-v0.8 handoff](docs/v0.6-v0.8/HANDOFF.md)
-- [v0.6 real LLM integration and evaluation plan](docs/v0.6/EXECUTION_PLAN.md)
-- [v0.6 MVP delivery contract](docs/v0.6/MVP_DELIVERY_CONTRACT.md)
-- [v0.6 implementation status](docs/v0.6/DEVELOPMENT_STATUS.md)
-- [v0.6 implementation handoff](docs/v0.6/HANDOFF.md)
-- [v0.7 plugin runtime MVP plan](docs/v0.7/EXECUTION_PLAN.md)
-- [v0.7 implementation status](docs/v0.7/DEVELOPMENT_STATUS.md)
-- [v0.7 plugin authoring guide](docs/v0.7/PLUGIN_AUTHORING.md)
-- [v0.8 academic method plugin MVP plan](docs/v0.8/EXECUTION_PLAN.md)
-- [v0.8 implementation status](docs/v0.8/DEVELOPMENT_STATUS.md)
-- [v0.5.1 execution plan](docs/v0.5.1/EXECUTION_PLAN.md)
-- [v0.5.1 release runbook](docs/v0.5.1/RELEASE_CANDIDATE.md)
-- [v0.5 handoff](docs/v0.5/HANDOFF.md)
-- [v0.4 handoff](docs/v0.4/HANDOFF.md)
-- [v0.3 handoff](docs/v0.3/HANDOFF.md)
-- [v0.2 handoff](docs/v0.2/HANDOFF.md)
-- [v0.1 handoff](docs/v0.1/HANDOFF.md)
+不要将其作为无认证的公网多用户服务直接暴露。
