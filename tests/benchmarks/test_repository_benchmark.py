@@ -16,7 +16,8 @@ def _load_benchmark_module() -> ModuleType:
 
 def test_repository_benchmark_reports_reproducible_shape(tmp_path: Path) -> None:
     module = _load_benchmark_module()
-    result = module.run_benchmark(tmp_path / "benchmark.db", 12)
+    database = tmp_path / "benchmark.db"
+    result = module.run_benchmark(database, 12)
 
     assert result["task_count"] == 12
     assert result["claimed_count"] == 12
@@ -25,3 +26,5 @@ def test_repository_benchmark_reports_reproducible_shape(tmp_path: Path) -> None
     assert result["create"]["p95_ms"] >= result["create"]["p50_ms"]
     assert result["claim"]["p95_ms"] >= result["claim"]["p50_ms"]
     assert "not a distributed" in result["boundary"]
+    database.unlink()
+    assert not database.exists()

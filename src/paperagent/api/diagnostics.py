@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import sqlite3
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
@@ -26,11 +28,16 @@ def _database_path(database_path: str | Path) -> Path:
     return path
 
 
-def _connect(database_path: str | Path) -> sqlite3.Connection:
+@contextmanager
+def _connect(database_path: str | Path) -> Iterator[sqlite3.Connection]:
     connection = sqlite3.connect(str(_database_path(database_path)), timeout=30.0)
-    connection.row_factory = sqlite3.Row
-    connection.execute("PRAGMA busy_timeout = 30000")
-    return connection
+    try:
+        connection.row_factory = sqlite3.Row
+        connection.execute("PRAGMA busy_timeout = 30000")
+        with connection:
+            yield connection
+    finally:
+        connection.close()
 
 
 def _has_table(connection: sqlite3.Connection, name: str) -> bool:

@@ -213,6 +213,9 @@ def _ensure_user_material_identity_queries(
     if not identities:
         return plan
 
+    if plan.status == "need_human" and len(plan.search_queries) >= query_budget:
+        return plan
+
     identity_gaps: list[EvidenceGap] = []
     identity_queries: list[SearchQuery] = []
     queued_identities: list[tuple[UserMaterialIdentity, str, str]] = []

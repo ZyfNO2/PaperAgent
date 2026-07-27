@@ -3,7 +3,8 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
@@ -53,14 +54,19 @@ class SQLiteTaskRepository:
             self.database_path.parent.mkdir(parents=True, exist_ok=True)
         self.initialize()
 
-    def _connect(self) -> sqlite3.Connection:
+    @contextmanager
+    def _connect(self) -> Iterator[sqlite3.Connection]:
         connection = sqlite3.connect(str(self.database_path), timeout=30.0)
-        connection.row_factory = sqlite3.Row
-        connection.execute("PRAGMA foreign_keys = ON")
-        connection.execute("PRAGMA busy_timeout = 30000")
-        if self.database_path != Path(":memory:"):
-            connection.execute("PRAGMA journal_mode = WAL")
-        return connection
+        try:
+            connection.row_factory = sqlite3.Row
+            connection.execute("PRAGMA foreign_keys = ON")
+            connection.execute("PRAGMA busy_timeout = 30000")
+            if self.database_path != Path(":memory:"):
+                connection.execute("PRAGMA journal_mode = WAL")
+            with connection:
+                yield connection
+        finally:
+            connection.close()
 
     def initialize(self) -> None:
         with self._connect() as connection:

@@ -16,7 +16,8 @@ def _load_demo_module() -> ModuleType:
 
 def test_interview_demo_exercises_backend_contracts(tmp_path: Path) -> None:
     module = _load_demo_module()
-    summary = module.run_demo(tmp_path / "paperagent.db")
+    database = tmp_path / "paperagent.db"
+    summary = module.run_demo(database)
 
     assert summary["idempotency_reused"] is True
     assert summary["idempotency_conflict_rejected"] is True
@@ -28,3 +29,5 @@ def test_interview_demo_exercises_backend_contracts(tmp_path: Path) -> None:
     assert summary["plugin_verdict"] == "GO"
     assert summary["schema_version"] == 1
     assert summary["metrics_exposed"] is True
+    database.unlink()
+    assert not database.exists()
