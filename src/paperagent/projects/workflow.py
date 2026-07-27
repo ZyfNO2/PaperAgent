@@ -3,6 +3,15 @@ from __future__ import annotations
 from collections.abc import Iterable
 from pathlib import Path
 
+from paperagent.academic import (
+    AcademicArtifactCoordinator,
+    AcademicArtifactSink,
+    AcademicRAGResult,
+    AcademicRAGWorkflow,
+    AcademicTailoringArtifacts,
+    InMemoryAcademicArtifactSink,
+    ProjectRAGEvidenceSource,
+)
 from paperagent.projects.ingestion import PaperIngestionService
 from paperagent.projects.models import (
     IngestionResult,
@@ -19,11 +28,23 @@ from paperagent.projects.tailoring import EvidenceBoundTailoringService
 
 
 class MemoryRAGWorkflow:
-    def __init__(self, database_path: str | Path) -> None:
+    def __init__(
+        self,
+        database_path: str | Path,
+        *,
+        academic_artifact_sink: AcademicArtifactSink | None = None,
+    ) -> None:
         self.repository = SQLiteProjectRepository(database_path)
         self.ingestion = PaperIngestionService(self.repository)
         self.retriever = HybridAcademicRetriever(self.repository)
         self.tailoring = EvidenceBoundTailoringService(self.repository, self.retriever)
+        self.academic_source = ProjectRAGEvidenceSource(self.repository, self.retriever)
+        self.academic_rag = AcademicRAGWorkflow(self.academic_source)
+        self.academic_artifact_sink = academic_artifact_sink or InMemoryAcademicArtifactSink()
+        self.academic_artifacts = AcademicArtifactCoordinator(
+            self.academic_rag,
+            self.academic_artifact_sink,
+        )
 
     def create_project(self, *, name: str, research_question: str) -> ResearchProject:
         return self.repository.create_project(name=name, research_question=research_question)
@@ -103,4 +124,32 @@ class MemoryRAGWorkflow:
             baseline_paper_id=baseline_paper_id,
             module_paper_ids=module_paper_ids,
             evidence_query=evidence_query,
+        )
+
+    def academic_query(
+        self,
+        *,
+        project_id: str,
+        question: str,
+        paper_ids: Iterable[str] = (),
+    ) -> AcademicRAGResult:
+        return self.academic_rag.run(
+            project_id=project_id,
+            question=question,
+            paper_ids=tuple(paper_ids),
+        )
+
+    def create_academic_tailoring_drafts(
+        self,
+        *,
+        project_id: str,
+        hypothesis: str,
+        baseline_paper_id: str,
+        module_paper_ids: Iterable[str],
+    ) -> AcademicTailoringArtifacts:
+        return self.academic_artifacts.create_tailoring_drafts(
+            project_id=project_id,
+            hypothesis=hypothesis,
+            baseline_paper_id=baseline_paper_id,
+            module_paper_ids=tuple(module_paper_ids),
         )
