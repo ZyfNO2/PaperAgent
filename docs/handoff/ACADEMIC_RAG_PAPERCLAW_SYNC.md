@@ -1,7 +1,8 @@
 # Academic RAG PaperClaw sync handoff
 
-Status: PaperAgent implementation complete for the local Project RAG adapter.
-PaperClaw synchronization is intentionally deferred.
+Status: PaperAgent is synchronized with PaperClaw 0.43 through the optional
+versioned Python interface. The local Project RAG adapter remains available as a
+text-only fallback.
 
 ## PaperAgent interface boundary
 
@@ -32,7 +33,20 @@ at most one conflict check. DOI/arXiv identifiers are preserved verbatim in the
 rewritten query. Claims in generated drafts may reference accepted evidence IDs
 only.
 
-## Current local fallback
+## Implemented adapters
+
+`PaperClawAcademicEvidenceSource` maps PaperAgent's bounded rounds to canonical
+PaperClaw requests without reading PaperClaw storage. It preserves the `exact`,
+lexical, dense, and visual channels and converts complete locators at the seam.
+
+`PaperClawAcademicArtifactSink` persists draft, review, and final states as
+append-only PaperClaw Artifact revisions.
+
+The integration is optional because PaperAgent supports Python 3.11 while
+PaperClaw 0.43 requires Python 3.12. Base PaperAgent imports remain independent
+of PaperClaw; the real adapter is exercised on Python 3.12.
+
+## Local fallback
 
 `ProjectRAGEvidenceSource` adapts the existing text Project RAG. It marks visual
 retrieval as degraded. `InMemoryAcademicArtifactSink` exists only for offline
@@ -41,7 +55,11 @@ tests and CLI previews; its output is labelled
 
 ## Sync acceptance
 
-The later PaperClaw adapter and the fake/local adapters must pass the same
-contract suite. Synchronization is complete only when locator replay, source hash
-validation, degradation behavior, and append-only artifact review all pass
-against PaperClaw's canonical `academic.v1` implementation.
+The structural adapter and real PaperClaw runtime pass the same seam tests:
+locator replay, source hash validation, exact identifier routing, degradation
+behavior, and append-only Artifact review. A real generated PDF also passes the
+PaperClaw ingest → parse → index → retrieve → PaperAgent ledger path.
+
+This engineering synchronization does not replace the remaining release gate:
+the frozen real-paper corpus report, real LLM run, and human Desktop approval
+must be recorded before declaring Academic RAG P0 GO.

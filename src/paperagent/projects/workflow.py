@@ -3,15 +3,15 @@ from __future__ import annotations
 from collections.abc import Iterable
 from pathlib import Path
 
-from paperagent.academic import (
+from paperagent.academic.artifacts import (
     AcademicArtifactCoordinator,
     AcademicArtifactSink,
-    AcademicRAGResult,
-    AcademicRAGWorkflow,
     AcademicTailoringArtifacts,
     InMemoryAcademicArtifactSink,
-    ProjectRAGEvidenceSource,
 )
+from paperagent.academic.contracts import AcademicEvidenceSource, AcademicRAGResult
+from paperagent.academic.project_adapter import ProjectRAGEvidenceSource
+from paperagent.academic.workflow import AcademicRAGWorkflow
 from paperagent.projects.ingestion import PaperIngestionService
 from paperagent.projects.models import (
     IngestionResult,
@@ -32,13 +32,17 @@ class MemoryRAGWorkflow:
         self,
         database_path: str | Path,
         *,
+        academic_evidence_source: AcademicEvidenceSource | None = None,
         academic_artifact_sink: AcademicArtifactSink | None = None,
     ) -> None:
         self.repository = SQLiteProjectRepository(database_path)
         self.ingestion = PaperIngestionService(self.repository)
         self.retriever = HybridAcademicRetriever(self.repository)
         self.tailoring = EvidenceBoundTailoringService(self.repository, self.retriever)
-        self.academic_source = ProjectRAGEvidenceSource(self.repository, self.retriever)
+        self.academic_source = academic_evidence_source or ProjectRAGEvidenceSource(
+            self.repository,
+            self.retriever,
+        )
         self.academic_rag = AcademicRAGWorkflow(self.academic_source)
         self.academic_artifact_sink = academic_artifact_sink or InMemoryAcademicArtifactSink()
         self.academic_artifacts = AcademicArtifactCoordinator(
