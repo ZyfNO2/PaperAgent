@@ -23,20 +23,22 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          from textwrap import dedent
 
           path = Path(".github/workflows/claw-case-001-end-to-end.yml")
           text = path.read_text(encoding="utf-8")
           start = text.index("on:\n")
           end = text.index("permissions:\n")
-          trigger = '''on:
-  push:
-    branches:
-      - feat/claw-live-search-runtime
-    paths:
-      - ".case001-e2e-trigger"
-  workflow_dispatch:
+          trigger = dedent("""\
+          on:
+            push:
+              branches:
+                - feat/claw-live-search-runtime
+              paths:
+                - ".case001-e2e-trigger"
+            workflow_dispatch:
 
-'''
+          """)
           text = text[:start] + trigger + text[end:]
           text = text.replace("  cancel-in-progress: false", "  cancel-in-progress: true", 1)
           path.write_text(text, encoding="utf-8")
