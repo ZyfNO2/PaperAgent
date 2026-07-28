@@ -22,12 +22,8 @@ def test_paperclaw_canonical_contract_assets_are_frozen() -> None:
     assert hashlib.sha256(schema.read_bytes()).hexdigest() == SCHEMA_SHA256
     assert hashlib.sha256(golden.read_bytes()).hexdigest() == GOLDEN_SHA256
     packaged = ROOT / "src" / "paperagent" / "academic" / "wire"
-    assert hashlib.sha256(
-        (packaged / schema.name).read_bytes()
-    ).hexdigest() == SCHEMA_SHA256
-    assert hashlib.sha256(
-        (packaged / golden.name).read_bytes()
-    ).hexdigest() == GOLDEN_SHA256
+    assert hashlib.sha256((packaged / schema.name).read_bytes()).hexdigest() == SCHEMA_SHA256
+    assert hashlib.sha256((packaged / golden.name).read_bytes()).hexdigest() == GOLDEN_SHA256
 
 
 def test_python311_locator_view_rejects_unknown_schema() -> None:

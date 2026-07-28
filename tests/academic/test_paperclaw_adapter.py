@@ -229,9 +229,7 @@ def test_real_paperclaw_runtime_drives_paperagent_evidence_workflow(
             source_hash=locator.source_hash,
             section_path=locator.section_path,
             bounding_box=(
-                BoundingBox(*locator.bounding_box)
-                if locator.bounding_box is not None
-                else None
+                BoundingBox(*locator.bounding_box) if locator.bounding_box is not None else None
             ),
             paragraph_index=locator.paragraph_index,
             line_range=locator.line_range,

@@ -152,16 +152,12 @@ class PaperClawAcademicEvidenceSource:
         )
         result = self.runtime.evidence_bundle(raw_result)
         if result.schema_version != "academic.v1":
-            raise ValueError(
-                f"unsupported PaperClaw academic schema: {result.schema_version!r}"
-            )
+            raise ValueError(f"unsupported PaperClaw academic schema: {result.schema_version!r}")
         trace = result.trace
-        degraded = (
-            tuple(
-                channel
-                for channel in trace.degraded_channels
-                if channel in {"lexical", "dense", "visual"}
-            )
+        degraded = tuple(
+            channel
+            for channel in trace.degraded_channels
+            if channel in {"lexical", "dense", "visual"}
         )
         sufficiency: SufficiencyDecision = result.sufficiency
         return AcademicRetrievalResult(
@@ -169,9 +165,7 @@ class PaperClawAcademicEvidenceSource:
             sufficiency=sufficiency,
             reasons=result.reasons,
             degraded_channels=cast(tuple[AcademicChannel, ...], degraded),
-            conflict_detected=bool(
-                trace.stop_reason in {"conflict", "conflict_detected"}
-            ),
+            conflict_detected=bool(trace.stop_reason in {"conflict", "conflict_detected"}),
             trace_id=trace.trace_id,
         )
 
@@ -214,9 +208,7 @@ class PaperClawAcademicEvidenceSource:
     @staticmethod
     def _locator(locator: _ClawLocator) -> AcademicLocator:
         if locator.schema_version != "academic.v1":
-            raise ValueError(
-                f"unsupported PaperClaw locator schema: {locator.schema_version!r}"
-            )
+            raise ValueError(f"unsupported PaperClaw locator schema: {locator.schema_version!r}")
         bbox = locator.bounding_box
         return AcademicLocator(
             schema_version="academic.v1",
