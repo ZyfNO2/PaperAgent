@@ -37,7 +37,14 @@ class FrozenAcademicModel(BaseModel):
     model_config = ConfigDict(frozen=True)
 
 
-class AcademicLocator(FrozenAcademicModel):
+class EvidenceLocatorView(FrozenAcademicModel):
+    """PaperAgent's read-only view of PaperClaw's canonical locator.
+
+    This is an internal Python 3.11 compatibility view, not a second wire
+    contract.  Serialization at the repository seam is owned by PaperClaw.
+    """
+
+    schema_version: Literal["academic.v1"]
     paper_id: str
     version_id: str
     object_id: str
@@ -52,7 +59,7 @@ class AcademicLocator(FrozenAcademicModel):
     table_column: int | None = Field(default=None, ge=0)
 
     @model_validator(mode="after")
-    def validate_coordinates(self) -> AcademicLocator:
+    def validate_coordinates(self) -> EvidenceLocatorView:
         if self.bounding_box is not None:
             x0, y0, x1, y1 = self.bounding_box
             if min(x0, y0) < 0 or x1 < x0 or y1 < y0:
@@ -64,9 +71,13 @@ class AcademicLocator(FrozenAcademicModel):
         return self
 
 
+# Source compatibility for the pre-freeze PaperAgent interface.
+AcademicLocator = EvidenceLocatorView
+
+
 class AcademicCandidate(FrozenAcademicModel):
     evidence_id: str
-    locator: AcademicLocator
+    locator: EvidenceLocatorView
     text: str
     score: float = Field(ge=0)
     provenance: Literal["extracted", "inferred"]
@@ -107,7 +118,7 @@ class AcademicRetrievalResult(FrozenAcademicModel):
 
 class AcademicEvidenceEntry(FrozenAcademicModel):
     evidence_id: str
-    locator: AcademicLocator
+    locator: EvidenceLocatorView
     status: Literal["accepted", "rejected", "conflicted"]
     supported_claims: tuple[str, ...] = ()
     limitations: tuple[str, ...] = ()
@@ -157,4 +168,4 @@ class AcademicRAGResult(FrozenAcademicModel):
 class AcademicEvidenceSource(Protocol):
     def retrieve(self, request: AcademicRetrievalRequest) -> AcademicRetrievalResult: ...
 
-    def resolve(self, locator: AcademicLocator) -> AcademicCandidate: ...
+    def resolve(self, locator: EvidenceLocatorView) -> AcademicCandidate: ...

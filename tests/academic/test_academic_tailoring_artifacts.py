@@ -22,6 +22,7 @@ def _paper_candidate(paper_id: str, text: str) -> AcademicCandidate:
     return AcademicCandidate(
         evidence_id=f"{paper_id}:paragraph:1",
         locator=AcademicLocator(
+            schema_version="academic.v1",
             paper_id=paper_id,
             version_id=f"{paper_id}-v1",
             object_id=f"{paper_id}-paragraph-1",

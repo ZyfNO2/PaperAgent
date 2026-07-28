@@ -40,6 +40,7 @@ class Locator:
     line_range: tuple[int, int] | None = None
     table_row: int | None = None
     table_column: int | None = None
+    schema_version: str = "academic.v1"
 
 
 class KeywordRecord:
@@ -92,6 +93,16 @@ class FakeRuntime:
             provenance="extracted",
         )
 
+    @staticmethod
+    def evidence_bundle(result):
+        return SimpleNamespace(
+            schema_version="academic.v1",
+            candidates=result.candidates,
+            sufficiency=result.sufficiency,
+            reasons=result.reasons,
+            trace=result.trace,
+        )
+
 
 class FakeStore:
     def __init__(self) -> None:
@@ -129,7 +140,7 @@ class FakeStore:
 @pytest.fixture(autouse=True)
 def canonical_modules(monkeypatch: pytest.MonkeyPatch) -> None:
     academic = SimpleNamespace(
-        AcademicLocator=Locator,
+        EvidenceLocator=Locator,
         BoundingBox=BoundingBox,
         RetrievalBudget=KeywordRecord,
         RetrievalRequest=KeywordRecord,

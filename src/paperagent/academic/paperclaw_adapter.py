@@ -31,6 +31,7 @@ class _ClawBoundingBox(Protocol):
 
 
 class _ClawLocator(Protocol):
+    schema_version: str
     paper_id: str
     version_id: str
     object_id: str
@@ -67,6 +68,14 @@ class _ClawResult(Protocol):
     trace: _ClawTrace | None
 
 
+class _ClawEvidenceBundle(Protocol):
+    schema_version: str
+    candidates: tuple[_ClawCandidate, ...]
+    sufficiency: Literal["sufficient", "partial", "insufficient"]
+    reasons: tuple[str, ...]
+    trace: _ClawTrace
+
+
 class _ClawObject(Protocol):
     locator: object
     text: str | None
@@ -75,6 +84,8 @@ class _ClawObject(Protocol):
 
 class PaperClawAcademicRuntime(Protocol):
     def retrieve(self, query: object) -> _ClawResult: ...
+
+    def evidence_bundle(self, result: _ClawResult) -> _ClawEvidenceBundle: ...
 
     def resolve(self, locator: object) -> _ClawObject: ...
 
@@ -124,7 +135,7 @@ class PaperClawAcademicEvidenceSource:
 
     def retrieve(self, request: AcademicRetrievalRequest) -> AcademicRetrievalResult:
         canonical = _academic_module()
-        result = self.runtime.retrieve(
+        raw_result = self.runtime.retrieve(
             canonical.RetrievalRequest(
                 text=request.query,
                 channels=request.channels,
@@ -139,6 +150,11 @@ class PaperClawAcademicEvidenceSource:
                 ),
             )
         )
+        result = self.runtime.evidence_bundle(raw_result)
+        if result.schema_version != "academic.v1":
+            raise ValueError(
+                f"unsupported PaperClaw academic schema: {result.schema_version!r}"
+            )
         trace = result.trace
         degraded = (
             tuple(
@@ -146,8 +162,6 @@ class PaperClawAcademicEvidenceSource:
                 for channel in trace.degraded_channels
                 if channel in {"lexical", "dense", "visual"}
             )
-            if trace
-            else ()
         )
         sufficiency: SufficiencyDecision = result.sufficiency
         return AcademicRetrievalResult(
@@ -156,9 +170,9 @@ class PaperClawAcademicEvidenceSource:
             reasons=result.reasons,
             degraded_channels=cast(tuple[AcademicChannel, ...], degraded),
             conflict_detected=bool(
-                trace and trace.stop_reason in {"conflict", "conflict_detected"}
+                trace.stop_reason in {"conflict", "conflict_detected"}
             ),
-            trace_id=trace.trace_id if trace else "paperclaw:trace-unavailable",
+            trace_id=trace.trace_id,
         )
 
     def resolve(self, locator: AcademicLocator) -> AcademicCandidate:
@@ -199,8 +213,13 @@ class PaperClawAcademicEvidenceSource:
 
     @staticmethod
     def _locator(locator: _ClawLocator) -> AcademicLocator:
+        if locator.schema_version != "academic.v1":
+            raise ValueError(
+                f"unsupported PaperClaw locator schema: {locator.schema_version!r}"
+            )
         bbox = locator.bounding_box
         return AcademicLocator(
+            schema_version="academic.v1",
             paper_id=locator.paper_id,
             version_id=locator.version_id,
             object_id=locator.object_id,
@@ -223,7 +242,7 @@ class PaperClawAcademicEvidenceSource:
             if locator.bounding_box is not None
             else None
         )
-        return canonical.AcademicLocator(
+        return canonical.EvidenceLocator(
             paper_id=locator.paper_id,
             version_id=locator.version_id,
             object_id=locator.object_id,

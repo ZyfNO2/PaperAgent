@@ -20,6 +20,7 @@ def _candidate(
     return AcademicCandidate(
         evidence_id=f"paper-1:{object_type}:1",
         locator=AcademicLocator(
+            schema_version="academic.v1",
             paper_id="paper-1",
             version_id="version-1",
             object_id=f"{object_type}-1",

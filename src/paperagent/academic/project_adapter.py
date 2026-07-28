@@ -86,6 +86,7 @@ class ProjectRAGEvidenceSource:
             paper_id=hit.unit.paper_id,
         )
         locator = AcademicLocator(
+            schema_version="academic.v1",
             paper_id=hit.unit.paper_id,
             version_id=f"{hit.unit.paper_id}:v{hit.unit.ingestion_version}",
             object_id=hit.unit.unit_id,
