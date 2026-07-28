@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Mapping
 from importlib import import_module
 from typing import Any, Literal, Protocol, cast
 
@@ -19,6 +20,7 @@ from paperagent.academic.contracts import (
     AcademicObjectType,
     AcademicRetrievalRequest,
     AcademicRetrievalResult,
+    EvidenceLocatorView,
     SufficiencyDecision,
 )
 
@@ -168,6 +170,8 @@ class PaperClawAcademicEvidenceSource:
             result = self.runtime.evidence_bundle(raw_result)
         if result.schema_version != "academic.v1":
             raise ValueError(f"unsupported PaperClaw academic schema: {result.schema_version!r}")
+        if hasattr(result, "to_dict"):
+            return normalize_bundle_payload(result.to_dict())
         trace = result.trace
         degraded = tuple(
             channel
@@ -266,6 +270,74 @@ class PaperClawAcademicEvidenceSource:
             table_row=locator.table_row,
             table_column=locator.table_column,
         )
+
+
+def normalize_bundle_payload(payload: Mapping[str, Any]) -> AcademicRetrievalResult:
+    """Normalize a canonical EvidenceBundle for both Python and REST seams."""
+
+    if payload.get("schema_version") != "academic.v1":
+        raise ValueError(
+            f"unsupported PaperClaw academic schema: {payload.get('schema_version')!r}"
+        )
+    raw_trace = payload.get("trace")
+    if not isinstance(raw_trace, Mapping):
+        raise ValueError("PaperClaw EvidenceBundle trace is malformed")
+    raw_candidates = payload.get("candidates")
+    if not isinstance(raw_candidates, list):
+        raise ValueError("PaperClaw EvidenceBundle candidates are malformed")
+    candidates: list[AcademicCandidate] = []
+    for raw in raw_candidates:
+        if not isinstance(raw, Mapping):
+            raise ValueError("PaperClaw evidence candidate is malformed")
+        raw_locator = raw.get("locator")
+        if not isinstance(raw_locator, Mapping):
+            raise ValueError("PaperClaw evidence locator is malformed")
+        locator_payload = dict(raw_locator)
+        bbox = locator_payload.get("bounding_box")
+        if isinstance(bbox, Mapping):
+            locator_payload["bounding_box"] = (
+                bbox["x0"],
+                bbox["y0"],
+                bbox["x1"],
+                bbox["y1"],
+            )
+        locator = EvidenceLocatorView.model_validate(locator_payload)
+        if raw.get("provenance") not in {"extracted", "inferred"}:
+            raise ValueError("PaperClaw evidence provenance is incompatible")
+        channel_scores = raw.get("channel_scores")
+        if not isinstance(channel_scores, Mapping):
+            raise ValueError("PaperClaw channel scores are malformed")
+        candidates.append(
+            AcademicCandidate(
+                evidence_id=(f"{locator.paper_id}:{locator.version_id}:{locator.object_id}"),
+                locator=locator,
+                text=str(raw.get("text", "")),
+                score=max(0.0, float(raw.get("fused_score", 0.0))),
+                provenance=raw["provenance"],
+                channel_scores={
+                    cast(AcademicChannel, channel): float(score)
+                    for channel, score in channel_scores.items()
+                    if channel in {"exact", "lexical", "dense", "visual"}
+                },
+                explanation=tuple(raw.get("explanation", ())),
+            )
+        )
+    sufficiency = payload.get("sufficiency")
+    if sufficiency not in {"sufficient", "partial", "insufficient"}:
+        raise ValueError("PaperClaw sufficiency state is incompatible")
+    degraded = tuple(
+        channel
+        for channel in raw_trace.get("degraded_channels", ())
+        if channel in {"lexical", "dense", "visual"}
+    )
+    return AcademicRetrievalResult(
+        candidates=tuple(candidates),
+        sufficiency=cast(SufficiencyDecision, sufficiency),
+        reasons=tuple(payload.get("reasons", ())),
+        degraded_channels=cast(tuple[AcademicChannel, ...], degraded),
+        conflict_detected=raw_trace.get("stop_reason") in {"conflict", "conflict_detected"},
+        trace_id=str(raw_trace.get("trace_id", "")),
+    )
 
 
 class PaperClawAcademicArtifactSink:
