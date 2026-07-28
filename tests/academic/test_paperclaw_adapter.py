@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -239,3 +240,7 @@ def test_real_paperclaw_runtime_drives_paperagent_evidence_workflow(
         )
     )
     assert any(asset.kind == "page" for asset in resolved.assets)
+    page_asset = next(asset for asset in resolved.assets if asset.kind == "page")
+    page_bytes = runtime.read_asset(resolved.locator, page_asset.asset_hash)
+    assert page_bytes.startswith(b"\x89PNG")
+    assert hashlib.sha256(page_bytes).hexdigest() == page_asset.asset_hash
