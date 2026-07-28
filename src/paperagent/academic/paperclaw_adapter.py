@@ -90,6 +90,16 @@ class PaperClawAcademicRuntime(Protocol):
     def resolve(self, locator: object) -> _ClawObject: ...
 
 
+class _ClawRetrievalResponse(Protocol):
+    bundle: _ClawEvidenceBundle
+
+
+class PaperClawRetrievalService(Protocol):
+    def search(self, request: object) -> _ClawRetrievalResponse: ...
+
+    def resolve_locator(self, locator: object) -> _ClawObject: ...
+
+
 class _ArtifactRecord(Protocol):
     artifact_id: str
     artifact_type: str
@@ -130,27 +140,32 @@ def _artifact_module() -> Any:
 class PaperClawAcademicEvidenceSource:
     """Map PaperAgent retrieval rounds onto PaperClaw's canonical runtime."""
 
-    def __init__(self, runtime: PaperClawAcademicRuntime) -> None:
+    def __init__(
+        self,
+        runtime: PaperClawAcademicRuntime | PaperClawRetrievalService,
+    ) -> None:
         self.runtime = runtime
 
     def retrieve(self, request: AcademicRetrievalRequest) -> AcademicRetrievalResult:
         canonical = _academic_module()
-        raw_result = self.runtime.retrieve(
-            canonical.RetrievalRequest(
-                text=request.query,
-                channels=request.channels,
-                paper_ids=request.paper_ids,
-                object_types=request.object_types,
-                budget=canonical.RetrievalBudget(
-                    max_candidates=request.max_candidates,
-                    max_chars=request.max_chars,
-                    max_primary_rounds=1,
-                    max_corrective_rounds=1 if request.round_kind == "corrective" else 0,
-                    max_conflict_rounds=1 if request.round_kind == "conflict" else 0,
-                ),
-            )
+        canonical_request = canonical.RetrievalRequest(
+            text=request.query,
+            channels=request.channels,
+            paper_ids=request.paper_ids,
+            object_types=request.object_types,
+            budget=canonical.RetrievalBudget(
+                max_candidates=request.max_candidates,
+                max_chars=request.max_chars,
+                max_primary_rounds=1,
+                max_corrective_rounds=1 if request.round_kind == "corrective" else 0,
+                max_conflict_rounds=1 if request.round_kind == "conflict" else 0,
+            ),
         )
-        result = self.runtime.evidence_bundle(raw_result)
+        if hasattr(self.runtime, "search"):
+            result = self.runtime.search(canonical_request).bundle
+        else:
+            raw_result = self.runtime.retrieve(canonical_request)
+            result = self.runtime.evidence_bundle(raw_result)
         if result.schema_version != "academic.v1":
             raise ValueError(f"unsupported PaperClaw academic schema: {result.schema_version!r}")
         trace = result.trace
@@ -171,7 +186,10 @@ class PaperClawAcademicEvidenceSource:
 
     def resolve(self, locator: AcademicLocator) -> AcademicCandidate:
         canonical_locator = self._canonical_locator(locator)
-        resolved = self.runtime.resolve(canonical_locator)
+        if hasattr(self.runtime, "resolve_locator"):
+            resolved = self.runtime.resolve_locator(canonical_locator)
+        else:
+            resolved = self.runtime.resolve(canonical_locator)
         if resolved.locator != canonical_locator:
             raise ValueError("PaperClaw resolved a different academic locator")
         return AcademicCandidate(

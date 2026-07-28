@@ -19,6 +19,7 @@ from paperclaw.academic import (
     EvidenceLocator,
     RetrievalCandidate,
     RetrievalResult,
+    RetrievalService,
     RetrievalTrace,
 )
 from paperclaw.artifacts import FileArtifactStore
@@ -201,7 +202,7 @@ def test_real_paperclaw_runtime_drives_paperagent_evidence_workflow(
     runtime = AcademicRuntime.for_workspace(tmp_path, manifest.project_id)
     runtime.parse_paper(imported.paper.paper_id)
     runtime.build_index()
-    evidence_source = PaperClawAcademicEvidenceSource(runtime)
+    evidence_source = PaperClawAcademicEvidenceSource(RetrievalService(runtime))
     workflow = MemoryRAGWorkflow(
         tmp_path / "paperagent.sqlite3",
         academic_evidence_source=evidence_source,
