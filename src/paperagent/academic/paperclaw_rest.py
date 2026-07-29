@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 from collections.abc import Mapping
 from typing import Any, Protocol, cast
 
@@ -155,6 +156,18 @@ class PaperClawRetrievalRESTClient:
             normalized = normalize_bundle_payload(bundle)
         except ValueError as exc:
             raise PaperClawContractError("PaperClaw EvidenceBundle is incompatible") from exc
+        metadata = raw.get("index_metadata")
+        trace = bundle.get("trace")
+        if not isinstance(metadata, Mapping):
+            raise PaperClawMalformedResponseError("PaperClaw index metadata is missing")
+        if not isinstance(trace, Mapping):
+            raise PaperClawMalformedResponseError("PaperClaw retrieval trace is missing")
+        if (
+            metadata.get("schema_version") != "academic.v1"
+            or metadata.get("index_version") != "academic-object-index.v1"
+            or metadata.get("generation_id") != trace.get("index_generation_id")
+        ):
+            raise PaperClawContractError("PaperClaw index metadata is incompatible")
         hit_identities = {
             self._object_identity(hit.get("object")) for hit in hits if isinstance(hit, Mapping)
         }
@@ -164,6 +177,8 @@ class PaperClawRetrievalRESTClient:
                 candidate.locator.version_id,
                 candidate.locator.source_hash,
                 candidate.locator.object_id,
+                candidate.locator.object_type,
+                candidate.locator.page_number,
             )
             if identity not in hit_identities:
                 raise PaperClawContractError("PaperClaw candidate has no matching grounded hit")
@@ -200,7 +215,7 @@ class PaperClawRetrievalRESTClient:
         )
 
     def read_asset(self, project_id: str, locator: AcademicLocator, asset_hash: str) -> bytes:
-        if len(asset_hash) != 64:
+        if re.fullmatch(r"[0-9a-f]{64}", asset_hash) is None:
             raise ValueError("asset_hash must be a SHA-256")
         response = self._request(
             "POST",
@@ -296,7 +311,7 @@ class PaperClawRetrievalRESTClient:
         return payload
 
     @classmethod
-    def _object_identity(cls, raw: Any) -> tuple[str, str, str, str] | None:
+    def _object_identity(cls, raw: Any) -> tuple[str, str, str, str, str, int] | None:
         if not isinstance(raw, Mapping):
             return None
         locator = raw.get("locator")
@@ -305,9 +320,23 @@ class PaperClawRetrievalRESTClient:
         normalized = cls._locator(locator)
         if raw.get("object_id") != normalized.object_id:
             raise PaperClawContractError("PaperClaw object identity drifted")
+        if (
+            raw.get("object_type") != normalized.object_type
+            or raw.get("locator", {}).get("page_number") != normalized.page_number
+        ):
+            raise PaperClawContractError("PaperClaw object locator identity drifted")
+        assets = raw.get("assets")
+        if not isinstance(assets, list) or any(
+            not isinstance(asset, Mapping)
+            or re.fullmatch(r"[0-9a-f]{64}", str(asset.get("asset_hash", ""))) is None
+            for asset in assets
+        ):
+            raise PaperClawContractError("PaperClaw object asset identity is malformed")
         return (
             normalized.paper_id,
             normalized.version_id,
             normalized.source_hash,
             normalized.object_id,
+            normalized.object_type,
+            normalized.page_number,
         )

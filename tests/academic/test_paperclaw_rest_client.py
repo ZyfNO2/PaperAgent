@@ -66,6 +66,17 @@ def _bundle() -> dict[str, Any]:
     }
 
 
+def _index_metadata() -> dict[str, str]:
+    return {
+        "schema_version": "academic.v1",
+        "index_version": "academic-object-index.v1",
+        "generation_id": "generation-1",
+        "corpus_hash": "a" * 64,
+        "model_fingerprint": "fixture",
+        "content_hash": "b" * 64,
+    }
+
+
 @dataclass
 class _Response:
     status_code: int
@@ -127,6 +138,7 @@ def test_rest_client_normalizes_grounded_bundle_without_expanding_budget() -> No
         "assets_truncated": False,
         "text_chars_used": 21,
         "text_truncated": False,
+        "index_metadata": _index_metadata(),
     }
     transport = _Transport([_Response(200, response)])
     client = PaperClawRetrievalRESTClient(
@@ -153,6 +165,7 @@ def test_rest_client_fails_closed_on_identity_drift_and_typed_upstream_error() -
         "assets_truncated": False,
         "text_chars_used": 21,
         "text_truncated": False,
+        "index_metadata": _index_metadata(),
     }
     client = PaperClawRetrievalRESTClient(
         "https://paperclaw.invalid",
@@ -203,6 +216,7 @@ def test_rest_client_distinguishes_healthy_zero_hit_from_contract_failure() -> N
                         "assets_truncated": False,
                         "text_chars_used": 0,
                         "text_truncated": False,
+                        "index_metadata": _index_metadata(),
                     },
                 )
             ]
