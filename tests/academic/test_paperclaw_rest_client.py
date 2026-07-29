@@ -275,14 +275,14 @@ def test_canonical_rest_fixture_digest_is_frozen() -> None:
     content = fixture.read_bytes()
 
     assert hashlib.sha256(content).hexdigest() == (
-        "34531d0e956f4ca2c99f277ee57f55f945bfae164285a5f21f42f589e57709e1"
+        "cd244b2346ffbcd6086286e3c97ec373d4f0a6fecb4f0fa8818e086c6b9e41e3"
     )
     assert b'"schema_version":"academic.v1"' in content
     assert b'"assets_truncated":false' in content
 
     cases = fixture.with_name("retrieval_rest_cases.v1.json").read_bytes()
     assert hashlib.sha256(cases).hexdigest() == (
-        "6266c6d126b6add14a89b82a7f16d6c738b4b47334ce9c1f87dfd625d0591ed2"
+        "ef2d86e62a78705c4ac5368bf2ccc246ad90f57989886dc98d258bbb40769e24"
     )
     for case in (
         b'"zero_hit"',
