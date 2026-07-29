@@ -11,8 +11,10 @@ import pytest
 from paperagent.academic.contracts import AcademicRetrievalRequest
 from paperagent.academic.paperclaw_rest import (
     PaperClawContractError,
+    PaperClawMalformedResponseError,
     PaperClawRetrievalRESTClient,
     PaperClawTimeoutError,
+    PaperClawTransportError,
     PaperClawUpstreamError,
 )
 
@@ -111,6 +113,32 @@ def _request() -> AcademicRetrievalRequest:
         paper_ids=("paper-1",),
         object_types=("paragraph",),
     )
+
+
+def _search_response() -> dict[str, Any]:
+    return {
+        "bundle": _bundle(),
+        "hits": [
+            {
+                "object": {
+                    "schema_version": "academic.v1",
+                    "object_id": "paragraph-1",
+                    "object_type": "paragraph",
+                    "reading_order": 1,
+                    "locator": _locator(),
+                    "text": "dual encoder evidence",
+                    "assets": [],
+                    "structured_content": {},
+                    "provenance": "extracted",
+                }
+            }
+        ],
+        "asset_bytes_used": 0,
+        "assets_truncated": False,
+        "text_chars_used": 21,
+        "text_truncated": False,
+        "index_metadata": _index_metadata(),
+    }
 
 
 def test_rest_client_normalizes_grounded_bundle_without_expanding_budget() -> None:
@@ -268,6 +296,173 @@ def test_rest_client_retries_one_timeout_then_surfaces_timeout() -> None:
     with pytest.raises(PaperClawTimeoutError):
         client.retrieve(_request())
     assert len(transport.calls) == 2
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "message"),
+    [
+        ({"base_url": "file:///tmp"}, "base URL"),
+        ({"timeout_seconds": 0}, "timeout"),
+        ({"max_retries": 2}, "retries"),
+        ({"project_id": ""}, "project_id"),
+    ],
+)
+def test_rest_client_rejects_invalid_configuration(kwargs, message) -> None:
+    values = {
+        "base_url": "https://paperclaw.invalid",
+        "project_id": "project-1",
+        "timeout_seconds": 10,
+        "max_retries": 1,
+    }
+    values.update(kwargs)
+    with pytest.raises(ValueError, match=message):
+        PaperClawRetrievalRESTClient(**values)
+
+
+def test_rest_client_covers_transport_and_json_failures() -> None:
+    request = _request()
+    wrong_project = request.model_copy(update={"project_id": "other"})
+    client = PaperClawRetrievalRESTClient(
+        "https://paperclaw.invalid",
+        project_id="project-1",
+        transport=_Transport([]),
+    )
+    with pytest.raises(PaperClawContractError, match="project"):
+        client.retrieve(wrong_project)
+
+    for failure in (httpx.ConnectError("down"), OSError("down")):
+        transport = _Transport([failure, failure])
+        client = PaperClawRetrievalRESTClient(
+            "https://paperclaw.invalid",
+            project_id="project-1",
+            transport=transport,
+        )
+        with pytest.raises(PaperClawTransportError):
+            client.retrieve(request)
+        assert len(transport.calls) == 2
+
+    class _BrokenJSON(_Response):
+        def json(self):
+            raise ValueError("broken")
+
+    for response in (_BrokenJSON(200, None), _Response(200, [])):
+        client = PaperClawRetrievalRESTClient(
+            "https://paperclaw.invalid",
+            project_id="project-1",
+            transport=_Transport([response]),
+        )
+        with pytest.raises(PaperClawMalformedResponseError):
+            client.retrieve(request)
+
+
+@pytest.mark.parametrize(
+    ("mutate", "error"),
+    [
+        (lambda body: body.pop("hits"), PaperClawMalformedResponseError),
+        (
+            lambda body: body["bundle"].__setitem__("project_id", "other"),
+            PaperClawContractError,
+        ),
+        (lambda body: body.pop("index_metadata"), PaperClawMalformedResponseError),
+        (
+            lambda body: body["bundle"].pop("trace"),
+            PaperClawContractError,
+        ),
+        (
+            lambda body: body["index_metadata"].__setitem__("index_version", "v0"),
+            PaperClawContractError,
+        ),
+        (
+            lambda body: body.__setitem__("assets_truncated", None),
+            PaperClawMalformedResponseError,
+        ),
+        (
+            lambda body: body.__setitem__("text_chars_used", "21"),
+            PaperClawMalformedResponseError,
+        ),
+        (
+            lambda body: body["hits"][0]["object"].__setitem__("object_id", "other"),
+            PaperClawContractError,
+        ),
+        (
+            lambda body: body["hits"][0]["object"].__setitem__("object_type", "table"),
+            PaperClawContractError,
+        ),
+        (
+            lambda body: body["hits"][0]["object"].__setitem__("assets", [{"asset_hash": "bad"}]),
+            PaperClawContractError,
+        ),
+    ],
+)
+def test_rest_client_fails_closed_on_malformed_search_shapes(mutate, error) -> None:
+    body = _search_response()
+    mutate(body)
+    client = PaperClawRetrievalRESTClient(
+        "https://paperclaw.invalid",
+        project_id="project-1",
+        transport=_Transport([_Response(200, body)]),
+    )
+    with pytest.raises(error):
+        client.retrieve(_request())
+
+
+def test_rest_client_resolve_asset_and_upstream_failure_paths() -> None:
+    locator = PaperClawRetrievalRESTClient._locator(_locator())
+    resolved = {
+        "locator": _locator(),
+        "text": "evidence",
+        "provenance": "inferred",
+    }
+    client = PaperClawRetrievalRESTClient(
+        "https://paperclaw.invalid",
+        project_id="project-1",
+        transport=_Transport([_Response(200, resolved)]),
+    )
+    assert client.resolve(locator).provenance == "inferred"
+
+    for payload in (
+        {"text": "missing locator"},
+        {"locator": {**_locator(), "object_id": "other"}, "provenance": "extracted"},
+        {"locator": _locator(), "provenance": "guessed"},
+    ):
+        client = PaperClawRetrievalRESTClient(
+            "https://paperclaw.invalid",
+            project_id="project-1",
+            transport=_Transport([_Response(200, payload)]),
+        )
+        with pytest.raises((PaperClawMalformedResponseError, PaperClawContractError)):
+            client.resolve(locator)
+
+    content = b"png"
+    digest = hashlib.sha256(content).hexdigest()
+    client = PaperClawRetrievalRESTClient(
+        "https://paperclaw.invalid",
+        project_id="project-1",
+        transport=_Transport([_Response(200, {}, content)]),
+    )
+    assert client.read_asset("project-1", locator, digest) == content
+    with pytest.raises(ValueError):
+        client.read_asset("project-1", locator, "BAD")
+    client = PaperClawRetrievalRESTClient(
+        "https://paperclaw.invalid",
+        project_id="project-1",
+        transport=_Transport([_Response(200, {}, b"drift")]),
+    )
+    with pytest.raises(PaperClawContractError, match="hash"):
+        client.read_asset("project-1", locator, digest)
+
+    for response in (
+        _Response(500, []),
+        _Response(500, {"detail": "bad"}),
+        _Response(500, {"detail": {"code": "unknown"}}),
+    ):
+        client = PaperClawRetrievalRESTClient(
+            "https://paperclaw.invalid",
+            project_id="project-1",
+            transport=_Transport([response]),
+        )
+        with pytest.raises(PaperClawUpstreamError):
+            client.retrieve(_request())
 
 
 def test_canonical_rest_fixture_digest_is_frozen() -> None:
