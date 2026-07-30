@@ -27,6 +27,9 @@ _MODULE_KEYWORDS = re.compile(
 _IDENTITY_KEYWORDS = re.compile(
     r"\b(who|what paper|which paper|哪篇|作者|author|cite|引用)\b", re.IGNORECASE
 )
+_FIGURE_KEYWORDS = re.compile(r"\b(figure|diagram|architecture diagram)\b|图", re.IGNORECASE)
+_TABLE_KEYWORDS = re.compile(r"\b(table|tabular)\b|表格", re.IGNORECASE)
+_EQUATION_KEYWORDS = re.compile(r"\b(equation|formula)\b|公式", re.IGNORECASE)
 
 
 @dataclass(frozen=True)
@@ -101,6 +104,55 @@ def decompose_question(
             ),
             strategy="parallel",
         )
+
+    object_routes: tuple[
+        tuple[
+            re.Pattern[str],
+            str,
+            tuple[AcademicChannel, ...],
+            tuple[AcademicObjectType, ...],
+        ],
+        ...,
+    ] = (
+        (
+            _FIGURE_KEYWORDS,
+            "figure",
+            ("visual", "lexical", "dense"),
+            ("figure", "caption", "page"),
+        ),
+        (
+            _TABLE_KEYWORDS,
+            "table",
+            ("exact", "lexical", "dense", "visual"),
+            ("table", "table_cell", "caption", "page"),
+        ),
+        (
+            _EQUATION_KEYWORDS,
+            "equation",
+            ("lexical", "dense", "visual"),
+            ("equation", "paragraph", "page"),
+        ),
+    )
+    for pattern, purpose, channels, object_types in object_routes:
+        if pattern.search(question):
+            return AcademicQueryDecomposition(
+                original_question=question,
+                sub_queries=(
+                    AcademicSubQuery(
+                        sub_query_id=f"sq-{purpose}",
+                        purpose=purpose,
+                        rewritten_query=question,
+                        channels=channels,
+                        object_types=object_types,
+                        paper_ids=paper_ids,
+                        corrective_reason=(
+                            f"{purpose} evidence requires grounded object retrieval"
+                        ),
+                        identity_constraints=identifiers,
+                    ),
+                ),
+                strategy="parallel",
+            )
 
     if _COMPARISON_KEYWORDS.search(question) and len(paper_ids) >= 2:
         subs = []

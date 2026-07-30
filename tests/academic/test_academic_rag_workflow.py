@@ -224,3 +224,67 @@ def test_unresolvable_and_changed_candidates_are_not_accepted() -> None:
 
     assert result.ledger.accepted_ids == ()
     assert result.ledger.conflicted_ids == (first.evidence_id,)
+
+
+def test_workflow_runs_planner_context_and_evidence_text_claims_end_to_end() -> None:
+    candidates: dict[str, AcademicCandidate] = {}
+
+    @dataclass
+    class PlannedSource(AcademicEvidenceSource):
+        requests: list[AcademicRetrievalRequest] = field(default_factory=list)
+
+        def retrieve(self, request: AcademicRetrievalRequest) -> AcademicRetrievalResult:
+            self.requests.append(request)
+            paper_id = request.paper_ids[0] if len(request.paper_ids) == 1 else "joint"
+            locator = AcademicLocator(
+                schema_version="academic.v1",
+                paper_id=paper_id,
+                version_id="version-1",
+                object_id=f"{request.round_kind}-{paper_id}",
+                page_number=1,
+                object_type="paragraph",
+                source_hash="b" * 64,
+            )
+            candidate = AcademicCandidate(
+                evidence_id=f"evidence-{paper_id}",
+                locator=locator,
+                text=f"{paper_id} achieves 91.2 percent F1 on the test split.",
+                score=0.9,
+                provenance="extracted",
+            )
+            candidates[locator.object_id] = candidate
+            return AcademicRetrievalResult(
+                candidates=(candidate,),
+                sufficiency="sufficient",
+                reasons=("grounded",),
+                degraded_channels=(),
+                conflict_detected=False,
+                trace_id=f"trace-{paper_id}",
+            )
+
+        def resolve(self, locator: AcademicLocator) -> AcademicCandidate:
+            return candidates[locator.object_id]
+
+    source = PlannedSource()
+
+    result = AcademicRAGWorkflow(source).run(
+        project_id="project-1",
+        question="Compare baseline F1 results.",
+        paper_ids=("paper-a", "paper-b"),
+    )
+
+    assert result.decomposition_strategy == "fan_out_by_paper"
+    assert result.sub_query_ids == ("sq-paper-0", "sq-paper-1", "sq-cross")
+    assert result.rounds_used["primary"] == 3
+    assert [request.paper_ids for request in source.requests] == [
+        ("paper-a",),
+        ("paper-b",),
+        ("paper-a", "paper-b"),
+    ]
+    assert set(result.context_evidence_ids) == {
+        "evidence-paper-a",
+        "evidence-paper-b",
+        "evidence-joint",
+    }
+    assert all("91.2 percent F1" in claim for claim in result.generated_claims)
+    assert result.citation_mismatches == ()

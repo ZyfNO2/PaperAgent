@@ -155,6 +155,7 @@ class PaperClawAcademicEvidenceSource:
             channels=request.channels,
             paper_ids=request.paper_ids,
             object_types=request.object_types,
+            section_scope=request.section_scope,
             budget=canonical.RetrievalBudget(
                 max_candidates=request.max_candidates,
                 max_chars=request.max_chars,
@@ -184,7 +185,9 @@ class PaperClawAcademicEvidenceSource:
             sufficiency=sufficiency,
             reasons=result.reasons,
             degraded_channels=cast(tuple[AcademicChannel, ...], degraded),
-            conflict_detected=bool(trace.stop_reason in {"conflict", "conflict_detected"}),
+            conflict_detected=bool(
+                trace.stop_reason in {"conflict", "conflict_detected", "conflict_unresolved"}
+            ),
             trace_id=trace.trace_id,
         )
 
@@ -335,7 +338,8 @@ def normalize_bundle_payload(payload: Mapping[str, Any]) -> AcademicRetrievalRes
         sufficiency=cast(SufficiencyDecision, sufficiency),
         reasons=tuple(payload.get("reasons", ())),
         degraded_channels=cast(tuple[AcademicChannel, ...], degraded),
-        conflict_detected=raw_trace.get("stop_reason") in {"conflict", "conflict_detected"},
+        conflict_detected=raw_trace.get("stop_reason")
+        in {"conflict", "conflict_detected", "conflict_unresolved"},
         trace_id=str(raw_trace.get("trace_id", "")),
     )
 

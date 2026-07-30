@@ -3,6 +3,14 @@ from __future__ import annotations
 import re
 from typing import Literal
 
+from paperagent.academic.claims import (
+    check_citation_claim_mismatch,
+    generate_claims_from_ledger,
+)
+from paperagent.academic.context import (
+    AcademicEvidenceInsufficientError,
+    build_accepted_context_manifest,
+)
 from paperagent.academic.contracts import (
     AcademicCandidate,
     AcademicChannel,
@@ -18,6 +26,7 @@ from paperagent.academic.contracts import (
     RetrievalRoundKind,
     SufficiencyDecision,
 )
+from paperagent.academic.planner import AcademicSubQuery, decompose_question
 
 _DOI = re.compile(r"\b10\.\d{4,9}/[-._;()/:A-Za-z0-9]+\b", re.IGNORECASE)
 _ARXIV = re.compile(r"\barXiv:\d{4}\.\d{4,5}\b", re.IGNORECASE)
@@ -84,24 +93,28 @@ class AcademicRAGWorkflow:
         paper_ids: tuple[str, ...] = (),
     ) -> AcademicRAGResult:
         plan = _route(question)
+        decomposition = decompose_question(question, paper_ids=paper_ids)
         rounds: dict[RetrievalRoundKind, int] = {
             "primary": 0,
             "corrective": 0,
             "conflict": 0,
         }
         results: list[AcademicRetrievalResult] = []
-        primary = self._retrieve(project_id, plan, "primary", paper_ids)
-        rounds["primary"] = 1
-        results.append(primary)
-        current = primary
-        if current.sufficiency in {"insufficient", "blocked"}:
-            current = self._retrieve(project_id, plan, "corrective", paper_ids)
-            rounds["corrective"] = 1
+        current: AcademicRetrievalResult | None = None
+        for sub_query in decomposition.sub_queries:
+            current = self._retrieve(project_id, plan, sub_query, "primary")
+            rounds["primary"] += 1
             results.append(current)
-        if current.conflict_detected:
-            current = self._retrieve(project_id, plan, "conflict", paper_ids)
-            rounds["conflict"] = 1
-            results.append(current)
+            if current.sufficiency in {"insufficient", "blocked"}:
+                current = self._retrieve(project_id, plan, sub_query, "corrective")
+                rounds["corrective"] += 1
+                results.append(current)
+            if current.conflict_detected:
+                current = self._retrieve(project_id, plan, sub_query, "conflict")
+                rounds["conflict"] += 1
+                results.append(current)
+        if current is None:  # pragma: no cover - planner guarantees one sub-query
+            raise RuntimeError("academic planner produced no sub-queries")
 
         sufficiency: SufficiencyDecision = current.sufficiency
         stop_reason: str = current.sufficiency
@@ -110,6 +123,36 @@ class AcademicRAGWorkflow:
             sufficiency = "partial"
             stop_reason = "visual_channel_degraded"
         ledger = self._build_ledger(results)
+        context_ids: tuple[str, ...] = ()
+        generated_claim_texts: tuple[str, ...] = ()
+        mismatch_kinds: tuple[str, ...] = ()
+        if ledger.accepted_ids:
+            try:
+                context = build_accepted_context_manifest(
+                    ledger,
+                    self.source,
+                    character_budget=min(
+                        100_000,
+                        sum(item.character_budget for item in decomposition.sub_queries),
+                    ),
+                    token_budget=sum(item.token_budget for item in decomposition.sub_queries),
+                    retrieval_trace_ids=tuple(result.trace_id for result in results),
+                )
+                claims = generate_claims_from_ledger(
+                    ledger,
+                    self.source,
+                    question=question,
+                )
+                mismatches = check_citation_claim_mismatch(claims, self.source)
+                context_ids = context.evidence_ids
+                generated_claim_texts = tuple(item.text for item in claims)
+                mismatch_kinds = tuple(item.kind for item in mismatches)
+                if mismatches:
+                    sufficiency = "blocked"
+                    stop_reason = "citation_semantic_mismatch"
+            except AcademicEvidenceInsufficientError:
+                sufficiency = "blocked"
+                stop_reason = "accepted_context_unresolvable"
         return AcademicRAGResult(
             project_id=project_id,
             query_plan=plan,
@@ -119,28 +162,42 @@ class AcademicRAGWorkflow:
             trace_ids=tuple(result.trace_id for result in results),
             rounds_used=rounds,
             stop_reason=stop_reason,
+            decomposition_strategy=decomposition.strategy,
+            sub_query_ids=tuple(item.sub_query_id for item in decomposition.sub_queries),
+            context_evidence_ids=context_ids,
+            generated_claims=generated_claim_texts,
+            citation_mismatches=mismatch_kinds,
         )
 
     def _retrieve(
         self,
         project_id: str,
         plan: AcademicQueryPlan,
+        sub_query: AcademicSubQuery,
         round_kind: RetrievalRoundKind,
-        paper_ids: tuple[str, ...],
     ) -> AcademicRetrievalResult:
-        channels = plan.channels
+        channels = sub_query.channels
+        query = sub_query.rewritten_query
         if round_kind == "corrective":
-            channels = tuple(dict.fromkeys((*channels, "exact", "visual")))
+            channels = tuple(dict.fromkeys((*channels, "exact")))
+            if sub_query.corrective_reason:
+                query = f"{query} {sub_query.corrective_reason}".strip()
+        elif round_kind == "conflict":
+            channels = tuple(dict.fromkeys(("exact", "lexical", "dense", *channels)))
+            query = f"{query} resolve metric unit dataset split active version"
         return self.source.retrieve(
             AcademicRetrievalRequest(
                 project_id=project_id,
-                query=plan.rewritten_query,
+                query=query,
                 original_question=plan.original_question,
                 kind=plan.kind,
                 round_kind=round_kind,
                 channels=channels,
-                paper_ids=paper_ids,
-                object_types=plan.object_types,
+                paper_ids=sub_query.paper_ids,
+                object_types=sub_query.object_types,
+                section_scope=sub_query.section_scope,
+                max_candidates=sub_query.result_budget,
+                max_chars=sub_query.character_budget,
             )
         )
 

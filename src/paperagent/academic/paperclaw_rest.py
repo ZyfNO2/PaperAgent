@@ -134,6 +134,7 @@ class PaperClawRetrievalRESTClient:
             "channels": list(request.channels),
             "paper_ids": list(request.paper_ids),
             "object_types": list(request.object_types),
+            "section_scope": list(request.section_scope),
             "max_candidates": request.max_candidates,
             "max_chars": request.max_chars,
             "include_neighbors": False,

@@ -73,6 +73,7 @@ def test_manifest_contains_only_accepted_resolved_evidence_and_is_bounded() -> N
     assert manifest.evidence_ids == ("ok",)
     assert manifest.entries[0].text == "12345"
     assert manifest.characters_used == 5
+    assert manifest.tokens_used == 5
     assert manifest.retrieval_trace_ids == ("trace-1",)
 
 
@@ -94,6 +95,23 @@ def test_empty_or_unresolvable_accepted_ledger_abstains() -> None:
             token_budget=10,
             retrieval_trace_ids=(),
         )
+
+
+def test_token_budget_is_enforced_for_non_ascii_text() -> None:
+    entry = AcademicEvidenceEntry(evidence_id="ok", locator=_locator("o1"), status="accepted")
+    source = _Source({"o1": _candidate("ok", "o1", "混凝土crack")})
+
+    manifest = build_accepted_context_manifest(
+        _ledger(entry),
+        source,
+        character_budget=100,
+        token_budget=6,
+        retrieval_trace_ids=(),
+    )
+
+    assert manifest.entries[0].text == "混凝"
+    assert manifest.tokens_used == 6
+    assert manifest.tokens_used <= manifest.token_budget
 
 
 def test_source_identity_drift_fails_closed() -> None:

@@ -13,6 +13,7 @@ on:
   pull_request:
     branches:
       - master
+      - codex/academic-rag-p0
       - feat/v0.1-offline-skeleton
       - feat/v0.2-literature-retrieval-foundation
       - feat/v0.3-durable-task-api-mvp
@@ -52,6 +53,9 @@ jobs:
           --cov-branch
           --cov-report=term-missing
           --cov-report=xml
+          --cov-report=json:coverage.json
+      - name: Enforce raw coverage threshold
+        run: python scripts/assert_coverage_threshold.py coverage.json 90.0
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4
@@ -59,3 +63,31 @@ jobs:
           name: coverage-python-${{ matrix.python-version }}
           path: coverage.xml
           if-no-files-found: ignore
+
+  paperclaw-integration:
+    name: Required PaperClaw academic integration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install PaperAgent and PaperClaw academic extra
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+          python -m pip install \
+            'paperclaw[academic] @ git+https://github.com/ZyfNO2/PaperClaw.git@codex/academic-rag-h2-retrieval'
+      - name: Run required PDF and REST integration
+        run: |
+          pytest -q tests/academic/test_paperclaw_rest_integration.py \
+            --junitxml=paperclaw-integration.xml
+          python scripts/assert_junit_no_skips.py paperclaw-integration.xml
+      - name: Upload integration evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paperclaw-integration
+          path: paperclaw-integration.xml
+          if-no-files-found: error

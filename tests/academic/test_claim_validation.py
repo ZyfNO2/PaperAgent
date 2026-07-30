@@ -46,9 +46,18 @@ class _Source:
 
 
 def test_claim_generation_is_deterministic_and_accepted_only() -> None:
-    first = generate_claims_from_ledger(_ledger(), question="What is supported?")
-    second = generate_claims_from_ledger(_ledger(), question="What is supported?")
+    resolved = AcademicCandidate(
+        evidence_id="e1",
+        locator=_locator(),
+        text="The method achieves 91.2 percent F1 on Crack500 test.",
+        score=1,
+        provenance="extracted",
+    )
+    source = _Source(resolved)
+    first = generate_claims_from_ledger(_ledger(), source, question="What is supported?")
+    second = generate_claims_from_ledger(_ledger(), source, question="What is supported?")
     assert first == second
+    assert first[0].text == resolved.text.rstrip(".")
     assert first[0].evidence_ids == ("e1",)
     assert first[0].locator_bindings == (_locator(),)
 
@@ -65,7 +74,10 @@ def test_unresolvable_and_wrong_object_citations_fail_closed() -> None:
         provenance="extracted",
     )
     mismatch = check_citation_claim_mismatch((claim,), _Source(wrong))
-    assert [item.kind for item in mismatch] == ["locator_identity_mismatch"]
+    assert {item.kind for item in mismatch} == {
+        "locator_identity_mismatch",
+        "semantic_support_mismatch",
+    }
 
 
 def test_source_hash_mismatch_is_hard_failure() -> None:
@@ -78,4 +90,30 @@ def test_source_hash_mismatch_is_hard_failure() -> None:
         provenance="extracted",
     )
     mismatch = check_citation_claim_mismatch((claim,), _Source(changed))
-    assert {item.kind for item in mismatch} == {"source_hash_mismatch"}
+    assert {item.kind for item in mismatch} == {
+        "source_hash_mismatch",
+        "semantic_support_mismatch",
+    }
+
+
+def test_semantic_and_numeric_mismatches_fail_closed() -> None:
+    claim = GeneratedClaim(
+        "c1",
+        "The method achieves 95 percent F1.",
+        ("e1",),
+        (_locator(),),
+    )
+    resolved = AcademicCandidate(
+        evidence_id="e1",
+        locator=_locator(),
+        text="The method achieves 91.2 percent F1.",
+        score=1,
+        provenance="extracted",
+    )
+
+    mismatch = check_citation_claim_mismatch((claim,), _Source(resolved))
+
+    assert {item.kind for item in mismatch} == {
+        "semantic_support_mismatch",
+        "numeric_value_mismatch",
+    }

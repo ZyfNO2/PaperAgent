@@ -103,6 +103,7 @@ class AcademicRetrievalRequest(FrozenAcademicModel):
     channels: tuple[AcademicChannel, ...]
     paper_ids: tuple[str, ...] = ()
     object_types: tuple[AcademicObjectType, ...] = ()
+    section_scope: tuple[str, ...] = ()
     max_candidates: int = Field(default=10, ge=1, le=100)
     max_chars: int = Field(default=12_000, ge=1, le=100_000)
 
@@ -162,6 +163,11 @@ class AcademicRAGResult(FrozenAcademicModel):
     trace_ids: tuple[str, ...]
     rounds_used: dict[RetrievalRoundKind, int]
     stop_reason: str
+    decomposition_strategy: str = "parallel"
+    sub_query_ids: tuple[str, ...] = ()
+    context_evidence_ids: tuple[str, ...] = ()
+    generated_claims: tuple[str, ...] = ()
+    citation_mismatches: tuple[str, ...] = ()
 
 
 @runtime_checkable

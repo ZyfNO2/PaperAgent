@@ -40,6 +40,7 @@ class MismatchReport:
 
 def generate_claims_from_ledger(
     ledger: AcademicEvidenceLedger,
+    source: AcademicEvidenceSource,
     *,
     question: str,
 ) -> tuple[GeneratedClaim, ...]:
@@ -48,10 +49,13 @@ def generate_claims_from_ledger(
         return ()
     claims: list[GeneratedClaim] = []
     for entry in accepted:
-        candidate_text = ""
-        if entry.locator:
-            candidate_text = f"[{entry.evidence_id}] locator:{entry.locator.object_id}"
-        claim_text = _extract_claim_sentence(candidate_text or entry.evidence_id, question)
+        try:
+            candidate = source.resolve(entry.locator)
+        except (KeyError, OSError, RuntimeError, ValueError):
+            continue
+        if candidate.evidence_id != entry.evidence_id or candidate.locator != entry.locator:
+            continue
+        claim_text = _extract_claim_sentence(candidate.text, question)
         claims.append(
             GeneratedClaim(
                 claim_id=(
@@ -61,7 +65,7 @@ def generate_claims_from_ledger(
                 text=claim_text,
                 evidence_ids=(entry.evidence_id,),
                 locator_bindings=(entry.locator,) if entry.locator else (),
-                confidence="high" if entry.locator else "low",
+                confidence="high",
                 limitations=entry.limitations or (),
             )
         )
@@ -69,7 +73,10 @@ def generate_claims_from_ledger(
 
 
 def _extract_claim_sentence(evidence_text: str, question: str) -> str:
-    sentences = re.split(r"[.。!\uff01?\uff1f\n]", evidence_text)
+    sentences = re.split(
+        r"(?<!\d)[.!?](?!\d)|[\u3002\uFF01\uFF1F\n]",
+        evidence_text,
+    )
     for sentence in sentences:
         if _NUMERIC_CLAIM.search(sentence) and len(sentence.strip()) > 20:
             return sentence.strip()
@@ -121,4 +128,30 @@ def check_citation_claim_mismatch(
                         ),
                     )
                 )
+            evidence_text = _normalize_text(resolved.text)
+            claim_text = _normalize_text(claim.text)
+            if claim_text and claim_text not in evidence_text:
+                mismatches.append(
+                    MismatchReport(
+                        claim_id=claim.claim_id,
+                        evidence_id=(claim.evidence_ids[0] if claim.evidence_ids else ""),
+                        kind="semantic_support_mismatch",
+                        detail="claim text is not present in the bound evidence scope",
+                    )
+                )
+            claim_numbers = set(re.findall(r"-?\d+(?:\.\d+)?", claim.text))
+            evidence_numbers = set(re.findall(r"-?\d+(?:\.\d+)?", resolved.text))
+            if not claim_numbers <= evidence_numbers:
+                mismatches.append(
+                    MismatchReport(
+                        claim_id=claim.claim_id,
+                        evidence_id=(claim.evidence_ids[0] if claim.evidence_ids else ""),
+                        kind="numeric_value_mismatch",
+                        detail="claim contains numeric values absent from evidence",
+                    )
+                )
     return tuple(mismatches)
+
+
+def _normalize_text(value: str) -> str:
+    return " ".join(value.casefold().split())

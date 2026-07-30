@@ -31,6 +31,7 @@ class AcademicContextManifest:
     character_budget: int
     token_budget: int
     characters_used: int
+    tokens_used: int
     retrieval_trace_ids: tuple[str, ...]
 
 
@@ -46,7 +47,8 @@ def build_accepted_context_manifest(
         raise ValueError("context budgets must be positive")
     accepted = [entry for entry in ledger.entries if entry.status == "accepted"]
     resolved_entries: list[AcceptedContextEntry] = []
-    remaining = character_budget
+    remaining_chars = character_budget
+    remaining_tokens = token_budget
     for entry in accepted:
         try:
             candidate = source.resolve(entry.locator)
@@ -62,7 +64,11 @@ def build_accepted_context_manifest(
             raise AcademicEvidenceInsufficientError(
                 f"accepted evidence {entry.evidence_id} source identity drifted"
             )
-        text = candidate.text[:remaining]
+        text = _truncate_to_budgets(
+            candidate.text,
+            character_budget=remaining_chars,
+            token_budget=remaining_tokens,
+        )
         if text:
             resolved_entries.append(
                 AcceptedContextEntry(
@@ -73,8 +79,9 @@ def build_accepted_context_manifest(
                     entry.limitations,
                 )
             )
-            remaining -= len(text)
-        if remaining == 0:
+            remaining_chars -= len(text)
+            remaining_tokens -= _conservative_token_count(text)
+        if remaining_chars == 0 or remaining_tokens == 0:
             break
     if not resolved_entries:
         raise AcademicEvidenceInsufficientError(
@@ -85,6 +92,32 @@ def build_accepted_context_manifest(
         tuple(item.evidence_id for item in resolved_entries),
         character_budget,
         token_budget,
-        character_budget - remaining,
+        character_budget - remaining_chars,
+        token_budget - remaining_tokens,
         retrieval_trace_ids,
     )
+
+
+def _conservative_token_count(text: str) -> int:
+    """Upper-bound common UTF-8 BPE token counts without provider dependencies."""
+
+    return len(text.encode("utf-8"))
+
+
+def _truncate_to_budgets(
+    text: str,
+    *,
+    character_budget: int,
+    token_budget: int,
+) -> str:
+    if character_budget <= 0 or token_budget <= 0:
+        return ""
+    selected: list[str] = []
+    used_tokens = 0
+    for character in text[:character_budget]:
+        cost = len(character.encode("utf-8"))
+        if used_tokens + cost > token_budget:
+            break
+        selected.append(character)
+        used_tokens += cost
+    return "".join(selected)
