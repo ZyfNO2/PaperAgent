@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, Any
+
 from paperagent.projects.ingestion import PaperIngestionService
 from paperagent.projects.models import (
     CitationLocator,
@@ -22,7 +24,9 @@ from paperagent.projects.repository import (
     SQLiteProjectRepository,
 )
 from paperagent.projects.tailoring import EvidenceBoundTailoringService
-from paperagent.projects.workflow import MemoryRAGWorkflow
+
+if TYPE_CHECKING:
+    from paperagent.projects.workflow import MemoryRAGWorkflow
 
 __all__ = [
     "CitationLocator",
@@ -47,3 +51,11 @@ __all__ = [
     "TailoringModule",
     "TailoringPlan",
 ]
+
+
+def __getattr__(name: str) -> Any:
+    if name == "MemoryRAGWorkflow":
+        from paperagent.projects.workflow import MemoryRAGWorkflow
+
+        return MemoryRAGWorkflow
+    raise AttributeError(name)

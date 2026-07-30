@@ -11,7 +11,8 @@ _SECURITY_HEADERS = {
     "Cache-Control": "no-store",
     "Content-Security-Policy": (
         "default-src 'self'; connect-src 'self'; img-src 'self' data:; "
-        "manifest-src 'self'; script-src 'self'; style-src 'self'; worker-src 'self'"
+        "manifest-src 'self'; script-src 'self'; "
+        "style-src 'self' 'unsafe-inline'; worker-src 'self'"
     ),
     "Referrer-Policy": "no-referrer",
     "X-Content-Type-Options": "nosniff",

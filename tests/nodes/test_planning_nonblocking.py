@@ -122,11 +122,32 @@ def test_supplied_title_does_not_exceed_query_budget() -> None:
     normalized = _ensure_user_material_identity_queries(
         original,
         request,
-        query_budget=1,
+        query_budget=2,
     )
 
     assert normalized.status == "ready"
-    assert len(normalized.evidence_gaps) == 1
+    assert len(normalized.evidence_gaps) == 2
     assert normalized.evidence_gaps[0].gap_id == "user-material-01-identity"
-    assert len(normalized.search_queries) == 1
+    assert len(normalized.search_queries) == 2
     assert normalized.search_queries[0].gap_id == normalized.evidence_gaps[0].gap_id
+    assert normalized.search_queries[1].gap_id == original.search_queries[0].gap_id
+    assert normalized.search_queries[1].query == original.search_queries[0].query
+
+
+def test_need_human_plan_at_query_budget_is_unchanged_for_supplied_title() -> None:
+    original = _need_human_plan()
+    request = ResearchRequest(
+        question="Assess how to use my supplied baseline.",
+        user_material_refs=[
+            "LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation "
+            "[declared role: baseline_candidate]"
+        ],
+    )
+
+    normalized = _ensure_user_material_identity_queries(
+        original,
+        request,
+        query_budget=1,
+    )
+
+    assert normalized is original

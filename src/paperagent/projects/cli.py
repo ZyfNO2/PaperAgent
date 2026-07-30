@@ -24,6 +24,8 @@ _COMMANDS = {
     "memory-review",
     "memory-show",
     "tailor",
+    "academic-query",
+    "academic-tailor",
 }
 
 
@@ -104,6 +106,25 @@ def configure_memory_rag_parser(subparsers: Any) -> None:
     tailor.add_argument("--hypothesis", required=True)
     tailor.add_argument("--evidence-query", default=None)
 
+    academic_query = subparsers.add_parser(
+        "academic-query",
+        help="run bounded locator-aware Academic RAG over the current project adapter",
+    )
+    _add_database(academic_query)
+    academic_query.add_argument("--project-id", required=True)
+    academic_query.add_argument("--query", required=True)
+    academic_query.add_argument("--paper-id", action="append", default=[])
+
+    academic_tailor = subparsers.add_parser(
+        "academic-tailor",
+        help="create evidence-bound academic draft artifacts pending PaperClaw sync",
+    )
+    _add_database(academic_tailor)
+    academic_tailor.add_argument("--project-id", required=True)
+    academic_tailor.add_argument("--baseline-paper-id", required=True)
+    academic_tailor.add_argument("--module-paper-id", action="append", default=[])
+    academic_tailor.add_argument("--hypothesis", required=True)
+
 
 def run_memory_rag_cli(args: argparse.Namespace) -> int | None:
     command = cast(str, args.command)
@@ -171,6 +192,27 @@ def run_memory_rag_cli(args: argparse.Namespace) -> int | None:
             )
             _print_json(plan.model_dump(mode="json"))
             return 0 if plan.decision.value in {"GO", "REVISE"} else 3
+        if command == "academic-query":
+            result = workflow.academic_query(
+                project_id=cast(str, args.project_id),
+                question=cast(str, args.query),
+                paper_ids=cast(list[str], args.paper_id),
+            )
+            payload = result.model_dump(mode="json")
+            payload["paperclaw_sync"] = "pending"
+            _print_json(payload)
+            return 0
+        if command == "academic-tailor":
+            artifacts = workflow.create_academic_tailoring_drafts(
+                project_id=cast(str, args.project_id),
+                hypothesis=cast(str, args.hypothesis),
+                baseline_paper_id=cast(str, args.baseline_paper_id),
+                module_paper_ids=cast(list[str], args.module_paper_id),
+            )
+            payload = artifacts.model_dump(mode="json")
+            payload["artifact_persistence"] = "in_memory_pending_paperclaw_sync"
+            _print_json(payload)
+            return 0 if artifacts.decision in {"GO", "REVISE"} else 3
         raise RuntimeError(f"unhandled command: {command}")
     except (
         FileNotFoundError,
