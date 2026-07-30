@@ -2,18 +2,10 @@
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
-
-def assert_coverage(path: Path, threshold: float) -> float:
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    actual = float(payload["totals"]["percent_covered"])
-    if actual < threshold:
-        raise SystemExit(f"raw coverage {actual:.12f}% is below required {threshold:.12f}%")
-    print(f"raw coverage {actual:.12f}% >= {threshold:.12f}%")
-    return actual
+from paperagent.ci_evidence import assert_coverage
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -5,8 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.assert_coverage_threshold import assert_coverage
-from scripts.assert_junit_no_skips import assert_no_skips
+from paperagent.ci_evidence import assert_coverage, assert_no_skips
 
 
 def test_raw_coverage_threshold_does_not_round_up(tmp_path: Path) -> None:
