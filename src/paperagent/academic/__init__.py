@@ -7,6 +7,12 @@ from paperagent.academic.artifacts import (
     EvidenceBoundClaim,
     InMemoryAcademicArtifactSink,
 )
+from paperagent.academic.context import (
+    AcademicContextManifest,
+    AcademicEvidenceInsufficientError,
+    AcceptedContextEntry,
+    build_accepted_context_manifest,
+)
 from paperagent.academic.contracts import (
     AcademicCandidate,
     AcademicEvidenceEntry,
@@ -38,7 +44,9 @@ __all__ = [
     "AcademicArtifactRevision",
     "AcademicArtifactSink",
     "AcademicCandidate",
+    "AcademicContextManifest",
     "AcademicEvidenceEntry",
+    "AcademicEvidenceInsufficientError",
     "AcademicEvidenceLedger",
     "AcademicEvidenceSource",
     "AcademicLocator",
@@ -50,11 +58,13 @@ __all__ = [
     "AcademicRetrievalResult",
     "AcademicSubQuery",
     "AcademicTailoringArtifacts",
+    "AcceptedContextEntry",
     "EvidenceBoundClaim",
     "InMemoryAcademicArtifactSink",
     "PaperClawDependencyError",
     "PaperClawVersionError",
     "ProjectRAGEvidenceSource",
+    "build_accepted_context_manifest",
     "create_paperclaw_artifact_sink",
     "create_paperclaw_evidence_source",
     "decompose_question",
