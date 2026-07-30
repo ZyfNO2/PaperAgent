@@ -7,6 +7,12 @@ from paperagent.academic.artifacts import (
     EvidenceBoundClaim,
     InMemoryAcademicArtifactSink,
 )
+from paperagent.academic.claims import (
+    GeneratedClaim,
+    MismatchReport,
+    check_citation_claim_mismatch,
+    generate_claims_from_ledger,
+)
 from paperagent.academic.context import (
     AcademicContextManifest,
     AcademicEvidenceInsufficientError,
@@ -60,12 +66,16 @@ __all__ = [
     "AcademicTailoringArtifacts",
     "AcceptedContextEntry",
     "EvidenceBoundClaim",
+    "GeneratedClaim",
     "InMemoryAcademicArtifactSink",
+    "MismatchReport",
     "PaperClawDependencyError",
     "PaperClawVersionError",
     "ProjectRAGEvidenceSource",
     "build_accepted_context_manifest",
+    "check_citation_claim_mismatch",
     "create_paperclaw_artifact_sink",
     "create_paperclaw_evidence_source",
     "decompose_question",
+    "generate_claims_from_ledger",
 ]
