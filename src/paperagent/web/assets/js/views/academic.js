@@ -84,6 +84,9 @@
           importButton.disabled = true;
           try {
             const result = await PA.api.importPaper(current.id, source.value.trim());
+            await PA.api.parsePaper(current.id, result.paper.paper_id);
+            await PA.api.buildIndex(current.id);
+            result.paper.parse_status = "indexed";
             PA.model.papers.push(result.paper);
             PA.navigate();
           } catch (error) {
@@ -179,6 +182,31 @@
       h("p", { class: "muted small", text: `${entry.locator.object_type} · page ${entry.locator.page_number} · ${entry.locator.object_id}` }),
       h("p", { class: "muted small", text: `score ${candidate.score == null ? "—" : candidate.score}` }));
     })));
+    const papers = PA.model.papers || [];
+    if (papers.length >= 2 && result.ledger.accepted_ids.length) {
+      const generate = h("button", {
+        class: "btn btn-primary", type: "button", text: "生成八类 Evidence-bound Artifacts",
+        onclick: async () => {
+          generate.disabled = true;
+          try {
+            await PA.api.generateArtifacts(
+              projectId,
+              result.query_plan.original_question,
+              papers[0].paper_id,
+              papers.slice(1).map((paper) => paper.paper_id),
+            );
+            const refreshed = await PA.api.listArtifacts(projectId);
+            PA.model.artifacts = refreshed.artifacts || [];
+            PA.toast("Artifact 草稿已写入 PaperClaw append-only store", "success");
+          } catch (error) {
+            PA.toast(error.message, "danger");
+          } finally {
+            generate.disabled = false;
+          }
+        },
+      });
+      output.append(h("div", { class: "row" }, generate));
+    }
   }
 
   PA.views.artifacts = {

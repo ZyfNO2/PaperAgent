@@ -28,7 +28,10 @@ PA.api = (() => {
     try {
       const response = await fetch(path, {
         method: options.method || "GET",
-        headers: options.body ? { "Content-Type": "application/json" } : undefined,
+        headers: {
+          ...(options.body ? { "Content-Type": "application/json" } : {}),
+          ...(options.headers || {}),
+        },
         body: options.body ? JSON.stringify(options.body) : undefined,
         signal: controller.signal,
         credentials: "same-origin",
@@ -117,6 +120,10 @@ PA.api = (() => {
     importPaper: (projectId, sourcePath) => request(projectPath(projectId, "/papers/import"), {
       method: "POST", body: { source_path: sourcePath },
     }),
+    parsePaper: (projectId, paperId) => request(
+      projectPath(projectId, `/papers/${encodeURIComponent(paperId)}/parse`), { method: "POST" },
+    ),
+    buildIndex: (projectId) => request(projectPath(projectId, "/index"), { method: "POST" }),
     queryEvidence: (projectId, question, paperIds = [], signal) => request(
       projectPath(projectId, "/evidence/query"),
       { method: "POST", body: { question, paper_ids: paperIds }, signal },
@@ -138,5 +145,39 @@ PA.api = (() => {
         },
       },
     ),
+    generateArtifacts: (projectId, hypothesis, baselinePaperId, modulePaperIds) => request(
+      projectPath(projectId, "/artifacts/generate"),
+      {
+        method: "POST",
+        body: {
+          hypothesis,
+          baseline_paper_id: baselinePaperId,
+          module_paper_ids: modulePaperIds,
+        },
+      },
+    ),
+    listArtifacts: (projectId) => request(projectPath(projectId, "/artifacts")),
+    createTask: (payload, idempotencyKey) => request("/v1/tasks", {
+      method: "POST",
+      body: payload,
+      headers: { "Idempotency-Key": idempotencyKey },
+    }),
+    cancelTask: (taskId) => request(`/v1/tasks/${encodeURIComponent(taskId)}/cancel`, {
+      method: "POST",
+    }),
+    async pollTask(taskId, { signal, intervalMs = 500, maxPolls = 120 } = {}) {
+      for (let poll = 0; poll < maxPolls; poll += 1) {
+        const task = await request(`/v1/tasks/${encodeURIComponent(taskId)}`, { signal });
+        if (["succeeded", "failed", "cancelled"].includes(task.status)) return task;
+        await new Promise((resolve, reject) => {
+          const timer = setTimeout(resolve, intervalMs);
+          if (signal) signal.addEventListener("abort", () => {
+            clearTimeout(timer);
+            reject(new APIError("request_cancelled", "任务轮询已取消。", 0, true));
+          }, { once: true });
+        });
+      }
+      throw new APIError("task_poll_exhausted", "任务在轮询预算内未结束。", 408, true);
+    },
   };
 })();
