@@ -11,12 +11,9 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, cast
 
-import fitz
 import pytest
 import uvicorn
 from fastapi.testclient import TestClient
-from paperclaw.academic import AcademicRuntime
-from paperclaw.service.fastapi_app import create_app as create_paperclaw_app
 
 from paperagent.academic.frontend_service import AcademicFrontendService
 from paperagent.api import create_app
@@ -187,6 +184,8 @@ def _wait_for_ready(base_url: str, process: subprocess.Popen[str]) -> None:
 
 
 def _generated_pdf(path: Path, text: str) -> None:
+    import fitz
+
     document = fitz.open()
     page = document.new_page()
     page.insert_textbox(fitz.Rect(40, 40, 555, 780), text, fontsize=11)
@@ -338,6 +337,9 @@ def test_pwa__production_academic_pages_locator_and_revision(tmp_path: Path) -> 
 
 
 def test_pwa__real_paperclaw_two_project_pdf_asset_and_artifact_loop(tmp_path: Path) -> None:
+    from paperclaw.academic import AcademicRuntime
+    from paperclaw.service.fastapi_app import create_app as create_paperclaw_app
+
     workspace_root = tmp_path / "paperclaw-projects"
     workspace_root.mkdir()
     paperclaw = TestClient(
