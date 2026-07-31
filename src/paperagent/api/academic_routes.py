@@ -4,7 +4,7 @@ import asyncio
 from collections.abc import Mapping
 from typing import Annotated, Any, Literal
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Response
 from pydantic import BaseModel, Field
 
 from paperagent.academic.frontend_service import (
@@ -41,6 +41,11 @@ class ArtifactReviewBody(BaseModel):
 
 class LocatorResolveBody(BaseModel):
     locator: dict[str, Any]
+
+
+class LocatorAssetBody(BaseModel):
+    locator: dict[str, Any]
+    asset_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
 def register_academic_routes(
@@ -122,6 +127,26 @@ def register_academic_routes(
         project_id: str, body: LocatorResolveBody
     ) -> Mapping[str, Any]:
         return await call("resolve_locator", project_id, body.locator)
+
+    @app.post("/v1/academic/projects/{project_id}/locator/asset")
+    async def read_locator_asset(
+        project_id: str, body: LocatorAssetBody
+    ) -> Response:
+        target = available()
+        try:
+            content = await asyncio.to_thread(
+                target.read_asset, project_id, body.locator, body.asset_hash
+            )
+        except AcademicFrontendError as exc:
+            raise HTTPException(
+                exc.status_code,
+                detail={"code": exc.code, "message": str(exc), "retryable": False},
+            ) from exc
+        return Response(
+            content=content,
+            media_type="image/png",
+            headers={"ETag": f'"{body.asset_hash}"', "Cache-Control": "private, no-store"},
+        )
 
     @app.post("/v1/academic/projects/{project_id}/artifacts/generate")
     async def generate_artifacts(

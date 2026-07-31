@@ -222,17 +222,57 @@ class AcademicFrontendService:
     def resolve_locator(
         self, project_id: str, locator: Mapping[str, Any]
     ) -> Mapping[str, Any]:
-        wire = dict(locator)
-        bounding_box = wire.get("bounding_box")
-        if isinstance(bounding_box, (list, tuple)) and len(bounding_box) == 4:
-            wire["bounding_box"] = dict(
-                zip(("x0", "y0", "x1", "y1"), bounding_box, strict=True)
-            )
+        wire = self._locator_wire(locator)
         return self.request(
             "POST",
             f"/v1/projects/{project_id}/academic/resolve",
             {"locator": wire},
         )
+
+    def read_asset(
+        self, project_id: str, locator: Mapping[str, Any], asset_hash: str
+    ) -> bytes:
+        if len(asset_hash) != 64 or any(char not in "0123456789abcdef" for char in asset_hash):
+            raise AcademicFrontendError(
+                "asset_hash_invalid", "Asset hash must be a lowercase SHA-256", status_code=422
+            )
+        try:
+            response = self._client.request(
+                "POST",
+                f"{self._base_url}/v1/projects/{project_id}/academic/asset",
+                json={"locator": self._locator_wire(locator), "asset_hash": asset_hash},
+                timeout=self._timeout,
+            )
+        except (httpx.TimeoutException, TimeoutError) as exc:
+            raise AcademicFrontendError(
+                "paperclaw_timeout", "PaperClaw request timed out", status_code=504
+            ) from exc
+        except (httpx.TransportError, OSError) as exc:
+            raise AcademicFrontendError(
+                "paperclaw_unavailable", "PaperClaw is unavailable", status_code=503
+            ) from exc
+        if not 200 <= response.status_code < 300:
+            raise AcademicFrontendError(
+                "paperclaw_asset_failure",
+                "PaperClaw rejected the asset request",
+                status_code=response.status_code,
+            )
+        content = bytes(response.content)
+        if hashlib.sha256(content).hexdigest() != asset_hash:
+            raise AcademicFrontendError(
+                "paperclaw_asset_hash_mismatch", "PaperClaw asset hash mismatch"
+            )
+        return content
+
+    @staticmethod
+    def _locator_wire(locator: Mapping[str, Any]) -> dict[str, Any]:
+        wire = dict(locator)
+        bounding_box = wire.get("bounding_box")
+        if isinstance(bounding_box, list | tuple) and len(bounding_box) == 4:
+            wire["bounding_box"] = dict(
+                zip(("x0", "y0", "x1", "y1"), bounding_box, strict=True)
+            )
+        return wire
 
     def create_tailoring_artifacts(
         self,
