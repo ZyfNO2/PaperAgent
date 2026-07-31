@@ -168,12 +168,24 @@
         onclick: async () => {
           try {
             const resolved = await PA.api.resolveLocator(projectId, entry.locator);
+            const body = h("div", { class: "stack" },
+              h("pre", { class: "code-block", text: JSON.stringify(entry.locator, null, 2) }),
+              h("p", { text: resolved.text || "This object has no extracted text." }));
+            const asset = (resolved.assets || [])[0];
+            if (asset && asset.sha256) {
+              const blob = await PA.api.readAsset(projectId, entry.locator, asset.sha256);
+              body.append(h("img", {
+                src: URL.createObjectURL(blob),
+                alt: `Resolved page/region asset for ${entry.evidence_id}`,
+                style: "max-width:100%;height:auto;border-radius:8px",
+              }));
+            } else {
+              body.append(h("p", { class: "muted small", text: "No page/region asset is attached to this canonical object." }));
+            }
             PA.drawer({
               title: `Claim Locator · ${entry.evidence_id}`,
               subtitle: `${entry.locator.paper_id} / p.${entry.locator.page_number}`,
-              body: h("div", { class: "stack" },
-                h("pre", { class: "code-block", text: JSON.stringify(entry.locator, null, 2) }),
-                h("p", { text: resolved.text || "该对象没有文本；可通过资产端点读取 page/region。" })),
+              body,
             });
           } catch (error) { PA.toast(error.message, "danger"); }
         },

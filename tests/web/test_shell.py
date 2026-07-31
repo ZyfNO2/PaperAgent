@@ -40,6 +40,8 @@ def test_web_shell__serves_manifest_worker_and_static_assets(tmp_path) -> None:
         manifest_response = client.get("/app/manifest.webmanifest")
         worker = client.get("/app/service-worker.js")
         javascript = client.get("/app-static/js/app.js")
+        academic_api = client.get("/app-static/js/api.js")
+        academic_views = client.get("/app-static/js/views/academic.js")
         stylesheet = client.get("/app-static/css/tokens.css")
         icon = client.get("/app-static/icon.svg")
 
@@ -52,7 +54,14 @@ def test_web_shell__serves_manifest_worker_and_static_assets(tmp_path) -> None:
     assert worker.headers["service-worker-allowed"] == "/app"
     assert "paperagent-shell-v1.1.0-academic-api" in worker.text
     assert "/v1" not in worker.text
-    assert javascript.status_code == stylesheet.status_code == icon.status_code == 200
+    assert (
+        javascript.status_code
+        == academic_api.status_code
+        == academic_views.status_code
+        == stylesheet.status_code
+        == icon.status_code
+        == 200
+    )
     assert javascript.headers["content-type"].startswith(
         ("text/javascript", "application/javascript")
     )
@@ -80,6 +89,7 @@ def test_web_shell__javascript_contract_covers_bounded_academic_api(tmp_path) ->
     assert "fetch(" in api_source
     assert "AbortController" in api_source
     assert "paperclaw_not_configured" in api_source
+    assert "readAsset" in api_source
     assert "openai" not in source.lower()
     assert "semantic scholar" not in source.lower()
 

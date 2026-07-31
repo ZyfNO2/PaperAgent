@@ -247,9 +247,7 @@ def test_pwa__production_academic_pages_locator_and_revision(tmp_path: Path) -> 
         database_path=tmp_path / "production-browser.db",
         academic_service=service,  # type: ignore[arg-type]
     )
-    server = uvicorn.Server(
-        uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning")
-    )
+    server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning"))
     thread = threading.Thread(target=server.run, daemon=True)
     thread.start()
     try:
@@ -297,9 +295,7 @@ def test_pwa__production_failure_never_falls_back_to_demo(tmp_path: Path) -> Non
         executor=DemoTaskExecutor(),
         database_path=tmp_path / "fail-closed-browser.db",
     )
-    server = uvicorn.Server(
-        uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning")
-    )
+    server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning"))
     thread = threading.Thread(target=server.run, daemon=True)
     thread.start()
     try:

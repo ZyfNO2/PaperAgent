@@ -64,9 +64,7 @@ def register_academic_routes(
             )
         return service
 
-    async def call(
-        method: str, *args: object, **kwargs: object
-    ) -> Mapping[str, Any]:
+    async def call(method: str, *args: object, **kwargs: object) -> Mapping[str, Any]:
         target = available()
         try:
             operation = getattr(target, method)
@@ -103,9 +101,7 @@ def register_academic_routes(
         return await call("list_papers", project_id)
 
     @app.post("/v1/academic/projects/{project_id}/papers/import", status_code=201)
-    async def import_paper(
-        project_id: str, body: PaperImportBody
-    ) -> Mapping[str, Any]:
+    async def import_paper(project_id: str, body: PaperImportBody) -> Mapping[str, Any]:
         return await call("import_paper", project_id, body.source_path, body.paper_id)
 
     @app.post("/v1/academic/projects/{project_id}/papers/{paper_id}/parse")
@@ -117,21 +113,15 @@ def register_academic_routes(
         return await call("build_index", project_id)
 
     @app.post("/v1/academic/projects/{project_id}/evidence/query")
-    async def query_evidence(
-        project_id: str, body: EvidenceQueryBody
-    ) -> Mapping[str, Any]:
+    async def query_evidence(project_id: str, body: EvidenceQueryBody) -> Mapping[str, Any]:
         return await call("query_evidence", project_id, body.question, body.paper_ids)
 
     @app.post("/v1/academic/projects/{project_id}/locator/resolve")
-    async def resolve_locator(
-        project_id: str, body: LocatorResolveBody
-    ) -> Mapping[str, Any]:
+    async def resolve_locator(project_id: str, body: LocatorResolveBody) -> Mapping[str, Any]:
         return await call("resolve_locator", project_id, body.locator)
 
     @app.post("/v1/academic/projects/{project_id}/locator/asset")
-    async def read_locator_asset(
-        project_id: str, body: LocatorAssetBody
-    ) -> Response:
+    async def read_locator_asset(project_id: str, body: LocatorAssetBody) -> Response:
         target = available()
         try:
             content = await asyncio.to_thread(
@@ -149,9 +139,7 @@ def register_academic_routes(
         )
 
     @app.post("/v1/academic/projects/{project_id}/artifacts/generate")
-    async def generate_artifacts(
-        project_id: str, body: TailoringBody
-    ) -> Mapping[str, Any]:
+    async def generate_artifacts(project_id: str, body: TailoringBody) -> Mapping[str, Any]:
         return await call(
             "create_tailoring_artifacts",
             project_id,
@@ -169,9 +157,7 @@ def register_academic_routes(
         return await call("list_artifacts", project_id)
 
     @app.get("/v1/academic/projects/{project_id}/artifacts/{artifact_id}")
-    async def get_artifact(
-        project_id: str, artifact_id: str
-    ) -> Mapping[str, Any]:
+    async def get_artifact(project_id: str, artifact_id: str) -> Mapping[str, Any]:
         return await call("get_artifact", project_id, artifact_id)
 
     @app.post("/v1/academic/projects/{project_id}/artifacts/{artifact_id}/review")

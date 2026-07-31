@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from typing import Any
 
 import httpx
@@ -57,6 +58,15 @@ class StubAcademicService:
             "stop_reason": "evidence_insufficient",
         }
 
+    def resolve_locator(self, project_id: str, locator: dict[str, Any]) -> dict[str, Any]:
+        return {"project_id": project_id, "locator": locator, "text": "resolved"}
+
+    def read_asset(self, project_id: str, locator: dict[str, Any], asset_hash: str) -> bytes:
+        assert project_id == "demo" and locator["object_id"] == "object-1"
+        content = b"asset"
+        assert hashlib.sha256(content).hexdigest() == asset_hash
+        return content
+
     def create_tailoring_artifacts(self, project_id: str, **_: Any) -> dict[str, Any]:
         return {"project_id": project_id, "decision": "REVISE", "revisions": []}
 
@@ -104,17 +114,63 @@ def test_academic_routes_project_paper_evidence_and_review_projection(tmp_path) 
     )
     with TestClient(app) as client:
         assert client.get("/v1/academic/projects").json()["count"] == 1
-        assert client.post(
-            "/v1/academic/projects", json={"name": "New Study"}
-        ).json()["project"]["name"] == "New Study"
-        assert client.get("/v1/academic/projects/demo/papers").json()["papers"][0][
-            "paper_id"
-        ] == "paper-1"
+        assert (
+            client.post("/v1/academic/projects", json={"name": "New Study"}).json()["project"][
+                "name"
+            ]
+            == "New Study"
+        )
+        assert (
+            client.get("/v1/academic/projects/demo/papers").json()["papers"][0]["paper_id"]
+            == "paper-1"
+        )
+        imported = client.post(
+            "/v1/academic/projects/demo/papers/import",
+            json={"source_path": "allowed/paper.pdf"},
+        )
+        assert imported.status_code == 201
+        assert (
+            client.post("/v1/academic/projects/demo/papers/paper-1/parse").json()["status"]
+            == "parsed"
+        )
+        assert client.post("/v1/academic/projects/demo/index").json()["status"] == "ready"
         evidence = client.post(
             "/v1/academic/projects/demo/evidence/query",
             json={"question": "Find the baseline", "paper_ids": ["paper-1"]},
         ).json()
         assert evidence["sufficiency"] == "insufficient"
+        locator = {"object_id": "object-1"}
+        assert (
+            client.post(
+                "/v1/academic/projects/demo/locator/resolve", json={"locator": locator}
+            ).json()["text"]
+            == "resolved"
+        )
+        asset = b"asset"
+        asset_hash = hashlib.sha256(asset).hexdigest()
+        asset_response = client.post(
+            "/v1/academic/projects/demo/locator/asset",
+            json={"locator": locator, "asset_hash": asset_hash},
+        )
+        assert asset_response.content == asset
+        assert (
+            client.post(
+                "/v1/academic/projects/demo/artifacts/generate",
+                json={
+                    "hypothesis": "Bounded hypothesis",
+                    "baseline_paper_id": "paper-1",
+                    "module_paper_ids": ["paper-2"],
+                },
+            ).json()["decision"]
+            == "REVISE"
+        )
+        assert client.get("/v1/academic/projects/demo/artifacts").json()["count"] == 0
+        assert (
+            client.get("/v1/academic/projects/demo/artifacts/artifact-1").json()["artifact"][
+                "artifact_id"
+            ]
+            == "artifact-1"
+        )
         reviewed = client.post(
             "/v1/academic/projects/demo/artifacts/artifact-1/review",
             json={
@@ -149,3 +205,37 @@ def test_frontend_service_returns_structured_upstream_error() -> None:
         assert exc.status_code == 409
     else:  # pragma: no cover
         raise AssertionError("expected structured upstream error")
+
+
+def test_frontend_service_proxies_lifecycle_and_validates_asset_hash() -> None:
+    asset = b"png-asset"
+    asset_hash = hashlib.sha256(asset).hexdigest()
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        path = request.url.path
+        if path.endswith("/academic/asset"):
+            return httpx.Response(200, content=asset)
+        if path == "/v1/projects":
+            return httpx.Response(200, json={"projects": [], "count": 0})
+        if path.endswith("/papers"):
+            return httpx.Response(200, json={"papers": []})
+        if path.endswith("/parse"):
+            return httpx.Response(200, json={"status": "parsed"})
+        if path.endswith("/academic/index"):
+            return httpx.Response(200, json={"status": "ready"})
+        if path.endswith("/artifacts"):
+            return httpx.Response(200, json={"artifacts": [], "count": 0})
+        return httpx.Response(200, json={"project": {"project_id": "demo"}})
+
+    service = AcademicFrontendService(
+        "http://paperclaw.test",
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+    assert service.list_projects()["count"] == 0
+    assert service.get_project("demo")["project"]["project_id"] == "demo"
+    assert service.list_papers("demo")["papers"] == []
+    assert service.parse_paper("demo", "paper-1")["status"] == "parsed"
+    assert service.build_index("demo")["status"] == "ready"
+    assert service.list_artifacts("demo")["count"] == 0
+    locator = {"object_id": "object-1", "bounding_box": [0, 0, 1, 1]}
+    assert service.read_asset("demo", locator, asset_hash) == asset

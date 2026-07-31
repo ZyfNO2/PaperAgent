@@ -65,6 +65,39 @@ PA.api = (() => {
     }
   }
 
+  async function requestBlob(path, body) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort("timeout"), TIMEOUT_MS);
+    try {
+      const response = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+        credentials: "same-origin",
+      });
+      if (!response.ok) {
+        let detail = {};
+        try { detail = (await response.json()).detail || {}; } catch (_) { /* bounded below */ }
+        throw new APIError(
+          detail.code || "asset_request_failed",
+          detail.message || `Asset request failed (HTTP ${response.status})`,
+          response.status,
+          Boolean(detail.retryable),
+        );
+      }
+      return response.blob();
+    } catch (error) {
+      if (error instanceof APIError) throw error;
+      if (controller.signal.aborted) {
+        throw new APIError("request_cancelled", "Asset request timed out.", 0, true);
+      }
+      throw new APIError("network_failure", "Unable to read the PaperClaw asset.", 0, true);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   const projectPath = (projectId, suffix = "") =>
     `/v1/academic/projects/${encodeURIComponent(projectId)}${suffix}`;
 
@@ -131,6 +164,10 @@ PA.api = (() => {
     resolveLocator: (projectId, locator) => request(projectPath(projectId, "/locator/resolve"), {
       method: "POST", body: { locator },
     }),
+    readAsset: (projectId, locator, assetHash) => requestBlob(
+      projectPath(projectId, "/locator/asset"),
+      { locator, asset_hash: assetHash },
+    ),
     getArtifact: (projectId, artifactId) => request(
       projectPath(projectId, `/artifacts/${encodeURIComponent(artifactId)}`),
     ),
