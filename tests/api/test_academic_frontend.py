@@ -357,3 +357,50 @@ def test_frontend_service_asset_failures_are_structured() -> None:
     with pytest.raises(AcademicFrontendError) as corrupted:
         mismatch.read_asset("demo", {}, "a" * 64)
     assert corrupted.value.code == "paperclaw_asset_hash_mismatch"
+
+
+@pytest.mark.parametrize(
+    ("error", "expected_code", "expected_status"),
+    [
+        (httpx.ReadTimeout("slow"), "paperclaw_timeout", 504),
+        (httpx.ConnectError("down"), "paperclaw_unavailable", 503),
+    ],
+)
+def test_frontend_service_transport_failures_are_structured(
+    error: Exception, expected_code: str, expected_status: int
+) -> None:
+    def fail(_: httpx.Request) -> httpx.Response:
+        raise error
+
+    service = AcademicFrontendService(
+        "http://paperclaw.test",
+        client=httpx.Client(transport=httpx.MockTransport(fail)),
+    )
+    with pytest.raises(AcademicFrontendError) as request_error:
+        service.list_projects()
+    assert request_error.value.code == expected_code
+    assert request_error.value.status_code == expected_status
+
+    with pytest.raises(AcademicFrontendError) as asset_error:
+        service.read_asset("demo", {}, "a" * 64)
+    assert asset_error.value.code == expected_code
+    assert asset_error.value.status_code == expected_status
+
+
+def test_frontend_service_optional_paper_id_and_locator_wire() -> None:
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(200, json={"paper": {"paper_id": "chosen"}})
+
+    service = AcademicFrontendService(
+        "http://paperclaw.test/",
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+    assert service.import_paper("demo", "paper.pdf", "chosen")["paper"]["paper_id"] == "chosen"
+    payload = requests[0].read().decode()
+    assert '"paper_id":"chosen"' in payload
+    assert AcademicFrontendService._locator_wire({"bounding_box": (0, 1, 2, 3)})[
+        "bounding_box"
+    ] == {"x0": 0, "y0": 1, "x1": 2, "y1": 3}
