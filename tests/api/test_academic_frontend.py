@@ -6,9 +6,11 @@ from typing import Any
 import httpx
 from fastapi.testclient import TestClient
 
+from paperagent.academic.artifacts import AcademicArtifactDraft
 from paperagent.academic.frontend_service import (
     AcademicFrontendError,
     AcademicFrontendService,
+    _RESTArtifactSink,
 )
 from paperagent.api import create_app
 from paperagent.demo import DemoTaskExecutor
@@ -239,3 +241,64 @@ def test_frontend_service_proxies_lifecycle_and_validates_asset_hash() -> None:
     assert service.list_artifacts("demo")["count"] == 0
     locator = {"object_id": "object-1", "bounding_box": [0, 0, 1, 1]}
     assert service.read_asset("demo", locator, asset_hash) == asset
+
+
+class ArtifactRESTService:
+    def __init__(self) -> None:
+        self.reviewed = False
+
+    def request(self, method: str, path: str, payload: dict[str, Any]) -> dict[str, Any]:
+        assert method == "POST" and path.endswith("/artifacts")
+        assert payload["draft"]["state"] == "draft"
+        return {
+            "artifact": {"artifact_id": "artifact-1"},
+            "revision": {"revision_number": 1, "content_hash": "a" * 64},
+        }
+
+    def get_artifact(self, project_id: str, artifact_id: str) -> dict[str, Any]:
+        return {"artifact": {"artifact_id": artifact_id, "artifact_type": "baseline_card"}}
+
+    def review_artifact(self, *_: Any, **kwargs: Any) -> dict[str, Any]:
+        assert kwargs["decision"] == "approved"
+        self.reviewed = True
+        return {"revision": {"revision_number": 2, "content_hash": "b" * 64}}
+
+
+def test_rest_artifact_sink_validates_project_and_maps_revisions() -> None:
+    service = ArtifactRESTService()
+    sink = _RESTArtifactSink(service, "demo")  # type: ignore[arg-type]
+    draft = AcademicArtifactDraft(
+        artifact_type="baseline_card",
+        title="Baseline",
+        project_id="demo",
+        summary="Evidence-scoped draft.",
+        evidence_ids=("e1",),
+        claims=(),
+    )
+
+    created = sink.create_draft(draft)
+    assert created.revision_number == 1
+    approved = sink.review("artifact-1", decision="approved", note="checked")
+    assert approved.revision_number == 2
+    assert service.reviewed is True
+
+    uncached = _RESTArtifactSink(service, "demo")  # type: ignore[arg-type]
+    assert uncached.review("artifact-1", decision="approved", note="checked").revision_number == 2
+    try:
+        sink.create_draft(draft.model_copy(update={"project_id": "other"}))
+    except ValueError as exc:
+        assert "project" in str(exc)
+    else:  # pragma: no cover
+        raise AssertionError("expected project mismatch")
+    try:
+        sink.finalize("artifact-1")
+    except ValueError as exc:
+        assert "automatically finalize" in str(exc)
+    else:  # pragma: no cover
+        raise AssertionError("expected bounded finalize failure")
+    try:
+        sink._mapping([], "artifact")
+    except AcademicFrontendError as exc:
+        assert exc.code == "paperclaw_malformed_response"
+    else:  # pragma: no cover
+        raise AssertionError("expected malformed response")
