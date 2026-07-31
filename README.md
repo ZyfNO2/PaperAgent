@@ -160,6 +160,16 @@ GET  /healthz
 GET  /readyz
 ```
 
+## Agent 自动评估
+
+仓库包含默认离线、无外部副作用的 Evaluation Harness，可检查 Agent 终态、Tool、结构化输出与引用落地、循环/预算、成本遥测和 HumanGate：
+
+```bash
+python -m evaluation.runner --dataset evaluation/cases/paper_search.jsonl --offline --output artifacts/evaluations/example
+```
+
+Case Schema、指标、offline/live 边界及报告说明见 [`evaluation/README.md`](evaluation/README.md)。LLM Judge 默认关闭，CI 不访问付费 API。
+
 ## 验证
 
 ```bash

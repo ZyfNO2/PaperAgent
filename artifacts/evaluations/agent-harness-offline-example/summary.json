@@ -1,0 +1,62 @@
+{
+  "average_tool_calls": 1.0,
+  "case_count": 5,
+  "cases": [
+    {
+      "case_id": "paper_search_001",
+      "error": null,
+      "failures": [],
+      "status": "passed"
+    },
+    {
+      "case_id": "paper_search_002",
+      "error": null,
+      "failures": [],
+      "status": "passed"
+    },
+    {
+      "case_id": "paper_search_empty_001",
+      "error": null,
+      "failures": [],
+      "status": "passed"
+    },
+    {
+      "case_id": "paper_search_invalid_args_001",
+      "error": null,
+      "failures": [
+        "INVALID_ARGUMENT",
+        "TOOL_FAILURE"
+      ],
+      "status": "failed"
+    },
+    {
+      "case_id": "paper_search_timeout_001",
+      "error": null,
+      "failures": [
+        "TOOL_TIMEOUT",
+        "TOOL_FAILURE"
+      ],
+      "status": "failed"
+    }
+  ],
+  "commit_sha": "b1ab259e8b5266a2355b11f6d53b6232383e474b",
+  "cost_note": "cost is only estimated when usage, model, and a configured price table are available",
+  "counts": {
+    "failed": 2,
+    "passed": 3
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.8"
+  },
+  "failure_distribution": {
+    "INVALID_ARGUMENT": 1,
+    "TOOL_FAILURE": 2,
+    "TOOL_TIMEOUT": 1
+  },
+  "generated_at": "2026-07-31T16:43:48.629058+00:00",
+  "run_id": "eval_20260731T164348Z_7e60f4",
+  "schema_version": "paperagent.agent-evaluation.v1",
+  "task_success_rate": 0.6,
+  "token_note": "not_available means the provider/fixture supplied no usage; values are never fabricated"
+}

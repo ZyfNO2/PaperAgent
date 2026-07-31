@@ -1,0 +1,195 @@
+{
+  "case": {
+    "allowed_tools": [
+      "paper_search",
+      "paper_fetch"
+    ],
+    "case_id": "paper_search_001",
+    "category": "paper_search",
+    "citation_fields": [
+      "source",
+      "doi",
+      "url",
+      "paper_id"
+    ],
+    "expected_gate": null,
+    "expected_terminal_states": [
+      "COMPLETED"
+    ],
+    "forbidden_tools": [
+      "shell",
+      "write_file"
+    ],
+    "input": "检索 Agent RAG evaluation 论文并返回来源",
+    "max_output_chars": 100000,
+    "max_steps": 12,
+    "max_tool_calls": 8,
+    "metadata": {
+      "difficulty": "medium",
+      "offline_observation": {
+        "final_output": [
+          {
+            "source": "https://example.test/paper/1",
+            "summary": "Offline fixture summary.",
+            "title": "Evaluating RAG"
+          }
+        ],
+        "steps": [
+          {
+            "argument_valid": true,
+            "arguments": {
+              "limit": 3,
+              "query": "Agent RAG evaluation"
+            },
+            "event_type": "tool_call",
+            "result_summary": [
+              {
+                "title": "Evaluating RAG",
+                "url": "https://example.test/paper/1"
+              }
+            ],
+            "tool_name": "paper_search"
+          }
+        ],
+        "terminal_state": "COMPLETED"
+      }
+    },
+    "mode": "offline",
+    "required_output_fields": [
+      "title",
+      "source",
+      "summary"
+    ],
+    "required_tools": [
+      "paper_search"
+    ],
+    "status": "active",
+    "timeout_seconds": 120.0
+  },
+  "error": null,
+  "llm_judge": null,
+  "llm_judge_error": null,
+  "metrics": {
+    "citation_grounding_rate": 1.0,
+    "citation_presence_rate": 1.0,
+    "duplicate_tool_call_count": 0,
+    "estimated_cost": "not_available",
+    "expected_gate_triggered": false,
+    "final_state_waiting_approval": false,
+    "forbidden_tool_call_count": 0,
+    "gate_action_match": true,
+    "gate_reason_match": true,
+    "gate_trigger_count": 0,
+    "gate_triggered": false,
+    "input_tokens": 0,
+    "invalid_argument_count": 0,
+    "loop_detected": false,
+    "model_call_count": 0,
+    "model_latency_ms": 0,
+    "output_limit_exceeded": false,
+    "output_non_empty": true,
+    "output_tokens": 0,
+    "placeholder_detected": false,
+    "required_field_completion_rate": 1.0,
+    "required_tool_coverage": 1.0,
+    "retry_count": 0,
+    "schema_valid": true,
+    "step_limit_exceeded": false,
+    "task_success": true,
+    "terminal_matches": true,
+    "terminal_state": "COMPLETED",
+    "timeout": false,
+    "timeout_count": 0,
+    "tool_call_count": 1,
+    "tool_call_limit_exceeded": false,
+    "tool_failure_count": 0,
+    "tool_failure_recovery_rate": 1.0,
+    "tool_latency_ms": 0,
+    "total_latency_ms": 0,
+    "total_tokens": 0,
+    "unexpected_gate_triggered": false,
+    "unnecessary_tool_call_count": 0,
+    "unsupported_citation_count": 0
+  },
+  "rule_judge": {
+    "checks": {
+      "citation_grounding_rate": 1.0,
+      "citation_presence_rate": 1.0,
+      "duplicate_tool_call_count": 0,
+      "expected_gate_triggered": false,
+      "final_state_waiting_approval": false,
+      "forbidden_tool_call_count": 0,
+      "gate_action_match": true,
+      "gate_reason_match": true,
+      "gate_trigger_count": 0,
+      "gate_triggered": false,
+      "invalid_argument_count": 0,
+      "loop_detected": false,
+      "output_limit_exceeded": false,
+      "output_non_empty": true,
+      "placeholder_detected": false,
+      "required_field_completion_rate": 1.0,
+      "required_tool_coverage": 1.0,
+      "schema_valid": true,
+      "step_limit_exceeded": false,
+      "terminal_matches": true,
+      "terminal_state": "COMPLETED",
+      "tool_call_limit_exceeded": false,
+      "unexpected_gate_triggered": false,
+      "unnecessary_tool_call_count": 0,
+      "unsupported_citation_count": 0
+    },
+    "failures": [],
+    "passed": true,
+    "reasons": []
+  },
+  "status": "passed",
+  "trajectory": {
+    "case_id": "paper_search_001",
+    "cost_status": "not_available",
+    "ended_at": "2026-07-31T16:43:48.620550Z",
+    "estimated_cost": null,
+    "final_output": [
+      {
+        "source": "https://example.test/paper/1",
+        "summary": "Offline fixture summary.",
+        "title": "Evaluating RAG"
+      }
+    ],
+    "provider": "offline_fixture",
+    "run_id": "eval-d3a01af84303",
+    "started_at": "2026-07-31T16:43:48.620550Z",
+    "steps": [
+      {
+        "argument_valid": true,
+        "arguments": {
+          "limit": 3,
+          "query": "Agent RAG evaluation"
+        },
+        "error": null,
+        "error_type": null,
+        "event_type": "tool_call",
+        "gate_action": null,
+        "gate_reason": null,
+        "input_tokens": null,
+        "latency_ms": null,
+        "model_name": null,
+        "output_tokens": null,
+        "result_summary": [
+          {
+            "title": "Evaluating RAG",
+            "url": "https://example.test/paper/1"
+          }
+        ],
+        "retry": false,
+        "state": null,
+        "step_index": 0,
+        "timestamp": "2026-07-31T16:43:48.620550Z",
+        "tool_name": "paper_search"
+      }
+    ],
+    "stop_reason": null,
+    "terminal_state": "COMPLETED",
+    "user_input": "检索 Agent RAG evaluation 论文并返回来源"
+  }
+}

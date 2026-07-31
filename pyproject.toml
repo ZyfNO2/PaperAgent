@@ -20,6 +20,7 @@ dependencies = [
 
 [project.scripts]
 paperagent = "paperagent.cli:main"
+paperagent-evaluate = "evaluation.runner:main"
 
 [project.optional-dependencies]
 dev = [
@@ -76,7 +77,7 @@ ignore = ["B008"]
 [tool.mypy]
 python_version = "3.11"
 strict = true
-files = ["src/paperagent"]
+files = ["src/paperagent", "src/evaluation"]
 mypy_path = "src"
 follow_imports = "normal"
 warn_unreachable = true
