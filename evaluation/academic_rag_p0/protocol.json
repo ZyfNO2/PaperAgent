@@ -1,0 +1,52 @@
+{
+  "protocol_version": "academic-rag-p0-scientific-acceptance.v1",
+  "status": "FROZEN_FOR_IMPLEMENTATION; NOT_READY_FOR_SCIENTIFIC_RUN",
+  "source_protocol": "PaperClaw/benchmarks/academic_rag/v1/eval/protocol.json",
+  "starting_commit_pair": {
+    "paperagent": "8aca0c14e21107bd02b802254a24bb8618efab29",
+    "paperclaw": "84c431da9d1dafecb9a8dfa27b3698d609f9542f"
+  },
+  "schema_digest": "62c3c6bbde000023a95025fdcae53c777fac479ddc9da02a63ea293b0855d2e0",
+  "golden_fixture_digest": "5f8b3b999de2139c6e328966086043663a3012a068636061971926b979ea647d",
+  "contract_files": {
+    "schema": {"path": "src/paperagent/academic/wire/academic.v1.schema.json", "sha256": "62c3c6bbde000023a95025fdcae53c777fac479ddc9da02a63ea293b0855d2e0"},
+    "golden": {"path": "src/paperagent/academic/wire/academic.v1.golden.json", "sha256": "5f8b3b999de2139c6e328966086043663a3012a068636061971926b979ea647d"}
+  },
+  "corpus_manifest_sha256": "389be651cc8ca001f0d8cf2a5be3343ba7764407bc0f4669d620b37c5135ea20",
+  "corpus_manifest_entry_count": 12,
+  "question_pack": {
+    "owner": "PaperClaw",
+    "path": "benchmarks/academic_rag/v1/eval/questions.blinded.jsonl",
+    "sha256": "fbdd29881729e95f75994cb225eaf07ba46b1a0664893452cec778893238051e",
+    "count": 32,
+    "distribution": {"text": 8, "figure": 8, "table": 8, "equation": 8},
+    "gold_path": "benchmarks/academic_rag/v1/eval/gold_labels.private.jsonl",
+    "question_manifest_sha256": "0938c390e6ab90993a9b1bff6e5085253ec2a8c96d3035eae3582ae4b3041e5c",
+    "artifact_manifest_sha256": "74d94283730cc36fdac84d59d48ca53296f6cc776e3aa35fa97bf4a605ecd620"
+  },
+  "required_gates": [
+    "real_papers",
+    "questions_32",
+    "human_gold_labels",
+    "cross_paper_decisions",
+    "real_minilm",
+    "real_colqwen2",
+    "real_academic_llm",
+    "native_windows",
+    "human_artifact_reviewer"
+  ],
+  "required_zero_metrics": [
+    "critical_unsupported_claims",
+    "critical_citation_mismatches",
+    "false_go"
+  ],
+  "severity_levels": ["critical", "major", "minor", "informational"],
+  "current_required_conclusion": "REVISE / P0 NO-GO",
+  "private_inputs_never_committed": [
+    "gold_labels.private.jsonl",
+    "private PDFs",
+    "model weights and caches",
+    "vector indexes and databases",
+    "API keys and raw private provider payloads"
+  ]
+}

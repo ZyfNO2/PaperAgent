@@ -1,0 +1,120 @@
+{
+  "all_required_gates_pass": false,
+  "blockers": [
+    "real_papers",
+    "questions_32",
+    "human_gold_labels",
+    "cross_paper_decisions",
+    "real_colqwen2",
+    "real_academic_llm",
+    "native_windows",
+    "human_artifact_reviewer"
+  ],
+  "conclusion": "REVISE / P0 NO-GO",
+  "critical_metrics_complete": false,
+  "evidence_classes": {
+    "fake_mock": "NOT_RUN",
+    "generated_pdf": "NOT_RUN",
+    "human_artifact_review": "BLOCKED",
+    "human_decisions": "BLOCKED",
+    "human_labels": "BLOCKED",
+    "native_windows": "BLOCKED",
+    "real_academic_llm": "BLOCKED",
+    "real_colqwen2": "BLOCKED",
+    "real_minilm": "PASS",
+    "real_papers": "BLOCKED",
+    "unit": "NOT_RUN"
+  },
+  "false_go": null,
+  "gates": [
+    {
+      "evidence_ref": null,
+      "gate_id": "unit_automation",
+      "reason": "run the frozen test command",
+      "status": "NOT_RUN"
+    },
+    {
+      "evidence_ref": null,
+      "gate_id": "corpus_manifest",
+      "reason": "metadata/hash manifest is frozen",
+      "status": "PASS"
+    },
+    {
+      "evidence_ref": null,
+      "gate_id": "real_papers",
+      "reason": "controlled local real-paper files and license evidence are not supplied",
+      "status": "BLOCKED"
+    },
+    {
+      "evidence_ref": null,
+      "gate_id": "questions_32",
+      "reason": "32 IDs exist, but human question authoring is incomplete",
+      "status": "BLOCKED"
+    },
+    {
+      "evidence_ref": null,
+      "gate_id": "human_gold_labels",
+      "reason": "human gold labels are absent",
+      "status": "BLOCKED"
+    },
+    {
+      "evidence_ref": null,
+      "gate_id": "cross_paper_decisions",
+      "reason": "two human scientific decisions are absent",
+      "status": "BLOCKED"
+    },
+    {
+      "evidence_ref": null,
+      "gate_id": "real_minilm",
+      "reason": "recorded RTX 4070 SUPER MiniLM evidence is available",
+      "status": "PASS"
+    },
+    {
+      "evidence_ref": null,
+      "gate_id": "real_colqwen2",
+      "reason": "fixed-revision ColQwen2 run did not complete",
+      "status": "BLOCKED"
+    },
+    {
+      "evidence_ref": null,
+      "gate_id": "real_academic_llm",
+      "reason": "no P0 academic workflow trace is supplied",
+      "status": "BLOCKED"
+    },
+    {
+      "evidence_ref": null,
+      "gate_id": "native_windows",
+      "reason": "manual Native Windows click-through is absent",
+      "status": "BLOCKED"
+    },
+    {
+      "evidence_ref": null,
+      "gate_id": "human_artifact_reviewer",
+      "reason": "independent human Artifact review is absent",
+      "status": "BLOCKED"
+    }
+  ],
+  "golden_fixture_digest": "5f8b3b999de2139c6e328966086043663a3012a068636061971926b979ea647d",
+  "metrics": {
+    "critical_citation_mismatches": null,
+    "critical_unsupported_claims": null,
+    "denominator_status": "BLOCKED",
+    "false_go": null
+  },
+  "overall_decision": "REVISE",
+  "p0_release": "NO-GO",
+  "proposed_decision": "REVISE",
+  "protocol_version": "academic-rag-p0-scientific-acceptance.v1",
+  "resource_summary": {
+    "artifact_manifest_sha256": "74d94283730cc36fdac84d59d48ca53296f6cc776e3aa35fa97bf4a605ecd620",
+    "question_pack_sha256": "fbdd29881729e95f75994cb225eaf07ba46b1a0664893452cec778893238051e",
+    "questions_expected": 32,
+    "real_paper_manifest_entries": 12
+  },
+  "schema_digest": "62c3c6bbde000023a95025fdcae53c777fac479ddc9da02a63ea293b0855d2e0",
+  "schema_version": "academic-rag-p0-acceptance-report.v1",
+  "starting_commit_pair": {
+    "paperagent": "8aca0c14e21107bd02b802254a24bb8618efab29",
+    "paperclaw": "84c431da9d1dafecb9a8dfa27b3698d609f9542f"
+  }
+}
