@@ -13,6 +13,7 @@ from paperagent.academic.p0_acceptance import (
     validate_denominators,
     verify_file_digest,
 )
+from paperagent.p0_acceptance_cli import main as p0_cli_main
 
 
 def test_accepted_only_context_and_claim_failures_are_classified() -> None:
@@ -120,3 +121,31 @@ def test_resource_digest_mismatch_is_rejected(tmp_path) -> None:
     resource.write_text("{}", encoding="utf-8")
     with pytest.raises(P0AcceptanceError, match="digest mismatch"):
         verify_file_digest(resource, "0" * 64)
+
+
+def test_blocked_report_cli_returns_nonzero_after_writing_outputs(tmp_path) -> None:
+    root = tmp_path / "repo"
+    root.mkdir()
+    protocol = root / "protocol.json"
+    protocol.write_text(
+        '{"protocol_version":"academic-rag-p0-scientific-acceptance.v1",'
+        '"schema_digest":"a","golden_fixture_digest":"b"}',
+        encoding="utf-8",
+    )
+    json_output = tmp_path / "report.json"
+    markdown_output = tmp_path / "report.md"
+    assert (
+        p0_cli_main(
+            [
+                "--protocol",
+                str(protocol),
+                "--json-output",
+                str(json_output),
+                "--markdown-output",
+                str(markdown_output),
+            ]
+        )
+        == 2
+    )
+    assert json_output.is_file()
+    assert markdown_output.is_file()

@@ -37,7 +37,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args.markdown_output.write_text(render_report_markdown(report), encoding="utf-8")
     print(json.dumps({"status": report["p0_release"], "json": str(args.json_output)}))
-    return 0
+    return 0 if report["p0_release"] == "GO" else 2
 
 
 if __name__ == "__main__":

@@ -14,4 +14,5 @@ paperagent-p0-acceptance `
 ```
 
 The command must keep the result `REVISE / P0 NO-GO` while any real or human Gate
-is missing. It does not run a model, create gold labels, or approve Artifacts.
+is missing and returns exit code `2` after writing the report. It does not run a
+model, create gold labels, or approve Artifacts.
