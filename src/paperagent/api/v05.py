@@ -7,6 +7,8 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse, PlainTextResponse
 
+from paperagent.academic.frontend_service import AcademicFrontendService
+from paperagent.api.academic_routes import register_academic_routes
 from paperagent.api.diagnostics import (
     collect_runtime_diagnostics,
     ensure_schema_version,
@@ -30,6 +32,7 @@ def create_app(
     review_repository: SQLiteReviewRepository | None = None,
     sse_poll_seconds: float = 0.2,
     sse_heartbeat_seconds: float = 15.0,
+    academic_service: AcademicFrontendService | None = None,
 ) -> FastAPI:
     app = create_review_app(
         executor=executor,
@@ -42,6 +45,7 @@ def create_app(
     )
     app.version = "0.5.1"
     register_web_routes(app)
+    register_academic_routes(app, academic_service)
     durable_path = app.state.task_repository.database_path
     ensure_schema_version(durable_path)
 

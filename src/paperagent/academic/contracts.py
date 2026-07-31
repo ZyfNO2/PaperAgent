@@ -115,6 +115,7 @@ class AcademicRetrievalResult(FrozenAcademicModel):
     degraded_channels: tuple[AcademicChannel, ...]
     conflict_detected: bool
     trace_id: str
+    trace_details: dict[str, object] = Field(default_factory=dict)
 
 
 class AcademicEvidenceEntry(FrozenAcademicModel):
@@ -168,6 +169,8 @@ class AcademicRAGResult(FrozenAcademicModel):
     context_evidence_ids: tuple[str, ...] = ()
     generated_claims: tuple[str, ...] = ()
     citation_mismatches: tuple[str, ...] = ()
+    retrieval_candidates: tuple[AcademicCandidate, ...] = ()
+    retrieval_trace_details: tuple[dict[str, object], ...] = ()
 
 
 @runtime_checkable

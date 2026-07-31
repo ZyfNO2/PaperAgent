@@ -167,6 +167,10 @@ class AcademicRAGWorkflow:
             context_evidence_ids=context_ids,
             generated_claims=generated_claim_texts,
             citation_mismatches=mismatch_kinds,
+            retrieval_candidates=tuple(
+                {item.evidence_id: item for result in results for item in result.candidates}.values()
+            ),
+            retrieval_trace_details=tuple(result.trace_details for result in results),
         )
 
     def _retrieve(

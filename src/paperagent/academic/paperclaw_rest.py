@@ -189,7 +189,7 @@ class PaperClawRetrievalRESTClient:
             raw.get("text_chars_used"), int
         ):
             raise PaperClawMalformedResponseError("PaperClaw text budget state is malformed")
-        return normalized
+        return normalized.model_copy(update={"trace_details": dict(trace)})
 
     def resolve(self, locator: AcademicLocator) -> AcademicCandidate:
         raw = self._json_request(
