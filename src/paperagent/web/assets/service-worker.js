@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "paperagent-shell-v1.0.0-workbench";
+const CACHE_NAME = "paperagent-shell-v1.1.0-academic-api";
 const SHELL_ASSETS = [
   "/app",
   "/app/manifest.webmanifest",
@@ -11,12 +11,14 @@ const SHELL_ASSETS = [
   "/app-static/css/pages.css",
   "/app-static/css/intro.css",
   "/app-static/js/data.js",
+  "/app-static/js/api.js",
   "/app-static/js/ui.js",
   "/app-static/js/intro.js",
   "/app-static/js/views/core.js",
   "/app-static/js/views/research.js",
   "/app-static/js/views/design.js",
   "/app-static/js/views/review.js",
+  "/app-static/js/views/academic.js",
   "/app-static/js/app.js",
 ];
 

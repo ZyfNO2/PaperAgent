@@ -6,7 +6,7 @@
 
 window.PA = window.PA || {};
 
-PA.data = (() => {
+PA.demoData = (() => {
   const stages = [
     { id: "contract", label: "研究契约" },
     { id: "literature", label: "文献检索" },

@@ -16,8 +16,8 @@
       section: "研究流程",
       items: [
         { id: "research", label: "研究问题", icon: "question" },
-        { id: "literature", label: "文献检索", icon: "literature", count: () => PA.data.papers.length },
-        { id: "evidence", label: "Evidence", icon: "evidence", count: () => PA.data.evidence.length },
+        { id: "literature", label: "文献检索", icon: "literature", count: () => (PA.model.papers || []).length },
+        { id: "evidence", label: "Evidence", icon: "evidence", count: () => (PA.model.evidence || []).length },
         { id: "baseline", label: "Baseline", icon: "baseline" },
         { id: "gap", label: "Gap 与假设", icon: "gap" },
         { id: "method", label: "方法设计", icon: "method" },
@@ -106,18 +106,31 @@
     container.classList.remove("view-enter");
     void container.offsetWidth; // 重启动画
     container.classList.add("view-enter");
-    if (view && view.render) view.render(container, params);
+    const productionPages = new Set(["projects", "literature", "evidence", "artifacts", "runs"]);
+    if (PA.mode === "production" && !productionPages.has(id)) {
+      container.append(PA.emptyState({
+        title: "该页面尚未接入生产 API",
+        text: "当前 MVP 仅开放 Projects、Papers、Evidence、Artifacts/Runs；不会显示 Demo 数据。",
+      }));
+    } else if (view && view.render) view.render(container, params);
     else container.append(PA.emptyState({ title: "页面不存在", text: `未找到视图 ${id}` }));
     document.querySelector(".app-main").scrollTop = 0;
   }
 
   function renderProjectSwitcher() {
     const sel = PA.clear(document.querySelector("#project-switcher"));
-    for (const p of PA.data.projects) {
+    for (const p of PA.model.projects || []) {
       sel.append(PA.h("option", { value: p.id, text: p.name }));
     }
-    const known = PA.data.projects.some((p) => p.id === PA.store.get("currentProject"));
-    sel.value = known ? PA.store.get("currentProject") : PA.data.projects[0].id;
+    const known = (PA.model.projects || []).some((p) => p.id === PA.store.get("currentProject"));
+    const first = (PA.model.projects || [])[0];
+    if (!first) {
+      sel.append(PA.h("option", { value: "", text: "暂无项目" }));
+      sel.disabled = true;
+      return;
+    }
+    sel.value = known ? PA.store.get("currentProject") : first.id;
+    if (!known) PA.store.set("currentProject", first.id);
     sel.addEventListener("change", () => {
       PA.store.set("currentProject", sel.value);
       PA.toast(`已切换到项目「${sel.selectedOptions[0].text}」`, "info");
@@ -154,17 +167,38 @@
     syncLabel();
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
     if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
       navigator.serviceWorker.register("/app/service-worker.js").catch(() => {});
     PA.store.applySettings();
-    renderNav();
-    renderProjectSwitcher();
-    renderThemeToggle();
-    bindCollapse();
-    window.addEventListener("hashchange", navigate);
-    if (!location.hash) location.hash = "#/overview";
-    navigate();
+    const viewRoot = root();
+    viewRoot.append(PA.loadingState("正在连接 PaperAgent / PaperClaw…"));
+    try {
+      const boot = await PA.api.bootstrap();
+      PA.mode = boot.mode;
+      PA.model = boot.model;
+      PA.data = boot.mode === "demo" ? boot.model : undefined;
+      const badge = document.querySelector("#demo-badge");
+      badge.hidden = boot.mode !== "demo";
+      badge.title = boot.mode === "demo" ? "显式 Demo fixture（非真实论文）" : "";
+      renderNav();
+      renderProjectSwitcher();
+      renderThemeToggle();
+      bindCollapse();
+      PA.navigate = navigate;
+      window.addEventListener("hashchange", navigate);
+      if (!location.hash) location.hash = "#/projects";
+      navigate();
+    } catch (error) {
+      PA.mode = "failed";
+      PA.model = { projects: [], papers: [], evidence: [], artifacts: [], runs: [] };
+      PA.clear(viewRoot).append(PA.errorState(
+        `${error.code || "startup_failed"}: ${error.message}`,
+        () => location.reload(),
+      ));
+      document.querySelector("#demo-badge").hidden = true;
+      return;
+    }
 
     /* 启动流程：Splash → Gate（每会话一次，可在设置中关闭） */
     PA.onProjectChanged = () => {
@@ -174,7 +208,7 @@
       navigate();
     };
     const INTRO_FLAG = "paperagent.intro.shown";
-    if (PA.store.settings().intro && !sessionStorage.getItem(INTRO_FLAG)) {
+    if (PA.mode === "demo" && PA.store.settings().intro && !sessionStorage.getItem(INTRO_FLAG)) {
       sessionStorage.setItem(INTRO_FLAG, "1");
       PA.intro.start(() => PA.onProjectChanged());
     }
