@@ -57,6 +57,41 @@
   };
 
   const root = () => document.querySelector("#view-root");
+  let projectSwitchGeneration = 0;
+
+  async function switchProject(projectId) {
+    if (!projectId || PA.mode !== "production") return;
+    const generation = ++projectSwitchGeneration;
+    const controls = document.querySelectorAll(".nav-item, #project-switcher");
+    controls.forEach((item) => { item.setAttribute("aria-disabled", "true"); item.disabled = true; });
+    const container = root();
+    PA.clear(container).append(PA.loadingState("Loading the selected project boundary…"));
+    try {
+      const result = await PA.api.loadProjectData(projectId);
+      if (generation !== projectSwitchGeneration) return;
+      PA.store.set("currentProject", projectId);
+      PA.model.papers = result.papers || [];
+      PA.model.artifacts = result.artifacts || [];
+      PA.model.evidence = [];
+      PA.model.lastEvidence = null;
+      PA.model.runs = [];
+      if (PA.restoreProjectRuns) await PA.restoreProjectRuns(projectId);
+      renderNav();
+      renderProjectSwitcher();
+      navigate();
+    } catch (error) {
+      if (generation === projectSwitchGeneration) {
+        PA.clear(container).append(PA.errorState(
+          `${error.code || "project_switch_failed"}: ${error.message}`,
+          () => switchProject(projectId),
+        ));
+      }
+    } finally {
+      if (generation === projectSwitchGeneration) {
+        controls.forEach((item) => { item.removeAttribute("aria-disabled"); item.disabled = false; });
+      }
+    }
+  }
 
   function renderNav() {
     const scroll = PA.clear(document.querySelector("#nav-scroll"));
@@ -131,10 +166,11 @@
     }
     sel.value = known ? PA.store.get("currentProject") : first.id;
     if (!known) PA.store.set("currentProject", first.id);
-    sel.addEventListener("change", () => {
-      PA.store.set("currentProject", sel.value);
+    sel.addEventListener("change", async () => {
+      const selectedProjectId = sel.value;
       PA.toast(`已切换到项目「${sel.selectedOptions[0].text}」`, "info");
-      navigate();
+      if (PA.mode === "production") await switchProject(selectedProjectId);
+      else { PA.store.set("currentProject", selectedProjectId); navigate(); }
     });
   }
 
@@ -186,6 +222,7 @@
       renderThemeToggle();
       bindCollapse();
       PA.navigate = navigate;
+      PA.switchProject = switchProject;
       window.addEventListener("hashchange", navigate);
       if (!location.hash) location.hash = "#/projects";
       navigate();

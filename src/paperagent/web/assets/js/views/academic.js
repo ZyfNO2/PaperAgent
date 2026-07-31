@@ -40,8 +40,7 @@
               id: item.project_id, name: item.name, status: "active", stage: "evidence",
               paperCount: 0, evidenceCount: 0, gateStatus: "REVISE",
             });
-            PA.store.set("currentProject", item.project_id);
-            PA.navigate();
+            await PA.switchProject(item.project_id);
           } catch (error) {
             PA.toast(error.message, "danger");
           } finally {
@@ -57,7 +56,7 @@
           projects.length ? h("div", { class: "card-grid" }, projects.map((item) =>
             h("button", {
               class: "card", type: "button",
-              onclick: () => { PA.store.set("currentProject", item.id); PA.navigate(); },
+              onclick: () => PA.switchProject(item.id),
             }, h("h3", { text: item.name }),
             h("p", { class: "muted small", text: item.id }),
             h("div", { class: "row" }, state("info", `${item.paperCount || 0} papers`),
@@ -75,11 +74,11 @@
         return;
       }
       const source = h("input", {
-        class: "input", placeholder: "PaperClaw 允许根目录内的 PDF 路径",
-        "aria-label": "论文文件路径",
+        class: "input", placeholder: "Server-local PDF path inside a PaperClaw allowed root",
+        "aria-label": "Server-local paper path import",
       });
       const importButton = h("button", {
-        class: "btn btn-primary", type: "button", text: "导入论文",
+        class: "btn btn-primary", type: "button", text: "Import Server-local PDF",
         onclick: async () => {
           importButton.disabled = true;
           try {
@@ -172,8 +171,9 @@
               h("pre", { class: "code-block", text: JSON.stringify(entry.locator, null, 2) }),
               h("p", { text: resolved.text || "This object has no extracted text." }));
             const asset = (resolved.assets || [])[0];
-            if (asset && asset.sha256) {
-              const blob = await PA.api.readAsset(projectId, entry.locator, asset.sha256);
+            const assetHash = asset && (asset.asset_hash || asset.sha256);
+            if (assetHash) {
+              const blob = await PA.api.readAsset(projectId, entry.locator, assetHash);
               body.append(h("img", {
                 src: URL.createObjectURL(blob),
                 alt: `Resolved page/region asset for ${entry.evidence_id}`,
@@ -271,13 +271,77 @@
     } catch (error) { PA.toast(error.message, "danger"); }
   }
 
+  const runKey = (projectId) => `paperagent.runs.${projectId}`;
+  const runIds = (projectId) => {
+    try { return JSON.parse(localStorage.getItem(runKey(projectId)) || "[]"); }
+    catch (_) { return []; }
+  };
+  const rememberRun = (projectId, taskId) => {
+    const ids = [taskId, ...runIds(projectId).filter((item) => item !== taskId)].slice(0, 50);
+    localStorage.setItem(runKey(projectId), JSON.stringify(ids));
+  };
+
+  PA.restoreProjectRuns = async (projectId) => {
+    const settled = await Promise.allSettled(runIds(projectId).map((taskId) => PA.api.getTask(taskId)));
+    PA.model.runs = settled.filter((item) => item.status === "fulfilled").map((item) => item.value);
+  };
+
   PA.views.runs = {
-    render(container) {
+    async render(container) {
       if (PA.mode === "demo") return demoViews.runs.render(container);
-      const runs = PA.model.runs || [];
-      container.append(runs.length
-        ? h("pre", { class: "code-block", text: JSON.stringify(runs, null, 2) })
-        : PA.emptyState({ title: "暂无运行记录", text: "任务状态通过 PaperAgent durable Task API 与 SSE 恢复。" }));
+      const current = project();
+      if (!current) return container.append(PA.emptyState({ title: "No project selected", text: "Create a project first." }));
+      await PA.restoreProjectRuns(current.id);
+      const question = h("textarea", {
+        class: "input", rows: "3", placeholder: "Bounded research task objective",
+        "aria-label": "Research task objective",
+      });
+      const create = h("button", {
+        class: "btn btn-primary", type: "button", text: "Create Research Task",
+        onclick: async () => {
+          const objective = question.value.trim();
+          if (!objective) return;
+          create.disabled = true;
+          try {
+            const accepted = await PA.api.createTask(
+              { request: { question: objective }, metadata: { project_id: current.id, client: "academic-pwa" } },
+              `academic-${current.id}-${Date.now()}`,
+            );
+            rememberRun(current.id, accepted.task_id);
+            PA.model.runs.unshift({ ...accepted, request: { question: objective } });
+            PA.navigate();
+            PA.api.pollTask(accepted.task_id).then((task) => {
+              const index = PA.model.runs.findIndex((item) => item.task_id === task.task_id);
+              if (index >= 0) PA.model.runs[index] = task;
+              if (project()?.id === current.id) PA.navigate();
+            }).catch((error) => PA.toast(error.message, "danger"));
+          } catch (error) { PA.toast(error.message, "danger"); }
+          finally { create.disabled = false; }
+        },
+      });
+      const list = h("div", { class: "stack" });
+      for (const task of PA.model.runs || []) {
+        const cancel = h("button", {
+          class: "btn btn-secondary btn-sm", type: "button", text: "Cancel",
+          disabled: ["succeeded", "failed", "cancelled"].includes(task.status),
+          onclick: async () => {
+            await PA.api.cancelTask(task.task_id);
+            Object.assign(task, await PA.api.getTask(task.task_id));
+            PA.navigate();
+          },
+        });
+        list.append(h("article", { class: "card" },
+          h("div", { class: "row" }, state("info", task.status), cancel),
+          h("h3", { text: task.request?.question || task.task_id }),
+          h("p", { class: "muted small", text: `Trace/task: ${task.task_id}` })));
+      }
+      container.append(h("section", { class: "panel" },
+        h("div", { class: "panel-header" }, h("h3", { text: "Durable Research Runs" })),
+        h("div", { class: "panel-body stack" }, question, create,
+          (PA.model.runs || []).length ? list : PA.emptyState({
+            title: "No runs for this project",
+            text: "Task IDs are restored from this browser and refreshed through the durable Task API.",
+          }))));
     },
   };
 })();

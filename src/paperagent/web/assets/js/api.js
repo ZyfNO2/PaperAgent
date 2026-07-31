@@ -112,6 +112,7 @@ PA.api = (() => {
   return {
     APIError,
     request,
+    loadProjectData,
     async bootstrap() {
       const params = new URLSearchParams(location.search);
       if (params.get("demo") === "1") {
@@ -199,6 +200,7 @@ PA.api = (() => {
       body: payload,
       headers: { "Idempotency-Key": idempotencyKey },
     }),
+    getTask: (taskId) => request(`/v1/tasks/${encodeURIComponent(taskId)}`),
     cancelTask: (taskId) => request(`/v1/tasks/${encodeURIComponent(taskId)}/cancel`, {
       method: "POST",
     }),

@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "paperagent-shell-v1.1.0-academic-api";
+const CACHE_NAME = "paperagent-shell-v1.1.1-review-boundaries";
 const SHELL_ASSETS = [
   "/app",
   "/app/manifest.webmanifest",

@@ -52,7 +52,7 @@ def test_web_shell__serves_manifest_worker_and_static_assets(tmp_path) -> None:
     assert manifest["display"] == "standalone"
     assert worker.status_code == 200
     assert worker.headers["service-worker-allowed"] == "/app"
-    assert "paperagent-shell-v1.1.0-academic-api" in worker.text
+    assert "paperagent-shell-v1.1.1-review-boundaries" in worker.text
     assert "/v1" not in worker.text
     assert (
         javascript.status_code
@@ -75,6 +75,7 @@ def test_web_shell__javascript_contract_covers_bounded_academic_api(tmp_path) ->
     with TestClient(app) as client:
         source = client.get("/app-static/js/app.js").text
         api_source = client.get("/app-static/js/api.js").text
+        academic_source = client.get("/app-static/js/views/academic.js").text
 
     required_contracts = [
         "location.hash",
@@ -90,6 +91,12 @@ def test_web_shell__javascript_contract_covers_bounded_academic_api(tmp_path) ->
     assert "AbortController" in api_source
     assert "paperclaw_not_configured" in api_source
     assert "readAsset" in api_source
+    assert "loadProjectData" in api_source
+    assert "switchProject" in source
+    assert "PA.model.lastEvidence = null" in source
+    assert "restoreProjectRuns" in academic_source
+    assert "Create Research Task" in academic_source
+    assert "Server-local PDF" in academic_source
     assert "openai" not in source.lower()
     assert "semantic scholar" not in source.lower()
 
