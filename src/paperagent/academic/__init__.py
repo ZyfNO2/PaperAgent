@@ -36,6 +36,19 @@ from paperagent.academic.factory import (
     create_paperclaw_artifact_sink,
     create_paperclaw_evidence_source,
 )
+from paperagent.academic.p0_acceptance import (
+    ARTIFACT_TYPES,
+    P0_PROTOCOL_VERSION,
+    P0_REPORT_SCHEMA,
+    P0AcceptanceError,
+    assert_protocol_compatible,
+    build_blocked_report,
+    decide_p0,
+    score_accepted_context,
+    score_artifacts,
+    score_claims,
+    validate_denominators,
+)
 from paperagent.academic.planner import (
     AcademicQueryDecomposition,
     AcademicSubQuery,
@@ -45,6 +58,9 @@ from paperagent.academic.project_adapter import ProjectRAGEvidenceSource
 from paperagent.academic.workflow import AcademicRAGWorkflow
 
 __all__ = [
+    "ARTIFACT_TYPES",
+    "P0_PROTOCOL_VERSION",
+    "P0_REPORT_SCHEMA",
     "AcademicArtifactCoordinator",
     "AcademicArtifactDraft",
     "AcademicArtifactRevision",
@@ -69,13 +85,21 @@ __all__ = [
     "GeneratedClaim",
     "InMemoryAcademicArtifactSink",
     "MismatchReport",
+    "P0AcceptanceError",
     "PaperClawDependencyError",
     "PaperClawVersionError",
     "ProjectRAGEvidenceSource",
+    "assert_protocol_compatible",
     "build_accepted_context_manifest",
+    "build_blocked_report",
     "check_citation_claim_mismatch",
     "create_paperclaw_artifact_sink",
     "create_paperclaw_evidence_source",
+    "decide_p0",
     "decompose_question",
     "generate_claims_from_ledger",
+    "score_accepted_context",
+    "score_artifacts",
+    "score_claims",
+    "validate_denominators",
 ]
