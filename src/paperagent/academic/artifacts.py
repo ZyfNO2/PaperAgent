@@ -209,12 +209,26 @@ class AcademicArtifactCoordinator:
                 reason_code="accepted_evidence_missing",
                 revisions=(),
             )
+        grounded_claims = tuple(
+            EvidenceBoundClaim(
+                text=claim,
+                evidence_ids=(evidence_id,),
+                limitations=("Generated from accepted, resolved evidence.",),
+            )
+            for result in (baseline, *modules)
+            for evidence_id, claim in zip(
+                result.context_evidence_ids,
+                result.generated_claims,
+                strict=True,
+            )
+        )
         drafts = self._drafts(
             project_id=project_id,
             hypothesis=clean_hypothesis,
             baseline_ids=baseline_ids,
             module_ids=module_ids,
             all_ids=all_ids,
+            grounded_claims=grounded_claims,
         )
         return AcademicTailoringArtifacts(
             project_id=project_id,
@@ -231,6 +245,7 @@ class AcademicArtifactCoordinator:
         baseline_ids: tuple[str, ...],
         module_ids: tuple[str, ...],
         all_ids: tuple[str, ...],
+        grounded_claims: tuple[EvidenceBoundClaim, ...],
     ) -> tuple[AcademicArtifactDraft, ...]:
         descriptions: tuple[tuple[AcademicArtifactType, str, str, tuple[str, ...]], ...] = (
             (
@@ -282,20 +297,26 @@ class AcademicArtifactCoordinator:
                 all_ids,
             ),
         )
-        return tuple(
-            AcademicArtifactDraft(
-                artifact_type=artifact_type,
-                title=title,
-                project_id=project_id,
-                summary=summary,
-                evidence_ids=evidence_ids,
-                claims=(
-                    EvidenceBoundClaim(
-                        text=summary,
-                        evidence_ids=evidence_ids,
-                        limitations=("Draft claim; not a scientific GO decision.",),
-                    ),
-                ),
+        drafts: list[AcademicArtifactDraft] = []
+        for artifact_type, title, summary, evidence_ids in descriptions:
+            scoped_claims = tuple(
+                claim for claim in grounded_claims if set(claim.evidence_ids) <= set(evidence_ids)
             )
-            for artifact_type, title, summary, evidence_ids in descriptions
-        )
+            drafts.append(
+                AcademicArtifactDraft(
+                    artifact_type=artifact_type,
+                    title=title,
+                    project_id=project_id,
+                    summary=summary,
+                    evidence_ids=evidence_ids,
+                    claims=scoped_claims
+                    or (
+                        EvidenceBoundClaim(
+                            text=summary,
+                            evidence_ids=evidence_ids,
+                            limitations=("Draft claim; not a scientific GO decision.",),
+                        ),
+                    ),
+                )
+            )
+        return tuple(drafts)

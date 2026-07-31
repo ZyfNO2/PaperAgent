@@ -40,6 +40,8 @@ def test_web_shell__serves_manifest_worker_and_static_assets(tmp_path) -> None:
         manifest_response = client.get("/app/manifest.webmanifest")
         worker = client.get("/app/service-worker.js")
         javascript = client.get("/app-static/js/app.js")
+        academic_api = client.get("/app-static/js/api.js")
+        academic_views = client.get("/app-static/js/views/academic.js")
         stylesheet = client.get("/app-static/css/tokens.css")
         icon = client.get("/app-static/icon.svg")
 
@@ -50,9 +52,16 @@ def test_web_shell__serves_manifest_worker_and_static_assets(tmp_path) -> None:
     assert manifest["display"] == "standalone"
     assert worker.status_code == 200
     assert worker.headers["service-worker-allowed"] == "/app"
-    assert "paperagent-shell-v1.0.0-workbench" in worker.text
+    assert "paperagent-shell-v1.1.1-review-boundaries" in worker.text
     assert "/v1" not in worker.text
-    assert javascript.status_code == stylesheet.status_code == icon.status_code == 200
+    assert (
+        javascript.status_code
+        == academic_api.status_code
+        == academic_views.status_code
+        == stylesheet.status_code
+        == icon.status_code
+        == 200
+    )
     assert javascript.headers["content-type"].startswith(
         ("text/javascript", "application/javascript")
     )
@@ -60,22 +69,34 @@ def test_web_shell__serves_manifest_worker_and_static_assets(tmp_path) -> None:
     assert icon.headers["content-type"].startswith("image/svg+xml")
 
 
-def test_web_shell__javascript_contract_covers_workbench_demo_slice(tmp_path) -> None:
+def test_web_shell__javascript_contract_covers_bounded_academic_api(tmp_path) -> None:
     app = create_app(executor=NeverCalledExecutor(), database_path=tmp_path / "tasks.db")
 
     with TestClient(app) as client:
         source = client.get("/app-static/js/app.js").text
+        api_source = client.get("/app-static/js/api.js").text
+        academic_source = client.get("/app-static/js/views/academic.js").text
 
     required_contracts = [
         "location.hash",
-        "#/overview",
+        "#/projects",
         "PA.views",
         "serviceWorker.register",
     ]
     for contract in required_contracts:
         assert contract in source
     assert "eval(" not in source
-    assert "fetch(" not in source  # 演示工作台不发起网络请求
+    assert "fetch(" not in source  # 网络边界集中在 PA.api
+    assert "fetch(" in api_source
+    assert "AbortController" in api_source
+    assert "paperclaw_not_configured" in api_source
+    assert "readAsset" in api_source
+    assert "loadProjectData" in api_source
+    assert "switchProject" in source
+    assert "PA.model.lastEvidence = null" in source
+    assert "restoreProjectRuns" in academic_source
+    assert "Create Research Task" in academic_source
+    assert "Server-local PDF" in academic_source
     assert "openai" not in source.lower()
     assert "semantic scholar" not in source.lower()
 

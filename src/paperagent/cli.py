@@ -11,6 +11,7 @@ from typing import cast
 
 import uvicorn
 
+from paperagent.academic.frontend_service import AcademicFrontendService
 from paperagent.api import create_app
 from paperagent.api.diagnostics import collect_runtime_diagnostics
 from paperagent.api.executor import TaskExecutor
@@ -62,6 +63,11 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--llm-provider", default=None)
     serve.add_argument("--llm-model", default=None)
     serve.add_argument("--llm-base-url", default=None)
+    serve.add_argument(
+        "--paperclaw-base-url",
+        default=os.getenv("PAPERAGENT_PAPERCLAW_BASE_URL"),
+        help="PaperClaw service URL; Academic pages fail closed when omitted",
+    )
     serve.add_argument(
         "--llm-price-table",
         type=Path,
@@ -177,6 +183,11 @@ def _serve(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
         database_path=database,
         sse_poll_seconds=0.05,
         sse_heartbeat_seconds=5.0,
+        academic_service=(
+            AcademicFrontendService(cast(str, args.paperclaw_base_url))
+            if args.paperclaw_base_url
+            else None
+        ),
     )
     uvicorn.run(app, host=host, port=port, log_level=log_level)
     return 0

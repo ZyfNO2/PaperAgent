@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -14,8 +16,10 @@ from paperclaw.academic import (
     AcademicObject,
     AcademicRuntime,
     BoundingBox,
+    EvidenceLocator,
     RetrievalCandidate,
     RetrievalResult,
+    RetrievalService,
     RetrievalTrace,
 )
 from paperclaw.artifacts import FileArtifactStore
@@ -80,6 +84,16 @@ class FakeAcademicRuntime:
                 degraded_channels=(),
                 stop_reason="sufficient",
             ),
+        )
+
+    @staticmethod
+    def evidence_bundle(result):
+        return SimpleNamespace(
+            schema_version="academic.v1",
+            candidates=result.candidates,
+            sufficiency=result.sufficiency,
+            reasons=result.reasons,
+            trace=result.trace,
         )
 
     def resolve(self, locator):
@@ -188,9 +202,10 @@ def test_real_paperclaw_runtime_drives_paperagent_evidence_workflow(
     runtime = AcademicRuntime.for_workspace(tmp_path, manifest.project_id)
     runtime.parse_paper(imported.paper.paper_id)
     runtime.build_index()
+    evidence_source = PaperClawAcademicEvidenceSource(RetrievalService(runtime))
     workflow = MemoryRAGWorkflow(
         tmp_path / "paperagent.sqlite3",
-        academic_evidence_source=PaperClawAcademicEvidenceSource(runtime),
+        academic_evidence_source=evidence_source,
         academic_artifact_sink=PaperClawAcademicArtifactSink(
             FileArtifactStore(tmp_path / ".paperclaw" / "paperagent-artifacts")
         ),
@@ -204,3 +219,27 @@ def test_real_paperclaw_runtime_drives_paperagent_evidence_workflow(
 
     assert result.sufficiency == "sufficient"
     assert len(result.ledger.accepted_ids) == 1
+    locator = result.ledger.entries[0].locator
+    resolved = runtime.resolve(
+        EvidenceLocator(
+            paper_id=locator.paper_id,
+            version_id=locator.version_id,
+            object_id=locator.object_id,
+            page_number=locator.page_number,
+            object_type=locator.object_type,
+            source_hash=locator.source_hash,
+            section_path=locator.section_path,
+            bounding_box=(
+                BoundingBox(*locator.bounding_box) if locator.bounding_box is not None else None
+            ),
+            paragraph_index=locator.paragraph_index,
+            line_range=locator.line_range,
+            table_row=locator.table_row,
+            table_column=locator.table_column,
+        )
+    )
+    assert any(asset.kind == "page" for asset in resolved.assets)
+    page_asset = next(asset for asset in resolved.assets if asset.kind == "page")
+    page_bytes = runtime.read_asset(resolved.locator, page_asset.asset_hash)
+    assert page_bytes.startswith(b"\x89PNG")
+    assert hashlib.sha256(page_bytes).hexdigest() == page_asset.asset_hash
