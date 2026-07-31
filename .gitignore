@@ -8,12 +8,15 @@ __pycache__/
 coverage.xml
 htmlcov/
 .venv/
+.venv-*/
 .env
 .env.*
 !.env.example
 
 # Local scratch / temporary artifacts (pytest tmp, patch drafts, logs)
 tmp/
+.tmp-*/
+.vscode/
 
 # Third-party plugin/tool working dirs (not part of the project)
 .codely-cli/
@@ -30,6 +33,8 @@ dist/
 # Runtime data
 *.db
 *.db.backup
+output/
+artifacts/evaluations/*/
 
 # UI design source files
 paperagent-ui.design/
@@ -37,3 +42,4 @@ paperagent-ui.design/
 # Coverage output
 cov-err.txt
 cov-out.txt
+coverage*.json
