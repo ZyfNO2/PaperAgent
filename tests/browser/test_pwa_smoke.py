@@ -426,9 +426,24 @@ def test_pwa__real_paperclaw_two_project_pdf_asset_and_artifact_loop(tmp_path: P
             page.get_by_role("button", name="生成八类 Evidence-bound Artifacts").wait_for()
             page.get_by_role("button", name="生成八类 Evidence-bound Artifacts").click()
             page.get_by_text("Artifact 草稿已写入", exact=False).wait_for()
+            artifact_listing = academic.list_artifacts(project_a)
+            assert artifact_listing["count"] == 8
             page.locator('.nav-item[data-nav="artifacts"]').click()
-            page.locator("button.card").first.wait_for()
-            assert page.locator("button.card").count() == 8
+            page.wait_for_function("() => document.querySelectorAll('button.card').length === 8")
+
+            artifact_id = artifact_listing["artifacts"][0]["artifact_id"]
+            page.locator("button.card").first.click()
+            page.once(
+                "dialog",
+                lambda dialog: dialog.accept("Add explicit real-paper evidence."),
+            )
+            page.get_by_role("button", name="Request Revision").click()
+            for _ in range(100):
+                revised = academic.get_artifact(project_a, artifact_id)
+                if len(revised["revisions"]) == 2:
+                    break
+                time.sleep(0.05)
+            assert [item["revision_number"] for item in revised["revisions"]] == [1, 2]
 
             page.locator('.nav-item[data-nav="projects"]').click()
             page.locator("input[placeholder='项目名称']").fill("Project B")
