@@ -4,6 +4,7 @@ import hashlib
 from typing import Any
 
 import httpx
+import pytest
 from fastapi.testclient import TestClient
 
 from paperagent.academic.artifacts import AcademicArtifactDraft
@@ -302,3 +303,57 @@ def test_rest_artifact_sink_validates_project_and_maps_revisions() -> None:
         assert exc.code == "paperclaw_malformed_response"
     else:  # pragma: no cover
         raise AssertionError("expected malformed response")
+
+
+@pytest.mark.parametrize(
+    ("url", "timeout"),
+    [("file:///tmp/paperclaw", 1.0), ("http://paperclaw.test", 0.0), ("http://x", 61.0)],
+)
+def test_frontend_service_rejects_invalid_connection_bounds(url: str, timeout: float) -> None:
+    with pytest.raises(ValueError):
+        AcademicFrontendService(url, timeout_seconds=timeout)
+
+
+@pytest.mark.parametrize(
+    ("response", "expected_code"),
+    [
+        (httpx.Response(200, text="not-json"), "paperclaw_malformed_response"),
+        (httpx.Response(200, json=[]), "paperclaw_malformed_response"),
+        (httpx.Response(502, json={}), "paperclaw_upstream_failure"),
+    ],
+)
+def test_frontend_service_rejects_malformed_upstream_responses(
+    response: httpx.Response, expected_code: str
+) -> None:
+    service = AcademicFrontendService(
+        "http://paperclaw.test",
+        client=httpx.Client(transport=httpx.MockTransport(lambda _: response)),
+    )
+    with pytest.raises(AcademicFrontendError, match="PaperClaw") as caught:
+        service.list_projects()
+    assert caught.value.code == expected_code
+
+
+def test_frontend_service_asset_failures_are_structured() -> None:
+    service = AcademicFrontendService(
+        "http://paperclaw.test",
+        client=httpx.Client(
+            transport=httpx.MockTransport(lambda _: httpx.Response(404, content=b"missing"))
+        ),
+    )
+    with pytest.raises(AcademicFrontendError) as invalid:
+        service.read_asset("demo", {}, "INVALID")
+    assert invalid.value.code == "asset_hash_invalid"
+    with pytest.raises(AcademicFrontendError) as rejected:
+        service.read_asset("demo", {}, "a" * 64)
+    assert rejected.value.code == "paperclaw_asset_failure"
+
+    mismatch = AcademicFrontendService(
+        "http://paperclaw.test",
+        client=httpx.Client(
+            transport=httpx.MockTransport(lambda _: httpx.Response(200, content=b"wrong"))
+        ),
+    )
+    with pytest.raises(AcademicFrontendError) as corrupted:
+        mismatch.read_asset("demo", {}, "a" * 64)
+    assert corrupted.value.code == "paperclaw_asset_hash_mismatch"
