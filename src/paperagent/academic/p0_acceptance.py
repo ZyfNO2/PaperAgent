@@ -50,6 +50,8 @@ class GateResult:
 
 
 def canonical_sha256(path: Path) -> str:
+    """Hash exact file bytes; this is not canonical-JSON serialization."""
+
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
@@ -220,14 +222,10 @@ def decide_p0(
     proposed_go = proposed_decision.strip().upper() == "GO"
     final_release = "GO" if gates_complete and hard_zero else "NO-GO"
     false_go_count = (
-        1
-        if proposed_go and final_release != "GO"
-        else 0
-        if false_go is not None
-        else None
+        false_go if false_go is not None else 1 if proposed_go and final_release != "GO" else None
     )
     return {
-        "overall_decision": "REVISE",
+        "overall_decision": "GO" if final_release == "GO" else "REVISE",
         "p0_release": final_release,
         "proposed_decision": proposed_decision,
         "false_go": false_go_count,
@@ -278,6 +276,7 @@ def build_blocked_report(protocol: Mapping[str, object]) -> dict[str, object]:
         "schema_version": P0_REPORT_SCHEMA,
         "protocol_version": protocol["protocol_version"],
         "starting_commit_pair": protocol.get("starting_commit_pair"),
+        "implementation_base_commit_pair": protocol.get("implementation_base_commit_pair"),
         "schema_digest": protocol.get("schema_digest"),
         "golden_fixture_digest": protocol.get("golden_fixture_digest"),
         "resource_summary": {
@@ -285,6 +284,11 @@ def build_blocked_report(protocol: Mapping[str, object]) -> dict[str, object]:
             "questions_expected": question_pack_map.get("count"),
             "question_pack_sha256": question_pack_map.get("sha256"),
             "artifact_manifest_sha256": question_pack_map.get("artifact_manifest_sha256"),
+            "frozen_set_sha256": (
+                frozen_spec.get("sha256")
+                if isinstance((frozen_spec := protocol.get("frozen_set")), Mapping)
+                else None
+            ),
         },
         "gates": [gate.to_dict() for gate in gates],
         "evidence_classes": {

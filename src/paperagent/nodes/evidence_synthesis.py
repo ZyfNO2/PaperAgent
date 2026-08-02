@@ -47,7 +47,7 @@ def _constrained_synthesis_schema(
         status=(Literal["supported", "partial", "unsupported", "conflicted"], ...),
         evidence_ids=(evidence_id_list, ...),
         summary=(str, ...),
-        limitations=(list[str], Field(default_factory=list)),
+        limitations=(list[str], Field(default_factory=lambda: list[str]())),
     )
     conflict = create_model(
         "ConstrainedEvidenceSynthesisConflict",
