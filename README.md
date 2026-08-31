@@ -24,6 +24,32 @@ Research Request
 
 PaperAgent 可以调用 PaperClaw 提供的项目知识、Memory、Artifact 和受限工具能力，但不应再次建设一套平行的通用运行时。
 
+## PWA 工作台界面预览
+
+PaperAgent 提供面向研究项目、文献检索、Evidence 评审、Baseline、方法设计与
+质量门的本地 PWA 工作台。以下截图展示当前 Demo 模式的主要界面；截图中的项目、
+文献和指标是前端演示数据，不代表真实 Provider 运行结果或科学质量结论。
+
+### 研究项目入口
+
+启动后可以继续已有研究项目，也可以输入新的研究问题创建项目。
+
+![PaperAgent 研究项目入口](docs/assets/frontend/paperagent-onboarding.png)
+
+### 研究工作台总览
+
+总览页展示当前研究问题、研究阶段、Evidence 覆盖度、Baseline、Quality Gate、
+最近任务、报告和待办事项。
+
+![PaperAgent 研究工作台总览](docs/assets/frontend/paperagent-overview.png)
+
+### Evidence 评审
+
+Evidence 页以卡片形式展示 Claim、来源、相关度、验证状态和人工接受/拒绝操作，
+用于支撑后续 Baseline 与方法设计。
+
+![PaperAgent Evidence 评审](docs/assets/frontend/paperagent-evidence.png)
+
 ## 当前状态
 
 ```text
